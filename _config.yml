@@ -2,6 +2,8 @@ site: Андрей Крисанов
 url: https://akrisanov.ru
 title: Андрей Крисанов
 description: Редкие заметки о менеджменте и программировании
+github:
+  username: akrisanov
 twitter:
   username: #yourusername
   card: summary
