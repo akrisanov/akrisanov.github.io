@@ -1,9 +1,9 @@
 links:
-  - title: Writing
+  - title: Заметки
     url: /
-  - title: About
+  - title: Обо мне
     url: /about
-  - title: Search
+  - title: Поиск
     url: /search
   - title: RSS
     url: /atom.xml

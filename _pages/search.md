@@ -1,32 +1,32 @@
 ---
 layout: page
-title: Search
+title: Поиск
 ---
 
 <style>
-	#search-container {
-	    max-width: 100%;
-	}
+ #search-container {
+     max-width: 100%;
+ }
 
-	input[type=text] {
-		font-size: normal;
-	    outline: none;
-	    padding: 1rem;
-		background: rgb(236, 237, 238);
-	    width: 100%;
-		-webkit-appearance: none;
-		font-family: inherit;
-		font-size: 100%;
-		border: none;
-	}
-	#results-container {
-		margin: .5rem 0;
-	}
+ input[type=text] {
+  font-size: normal;
+     outline: none;
+     padding: 1rem;
+  background: rgb(236, 237, 238);
+     width: 100%;
+  -webkit-appearance: none;
+  font-family: inherit;
+  font-size: 100%;
+  border: none;
+ }
+ #results-container {
+  margin: .5rem 0;
+ }
 </style>
 
 <!-- Html Elements for Search -->
 <div id="search-container">
-<input type="text" id="search-input" placeholder="Search...">
+<input type="text" id="search-input" placeholder="Искать...">
 <ol id="results-container"></ol>
 </div>
 
@@ -40,9 +40,9 @@ SimpleJekyllSearch({
   resultsContainer: document.getElementById('results-container'),
   json: '/search.json',
   searchResultTemplate: '<li><a href="{url}" title="{description}">{title}</a></li>',
-  noResultsText: 'No results found',
+  noResultsText: '😞 Ничего не найдено',
   limit: 10,
   fuzzy: false,
-  exclude: ['Welcome']
+  exclude: ['Привет']
 })
 </script>
