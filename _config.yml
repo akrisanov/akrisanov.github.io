@@ -1,65 +1,53 @@
-site: Андрей Крисанов
-url: https://akrisanov.ru
 title: Андрей Крисанов
-description: Редкие заметки о менеджменте и программировании
+author: Андрей Крисанов
+description: Заметки o разработке и менеджменте
+
 repository: akrisanov/akrisanov.github.io
-github:
-  username: akrisanov
-twitter:
-  username: _akrisanov
-  card: summary
-  creator: #yourusername
-author:
-  twitter: _akrisanov
-  name: #yourusername
-  avatar:
-  email: #youremail
-  url: #yoururl
-permalink: pretty
-
+url: https://akrisanov.ru
 baseurl: ""
+permalink: /:year/:month/:day/:slug/
+paginate: 5
+lang: ru
+date_format: "%d.%m.%Y"
 
-highlighter: none
+# Layout
 
-exclude:
-  - .jekyll-cache
-  - vendor
+show_excerpts: true # show article excerpts on the home page
+show_frame: true # adds a gray frame to the site
+show_sidebar: false # show a sidebar instead of the usual header
+minimal: false # use a dark header
 
-compress_html:
-  clippings: all
-  comments: ["<!-- ", " -->"]
+# Menu
 
-sass:
-  sass_dir: _sass
-  style: :compressed
+navigation: # accepts {file, title, url, icon, sidebaricon}
+  - { title: "Обо мне", file: "about.md" }
+  - { title: "Заметки", icon: "home", file: "index.html" }
+
+external: # shows a footer with social links - for available icons see fontawesome.com/icons
+  - {
+      title: Контакты,
+      icon: "address-card",
+      url: "https://linktr.ee/akrisanov",
+    }
+  - {
+      title: Linkedin,
+      icon: linkedin,
+      url: "https://linkedin.com/in/akrisanov/",
+    }
+  - { title: Github, icon: github, url: "https://github.com/akrisanov/" }
+  - { title: RSS, icon: rss, url: "/feed.xml" }
+
+comments:
+#  disqus_shortname: ""    # see https://disqus.com/
+#  isso_domain: ""         # see https://posativ.org/isso/
 
 plugins:
-  - jekyll-paginate
+  - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-youtube
   - jekyll-twitter-plugin
+  - jekyll-gist
+  - months
 
-collections:
-  pages:
-    output: true
-    permalink: /:name
-  posts:
-    output: true
-    permalink: /:year/:month/:day/:slug
-
-defaults:
-  - scope:
-      path: ""
-    values:
-      layout: "default"
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      layout: "page"
-  - scope:
-      path: ""
-      type: "posts"
-    values:
-      layout: "post"
+safe: false

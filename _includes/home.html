@@ -1,0 +1,18 @@
+{%- assign posts = paginator.posts | default: site.posts -%}
+{% for post in posts %}
+<article>
+  {% include meta.html post=post preview=true %}
+  {{ post.excerpt }}
+  <div class="more"><a href="{{ post.url | relative_url }}">читать</a></div>
+</article>
+{% endfor %}
+
+{% if paginator.total_pages > 1 %}
+<footer>
+  {% if paginator.previous_page %}<a href="{{ paginator.previous_page_path | relative_url }}">« назад</a>{% else
+  %}<span></span>{% endif %}
+  <span>страница {{ paginator.page }} из {{ paginator.total_pages }}</span>
+  {% if paginator.next_page %}<a href="{{ paginator.next_page_path | relative_url }}">дальше »</a>{% else
+  %}<span></span>{% endif %}
+</footer>
+{% endif %}
