@@ -21,6 +21,7 @@ minimal: false # use a dark header
 
 navigation: # accepts {file, title, url, icon, sidebaricon}
   - { title: "Обо мне", file: "about.md" }
+  - { title: "Notes in English", url: "https://akrisanov.com" }
   - { title: "Заметки", icon: "home", file: "index.html" }
 
 external: # shows a footer with social links - for available icons see fontawesome.com/icons
