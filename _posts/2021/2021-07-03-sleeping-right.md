@@ -19,5 +19,5 @@ tags: ["здоровье", "сон"]
 - Лежа на спине, подушка должна образовывать валик в области шеи
 - Ортопедическая подушка пригодна только для сна на боку
 - Подушка должна успевать проветриваться и сохнуть, а не лежать постоянно накрытой
-<br>
-{% youtube "https://www.youtube.com/watch?v=fZc9z9S04Uc" %}
+
+{% include embed.html url="https://www.youtube.com/embed/fZc9z9S04Uc?si=elEy4NauZ6gBqILK" %}

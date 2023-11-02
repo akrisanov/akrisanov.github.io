@@ -12,7 +12,7 @@ WSL2 не поддерживает высвобождение места на в
 
 Для начала удаляем неиспользуемые Docker-образы:
 
-```shell
+```
 $ docker system prune --all
 
 WARNING! This will remove:
@@ -41,7 +41,7 @@ sudo apt-get autoremove
 
 Ситуация исправляется следующим образом. Открываем PowerShell с правами администратора и выполняем:
 
-```shell
+```
 > wsl.exe --list --verbose  # получаем список виртуальных машин
 
 > wsl.exe --terminate Ubuntu-20.04  # останавливаем нужную
@@ -61,7 +61,7 @@ DiskPart successfully compacted the virtual disk file.
 
 То же самое проделываем для диска Docker:
 
-```shell
+```
 DISKPART> select vdisk file=C:\Users\devel\AppData\Local\Docker\wsl\data\ext4.vhdx
 
 DiskPart successfully selected the virtual disk file.

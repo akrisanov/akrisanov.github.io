@@ -41,7 +41,7 @@ USER 1000
 
 Убедиться, что сертификат был добавлен в список доверенных:
 
-```shell
+```
 cd /etc/pki/ca-trust/extracted/java
 keytool -list -keystore cacerts
 ```
