@@ -20,7 +20,7 @@ WSL2 не поддерживает высвобождение места на в
 
 Для начала удаляем неиспользуемые Docker-образы:
 
-```shell
+```bash
 $ docker system prune --all
 
 WARNING! This will remove:
@@ -39,7 +39,7 @@ Total reclaimed space: 76.84GB
 
 А также выполняем удаление неиспользуемых системных пакетов:
 
-```shell
+```bash
 sudo apt-get clean
 sudo apt-get autoclean
 sudo apt-get autoremove
@@ -49,7 +49,7 @@ sudo apt-get autoremove
 
 Ситуация исправляется следующим образом. Открываем PowerShell с правами администратора и выполняем:
 
-```shell
+```bash
 > wsl.exe --list --verbose  # получаем список виртуальных машин
 
 > wsl.exe --terminate Ubuntu-20.04  # останавливаем нужную
@@ -69,7 +69,7 @@ DiskPart successfully compacted the virtual disk file.
 
 То же самое проделываем для диска Docker:
 
-```shell
+```bash
 DISKPART> select vdisk file=C:\Users\devel\AppData\Local\Docker\wsl\data\ext4.vhdx
 
 DiskPart successfully selected the virtual disk file.

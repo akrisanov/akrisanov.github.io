@@ -15,7 +15,7 @@ toc = false
 Для установки пакетов на macOS я долгое время пользовался пакетным менеджером [Homebrew](https://brew.sh/).
 Утилита позволяет устанавливать и обновлять не только актуальные, но и major-версии программ:
 
-```shell
+```bash
 brew install postgresql@12
 ```
 
@@ -35,7 +35,7 @@ asdf имеет хорошую документацию, совместим со
 
 Python и JDK устанавливаются следующим образом:
 
-```shell
+```bash
 # Python
 $ asdf plugin add python
 $ asdf install python 3.9.4

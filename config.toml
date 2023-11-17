@@ -5,7 +5,7 @@ base_url = "https://akrisanov.com"
 # If you use the npm/node script then all you have to do is set offline = true, and everything else is automatic.
 
 title = "Andrey Krisanov"
-description = "Software Engineer and Engineering Leader"
+description = "Engineering Manager · CTO"
 theme = "abridge"
 
 default_language = "en"
@@ -39,12 +39,12 @@ smart_punctuation = false          # `...` to `…`, `"quote"` to `“curly”` 
 
 [languages.ru]
 title = "Андрей Крисанов"
-description = "Разработчик и технический менеджер · Backend и Data Engineering"
+description = "Технический руководитель · разработчик · консультант"
 generate_feed = true
 build_search_index = true
-search.include_title = true                                                     # include title of page/section in index
-search.include_description = true                                               # include description of page/section in index
-search.include_content = true                                                   # include rendered content of page/section in index
+search.include_title = true                                          # include title of page/section in index
+search.include_description = true                                    # include description of page/section in index
+search.include_content = true                                        # include rendered content of page/section in index
 # search.truncate_content_length = 100 # Truncate at nth character. May be useful if index is getting too large.
 taxonomies = [{ name = "tags", feed = true }]
 
@@ -60,7 +60,6 @@ menu = [
     { url = "archive", name = "Posts", slash = true, blank = false, size = "s95" },
     { url = "tags", name = "Tags", slash = true, blank = false, size = "s95" },
     { url = "about", name = "About", slash = true, blank = false, size = "s95" },
-    { url = "resume", name = "Resume", slash = true, blank = false, size = "s95" },
 ]
 menu_footer = [
     { url = "https://linktr.ee/akrisanov", name = "Contacts", slash = false, blank = true, icon = "address-card" },

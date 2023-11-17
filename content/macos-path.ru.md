@@ -17,13 +17,13 @@ toc = false
 файла `/etc/paths/`. Этот файл содержит список (по одному на строку) путей, которые добавляются к
 переменной `$PATH` в shell:
 
-```shell
+```bash
 echo $PATH
 ```
 
 Допустим, мы хотим добавить каталог `$HOME/.local/bin/` к уже существующему списку:
 
-```shell
+```bash
 /usr/local/bin
 /usr/bin
 /bin
@@ -33,7 +33,7 @@ echo $PATH
 
 Для этого достаточно открыть файл `/etc/paths/` в любом редакторе, например, nano:
 
-```shell
+```bash
 sudo nano /etc/paths
 ```
 

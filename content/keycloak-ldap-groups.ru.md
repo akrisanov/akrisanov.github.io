@@ -29,7 +29,7 @@ toc = false
 В настройках LDAP провайдера необходимо указать `User DN`. Самый простой вариант – когда все учетные
 записи разложены по организационным единицам:
 
-```shell
+```bash
 OU=Main,DC=Orgname,DC=ru
 ```
 
@@ -42,7 +42,7 @@ OU=Main,DC=Orgname,DC=ru
 фильтром для LDAP, я не нашел. В настройке `Custom User LDAP Filter` можно прописать все `CN` группы
 через оператор «Или» `|`:
 
-```shell
+```bash
 (&(objectCategory=Person)(sAMAccountName=*)(|(memberOf=CN=CMS_EDITOR,OU=Security,OU=Groups,OU=Central,OU=Main,DC=Orgname,DC=ru)))
 ```
 

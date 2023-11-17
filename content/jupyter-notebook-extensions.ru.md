@@ -28,25 +28,25 @@ Jupyter Notebook — один из часто используемых мною 
 
 Установить pip пакет с расширениями:
 
-```shell
+```bash
 pip3 install jupyter_contrib_nbextensions
 ```
 
 Скопировать JavaScript и CSS файлы:
 
-```shell
+```bash
 jupyter contrib nbextension install --user
 ```
 
 Активировать выбранное расширение:
 
-```shell
+```bash
 jupyter nbextension enable toc2/main
 ```
 
 В ответ вы должны получить следующее сообщение:
 
-```shell
+```bash
 Enabling notebook extension toc2/main...
       - Validating: OK
 ```

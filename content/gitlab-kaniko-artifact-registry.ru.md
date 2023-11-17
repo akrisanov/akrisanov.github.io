@@ -40,17 +40,17 @@ toc = false
 в разделе IAM & Admin.
 
 ![Создание сервисного аккаунта](/images/gcp-service-account.png)
-<span class="imgtitle">Создание сервисного аккаунта</span>
+<span class="img-title">Создание сервисного аккаунта</span>
 
 Далее сгенерировать приватный ключ в формате JSON и скачать его.
 
 ![Генерация нового приватного ключа](/images/gcp-private-key.png)
-<span class="imgtitle">Генерация нового приватного ключа</span>
+<span class="img-title">Генерация нового приватного ключа</span>
 
 Выдать права доступа к Artifact Registry для сервисного аккаунта.
 
 ![Назначение ролей Artifact Registry Reader и Artifact Registry Writer](/images/gcp-roles.png)
-<span class="imgtitle">Назначение ролей Artifact Registry Reader и Artifact Registry Writer</span>
+<span class="img-title">Назначение ролей Artifact Registry Reader и Artifact Registry Writer</span>
 
 Роль `Artifact Registry Reader` необходима для скачивания образов и кеширования,
 роль `Artifact Registry Writer` – для публикации образов. В интернете можно найти руководства,
@@ -64,7 +64,7 @@ toc = false
 значения base64 строку.
 
 ![Создание переменной GOOGLE_APPLICATION_CREDENTIALS](/images/gitlab-env.png)
-<span class="imgtitle">Создание переменной `GOOGLE_APPLICATION_CREDENTIALS`</span>
+<span class="img-title">Создание переменной `GOOGLE_APPLICATION_CREDENTIALS`</span>
 
 ```yml
 backend:build:
@@ -92,7 +92,7 @@ backend:build:
 определенного коммита.
 
 ![Пайплайн проекта](/images/kaniko-build-pipeline.png)
-<span class="imgtitle">Пайплайн проекта</span>
+<span class="img-title">Пайплайн проекта</span>
 
 Как результат, в GCP Artifact Registry после успешного выполнения пайплайна появится образ
 с именем вида `backend:{tag_name}`.

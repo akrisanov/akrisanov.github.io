@@ -49,12 +49,12 @@ USER 1000
 
 Убедиться, что сертификат был добавлен в список доверенных:
 
-```shell
+```bash
 cd /etc/pki/ca-trust/extracted/java
 keytool -list -keystore cacerts
 ```
 
-```shell
+```bash
 >> Your keystore contains 137 entries
 ```
 
