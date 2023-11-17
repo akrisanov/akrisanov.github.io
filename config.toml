@@ -109,7 +109,7 @@ foothr = true    # show or hide horizontal rule above footer
 ####################################################################################################
 
 title_separator = "|"                                                                                 # Separator between title and title_addition, set as |, -, _, etc
-title_addition = "Software Engineer and Engineering Leader"                                           # a default value for title addition
+title_addition = "Engineering Manager · CTO"                                                          # a default value for title addition
 author = "Andrey Krisanov"                                                                            # Put Your Name here
 keywords = "Andrey Krisanov, Software Engineer, Engineering Manager, TechLead, TeamLead, Remote Work" # used for the primary site index
 banner = "images/photo.jpg"                                                                           # Used as default image for OpenGraph/Twitter if page specific image is undefined.

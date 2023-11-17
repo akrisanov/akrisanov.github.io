@@ -8,17 +8,13 @@ draft = false
 
 ## Hi, I'm Andrey
 
-Senior Software Engineer in Backend & Data at [Anonos](https://www.anonos.com/)
-
-I'm a software engineer focused on shipping products and delivering value to customers.
+I'm a software engineer and engineering manager focused on shipping products and delivering value to customers.
 In a team, I'm an advocate of trust, asynchronous communication, solid documentation, and pragmatism.
-I have experience working in distributed teams and remotely. My main areas of interest lie in
-collaborative software, computing, data processing, and low-latency systems.
+I have experience working in distributed teams and remotely. My main areas of interest are
+collaborative software, data processing, and low-latency systems.
 
-I'm a Software Engineer at Anonos working on privacy and data protection solutions.
+I'm currently a member of the engineering team at Anonos, working on privacy and data protection solutions.
 We research and develop the Python SDK and the cloud platform for data anonymization.
-
-Currently based in Berlin, Germany, I am open to exploring opportunities in the UK.
 
 ## Past work
 
@@ -35,7 +31,7 @@ I have been fascinated by computers since I saw one in 2000. That's why my progr
 better than my understanding and knowledge of mathematics – such a pity.
 
 You can find information about my professional experience either on
-Linkedin [@akrisanov](http://linkedin.com/in/akrisanov/) or on [the CV page](/resume/).
+Linkedin [@akrisanov](http://linkedin.com/in/akrisanov/).
 
 ## This site
 
