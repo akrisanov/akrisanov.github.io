@@ -5,3 +5,41 @@
     font-size: 0.8em;
     font-weight: 200;
 }
+
+.callout {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+
+    .author {
+        font-size: 0.8em;
+        font-weight: 200;
+        font-style: italic;
+        text-align: right;
+    }
+
+    code {
+        border-radius: 3px;
+    }
+
+    &+.bs-callout {
+        margin-top: -5px;
+    }
+}
+
+@each $name, $color in (success, #5cb85c), (danger, #d9534f), (warning, #f0ad4e), (info, #5bc0de), (bdc, #29527a) {
+    .callout-#{$name} {
+        border-left-color: $color;
+        background-color: rgba($color, 0.1);
+
+        h4 {
+            color: $color;
+        }
+    }
+}

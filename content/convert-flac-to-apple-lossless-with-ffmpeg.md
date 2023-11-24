@@ -46,8 +46,8 @@ Finally, the `alac` directory can be dragged to Apple Music to import the album 
 ![](/images/Screenshot-2023-10-22-at-18.27.41.png)
 <span class="img-title">The Uploaded Album</span>
 
----
-
-👉 You probably wonder why this album has no Lossless icon in Apple Music. Well, it turns out the
+<div class="callout callout-warning">
+You probably wonder why this album has no Lossless icon in Apple Music. Well, it turns out the
 audio quality of the FLAC files wasn't on pair with lossless. So, make sure releases you buy or
 rip, have a proper audio codec and quality.
+</div>

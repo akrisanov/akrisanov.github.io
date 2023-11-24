@@ -83,7 +83,7 @@ Another option might be to run a similar workflow in a Docker container. I poste
 multi-architecture builds a few months ago. [Take a look!](https://dev.to/akrisanov/building-multi-arch-images-for-arm-and-x86-2802)
 Just make sure you choose the same architecture and Python version that you want to distribute your project to.
 
----
-
+<div class="callout callout-bdc">
 Other tools like Poetry might do the job better and provide more convenient ways of managing lock files.
 But if you have reasons to not use them, it's totally fine to stick with good old pip.
+</div>

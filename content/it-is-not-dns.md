@@ -75,10 +75,11 @@ I remove the first nameserver from `/etc/resolv.conf` and drop the DNS cache on 
 After a few seconds, the 504 error and the gateway timeout disappear. In the morning, we'll
 discuss the incident with the infrastructure team and senior management. Fun week ahead.
 
----
-
-> It's not DNS<br>
-> There's no way it's DNS<br>
-> It was DNS
-
-Old Japanese Haiku.
+<div class="callout callout-bdc">
+<p>
+    It's not DNS<br/>
+    There's no way it's DNS<br/>
+    It was DNS
+</p>
+<p class="author">Old Japanese Haiku</p>
+</div>
