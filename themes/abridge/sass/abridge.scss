@@ -24,13 +24,13 @@
 /// Fluid layout until a defined size, then becomes centered viewport
 $enable-maxwidth: true !default;
 $mw: 70% !default; // max-width
-$mb: 1200px !default; // value at which to switch from fluid layout to max-width
+$mb: 1000px !default; // value at which to switch from fluid layout to max-width
 
 $abridgeMode: "switcher" !default; //valid values: switcher, auto, dark, light
 $syntax-mode: "auto" !default; // Force syntax mode: auto, dark, light
 $switcherDefault: "dark" !default; // default for nojs switcher: dark, light
 
-$color: "orange" !default; // color template to use/override: orange, blue, blueshade
+$color: "orange" !default; // color template to use/override: orange, blue, helix
 
 $color-syntax: "abridge" !default; // syntax color template to use/override: abridge,
 $syntax: true !default; //syntax highlighting for Code Blocks.
@@ -161,7 +161,7 @@ $findFont-Code : null !default;
 $fontExt-Main : null !default;
 $fontExt-Code : null !default;
 
-$font: Roboto system-ui -apple-system BlinkMacSystemFont "Segoe UI" Oxygen Ubuntu Cantarell "Fira Sans" "Droid Sans" "Helvetica Neue" "Noto Sans" Helvetica Arial sans-serif !default;
+$font: system-ui -apple-system BlinkMacSystemFont "Segoe UI" Oxygen Ubuntu Cantarell "Fira Sans" "Droid Sans" "Helvetica Neue" "Noto Sans" Helvetica Arial sans-serif !default;
 $font-mono: ui-monospace Menlo Monaco Consolas "SF Mono" "Cascadia Mono" "Segoe UI Mono" "DejaVu Sans Mono" "Liberation Mono" "Roboto Mono" "Oxygen Mono" "Ubuntu Monospace" "Ubuntu Mono" "Source Code Pro" "Fira Mono" "Droid Sans Mono" "Courier New" Courier monospace !default;
 
 /// Enable <header>, <main>, <footer> inside <body> as a container

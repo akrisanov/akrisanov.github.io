@@ -57,9 +57,9 @@ taxonomies = [{ name = "tags", feed = true }]
 ####################################################################################################
 
 menu = [
-    { url = "archive", name = "Posts", slash = true, blank = false, size = "s95" },
-    { url = "tags", name = "Tags", slash = true, blank = false, size = "s95" },
     { url = "about", name = "About", slash = true, blank = false, size = "s95" },
+    { url = "archive", name = "Posts", slash = true, blank = false, size = "s95", icon = "bookmark" },
+    # { url = "tags", name = "Tags", slash = true, blank = false, size = "s95" },
 ]
 menu_footer = [
     { url = "https://linktr.ee/akrisanov", name = "Contacts", slash = false, blank = true, icon = "address-card" },
@@ -284,7 +284,9 @@ fontawesome = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/fon
 
 ### For externally loaded Fonts, make sure to include the FULL url including the https prefix:
 
-#fonts = [ {url = "https://fonts.googleapis.com/css?family=Roboto:400,700,italic|Roboto+Mono:400,italic"} ]
+fonts = [
+    # { url = "https://fonts.googleapis.com/css?family=Roboto:400,700,italic|Roboto+Mono:400,italic" },
+]
 
 ### Local fonts are defined in the css, https://github.com/Jieiku/abridge/tree/master/COPY-TO-ROOT-SASS/fonts/_Arimo.scss
 ### To load a local font resource, look at the bottom of this file: https://github.com/Jieiku/abridge/blob/master/COPY-TO-ROOT-SASS/abridge.scss

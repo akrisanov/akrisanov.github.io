@@ -31,3 +31,5 @@ copyright_override = '© $CURRENT_YEAR $SITE_TITLE • Le contenu du site Web es
 404_try_search = "Попробуйте поискать по сайту или"
 ### go to homepage
 404_go_home = "перейдите на главную страницу"
+
+"Switch Mode" = "Переключить тему"
