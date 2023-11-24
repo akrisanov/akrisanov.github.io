@@ -19,20 +19,35 @@ Kubernetes, and whatnot.
 
 A conversation with a talent usually looks the following:
 
+<blockquote>
 – How do you ship your service to production?
+
 – We build Docker images and run containers.
+
 – Sounds cool! Can you tell me about the resource requirements for a container?
+
 – Hmm, to be honest, I don't know the details. DevOps folks take care of that.
+
 – (discussing Python app) OK. And what application server do you use?
+
 – Application Server? (Some people even reply: "You mean WSGI?")
+
 – Yes, the thing that handles web requests and runs your Python code.
+
 – Hmm, let me open a project repo and check..
+
 – It's...Gunicorn!
+
 – Great. Can you estimate how many requests the web application can handle?
+
 – I don't think so because we don't do load testing.
+
 – So, it's not possible to do even a rough estimation?
+
 – Nope.
+
 – OK. Do you understand what happens on a processes and threads level when the application server processes a request?
+</blockquote>
 
 This is where the conversation hits a dead end. Many talents don't. And this is a red sign to me.
 It gets worse when a candidate claims they have experience with (semi)async services in production

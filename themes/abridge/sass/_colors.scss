@@ -78,15 +78,15 @@
       $f1: #c1bfef !default; // Font Color Primary
       $f2: #ddd !default; // Font Color Headers
       $c1: #281733 !default; // Background Color Primary
-      $c2: #123 !default; // Background Color Secondary
+      $c2: #324554 !default; // Background Color Secondary
       $c3: #345 !default; // Table Rows, Block quote edge, Borders
       $c4: #789 !default; // Disabled Buttons, Borders, mark background
       $a1: #eccdbb !default; // link color
       $a2: #c6aea1 !default; // link hover/focus color
       $a3: #a4a0e8 !default; // link h1-h2 hover/focus color
       $a4: #9d8a80 !default; // link visited color
-      $cg: #593 !default; // ins green, success
-      $cr: #e33 !default; // del red, errors
+      $cg: #A0F28F !default; // ins green, success
+      $cr: #FF0000 !default; // del red, errors
       $result: $cs $f1 $f2 $c1 $c2 $c3 $c4 $a1 $a2 $a3 $a4 $cg $cr;
       @return $result;
     }
@@ -96,16 +96,16 @@
       $cs: light !default; // color-scheme Variable for scrollbars, required for Chrome.
       $f1: #333 !default; // Font Color Primary
       $f2: #222 !default; // Font Color Headers
-      $c1: #fff !default; // Background Color Primary
-      $c2: #def !default; // Background Color Secondary
-      $c3: #cde !default; // Table Rows, Block quote edge, Borders
+      $c1: #faeada !default; // Background Color Primary
+      $c2: #DBBFEF !default; // Background Color Secondary
+      $c3: #ccddee !default; // Table Rows, Block quote edge, Borders
       $c4: #013 !default; // Disabled Buttons, Borders, mark background
-      $a1: #06e !default; // link color
-      $a2: #09f !default; // link hover/focus color
-      $a3: #07f !default; // link h1-h2 hover/focus color
-      $a4: #06e !default; // link visited color
-      $cg: #373 !default; // ins green, success
-      $cr: #d33 !default; // del red, errors
+      $a1: #345 !default; // link color
+      $a2: #540199 !default; // link hover/focus color
+      $a3: #433e56 !default; // link h1-h2 hover/focus color
+      $a4: #789 !default; // link visited color
+      $cg: #A0F28F !default; // ins green, success
+      $cr: #FF0000 !default; // del red, errors
       $result: $cs $f1 $f2 $c1 $c2 $c3 $c4 $a1 $a2 $a3 $a4 $cg $cr;
       @return $result;
     }
