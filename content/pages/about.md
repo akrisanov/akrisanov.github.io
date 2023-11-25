@@ -8,13 +8,15 @@ draft = false
 
 ## Hi, I'm Andrey
 
-I'm a software engineer and engineering manager focused on shipping products and delivering value to customers.
-In a team, I'm an advocate of trust, asynchronous communication, solid documentation, and pragmatism.
-I have experience working in distributed teams and remotely. My main areas of interest are
-collaborative software, data processing, and low-latency systems.
+I'm an engineering manager focused on shipping products and delivering value to customers.
+
+With experience working in distributed teams and remotely, I'm an advocate of transparency and
+trust, asynchronous communication, thorough documentation, and pragmatism.
+
+Collaborative software, data processing, applied AI, and fintech are my main areas of interest.
 
 I'm currently a member of the engineering team at Anonos, working on privacy and data protection solutions.
-We research and develop the Python SDK and the cloud platform for data anonymization.
+We research and develop the Python SDK and the cloud data anonymization platform.
 
 ## Past work
 
@@ -30,8 +32,7 @@ I have a degree in Applied Mathematics and Computer Science from Bryansk State U
 I have been fascinated by computers since I saw one in 2000. That's why my programming skills are
 better than my understanding and knowledge of mathematics – such a pity.
 
-You can find information about my professional experience either on
-Linkedin [@akrisanov](http://linkedin.com/in/akrisanov/).
+You can find information about my professional experience on Linkedin [@akrisanov](http://linkedin.com/in/akrisanov/).
 
 ## This site
 
@@ -39,3 +40,5 @@ This website is online since July 2023. It is another attempt to write about thi
 career and topics that interest me in English. The content varies from short essays to technical
 articles with lots of code snippets. I only post when I want to express myself, reflect on
 an experience, or document useful aspects of my work. So please don't expect regular posts here.
+
+Cheers!

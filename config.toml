@@ -5,7 +5,7 @@ base_url = "https://akrisanov.com"
 # If you use the npm/node script then all you have to do is set offline = true, and everything else is automatic.
 
 title = "Andrey Krisanov"
-description = "Engineering Manager · CTO"
+description = "CTO · Engineering Manager · Technical Lead"
 theme = "abridge"
 
 default_language = "en"
@@ -40,12 +40,12 @@ smart_punctuation = false                                           # `...` to `
 
 [languages.ru]
 title = "Андрей Крисанов"
-description = "Технический руководитель · разработчик · консультант"
+description = "Технический директор в ПланФакт · Технический менеджер и руководитель"
 generate_feed = true
 build_search_index = true
-search.include_title = true                                          # include title of page/section in index
-search.include_description = true                                    # include description of page/section in index
-search.include_content = true                                        # include rendered content of page/section in index
+search.include_title = true                                                           # include title of page/section in index
+search.include_description = true                                                     # include description of page/section in index
+search.include_content = true                                                         # include rendered content of page/section in index
 # search.truncate_content_length = 100 # Truncate at nth character. May be useful if index is getting too large.
 taxonomies = [{ name = "tags", feed = true }]
 
@@ -99,8 +99,8 @@ foothr = true    # show or hide horizontal rule above footer
 
 ### $CURRENT_YEAR and $SITE_TITLE can be used anywhere within the copyright, you can change their position or you can also delete them and type whatever you want instead.
 #copyright = false # set to false to disable the copyright.
-#copyright_override = '© 2019-$CURRENT_YEAR $SITE_TITLE'
-#copyright_override = '© $CURRENT_YEAR $SITE_TITLE • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.'
+copyright_override = '© $CURRENT_YEAR $SITE_TITLE'
+# copyright_override = '© $CURRENT_YEAR $SITE_TITLE • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.'
 
 
 ####################################################################################################
@@ -109,15 +109,15 @@ foothr = true    # show or hide horizontal rule above footer
 ### To always set the page title exactly eg "Abridge" then comment out title_addition or set to false (not recommend, bad for SEO)
 ####################################################################################################
 
-title_separator = "|"                                                                                 # Separator between title and title_addition, set as |, -, _, etc
-title_addition = "Engineering Manager · CTO"                                                          # a default value for title addition
-author = "Andrey Krisanov"                                                                            # Put Your Name here
-keywords = "Andrey Krisanov, Software Engineer, Engineering Manager, TechLead, TeamLead, Remote Work" # used for the primary site index
-banner = "images/photo.jpg"                                                                           # Used as default image for OpenGraph/Twitter if page specific image is undefined.
-twitter_meta = "_akrisanov"                                                                           # for SEO: twitter:site and twitter:creator
+title_separator = "|"                                                                   # Separator between title and title_addition, set as |, -, _, etc
+title_addition = "CTO · Engineering Manager · Technical Lead"                           # a default value for title addition
+author = "Andrey Krisanov"                                                              # Put Your Name here
+keywords = "Andrey Krisanov, CTO, Engineering Manager, TechLead, TeamLead, Remote Work" # used for the primary site index
+banner = "images/photo.jpg"                                                             # Used as default image for OpenGraph/Twitter if page specific image is undefined.
+twitter_meta = "_akrisanov"                                                             # for SEO: twitter:site and twitter:creator
 google = "Your Google Site verification code."
 bing = "Your Bing Site verification code."
-seo = true                                                                                            # enable or disable seo-related meta tags: opengraph, facebook, twitter
+seo = true                                                                              # enable or disable seo-related meta tags: opengraph, facebook, twitter
 #dev = false # development mode, if true then robots.txt should prevent search indexing.
 
 
