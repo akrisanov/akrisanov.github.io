@@ -63,11 +63,11 @@ menu = [
     # { url = "tags", name = "Tags", slash = true, blank = false, size = "s95" },
 ]
 menu_footer = [
-    { url = "https://linktr.ee/akrisanov", name = "Contacts", slash = false, blank = true, icon = "address-card" },
-    { url = "https://www.linkedin.com/in/akrisanov/", name = "LinkedIn", slash = false, blank = true, icon = "linkedin" },
-    { url = "https://github.com/akrisanov/", name = "Github", slash = false, blank = true, icon = "github" },
     { url = "atom.xml", name = "RSS", slash = false, blank = true, icon = "rss" },
     { url = "sitemap.xml", name = "Sitemap", slash = false, blank = true, icon = "sitemap" },
+    { url = "links", name = "Contacts", slash = false, blank = true, icon = "address-card" },
+    { url = "https://www.linkedin.com/in/akrisanov/", name = "LinkedIn", slash = false, blank = true, icon = "linkedin" },
+    { url = "https://github.com/akrisanov/", name = "Github", slash = false, blank = true, icon = "github" },
 ]
 
 toc = true
@@ -113,7 +113,7 @@ title_separator = "|"                                                           
 title_addition = "CTO · Engineering Manager · Technical Lead"                           # a default value for title addition
 author = "Andrey Krisanov"                                                              # Put Your Name here
 keywords = "Andrey Krisanov, CTO, Engineering Manager, TechLead, TeamLead, Remote Work" # used for the primary site index
-banner = "images/photo.jpg"                                                             # Used as default image for OpenGraph/Twitter if page specific image is undefined.
+banner = "images/photo.webp"                                                            # Used as default image for OpenGraph/Twitter if page specific image is undefined.
 twitter_meta = "_akrisanov"                                                             # for SEO: twitter:site and twitter:creator
 google = "Your Google Site verification code."
 bing = "Your Bing Site verification code."

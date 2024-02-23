@@ -27,4 +27,4 @@ zola serve
 
 ---
 
-Copyright © 2023 Andrey Krisanov
+Copyright © 2023–2024 Andrey Krisanov
