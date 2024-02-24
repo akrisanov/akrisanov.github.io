@@ -15,8 +15,8 @@ trust, asynchronous communication, thorough documentation, and pragmatism.
 
 Collaborative software, data processing, applied AI, and fintech are my main areas of interest.
 
-I'm currently a member of the engineering team at Anonos, working on privacy and data protection solutions.
-We research and develop the Python SDK and the cloud data anonymization platform.
+I'm currently a CTO at [planfact.io](planfact.io) SaaS, helping the company to scale its engineering
+team and processes for the next stage of growth.
 
 ## Past work
 
