@@ -3,9 +3,9 @@
 
   /// Enable a centered viewport for <header>, <main>, <footer> inside <body>
   /// Fluid layout until a defined size, then becomes centered viewport.
-  //$enable-maxwidth: true,
-  $mw: 70%, // max-width
-  //$mb: 1200px,// value at which to switch from fluid layout to max-width
+  //$enable-maxwidth: false,
+  $mw: 40%, // max-width
+  $mb: 1000px, // value at which to switch from fluid layout to max-width
 
   $abridgeMode: "switcher", //valid values: switcher, auto, dark, light
   $syntax-mode: "auto", // Force syntax mode: auto, dark, light
@@ -17,7 +17,7 @@
   $syntax: true, //syntax highlighting for Code Blocks.
 
   $enable-icons: true, // false disables ALL icons
-  $ic: true, // true for colorized icons, otherwise #888 is used.
+  $ic: false, // true for colorized icons, otherwise #888 is used.
 
   $icon-rss: true,
   $icon-mail: false, // e-mail

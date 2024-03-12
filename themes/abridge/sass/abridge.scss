@@ -24,7 +24,7 @@
 /// Fluid layout until a defined size, then becomes centered viewport
 $enable-maxwidth: true !default;
 $mw: 70% !default; // max-width
-$mb: 1000px !default; // value at which to switch from fluid layout to max-width
+$mb: 1200px !default; // value at which to switch from fluid layout to max-width
 
 $abridgeMode: "switcher" !default; //valid values: switcher, auto, dark, light
 $syntax-mode: "auto" !default; // Force syntax mode: auto, dark, light
@@ -243,7 +243,7 @@ $syntax: true !default; //syntax highlighting for code blocks
 --lh: 1.5; //line-height
 --lhh: 1.2; //line-height headers
 --fw: 400; //font-weight
---fh: 700; //font-weight h1-h6
+--fh: 550; //font-weight h1-h6
 
 // Responsive typography
 @if $enable-responsive-typography {
@@ -598,6 +598,10 @@ $syntax: true !default; //syntax highlighting for code blocks
     top: -.5em;
   }
 
+  details summary {
+    cursor: pointer;
+  }
+
   address,
   blockquote,
   dl,
@@ -759,7 +763,9 @@ $syntax: true !default; //syntax highlighting for code blocks
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+  }
 
+  header>nav {
     ul {
       margin: 0;
       display: flex;

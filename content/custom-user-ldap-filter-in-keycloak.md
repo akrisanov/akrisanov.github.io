@@ -35,7 +35,7 @@ construct the User DN.
 The base option that an Active Directory administrator could use to create user accounts is to
 organize them under organizational units:
 
-```
+```cfg
 OU=Main,DC=Orgname,DC=ru
 ```
 
@@ -51,7 +51,7 @@ in the way I've mentioned in the example above. Fortunately, the LDAP connection
 a filter for Active Directory. In my case, writing the filter to select all of the members of the
 `CMS_EDITOR` group was enough to solve a problem:
 
-```
+```cfg
 (&(objectCategory=Person)(sAMAccountName=*)(|(memberOf=CN=CMS_EDITOR,OU=Security,OU=Groups,OU=Central,OU=Main,DC=Orgname,DC=ru)))
 ```
 
