@@ -1,0 +1,419 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+  <link rel="stylesheet" href="https://akrisanov.com/abridge.css?h=e5fddf69608ab375f05e" />
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="base" content="https://akrisanov.com" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#333333" />
+  <meta name="msapplication-TileColor" content="#333333" />
+  <link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+  <link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg" color="#ff9900" />
+  <link rel="icon" type="image/svg+xml" href="https://akrisanov.com/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="https://akrisanov.com/apple-touch-icon.png" />
+  <link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+  <link rel="alternate" type="application/atom+xml" title="Андрей Крисанов Atom/RSS Feed" href="https://akrisanov.com/ru/atom.xml" />
+  <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <title>От задачи к релизу | Андрей Крисанов</title>
+  <meta name="author" content="Andrey Krisanov" />
+  <meta name="copyright" content="Андрей Крисанов" />
+  <meta name="description" content="Как организовать процесс разработки в кросс-функциональной команде в Jira" />
+  <link rel="canonical" href="https://akrisanov.com/ru/ot-zadachi-k-relizu/" />
+  <meta name="keywords" content="менеджмент, jira, workflow" />
+  <meta name="google-site-verification" content="Your Google Site verification code." />
+  <meta name="msvalidate.01" content="Your Bing Site verification code." />
+  <meta property="og:url" content="https://akrisanov.com/ru/ot-zadachi-k-relizu/" />
+  <meta name="twitter:url" content="https://akrisanov.com/ru/ot-zadachi-k-relizu/" />
+  <meta property="og:description" content="Как организовать процесс разработки в кросс-функциональной команде в Jira" />
+  <meta name="twitter:description" content="Как организовать процесс разработки в кросс-функциональной команде в Jira" />
+  <meta property="og:title" content="От задачи к релизу | Андрей Крисанов" />
+  <meta name="twitter:title" content="От задачи к релизу | Андрей Крисанов" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://akrisanov.com/images/photo.webp" />
+  <meta property="og:image" content="https://akrisanov.com/images/photo.webp" />
+  <meta property="og:site_name" content="Андрей Крисанов" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:updated_time" content="2021-03-28" />
+  <meta name="twitter:site" content="@_akrisanov" />
+  <meta name="twitter:creator" content="@_akrisanov" />
+  <script defer src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+  <script defer src="https://akrisanov.com/js/lunr.stemmer.support.min.js" integrity="sha384-f0MKdC/9ZSGTpDiuWusC0SbLXNCBp6NgzDZpjR/4UdHXAQBqvTEKyinnsa1wQ7oA"></script>
+  <script defer src="https://akrisanov.com/js/lunr.ru.min.js" integrity="sha384-R9oqgx8XLmQUPG/odEJyFPd90/TbRU0/6q+If/f8d5yDqLhZgtOT5/X9r3O1Etjr"></script>
+  <noscript><link rel="stylesheet" href="https://akrisanov.com/nojs.css" /></noscript><!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7G0435C4RL"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-7G0435C4RL');
+</script>
+
+</head>
+<body>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com/ru/" title="Андрей Крисанов">Андрей Крисанов</a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/ru/about/"> Обо мне 
+                </a></li><li><a class="s95" href="https://akrisanov.com/ru/archive/">
+                <i class="fa fa-bookmark" aria-hidden="true" title="Архив"></i>
+                
+                </a></li>
+            <li><div class="dropdown"><i class="svgs world" type="reset"></i>
+                <div class="dropdown-content">
+                <span>Русский</span><a href="https://akrisanov.com/ot-zadachi-k-relizu/">English</a></div>
+            </div></li><li>
+              <i type="reset" id="mode" class="js svgs adjust" title="Переключить тему"></i></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox">
+              <div class="searchd">
+                <input id="searchinput" type="text" placeholder="Поиск" title="Search" />
+                <button type="submit" title="Search" class="svgs search"></button>
+              </div>
+              <div class="results"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main>
+    <article>
+      <h1><a href="https://akrisanov.com/ru/ot-zadachi-k-relizu/">От задачи к релизу</a></h1>
+
+      <span class="s95"> марта 28, 2021<span class="hpad">·</span> #<a href="https://akrisanov.com/ru/tags/menedzhment/">менеджмент</a>  #<a href="https://akrisanov.com/ru/tags/jira/">jira</a> </span>
+
+    
+
+
+<p><a href="/ru/jira-workflow">В предыдущем посте</a> я рассказывал как выглядит
+Jira Workflow и пайплайн задач в кросс-функциональной команде разработки. В этой заметке, которая
+писалась как шпаргалка для внутреннего использования, приводится более полное описание процесса
+от момента постановки задачи до ее релиза. А еще, она точно не понравится адептам канонического Scrum.</p>
+<h2 id="sostav-komandy">Состав команды</h2>
+<ul>
+<li>Владелец продукта</li>
+<li>Delivery-менеджер</li>
+<li>Тимлид</li>
+<li>Несколько бэкенд-разработчиков</li>
+<li>Несколько фронтенд-рабработчиков</li>
+<li>DevOps-инженер</li>
+<li>QA</li>
+</ul>
+<h2 id="dezhurnye-razrabotchiki">Дежурные разработчики</h2>
+<p>Меняются каждую неделю как со стороны бэкенда, так и со стороны фронтенда.</p>
+<p>Задачи:</p>
+<ul>
+<li>следить за SLA ревью</li>
+<li>следить за событиями в Sentry, приоритизировать их с командой и при необходимости заводить задачи в Jira</li>
+<li>собирать и разворачивать сборки для тестирования или по запросу членов команды</li>
+<li>уведомлять о релизах в канале</li>
+<li>переводить задачи на QA</li>
+<li>собирать и разворачивать сборки для продакшен-окружения</li>
+</ul>
+<p>При планировании спринта стоит учитывать нагрузку на дежурных разработчиков с учетом их
+дополнительных активностей в течение дежурной недели.</p>
+<h2 id="instrumenty">Инструменты</h2>
+<ul>
+<li>Jira — таск-трекер</li>
+<li>Confluence — командная Wiki</li>
+<li>Slack — основной месседжер</li>
+<li>Gitlab — управление репозиториями кода и CI + CD</li>
+<li>Artifactory — репозиторий пакетов и Docker-образов</li>
+<li>Sentry — отслеживание исключений</li>
+<li>EFK — стек для сбора и обработки логов</li>
+<li>Prometheus + Graphana — метрики</li>
+<li>OpenShift — PaaS для cloud-native окружения</li>
+</ul>
+<p>Теперь о процессе. Самое важное — у каждого шага пайплайна есть владелец, который мониторит его
+выполнение и проталкивает дальше по цепочке.</p>
+<h2 id="trebovaniia-k-zadache">Требования к задаче</h2>
+<p>Каждая задача должна иметь как минимум:</p>
+<ul>
+<li>Внятное короткое название</li>
+<li>Развернутое описание, желательно со ссылками на спецификацию и дополнительные материалы</li>
+<li>Компонент: бэкенд, фронтенд, инфраструктура</li>
+<li>Возможного исполнителя</li>
+</ul>
+<h2 id="planirovanie-i-sprint">Планирование и спринт</h2>
+<p><em>Задача привязана к эпику, эпик привязан к цели, цель — важная.</em></p>
+<p>Владелец: product owner ⇢ delivery manager ⇢ тимлид.</p>
+<p><img src="/images/tasks.png" alt="Очередь работ" /></p>
+<h2 id="obshchii-protsess">Общий процесс</h2>
+<ul>
+<li>В бэклог проекта (не спринта) могут добавляться задачи в любой момент времени.</li>
+<li>Product Owner определяет видение и будущие цели, которые разворачиваются в эпики (большие изменения).</li>
+</ul>
+<p><img src="/images/storymap.png" alt="Story Map" /></p>
+<ul>
+<li>На основе эпиков предварительно создаются спецификации.</li>
+<li>Обсуждение спецификаций доступно всей команде, автор спецификации может обозначить SLA,
+по прошествию которого все обсуждения будут закрыты, т. е. спецификация считается готовой к реализации.</li>
+<li>В конце текущего спринта (последний рабочий день) команда планирует новый спринт на основе эпиков,
+отдельно взятых задач и задач, которые остались невыполненными в текущем спринте (их приоритет может быть пересмотрен).</li>
+<li>Владелец продукта и delivery manager определяют продуктовую цель спринта → создание спринта
+в Jira с указанием цели спринта на Scrum-доске.</li>
+<li>В процессе планирования выполняется декомпозиция и оценка задач командой.</li>
+<li>Для того, чтобы внести задачу в спринт, необходимо:</li>
+<li>Понять суть задачи ⇠ выяснить непонятные моменты, поговорить с коллегами, дополнить описание и документацию</li>
+<li>Проставить приоритет</li>
+<li>Добавить оценку в сторипойнтах (числа Фибоначчи)</li>
+<li>Выбрать спринт, сменить статус с Backlog на Todo, иначе она не будет отображена на Scrum-доске</li>
+<li>Delivery manager стартует новый спринт в понедельник в 12:00</li>
+</ul>
+<h2 id="paiplain">Пайплайн</h2>
+<h3 id="astonished-nuzhno-sdelat">😲 Нужно сделать</h3>
+<p>Владелец:</p>
+<ul>
+<li>на этапе формирования: delivery manager ⇢ тимлид ⇢ члены команды</li>
+<li>на этапе спринта: QA ⇢ delivery manager / тимлид ⇢ члены команды</li>
+</ul>
+<p>Данная колонка содержит бэклог спринта и формируется на основе предварительного планирования и
+декомпозиции. После старта спринта в нее могут добавляться только задачи высокого приоритета,
+например, неотложные баги.</p>
+<p>Исполнитель выполняет задачи в рамках указанного приоритета. За актуальностью следят владельцы
+бэклога, однако любой член команды в праве обсудить и аргументировать свое видение порядка выполнения задач.</p>
+<p>Крайне желательно избегать внеплановое пополнение спринта задачами на разработку новой функциональности.
+Такая ситуация может возникать в рамках плохого планирования и оценки. Под этим также понимается
+взаимодействие компонент проекта, например, бэкенда (API) и представления (фронтенд).</p>
+<p>На данном этапе QA уже может начинать работу над тест-кейсами.</p>
+<p>Совет: настроенные фильтрами позволяют увидеть статус по каждому члену команды.</p>
+<p><img src="/images/filters.png" alt="Быстрые фильтры" /></p>
+<h3 id="muscle-skin-tone-2-v-rabote">💪🏻 В работе</h3>
+<p>Владелец: исполнитель задачи.</p>
+<p>Задача, над которой в данный момент работает исполнитель, имеет соответствующий статус.
+В работе у исполнителя может быть одновременно не более двух задач. Идеальная ситуация — фокус на одной задаче.</p>
+<p>Если задача заблокирована какими-то внешними факторами, то она должна быть возвращена в колонку
+«😲 Нужно сделать» с указанием причины в комментариях. При возникновении внутренних факторов,
+следует указать на них на ежедневном стендапе или в командном чате.</p>
+<h3 id="memo-rev-iu">📝 Ревью</h3>
+<p>Владелец: ревьювер.</p>
+<p>Исполнитель задачи после ее выполнения оформляет merge request в Gitlab согласно заданному шаблону,
+убеждается в том, что на CI выполнены успешно все шаги сборки и назначает подходящего по его (ее)
+мнению ревьювера. Задача переходит в статус «📝 Ревью» и остается в нем до тех пор, пока автор
+не внесет правки согласно комментариям ревьювера и изменения не будут одобрены для тестирования.
+Достаточно одного одобрения 👍🏻</p>
+<p>SLA на ревью:</p>
+<ul>
+<li>блокер: 1 час — автор изменений связывается лично с ревьювером в общем чате</li>
+<li>высокий приоритет: 3 часа</li>
+<li>нормальный приоритет: 1 день</li>
+</ul>
+<p>На ревью должно накапливаться не более трех открытых MR.</p>
+<p>Аналогичный процесс может быть не только для технических задач, но и, например, для спецификаций
+и документации.</p>
+<p>После получения одобрения изменений ветка сливается с мастером (squash commits, fast forward merge)
+и MR автоматически закрывается. Задача в Jira переходит в статус «К тестированию», на нее
+назначается дежурный разработчик.</p>
+<p>Совет: при создании MR Gitlab автоматически берет в качестве заголовка заголовок первого коммита.
+Поэтому старайтесь писать понятные и короткие сообщения коммитов. В большинстве ситуаций за
+сообщение коммита можно взять название задачи из тикета Jira.</p>
+<h3 id="deploi-dlia-qa">🟡 Деплой для QA</h3>
+<p>Владелец: разработчик, вмерживающий ветку в master.</p>
+<p>После прохождения ревью изменения попадают в мастер-ветку. Мастер-ветка всегда должна быть готова
+к развертыванию как минимум на тестовое окружение.</p>
+<p>Сборка и деплой на staging-окружение выполняется автоматически в рамках CI/CD при мерже в master.</p>
+<p>Следует также учитывать fullstack-задачи, в случае которых бэкенд и фронтенд должны быть
+доставлены единовременно. В такой ситуации дежурные разработчики совместно обдумывают и выполняют
+план одновременного разворачивания приложений.</p>
+<h3 id="inbox-tray-reliz-v-jira">📥 Релиз в Jira</h3>
+<ol>
+<li>Создать новый релиз с тэгом, соответствующим Docker-образу. Префикс компонента не требуется.
+<img src="/images/releases.png" alt="Создание нового релиза" /></li>
+<li>Проставить релиз в поле «Исправить в версиях: » всех развернутых задач</li>
+<li>Скопировать информацию о релизе из Jira и отправить в канал #releases: в списке релизов
+кликнуть на версию → на странице релиза нажать ссылку «Описание релиза» → скопировать описание.
+<img src="/images/releases2.png" alt="Копирование заметок о релизе" /></li>
+<li>Отправить скопированные release notes в канал.</li>
+</ol>
+<p>После разворачивания новых изменений и информирования о релизе в канале #releases задачи в Jira назначаются на QA.</p>
+<h3 id="low-brightness-k-testirovaniiu">🔅 К тестированию</h3>
+<p>Владелец: QA.</p>
+<p>Перед стартом тестирования QA проверяет:</p>
+<ul>
+<li>Наличие всей необходимой информации по задаче — от описания до документации от разработчиков.
+Также полезно посмотреть на merge request в Gitlab и % покрытия тестами.</li>
+<li>Развернута ли задача на тестовом окружении, см. канал #releases</li>
+</ul>
+<h3 id="hamster-testirovanie">🐹 Тестирование</h3>
+<p>Владелец: QA.</p>
+<p>Тест-кейсы создаются в отдельной системе.</p>
+<p>Все найденные дефекты указываются в комментариях к оригинальной задаче. Проблема должна быть внятно
+описана, указано окружение (ОС, браузер, разрешение экрана и пр.), при необходимости добавлены скриншоты.</p>
+<p>Если недочеты мелкие и не влияют напрямую на реализованную функциональность, то они могут быть
+вынесены в отдельные задачи в будущих спринтах с сохранением ссылки на оригинальную задачу.</p>
+<ol>
+<li>Успешно протестирования задача получает статус «Готово к релизу».</li>
+<li>Задача, по которой найдены дефекты, получает статус «Нужно сделать», и итерация начинается с начала</li>
+</ol>
+<p>В обоих случаях задача назначается на исполнителя, который над ней работал. Тестирование на этом заканчивается.</p>
+<h3 id="place-gotovo-k-relizu">🚢 Готово к релизу</h3>
+<p>Владелец: дежурные разработчики.</p>
+<p>Как и в случае с тестовым окружением, релиз может быть выполнен в любое время как только для него
+будет сформирован список из минимум 3-4х задач.</p>
+<h3 id="reliz">🟢 Релиз</h3>
+<p>Владелец: дежурные разработчики.</p>
+<p>Не блокирующие друг-друга фронтенд и бэкенд могут развертываться независимо.</p>
+<p>Развертывание релиза в prod осуществляется в рамках CI/CD, но, в отличии от развертывания на
+staging, только по ручной запуску соответствующего job’а в pipeline Gitlab.</p>
+<p>После сборки и успешного деплоя:</p>
+<ol>
+<li>статусы задач меняются на «Выполнено»</li>
+<li>релиз в Jira выпускается: список релизов →… (действия) → выпустить (желательно указать дату релиза)</li>
+<li>копируются release notes (см. выше)</li>
+<li>создается уведомление о релизе в канале #releases со списком доставленных для конечного пользователя задач</li>
+<li>привлекается QA (при желании и команда) для базового тестирования самой критичной с точки
+зрения конечного пользователя функциональности:
+<ul>
+<li>Успешная аутентификация в портальной части / CMS</li>
+<li>Свой профиль</li>
+<li>На главной отображается список всех новостей</li>
+<li>Доступно главное меню</li>
+<li>…</li>
+</ul>
+</li>
+</ol>
+<p>Найденные на этом этапе дефекты заводятся новыми задачами.</p>
+<p>В случае серьезного сбоя после развертывания изменений есть возможность откатиться на предыдущий
+тэг Docker-образа. Однако, для бэкенда необходимо поддерживать downgrade-миграции схемы данных.</p>
+<h3 id="fire-hotfixes">🔥 Hotfixes</h3>
+<p>Если после выкатки релиза на прод обнаруживается наличие какого-то бага, который необходимо
+срочно поправить, то необходимо выполнить fix в коде, смержить его в master и тегнуть как
+v.0.59.1, где .1 — номер фикса. После того, как pipeline выполнит сборку образов запустить
+job’ы раскатки этого фикса на prod’e. Оформлять новый релиз при этом не нужно.</p>
+<p>Обратите внимание, что выполнить сборку фикса для prod можно не только из ветки master, но и ветки
+hotfix’a, не дожидаясь код-ревью. Для этого необходимо также как и описано выше назначить тег
+нужному коммиту в ветке hotfix’a.</p>
+<h3 id="champagne-vypolneno">🍾 Выполнено</h3>
+<p>Владелец: дежурные разработчики.</p>
+<p>Развернутые на продакшен-окружении задачи. На этом цикл разработки заканчивается.</p>
+<h2 id="upravlenie-riskami">Управление рисками</h2>
+<p>Владелец: исполнитель.</p>
+<p>См. <a href="https://akrisanov.com/ru/risk-management/">Риск-менеджмент в продуктовой команде</a></p>
+
+      <nav>
+        <div>
+          <a href="https://akrisanov.com/ru/asdf/">&#8249; asdf — менеджер версий языков программирования</a>
+        </div>
+        <div>
+          <a href="https://akrisanov.com/ru/jira-workflow/"> Jira Workflow &#8250;</a>
+        </div>
+      </nav>
+    </article>
+
+    <div class="sblock">
+
+      <div class="blockdiv sticky">
+        <a class="b s150" href="#">Содержание</a>
+        <div>
+          <a href="#sostav-komandy">Состав команды</a>
+        </div>
+        <div>
+          <a href="#dezhurnye-razrabotchiki">Дежурные разработчики</a>
+        </div>
+        <div>
+          <a href="#instrumenty">Инструменты</a>
+        </div>
+        <div>
+          <a href="#trebovaniia-k-zadache">Требования к задаче</a>
+        </div>
+        <div>
+          <a href="#planirovanie-i-sprint">Планирование и спринт</a>
+        </div>
+        <div>
+          <a href="#obshchii-protsess">Общий процесс</a>
+        </div>
+        <div>
+          <a href="#paiplain">Пайплайн</a>
+        </div>
+        <div class="hpad">
+          <a href="#astonished-nuzhno-sdelat"><small>- 😲 Нужно сделать</small></a>
+        </div>
+        <div class="hpad">
+          <a href="#muscle-skin-tone-2-v-rabote"><small>- 💪🏻 В работе</small></a>
+        </div>
+        <div class="hpad">
+          <a href="#memo-rev-iu"><small>- 📝 Ревью</small></a>
+        </div>
+        <div class="hpad">
+          <a href="#deploi-dlia-qa"><small>- 🟡 Деплой для QA</small></a>
+        </div>
+        <div class="hpad">
+          <a href="#inbox-tray-reliz-v-jira"><small>- 📥 Релиз в Jira</small></a>
+        </div>
+        <div class="hpad">
+          <a href="#low-brightness-k-testirovaniiu"><small>- 🔅 К тестированию</small></a>
+        </div>
+        <div class="hpad">
+          <a href="#hamster-testirovanie"><small>- 🐹 Тестирование</small></a>
+        </div>
+        <div class="hpad">
+          <a href="#place-gotovo-k-relizu"><small>- 🚢 Готово к релизу</small></a>
+        </div>
+        <div class="hpad">
+          <a href="#reliz"><small>- 🟢 Релиз</small></a>
+        </div>
+        <div class="hpad">
+          <a href="#fire-hotfixes"><small>- 🔥 Hotfixes</small></a>
+        </div>
+        <div class="hpad">
+          <a href="#champagne-vypolneno"><small>- 🍾 Выполнено</small></a>
+        </div>
+        <div>
+          <a href="#upravlenie-riskami">Управление рисками</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <hr />
+    <div class="c">
+      <nav><div></div></nav>
+          
+      <p class="s90"> © <span id="year">2024</span> Андрей Крисанов • Le contenu du site Web est sous licence <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90" href="https://akrisanov.com/ru/atom.xml" target="_blank"><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90" href="https://akrisanov.com/sitemap.xml" target="_blank"><i class="fa fa-sitemap" aria-hidden="true" title=" Карта сайта "></i></a>
+          <a class="s90" href="https://akrisanov.com/ru/links" target="_blank"><i class="fa fa-address-card" aria-hidden="true" title=" Контакты "></i></a>
+          <a class="s90" href="https://www.linkedin.com/in/akrisanov/" target="_blank"><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90" href="https://github.com/akrisanov/" target="_blank"><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer><span class="topout">
+<span class="topleft"> </span><a href="#" class="top" title="Back to Top"><i class="svgs svgh angu"></i></a>
+</span><!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95193128, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95193128" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+</body>
+</html>

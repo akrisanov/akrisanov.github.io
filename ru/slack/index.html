@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+  <link rel="stylesheet" href="https://akrisanov.com/abridge.css?h=e5fddf69608ab375f05e" />
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="base" content="https://akrisanov.com" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#333333" />
+  <meta name="msapplication-TileColor" content="#333333" />
+  <link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+  <link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg" color="#ff9900" />
+  <link rel="icon" type="image/svg+xml" href="https://akrisanov.com/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="https://akrisanov.com/apple-touch-icon.png" />
+  <link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+  <link rel="alternate" type="application/atom+xml" title="Андрей Крисанов Atom/RSS Feed" href="https://akrisanov.com/ru/atom.xml" />
+  <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <title>Slack в распределенной команде | Андрей Крисанов</title>
+  <meta name="author" content="Andrey Krisanov" />
+  <meta name="copyright" content="Андрей Крисанов" />
+  <meta name="description" content="Как использовать Slack в распределенной команде, чтобы не терять фокус и не отвлекать коллег." />
+  <link rel="canonical" href="https://akrisanov.com/ru/slack/" />
+  <meta name="keywords" content="slack, mattermost, удаленная работа, распределенная команда, эффективная коммуникация" />
+  <meta name="google-site-verification" content="Your Google Site verification code." />
+  <meta name="msvalidate.01" content="Your Bing Site verification code." />
+  <meta property="og:url" content="https://akrisanov.com/ru/slack/" />
+  <meta name="twitter:url" content="https://akrisanov.com/ru/slack/" />
+  <meta property="og:description" content="Как использовать Slack в распределенной команде, чтобы не терять фокус и не отвлекать коллег." />
+  <meta name="twitter:description" content="Как использовать Slack в распределенной команде, чтобы не терять фокус и не отвлекать коллег." />
+  <meta property="og:title" content="Slack в распределенной команде | Андрей Крисанов" />
+  <meta name="twitter:title" content="Slack в распределенной команде | Андрей Крисанов" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://akrisanov.com/images/photo.webp" />
+  <meta property="og:image" content="https://akrisanov.com/images/photo.webp" />
+  <meta property="og:site_name" content="Андрей Крисанов" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:updated_time" content="2019-06-08" />
+  <meta name="twitter:site" content="@_akrisanov" />
+  <meta name="twitter:creator" content="@_akrisanov" />
+  <script defer src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+  <script defer src="https://akrisanov.com/js/lunr.stemmer.support.min.js" integrity="sha384-f0MKdC/9ZSGTpDiuWusC0SbLXNCBp6NgzDZpjR/4UdHXAQBqvTEKyinnsa1wQ7oA"></script>
+  <script defer src="https://akrisanov.com/js/lunr.ru.min.js" integrity="sha384-R9oqgx8XLmQUPG/odEJyFPd90/TbRU0/6q+If/f8d5yDqLhZgtOT5/X9r3O1Etjr"></script>
+  <noscript><link rel="stylesheet" href="https://akrisanov.com/nojs.css" /></noscript><!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7G0435C4RL"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-7G0435C4RL');
+</script>
+
+</head>
+<body>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com/ru/" title="Андрей Крисанов">Андрей Крисанов</a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/ru/about/"> Обо мне 
+                </a></li><li><a class="s95" href="https://akrisanov.com/ru/archive/">
+                <i class="fa fa-bookmark" aria-hidden="true" title="Архив"></i>
+                
+                </a></li>
+            <li><div class="dropdown"><i class="svgs world" type="reset"></i>
+                <div class="dropdown-content">
+                <span>Русский</span><a href="https://akrisanov.com/slack/">English</a></div>
+            </div></li><li>
+              <i type="reset" id="mode" class="js svgs adjust" title="Переключить тему"></i></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox">
+              <div class="searchd">
+                <input id="searchinput" type="text" placeholder="Поиск" title="Search" />
+                <button type="submit" title="Search" class="svgs search"></button>
+              </div>
+              <div class="results"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main>
+    <article>
+      <h1><a href="https://akrisanov.com/ru/slack/">Slack в распределенной команде</a></h1>
+
+      <span class="s95"> июня 08, 2019<span class="hpad">·</span> #<a href="https://akrisanov.com/ru/tags/slack/">slack</a>  #<a href="https://akrisanov.com/ru/tags/remote/">remote</a> </span>
+
+    
+
+
+<p>Вот уже несколько лет я работаю удаленно, и все коммуникации даже в текущей компании мы строим на
+основе асинхронного подхода. Делаем мы это умышленно и стараемся предоставить сотрудникам возможность
+сфокусироваться на своих задачах, при этом не блокируя других членов команды, которые от них зависят.</p>
+<p>Slack для нас — основной инструмент коммуникации. Он позволяет команде общаться в течение дня
+используя правильные каналы для организации диалогов. В Slack мы синхронизируем рабочий процесс,
+договариваемся о звонках, или просто общаемся на отвлеченные темы. При этом, мы условились, что
+Slack не является:</p>
+<ul>
+<li>потоком сообщений, которые нужно постоянно проверять и немедленно реагировать на них</li>
+<li>местом для хранения важных ссылок, документации и обратной связи сотрудников</li>
+<li>местом для принятия важных решений</li>
+</ul>
+<p>Как и любой чат, Slack нельзя назвать асинхронным, что усложняет наше виденье распределенной команды.
+Основные причины этому — частые прерывания и многозадачность. Довольно быстро можно заметить что
+работая удаленно и используя чат по назначению, коллеги ожидают от вас почти немедленного ответа.
+При этом люди не учитывают и не знают заняты ли вы сейчас, общаетесь ли вы с другим членом команды,
+или же сделали небольшой перерыв. Подобное общение может вызывать стресс и мало отличаться от
+офисной трясины митингов, и снова возникает ощущение, что планируемая работа не завершена к концу дня.</p>
+<p>Однако, при правильном подходе, которому придерживается вся команда и руководство, Slack тоже может
+быть асинхронным. Ниже я привожу несколько практик, которые направлены на создание такого процесса.</p>
+<h3 id="upravliaite-svoim-otsutstviem">Управляйте своим отсутствием</h3>
+<p>Если все члены команды будут ответственны за оффлайн-режим, то это подарит команде свободу в коммуникациях. Ответственность заключается в том, чтобы разобрать полученные сообщениями тогда, когда это удобно именно вам.</p>
+<ol>
+<li>Установите <code>Do Not Disturb</code> режим в случае оффлайна или нерабочего времени</li>
+<li>Настройте нотификации на мобильном, если боитесь пропустить что-то важное</li>
+<li>Помечайте сообщения как непрочитанные, кликайте на звездочку чтобы сохранить их на потом,
+или ставьте напоминание для того, чтобы позже вернуться к нужному обсуждению</li>
+</ol>
+<h3 id="ispol-zuite-publichnye-kanaly">Используйте публичные каналы</h3>
+<p>Всегда старайтесь делать коммуникации общедоступными и прозрачными, чтобы любой член команды мог их
+увидеть, осознать, и, возможно, дополнить своими предложениями и вопросами. Только приватные
+обсуждения должны оставаться в стороне.</p>
+<h3 id="ispol-zuite-status-i-profil-kak-indikator-dostupnosti">Используйте статус и профиль как индикатор доступности</h3>
+<p>Заполните свой профиль — аватар, реальное имя, часовой пояс, роль, телефонный номер, Skype или
+Telegram (опционально).</p>
+<p><a rel="noopener" target="_blank" href="https://slackhq.com/set-your-status-in-slack-28a793914b98">Делитесь своим статусом с коллегами</a> —
+дайте знать если вы заболели, в отпуске, работаете в своем нестандартном режиме, или вам просто
+нужен период для фокуса над задачами.</p>
+<p><img src="/images/slack-status.png" alt="Установка информативного статуса в Slack" /></p>
+<h3 id="nastroite-uvedomleniia">Настройте уведомления</h3>
+<p>Убедитесь, что ваши настройки соответствуют рекомендованным Slack: только прямые (direct)
+сообщения, <code>@you</code> и подсвечиваемые слова (highlight words). Эти настройки позволяют фокусироваться
+на важных сообщениях и не беспокоиться, что вы что-то пропустили когда находитесь не у компьютера.</p>
+<p><img src="/images/slack-notifications.png" alt="Настройка уведомлений в Slack" /></p>
+<h3 id="obshchaites-proaktivno">Общайтесь проактивно</h3>
+<p>Когда вы отправляете кому-нибудь сообщение, старайтесь давать этому человеку больше контекста.
+Особенно это важно при асинхронных ответах, например, если у коллеги другой часовой пояс.
+Добавляйте ссылки, документы, ваш дедлайн по проблеме или желаемое время ответа на ваше сообщение
+— все что может продвинуть обсуждение вперед в асинхронном режиме.</p>
+<h3 id="sozdavaite-tredy-kogda-eto-vozmozhno">Создавайте треды когда это возможно</h3>
+<p>Когда вы ведете обсуждение с несколькими людьми одновременно, бывает довольно сложно уследить за
+ответами конкретным лицам в рамках обсуждения. Идеи и мысли могут теряться в потоке сообщений.
+Использование тредов позволяет структурировать общение.</p>
+<p><img src="/images/slack-threads.png" alt="Пример треда с двумя вложенными сообщениями" /></p>
+<h3 id="ispol-zuite-away-rezhim-kogda-vam-nuzhen-fokus">Используйте away режим когда вам нужен фокус</h3>
+<p>Несколько опций, которые позволят вам сфокусироваться:</p>
+<ul>
+<li>Установка away статуса в вашем профиле</li>
+<li>Режим «Не беспокоить» — <code>Do Not Disturb</code></li>
+<li>Явное сообщение, чтобы коллеги знали, что вас не стоит отвлекать</li>
+</ul>
+<h3 id="perestan-te-postoianno-proveriat-soobshcheniia">Перестаньте постоянно проверять сообщения</h3>
+<p>Наличие непрочитанных сообщений в Slack не означает, что их нужно прочитать немедленно!
+Дайте людям возможность выполнять их задачи, пока вы выполняете свои.</p>
+<h3 id="channel-ili-here">@channel или @here</h3>
+<p>Включение <code>@channel</code> в сообщение уведомит всех членов чата, в то время как <code>@here</code> только тех, кто
+сейчас находится онлайн. @channel и @everyone всегда лучше использовать только для важных анонсов —
+Slack отсылает пуш-уведомление и email каждому, включая людей, которые находятся оффлайн или в отпуске.</p>
+<h3 id="otvechaite-k-kontsu-svoego-rabochego-dnia">Отвечайте к концу своего рабочего дня</h3>
+<p>Отправляя сообщение вы должны ожидать, что ответ будет сделан в концу рабочего дня если:</p>
+<ul>
+<li>вы связались с коллегой используя <code>@</code> или написав личное сообщение если контент приватный</li>
+<li>вы не установили дедлайн для ответа — старайтесь всегда делать это</li>
+<li>коллега работает обычный день — не болен/отъезде/отпуске и т. д.</li>
+</ul>
+<h3 id="nepredvidennye-situatsii">Непредвиденные ситуации</h3>
+<p>Используйте <code>@channel</code>, <code>@everyone</code>, а также слово СРОЧНО в своем сообщении. Если вам нужно связаться
+с коллегой после рабочих часов или в рамках режима «Не беспокоить», все равно отправьте сообщение —
+Slack бот попросит подтвердить ваши намерения. Используйте телефонный номер, указанный в профиле.</p>
+<h2 id="zakliuchenie">Заключение</h2>
+<p>Все вышеперечисленные советы работают не только для Slack, но и для любого другого мессенджера.
+Их можно адаптировать для <a rel="noopener" target="_blank" href="https://mattermost.com/">Mattermost</a>, Zoolip или Telegram.</p>
+<p>Основная идея — сделать коммуникации эффективными, асинхронными и прозрачными, а не переживать
+по поводу онлайн-статуса или неотвеченных вообщений.</p>
+
+      <nav>
+        <div>
+          <a href="https://akrisanov.com/ru/techlead-vs-teamlead/">&#8249; Техлид или тимлид</a>
+        </div>
+        <div>
+        </div>
+      </nav>
+    </article>
+
+    <div class="sblock">
+
+      <div class="blockdiv sticky">
+        <a class="b s150" href="#">Содержание</a>
+        <div>
+          <a href="#upravliaite-svoim-otsutstviem">Управляйте своим отсутствием</a>
+        </div>
+        <div>
+          <a href="#ispol-zuite-publichnye-kanaly">Используйте публичные каналы</a>
+        </div>
+        <div>
+          <a href="#ispol-zuite-status-i-profil-kak-indikator-dostupnosti">Используйте статус и профиль как индикатор доступности</a>
+        </div>
+        <div>
+          <a href="#nastroite-uvedomleniia">Настройте уведомления</a>
+        </div>
+        <div>
+          <a href="#obshchaites-proaktivno">Общайтесь проактивно</a>
+        </div>
+        <div>
+          <a href="#sozdavaite-tredy-kogda-eto-vozmozhno">Создавайте треды когда это возможно</a>
+        </div>
+        <div>
+          <a href="#ispol-zuite-away-rezhim-kogda-vam-nuzhen-fokus">Используйте away режим когда вам нужен фокус</a>
+        </div>
+        <div>
+          <a href="#perestan-te-postoianno-proveriat-soobshcheniia">Перестаньте постоянно проверять сообщения</a>
+        </div>
+        <div>
+          <a href="#channel-ili-here">@channel или @here</a>
+        </div>
+        <div>
+          <a href="#otvechaite-k-kontsu-svoego-rabochego-dnia">Отвечайте к концу своего рабочего дня</a>
+        </div>
+        <div>
+          <a href="#nepredvidennye-situatsii">Непредвиденные ситуации</a>
+        </div>
+        <div>
+          <a href="#zakliuchenie">Заключение</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <hr />
+    <div class="c">
+      <nav><div></div></nav>
+          
+      <p class="s90"> © <span id="year">2024</span> Андрей Крисанов • Le contenu du site Web est sous licence <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90" href="https://akrisanov.com/ru/atom.xml" target="_blank"><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90" href="https://akrisanov.com/sitemap.xml" target="_blank"><i class="fa fa-sitemap" aria-hidden="true" title=" Карта сайта "></i></a>
+          <a class="s90" href="https://akrisanov.com/ru/links" target="_blank"><i class="fa fa-address-card" aria-hidden="true" title=" Контакты "></i></a>
+          <a class="s90" href="https://www.linkedin.com/in/akrisanov/" target="_blank"><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90" href="https://github.com/akrisanov/" target="_blank"><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer><span class="topout">
+<span class="topleft"> </span><a href="#" class="top" title="Back to Top"><i class="svgs svgh angu"></i></a>
+</span><!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95193128, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95193128" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+</body>
+</html>

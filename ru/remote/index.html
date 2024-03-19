@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+  <link rel="stylesheet" href="https://akrisanov.com/abridge.css?h=e5fddf69608ab375f05e" />
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="base" content="https://akrisanov.com" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#333333" />
+  <meta name="msapplication-TileColor" content="#333333" />
+  <link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+  <link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg" color="#ff9900" />
+  <link rel="icon" type="image/svg+xml" href="https://akrisanov.com/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="https://akrisanov.com/apple-touch-icon.png" />
+  <link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+  <link rel="alternate" type="application/atom+xml" title="Андрей Крисанов Atom/RSS Feed" href="https://akrisanov.com/ru/atom.xml" />
+  <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <title>Удаленная работа | Андрей Крисанов</title>
+  <meta name="author" content="Andrey Krisanov" />
+  <meta name="copyright" content="Андрей Крисанов" />
+  <meta name="description" content="Руководство по организации удаленной работы и асинхронных процессов в продуктовых командах." />
+  <link rel="canonical" href="https://akrisanov.com/ru/remote/" />
+  <meta name="keywords" content="удаленная работа, распределенная команда, продуктовая команда" />
+  <meta name="google-site-verification" content="Your Google Site verification code." />
+  <meta name="msvalidate.01" content="Your Bing Site verification code." />
+  <meta property="og:url" content="https://akrisanov.com/ru/remote/" />
+  <meta name="twitter:url" content="https://akrisanov.com/ru/remote/" />
+  <meta property="og:description" content="Руководство по организации удаленной работы и асинхронных процессов в продуктовых командах." />
+  <meta name="twitter:description" content="Руководство по организации удаленной работы и асинхронных процессов в продуктовых командах." />
+  <meta property="og:title" content="Удаленная работа | Андрей Крисанов" />
+  <meta name="twitter:title" content="Удаленная работа | Андрей Крисанов" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://akrisanov.com/images/photo.webp" />
+  <meta property="og:image" content="https://akrisanov.com/images/photo.webp" />
+  <meta property="og:site_name" content="Андрей Крисанов" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:updated_time" content="2020-03-18" />
+  <meta name="twitter:site" content="@_akrisanov" />
+  <meta name="twitter:creator" content="@_akrisanov" />
+  <script defer src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+  <script defer src="https://akrisanov.com/js/lunr.stemmer.support.min.js" integrity="sha384-f0MKdC/9ZSGTpDiuWusC0SbLXNCBp6NgzDZpjR/4UdHXAQBqvTEKyinnsa1wQ7oA"></script>
+  <script defer src="https://akrisanov.com/js/lunr.ru.min.js" integrity="sha384-R9oqgx8XLmQUPG/odEJyFPd90/TbRU0/6q+If/f8d5yDqLhZgtOT5/X9r3O1Etjr"></script>
+  <noscript><link rel="stylesheet" href="https://akrisanov.com/nojs.css" /></noscript><!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7G0435C4RL"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-7G0435C4RL');
+</script>
+
+</head>
+<body>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com/ru/" title="Андрей Крисанов">Андрей Крисанов</a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/ru/about/"> Обо мне 
+                </a></li><li><a class="s95" href="https://akrisanov.com/ru/archive/">
+                <i class="fa fa-bookmark" aria-hidden="true" title="Архив"></i>
+                
+                </a></li>
+            <li><div class="dropdown"><i class="svgs world" type="reset"></i>
+                <div class="dropdown-content">
+                <span>Русский</span><a href="https://akrisanov.com/remote/">English</a></div>
+            </div></li><li>
+              <i type="reset" id="mode" class="js svgs adjust" title="Переключить тему"></i></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox">
+              <div class="searchd">
+                <input id="searchinput" type="text" placeholder="Поиск" title="Search" />
+                <button type="submit" title="Search" class="svgs search"></button>
+              </div>
+              <div class="results"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main>
+    <article>
+      <h1><a href="https://akrisanov.com/ru/remote/">Удаленная работа</a></h1>
+
+      <span class="s95"> марта 18, 2020<span class="hpad">·</span> #<a href="https://akrisanov.com/ru/tags/raspredelennaia-komanda/">распределенная команда</a> </span>
+
+    
+
+
+<p>Данное руководство опирается на личный опыт удаленной работы и организации асинхронных процессов
+в продуктовых командах. Список рекомендуемых ресурсов вы найдете в конце заметки.</p>
+<h2 id="obshchie-printsipy">Общие принципы</h2>
+<p>🔐 Получите доступ к VPN и другие необходимые доступы для подключения к внутренним
+ресурсам; обязательно ознакомьтесь с правилами работы с конфиденциальной информацией.</p>
+<p>⬆️ Эскалируйте проблемы с организацией удаленной работы на вышестоящий менеджмент.</p>
+<p>🕙 Организуйте ежедневные стендапы в формате видео-конференций: Zoom, Skype, MS Teams и т. д.</p>
+<p>🗣 Менеджерам: проводите еженедельные 1-on-1 с членами команды.</p>
+<p>🙇🏼‍♂️ Продуктовым командам: ретроспективы в конце спринта можно превратить в еженедельные ретроспективы
+по итогам работы.</p>
+<p>📃 При общении сместите приоритеты в сторону документирования и прозрачных коммуникаций.
+Одну из ценностей гибких методологий «работающее ПО важнее исчерпывающей документации» придется
+немного отодвинуть на второй план.</p>
+<p>💬 Выстраивайте асинхронную работу и общение через мессенджер.</p>
+<p>Крайне важно, чтобы менеджмент или сама команда понимали необходимость следования перечисленным
+базовым принципам, их внедрения в ежедневные процессы, а также поддержки и развития.</p>
+<h2 id="rekomendatsii-menedzheram">Рекомендации менеджерам</h2>
+<p>🕰 Установите core-часы, в течение которых вся команда должна быть на связи. Например, с 10:00 до 16:00.
+Это поможет оперативно решать большинство возникающих вопросов.</p>
+<p>☀️ Организуйте ежедневные стендапы в формате видео-конференций: Zoom, Skype, MS Teams и т. д.
+Формат видео-конференций помогает поддерживать личностное общение и подталкивает членов команды
+привести себя в порядок и не оставаться, например, в пижаме несколько дней подряд :)</p>
+<p>🗣 Проводите еженедельные 1-on-1 с членами своей команды. Важность индивидуальных разговоров при
+удаленном формате работы возрастает, т. к. люди сталкиваются с ощущением профессиональной изоляции
+и одиночества, что может привести к выгоранию.</p>
+<p>😊 Создавайте комфортную рабочую атмосферу не требующую постоянного мониторинга каналов в чате или
+сообщений в мобильном. Члены команды не должны чувствовать себя виноватыми за отсутствие у компьютера
+или работу в рамках своего комфортного графика. Каждый несет ответственность за результат, процессы
+коммуникации и их прозрачность.</p>
+<h2 id="effektivnye-mitingi">Эффективные митинги</h2>
+<p>🎥 Для того, чтобы лучше понять собеседника, используйте видео-конференции вместо чатов или голосовых
+звонков. Иногда невербальное общение (жесты, мимика лица и т. д.) лучше помогает достичь цели митинга.</p>
+<p>📝 Подготовьте список вещей, которые вы хотите обсудить с коллегами.</p>
+<p>📅 Если обсуждение не срочное, пришлите приглашение в календарь вместе с повесткой встречи и комментариями.</p>
+<p>📵 Внимательно слушайте коллег и не отвлекайтесь на чаты, Интернет, Instagram, ленту Facebook, написание кода и пр.</p>
+<p>📝 Запишите важные детали обсуждения и поделитесь ими со всеми участниками встречи после ее завершения.</p>
+<p>👉🏻 Составьте план действий и ответственных.</p>
+<p>⏱ Начинайте и заканчивайте вовремя — уважайте время друг друга.</p>
+<p>Заметьте, этикет дистанционных митингов мало чем отличается от тех, которые проводятся в офисе.</p>
+<h2 id="dokumentirovanie-i-prozrachnye-kommunikatsii">Документирование и прозрачные коммуникации</h2>
+<p>📃 Документируйте практически все: идеи, записи по итогам митингов, планы на будущее, технические
+и продуктовые руководства. Сделайте документацию незаменимым помощником, который экономит время не
+только вам, но и всей команде.</p>
+<p>⬜️ Объясняйте и описывайте задачи не только текстом, но и любыми другими средствами, упрощающими
+коллаборацию — визуализация, онлайн-доски совместного рисования, схемы и диаграммы, стримминг экрана,
+emoji в конце концов.</p>
+<p>✋🏻 Избегайте непрозрачных или скрытых коммуникаций, обсуждений в приватных чатах, формулировок,
+которые могут быть понятны только вам, а также ложных предположений.</p>
+<h2 id="rabochii-protsess">Рабочий процесс</h2>
+<p>💌 Проверяйте почту пару раз в день — этого достаточно, чтобы быть в курсе событий и отвечать
+на приглашения в календаре.</p>
+<p>📆 Принимайте важные встречи в календаре и объясняйте в комментариях почему отклонили остальные.</p>
+<p>💬 Научитесь использовать мессенджер эффективно и не бросаться отвечать на каждое входящее сообщение.</p>
+<p>👨🏼‍💻 Jira и Scrum / Kanban доска отражают прогресс команды. Не забывайте обновлять статусы задач и
+оставлять комментарии.</p>
+<p>📤 Частые коммиты в репозиторий помогают избежать потери работы в случае выхода оборудования из строя.</p>
+<p>🌃 В конце дня кратко опишите прогресс по выполняемой задаче и возможные блокирующие факторы,
+если таковые имеются.</p>
+<h2 id="balans-mezhdu-zhizn-iu-i-rabotoi">Баланс между жизнью и работой</h2>
+<p>🕰 Сообщите коллегам о вашем стандартном графике работы, например, посредствам календаря или
+таблицы в Conflunce. Предупреждайте об его изменении и непредвиденных ситуациях.</p>
+<p>🍜 Не ешьте за рабочим столом. Пользуйтесь статусами в месседжере, если хотите предупредить,
+что вы оффлайн на ближайший час.</p>
+<p>⏰ Делайте регулярные перерывы — вставайте с рабочего места, общайтесь с ребенком или домашним
+питомцем, выполняйте какую-нибудь работу по дому, готовьте еду, спускайтесь на 10-15 минутную
+прогулку вокруг дома и т. д.</p>
+<p>👔 Одевайтесь. Наш мозг работает удивительным образом. Даже одеваясь на работу в одежду, отличную
+от домашней, мы подготавливаем себя к началу трудового дня.</p>
+<p>🎧 Фоновая музыка или звуки могут помочь настроиться на рабочий лад. Как и с одеждой, шум опенсейса,
+который мы так ненавидели в офисе, теперь может казаться не таким уж ужасным явлением. Пробуйте
+всякие ambient программы вместо похода в людные места. Например, под macOS смело рекомендую
+<a rel="noopener" target="_blank" href="https://noiz.io/">Noizio</a>.</p>
+<p>🛏 Не работайте в кровати — она для других целей. Инвестируйте в свое рабочее место.
+Не обязательно покупать дорогой стол и кресло, но организовать удобный уголок, выйдя из которого
+вы снова возвращаетесь в личную обстановку, очень важно.</p>
+<p>Одним из явных минусов удаленной работы являются размытые границы между рабочим и личным временем.
+Из-за этого очень легко обрести привычки, которые могут негативно повлиять на вашу жизнь и здоровье.</p>
+<p>Простой пример: как часто вы проверяете почту во время еды, пишите код не отрываясь от перекуса или
+же проводите несколько часов подряд за рабочим столом без перерыва на прогулку?</p>
+<p>Чтобы этого не случилось, менеджмент должен определить core-часы, в течение которых все обязаны
+быть на связи и вне которых можно выстраивать личный комфортный график работы, а сотрудники в свою
+очередь учиться говорить STOP и оставлять незавершенную работу на следующий день.</p>
+<h2 id="chto-eshche-pochitat-po-teme">Что еще почитать по теме</h2>
+<ul>
+<li><a rel="noopener" target="_blank" href="https://akrisanov.ru/all/slack/">Slack в распределенной команде</a></li>
+<li><a rel="noopener" target="_blank" href="https://hackernoon.com/the-stress-of-remote-working-38be5bdcf4da">The Stress of Remote Working</a></li>
+<li><a rel="noopener" target="_blank" href="https://blog.digitalocean.com/avoiding-burnout/">Helping Remote Developers Avoid Burnout</a></li>
+<li><a rel="noopener" target="_blank" href="https://doist.com/blog/remote-work-habits/">5 Habits for Crafting the Perfect Remote Work Day</a></li>
+<li><a rel="noopener" target="_blank" href="https://mikeindustries.com/blog/archive/2019/08/a-year-of-working-remotely">A Year of Working Remotely</a></li>
+<li><a rel="noopener" target="_blank" href="https://spinscale.de/posts/2018-05-08-five-years-homeoffice.html">Five Years Of Home Office — A Recap</a></li>
+</ul>
+
+      <nav>
+        <div>
+          <a href="https://akrisanov.com/ru/jupyter-notebook-extensions/">&#8249; Расширения для Jupyter Notebook</a>
+        </div>
+        <div>
+          <a href="https://akrisanov.com/ru/macos-path/"> Добавление путей в переменную PATH на macOS X 10.8+ &#8250;</a>
+        </div>
+      </nav>
+    </article>
+
+    <div class="sblock">
+
+      <div class="blockdiv sticky">
+        <a class="b s150" href="#">Содержание</a>
+        <div>
+          <a href="#obshchie-printsipy">Общие принципы</a>
+        </div>
+        <div>
+          <a href="#rekomendatsii-menedzheram">Рекомендации менеджерам</a>
+        </div>
+        <div>
+          <a href="#effektivnye-mitingi">Эффективные митинги</a>
+        </div>
+        <div>
+          <a href="#dokumentirovanie-i-prozrachnye-kommunikatsii">Документирование и прозрачные коммуникации</a>
+        </div>
+        <div>
+          <a href="#rabochii-protsess">Рабочий процесс</a>
+        </div>
+        <div>
+          <a href="#balans-mezhdu-zhizn-iu-i-rabotoi">Баланс между жизнью и работой</a>
+        </div>
+        <div>
+          <a href="#chto-eshche-pochitat-po-teme">Что еще почитать по теме</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <hr />
+    <div class="c">
+      <nav><div></div></nav>
+          
+      <p class="s90"> © <span id="year">2024</span> Андрей Крисанов • Le contenu du site Web est sous licence <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90" href="https://akrisanov.com/ru/atom.xml" target="_blank"><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90" href="https://akrisanov.com/sitemap.xml" target="_blank"><i class="fa fa-sitemap" aria-hidden="true" title=" Карта сайта "></i></a>
+          <a class="s90" href="https://akrisanov.com/ru/links" target="_blank"><i class="fa fa-address-card" aria-hidden="true" title=" Контакты "></i></a>
+          <a class="s90" href="https://www.linkedin.com/in/akrisanov/" target="_blank"><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90" href="https://github.com/akrisanov/" target="_blank"><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer><span class="topout">
+<span class="topleft"> </span><a href="#" class="top" title="Back to Top"><i class="svgs svgh angu"></i></a>
+</span><!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95193128, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95193128" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ru">
+    <title>Андрей Крисанов - unix</title>
+    <link href="https://akrisanov.com/ru/tags/unix/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2020-08-03T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/ru/tags/unix/atom.xml</id>
+    <entry xml:lang="ru">
+        <title>Запуск программы в виде демона</title>
+        <published>2020-08-03T00:00:00+00:00</published>
+        <updated>2020-08-03T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/unix-daemon/" type="text/html"/>
+        <id>https://akrisanov.com/ru/unix-daemon/</id>
+        
+        <content type="html">&lt;p&gt;В macOS и операционных системах семейства Unix для запуска программы в фоновом режиме достаточно
+добавить к команде знак амперсанда &lt;code&gt;&amp;amp;&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;sync&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --folder&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;home&#x2F;akrisanov&#x2F;downloads &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;amp;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;После ввода команды оболочка отвечает идентификатором процесса &lt;code&gt;PID&lt;&#x2F;code&gt;, который может быть использован
+в дальнейшем для прекращения работы процесса.&lt;&#x2F;p&gt;
+&lt;p&gt;Данный трюк часто бывает полезен при запуске серверов или других демонов.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+  <link rel="stylesheet" href="https://akrisanov.com/abridge.css?h=e5fddf69608ab375f05e" />
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="base" content="https://akrisanov.com" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#333333" />
+  <meta name="msapplication-TileColor" content="#333333" />
+  <link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+  <link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg" color="#ff9900" />
+  <link rel="icon" type="image/svg+xml" href="https://akrisanov.com/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="https://akrisanov.com/apple-touch-icon.png" />
+  <link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+  <link rel="alternate" type="application/atom+xml" title="Andrey Krisanov Atom/RSS Feed" href="https://akrisanov.com/atom.xml" />
+  <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <title>Convert Flac to Apple Lossless With FFmpeg | Andrey Krisanov</title>
+  <meta name="author" content="Andrey Krisanov" />
+  <meta name="copyright" content="Andrey Krisanov" />
+  <meta name="description" content="How to use FFmpeg to convert FLAC files to Apple Lossless without losing the original quality and uploading them to Apple Music." />
+  <link rel="canonical" href="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/" />
+  <meta name="keywords" content="apple, music, ffmpeg, lossless, audio" />
+  <meta name="google-site-verification" content="Your Google Site verification code." />
+  <meta name="msvalidate.01" content="Your Bing Site verification code." />
+  <meta property="og:url" content="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/" />
+  <meta name="twitter:url" content="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/" />
+  <meta property="og:description" content="How to use FFmpeg to convert FLAC files to Apple Lossless without losing the original quality and uploading them to Apple Music." />
+  <meta name="twitter:description" content="How to use FFmpeg to convert FLAC files to Apple Lossless without losing the original quality and uploading them to Apple Music." />
+  <meta property="og:title" content="Convert Flac to Apple Lossless With FFmpeg | Andrey Krisanov" />
+  <meta name="twitter:title" content="Convert Flac to Apple Lossless With FFmpeg | Andrey Krisanov" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://akrisanov.com/images/photo.webp" />
+  <meta property="og:image" content="https://akrisanov.com/images/photo.webp" />
+  <meta property="og:site_name" content="Andrey Krisanov" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:type" content="website" />
+  <meta property="og:updated_time" content="2023-10-23" />
+  <meta name="twitter:site" content="@_akrisanov" />
+  <meta name="twitter:creator" content="@_akrisanov" />
+  <script defer src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+  <noscript><link rel="stylesheet" href="https://akrisanov.com/nojs.css" /></noscript><!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7G0435C4RL"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-7G0435C4RL');
+</script>
+
+</head>
+<body>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com" title="Andrey Krisanov">Andrey Krisanov</a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/about/"> About 
+                </a></li><li><a class="s95" href="https://akrisanov.com/archive/">
+                <i class="fa fa-bookmark" aria-hidden="true" title="Posts"></i>
+                
+                </a></li>
+            <li><div class="dropdown"><i class="svgs world" type="reset"></i>
+                <div class="dropdown-content">
+                <span>English</span><a href="https://akrisanov.com/ru/convert-flac-to-apple-lossless-with-ffmpeg/">Русский</a></div>
+            </div></li><li>
+              <i type="reset" id="mode" class="js svgs adjust" title="Switch Mode"></i></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox">
+              <div class="searchd">
+                <input id="searchinput" type="text" placeholder="Search" title="Search" />
+                <button type="submit" title="Search" class="svgs search"></button>
+              </div>
+              <div class="results"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main>
+    <article>
+      <h1><a href="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/">Convert Flac to Apple Lossless With FFmpeg</a></h1>
+
+      <span class="s95"> October 23, 2023<span class="hpad">·</span> #<a href="https://akrisanov.com/tags/apple/">apple</a>  #<a href="https://akrisanov.com/tags/music/">music</a>  #<a href="https://akrisanov.com/tags/ffmpeg/">ffmpeg</a> </span>
+
+    
+
+
+<p>I'm a longtime Apple Music user. Most of my so-called music collection is on the streaming service.
+However, I occasionally buy rare or remastered releases ripped from CDs. These releases are usually
+in the FLAC format, which Apple Music doesn't support. But I've found an easy workaround that
+allows me to organize and play albums on the go.</p>
+<p>The centerpiece of the workaround is FFmpeg. So if you don't already have it installed,
+it's worth installing now:</p>
+<pre data-lang="bash" style="background-color:#3b224c;color:#dbbfef;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#a4a0e8;">brew</span><span> install ffmpeg
+</span></code></pre>
+<p><span class="img-title">Homebrew Formula</span></p>
+<p>When the tool is ready to use, navigate to the folder containing the FLAC files and run the following script:</p>
+<pre data-lang="bash" style="background-color:#3b224c;color:#dbbfef;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#eccdbb;">for</span><span> file </span><span style="color:#eccdbb;">in *</span><span>.flac</span><span style="color:#eccdbb;">; do </span><span style="color:#a4a0e8;">ffmpeg</span><span style="font-style:italic;color:#a4a0e8;"> -i </span><span style="color:#cccccc;">&quot;$</span><span style="color:#a4a0e8;">file</span><span style="color:#cccccc;">&quot;</span><span style="font-style:italic;color:#a4a0e8;"> -acodec</span><span> alac</span><span style="font-style:italic;color:#a4a0e8;"> -vcodec</span><span> copy </span><span style="color:#cccccc;">&quot;`</span><span style="color:#a4a0e8;">basename </span><span style="color:#cccccc;">&quot;$</span><span style="color:#a4a0e8;">file</span><span style="color:#cccccc;">&quot; .flac`.m4a&quot;</span><span style="color:#eccdbb;">; done; </span><span style="color:#a4a0e8;">mkdir</span><span> flac</span><span style="color:#eccdbb;">; </span><span style="color:#a4a0e8;">mkdir</span><span> alac</span><span style="color:#eccdbb;">; for</span><span> file </span><span style="color:#eccdbb;">in *</span><span>.flac</span><span style="color:#eccdbb;">; do </span><span style="color:#a4a0e8;">mv </span><span style="color:#cccccc;">&quot;$</span><span style="color:#a4a0e8;">file</span><span style="color:#cccccc;">&quot; &quot;flac/&quot;</span><span style="color:#eccdbb;">; done; for</span><span> file </span><span style="color:#eccdbb;">in *</span><span>.m4a</span><span style="color:#eccdbb;">; do </span><span style="color:#a4a0e8;">mv </span><span style="color:#cccccc;">&quot;$</span><span style="color:#a4a0e8;">file</span><span style="color:#cccccc;">&quot; &quot;alac/&quot;</span><span style="color:#eccdbb;">; done;
+</span></code></pre>
+<p><span class="img-title">Silly One-liner Converting FLAC to ALAC</span></p>
+<p><img src="/images/Screenshot-2023-10-22-at-18.26.25.png" alt="" />
+<span class="img-title">Susumu Hirasawa – Siren [Limited Edition]</span></p>
+<p>The bash script converts the audio to the Apple Lossless format (<code>*.m4a</code>) and moves the files to the <code>alac</code> directory:</p>
+<p><img src="/images/Screenshot-2023-10-22-at-18.27.10.png" alt="" /></p>
+<p>Finally, the <code>alac</code> directory can be dragged to Apple Music to import the album and upload its tracks to the cloud.</p>
+<p><img src="/images/Screenshot-2023-10-22-at-18.27.41.png" alt="" />
+<span class="img-title">The Uploaded Album</span></p>
+<div class="callout callout-warning">
+You probably wonder why this album has no Lossless icon in Apple Music. Well, it turns out the
+audio quality of the FLAC files wasn't on pair with lossless. So, make sure releases you buy or
+rip, have a proper audio codec and quality.
+</div>
+
+      <nav>
+        <div>
+        </div>
+        <div>
+          <a href="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/"> Generating A Lockfile For Python Project Using Github Actions &#8250;</a>
+        </div>
+      </nav>
+    </article>
+  </main>
+  <footer>
+    <hr />
+    <div class="c">
+      <nav><div></div></nav>
+          
+      <p class="s90"> © <span id="year">2024</span> Andrey Krisanov</p>
+      <nav>
+          <a class="s90" href="https://akrisanov.com/atom.xml" target="_blank"><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90" href="https://akrisanov.com/sitemap.xml" target="_blank"><i class="fa fa-sitemap" aria-hidden="true" title=" Sitemap "></i></a>
+          <a class="s90" href="https://akrisanov.com/links" target="_blank"><i class="fa fa-address-card" aria-hidden="true" title=" Contacts "></i></a>
+          <a class="s90" href="https://www.linkedin.com/in/akrisanov/" target="_blank"><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90" href="https://github.com/akrisanov/" target="_blank"><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer><!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(95193128, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/95193128" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+</body>
+</html>

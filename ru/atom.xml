@@ -1,0 +1,1728 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ru">
+    <title>Андрей Крисанов</title>
+    <link href="https://akrisanov.com/ru/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2022-07-12T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/ru/atom.xml</id>
+    <entry xml:lang="ru">
+        <title>Сборка образов на Gitlab CI для GCP Artifact Registry</title>
+        <published>2022-07-12T00:00:00+00:00</published>
+        <updated>2022-07-12T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/gitlab-kaniko-artifact-registry/" type="text/html"/>
+        <id>https://akrisanov.com/ru/gitlab-kaniko-artifact-registry/</id>
+        
+        <content type="html">&lt;p&gt;Пару дней назад потребовалось автоматизировать сборку образов для контейнеров веб-платформы, которая
+разворачивается в Google Kubernetes Engine (GKE). До этого момента сборка выполнялась локально на
+машинах разработчиков при помощи Docker и собранные образы отправлялись в Google Artifact Registry.
+Кроме того, стали появляться дополнительные тестовые и демо-окружения, требующие небольших изменений,
+например, в конфигурации фронтенда. Перечисленное также усложняло жизнь solution и sales-инженерам,
+разворачивающих систему у клиентов.&lt;&#x2F;p&gt;
+&lt;p&gt;Чтобы сэкономить время и другие ресурсы, решено было добавить дополнительный этап в существующий
+пайплайн с банальным именем &lt;code&gt;build&lt;&#x2F;code&gt; и выполнять рутиные операции после успешного прохождения
+линтеров и тестов.&lt;&#x2F;p&gt;
+&lt;p&gt;Первое с чем я столкнулся, это непонимание как запущен и сконфигурирован Gitlab Runner.
+Так как наш DevOps-инженер в это удачное время оказался в отпуске, пришлось самому проверять настройки CI.
+От того, какой тип раннера используется для выполнения пайплайнов, зависят в том числе и возможности сборки.
+В моем случае используется Kubernetes Runner и задачи прогоняются в контейнерах.
+Следовательно, чтобы собрать образы в таком окружении, потребуется &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.gitlab.com&#x2F;ee&#x2F;ci&#x2F;docker&#x2F;using_docker_build.html#use-docker-in-docker&quot;&gt;Docker внутри контейнера&lt;&#x2F;a&gt;.
+И с этим сразу начинаются проблемы, которые связаны с привелегированным доступом к сокету Docker,
+стабильностью пайплайна в целом, безопасностью и &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;kubernetes&#x2F;kubernetes&#x2F;blob&#x2F;master&#x2F;CHANGELOG&#x2F;CHANGELOG-1.20.md#deprecation&quot;&gt;желанием Kubernets уйти от Docker-образов&lt;&#x2F;a&gt;
+в будущем. Проведя несколько экспериментов, решил отказаться от изначального плана.&lt;&#x2F;p&gt;
+&lt;p&gt;Обойтись без dind (Docker-in-Docker) помогает Kaniko. &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.gitlab.com&#x2F;ee&#x2F;ci&#x2F;docker&#x2F;using_kaniko.html&quot;&gt;Официальная страница документации Gitlab&lt;&#x2F;a&gt;
+неплохо описывает весь процесс сборки. Единственная сложность, которая у меня возникла, была связана
+с аутентификацией GCP Artifact Registry.&lt;&#x2F;p&gt;
+&lt;p&gt;Для аутентификации раннера нужно создать &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;console.cloud.google.com&#x2F;iam-admin&#x2F;serviceaccounts&quot;&gt;сервисный аккаунт&lt;&#x2F;a&gt;
+в разделе IAM &amp;amp; Admin.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;gcp-service-account.png&quot; alt=&quot;Создание сервисного аккаунта&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Создание сервисного аккаунта&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Далее сгенерировать приватный ключ в формате JSON и скачать его.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;gcp-private-key.png&quot; alt=&quot;Генерация нового приватного ключа&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Генерация нового приватного ключа&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Выдать права доступа к Artifact Registry для сервисного аккаунта.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;gcp-roles.png&quot; alt=&quot;Назначение ролей Artifact Registry Reader и Artifact Registry Writer&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Назначение ролей Artifact Registry Reader и Artifact Registry Writer&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Роль &lt;code&gt;Artifact Registry Reader&lt;&#x2F;code&gt; необходима для скачивания образов и кеширования,
+роль &lt;code&gt;Artifact Registry Writer&lt;&#x2F;code&gt; – для публикации образов. В интернете можно найти руководства,
+которые предлагают указывать роль &lt;code&gt;Storage Admin&lt;&#x2F;code&gt;, но, на мой взгляд, это плохая практика.&lt;&#x2F;p&gt;
+&lt;p&gt;С настройкой на стороне облака закончено, остается раннер и Kaniko, который для аутентификации GCP
+читает специальную переменную &lt;code&gt;GOOGLE_APPLICATION_CREDENTIALS&lt;&#x2F;code&gt;. Чтобы записать в нее содержимое
+приватного ключа в формате JSON, потребуется перевести его в base64.&lt;&#x2F;p&gt;
+&lt;p&gt;В настройках CI&#x2F;CD репозитория следует добавить переменную окружения и скопировать в качестве
+значения base64 строку.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;gitlab-env.png&quot; alt=&quot;Создание переменной GOOGLE_APPLICATION_CREDENTIALS&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Создание переменной &lt;code&gt;GOOGLE_APPLICATION_CREDENTIALS&lt;&#x2F;code&gt;&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yml&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-yml &quot;&gt;&lt;code class=&quot;language-yml&quot; data-lang=&quot;yml&quot;&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;backend:build&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;stage&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;build
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;image&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;gcr.io&#x2F;kaniko-project&#x2F;executor:debug
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;entrypoint&lt;&#x2F;span&gt;&lt;span&gt;: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;variables&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;GOOGLE_APPLICATION_CREDENTIALS&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&#x2F;kaniko&#x2F;kaniko-secret.json
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;IMAGE_NAME&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;backend
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;before_script&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;echo $GOOGLE_APPLICATION_CREDENTIALS_BASE64 | base64 -d &amp;gt; &#x2F;kaniko&#x2F;kaniko-secret.json
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;-
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;      &#x2F;kaniko&#x2F;executor
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;      --context &amp;quot;$CI_PROJECT_DIR&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;      --dockerfile &amp;quot;$CI_PROJECT_DIR&#x2F;backend.Dockerfile&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;      --destination &amp;quot;$IMAGE_REPO&#x2F;$IMAGE_NAME:$CI_COMMIT_TAG&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;      --build-arg STATICE_PYTOKEN=&amp;quot;$STATICE_PYTOKEN&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;only&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;tags
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;После добавления нового этапа в &lt;code&gt;.gitlab-ci.yml&lt;&#x2F;code&gt;, сборка будет запускаться при тегировании
+определенного коммита.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;kaniko-build-pipeline.png&quot; alt=&quot;Пайплайн проекта&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Пайплайн проекта&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Как результат, в GCP Artifact Registry после успешного выполнения пайплайна появится образ
+с именем вида &lt;code&gt;backend:{tag_name}&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>eSIM как альтернатива роумингу в путешествиях</title>
+        <published>2022-05-27T00:00:00+00:00</published>
+        <updated>2022-05-27T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/esim/" type="text/html"/>
+        <id>https://akrisanov.com/ru/esim/</id>
+        
+        <content type="html">&lt;p&gt;Для людей, путешествующих в другие страны, существует два варианта оставаться на связи:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Воспользоваться роумингом своего оператора и платить много денег согласно тарифу или пакету роуминга&lt;&#x2F;li&gt;
+&lt;li&gt;Купить SIM-карту местного оператора в аэропорту или уже в городе по прибытию&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Первый вариант — без дополнительных действий, но это стоит дорого. Второй — разумный, но требует времени,
+и SIM-карта после поездки врядли уже пригодится. Сам часто выбираю первый вариант потому, что
+в отпуске не хочется думать о постороннем и специально искать ларек или салон сотовой связи.
+Однако ловил себя на мысли, что было бы классно иметь более дешевую альтернативу тому, что предлагает
+наша тройка операторов в роуминге.&lt;&#x2F;p&gt;
+&lt;p&gt;В начале года в Linkedin получил предложение основателя &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.airalo.com&#x2F;&quot;&gt;Airalo&lt;&#x2F;a&gt; пообщаться о вакансии.
+Компания продает eSIM карты, которые в 2022 году поддерживаются многими современными устройствами —
+начиная от iPhone SE и Android среднего и высшего ценового сегмента. О самих картах eSIM писать
+не буду — информация в интернете есть, гуглите. Если коротко, то eSIM — это еще один, третий,
+вариант оставаться на связи в путешествиях. Покупаете электронную карту онлайн в приложении или
+на сайте еще до прибытия в пункт назначения за границей. Вынимать обычную SIM-карту из слота
+телефона нет необходимости → &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;support.apple.com&#x2F;ru-ru&#x2F;HT209044&quot;&gt;официальный гайд Apple по использованию двух SIM-карт, одна из которых eSIM&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;В итоге, вакансию вежливо отклонил, но решил попробовать Airalo установив их приложение.&lt;&#x2F;p&gt;
+&lt;p&gt;В магазине доступен выбор местных eSIM — конкретной страны, региональных — Азия, Африка, Европа,
+Карибские острова, и международных, т. е. работающих по всему миру.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;esim0.png&quot; alt=&quot;Выбор eSIM&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Цены ниже, чем у российских операторов. Например, Тинькофф Мобайл предлагает для Турции и Европы:
+1 ГБ на неделю за 499 ₽; 3 ГБ на месяц за 999 ₽; Безлимитные мессенджеры и карты от 49 ₽ в день.
+Для сравнения:&lt;&#x2F;p&gt;
+&lt;div class=&quot;img-swap-div&quot;&gt; 
+  &lt;img src=&quot;https:&#x2F;&#x2F;akrisanov.com&#x2F;images&#x2F;esim1.png&quot; class=&quot;img-main&quot; alt=&quot;esim1&quot; width=&quot;410&quot; height=&quot;886&quot; loading=&quot;lazy&quot; &#x2F;&gt; 
+  &lt;img src=&quot;https:&#x2F;&#x2F;akrisanov.com&#x2F;images&#x2F;esim2.png&quot; class=&quot;img-swap&quot; alt=&quot;esim1&quot; width=&quot;410&quot; height=&quot;886&quot; loading=&quot;lazy&quot; &#x2F;&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;По текущему курсу $ за 1 Гб платим ~290 ₽, за 3 Гб ~510 ₽. Из недостатков — цена привязана к курсу доллара.
+Оплатить eSIM можно напрямую через Apple Pay или с карты.&lt;&#x2F;p&gt;
+&lt;p&gt;Вопрос покрытия и качества услуг пока остается открытым — буду в поездке, проверю.&lt;&#x2F;p&gt;
+&lt;p&gt;Мой промокод — &lt;code&gt;ANDREY7079&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Как освободить место на диске WSL2</title>
+        <published>2022-05-13T00:00:00+00:00</published>
+        <updated>2022-05-13T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/shrink-wsl2-disk/" type="text/html"/>
+        <id>https://akrisanov.com/ru/shrink-wsl2-disk/</id>
+        
+        <content type="html">&lt;p&gt;WSL2 создает виртуальный диск в формате .vhdx, который хранит файлы гостевой операционной системы.
+Это включает в себя в том числе Docker-образы, скачиваемые для запуска контейнеров.
+С течением времени размер диска сильно растет и начинает отъедать полезное место на диске &lt;code&gt;C:\&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;WSL2 не поддерживает высвобождение места на виртуальном диске, поэтому делать это нужно вручную.&lt;&#x2F;p&gt;
+&lt;p&gt;Для начала удаляем неиспользуемые Docker-образы:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; docker system prune&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --all
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;WARNING!&lt;&#x2F;span&gt;&lt;span&gt; This will remove:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span&gt; all stopped containers
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span&gt; all networks not used by at least one container
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span&gt; all images without at least one container associated to them
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span&gt; all build cache
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Are&lt;&#x2F;span&gt;&lt;span&gt; you sure you want to continue&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;? [&lt;&#x2F;span&gt;&lt;span&gt;y&#x2F;N&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span&gt; y
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Deleted&lt;&#x2F;span&gt;&lt;span&gt; Images:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;untagged:&lt;&#x2F;span&gt;&lt;span&gt; postgres:13.4-alpine3.14
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Total&lt;&#x2F;span&gt;&lt;span&gt; reclaimed space: 76.84GB
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;А также выполняем удаление неиспользуемых системных пакетов:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt-get clean
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt-get autoclean
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apt-get autoremove
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;76.84GB высвободилось на виртуальном диске. На диске &lt;code&gt;C:\&lt;&#x2F;code&gt; 76.84GB все еще недоступны для пользования.&lt;&#x2F;p&gt;
+&lt;p&gt;Ситуация исправляется следующим образом. Открываем PowerShell с правами администратора и выполняем:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; wsl.exe &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;--list&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --verbose  &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#6a7c81;&quot;&gt;# получаем список виртуальных машин
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; wsl.exe &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;--terminate&lt;&#x2F;span&gt;&lt;span&gt; Ubuntu-20.04  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# останавливаем нужную
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; diskpart  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# запускаем дисковую утилиту
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;DISKPART&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; select vdisk file=C:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\U&lt;&#x2F;span&gt;&lt;span&gt;sers&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\d&lt;&#x2F;span&gt;&lt;span&gt;evel&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\A&lt;&#x2F;span&gt;&lt;span&gt;ppData&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\L&lt;&#x2F;span&gt;&lt;span&gt;ocal&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\P&lt;&#x2F;span&gt;&lt;span&gt;ackages&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\C&lt;&#x2F;span&gt;&lt;span&gt;anonicalGroupLimited.Ubuntu20.04onWindows_79rhkp1fndgsc&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\L&lt;&#x2F;span&gt;&lt;span&gt;ocalState&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\e&lt;&#x2F;span&gt;&lt;span&gt;xt4.vhdx  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# указываем путь к файлу диска
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;DiskPart&lt;&#x2F;span&gt;&lt;span&gt; successfully selected the virtual disk file.
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;DISKPART&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; compact vdisk
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;100&lt;&#x2F;span&gt;&lt;span&gt; percent completed
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;DiskPart&lt;&#x2F;span&gt;&lt;span&gt; successfully compacted the virtual disk file.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;То же самое проделываем для диска Docker:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;DISKPART&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; select vdisk file=C:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\U&lt;&#x2F;span&gt;&lt;span&gt;sers&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\d&lt;&#x2F;span&gt;&lt;span&gt;evel&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\A&lt;&#x2F;span&gt;&lt;span&gt;ppData&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\L&lt;&#x2F;span&gt;&lt;span&gt;ocal&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\D&lt;&#x2F;span&gt;&lt;span&gt;ocker&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\w&lt;&#x2F;span&gt;&lt;span&gt;sl&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\d&lt;&#x2F;span&gt;&lt;span&gt;ata&lt;&#x2F;span&gt;&lt;span style=&quot;color:#efba5d;&quot;&gt;\e&lt;&#x2F;span&gt;&lt;span&gt;xt4.vhdx
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;DiskPart&lt;&#x2F;span&gt;&lt;span&gt; successfully selected the virtual disk file.
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;DISKPART&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; compact vdisk
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;100&lt;&#x2F;span&gt;&lt;span&gt; percent completed
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;DiskPart&lt;&#x2F;span&gt;&lt;span&gt; successfully compacted the virtual disk file.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Ура, на диске &lt;code&gt;C:\&lt;&#x2F;code&gt; появились 76.84GB и даже больше.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Чеклист по старту проекта с Apache Kafka®</title>
+        <published>2021-11-01T00:00:00+00:00</published>
+        <updated>2021-11-01T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/starting-project-with-kafka/" type="text/html"/>
+        <id>https://akrisanov.com/ru/starting-project-with-kafka/</id>
+        
+        <content type="html">&lt;p&gt;В любом современном проекте, где появляется необходимость обрабатывать какие-либо события — набор
+сообщений или поток данных, в качестве инфраструктурного решения разработчики часто предлагают Apache Kafka®.
+Не всегда этот выбор выглядит взвешенно — там, где достаточно классического брокера типа ActiveMQ, побеждает маркетинг.&lt;&#x2F;p&gt;
+&lt;p&gt;Допустим все же, вы обдуманно пришли к выбору Кафки или же ваша централизованная инфраструктура
+не оставила вам выбора. На какие вопросы стоит ответить перед тем, как начать писать продюсеры,
+консьюмеры и настраивать какие-то параметры брокера? Мой базовый чеклист-опросник ниже:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Объем данных, который планируется генерировать продьюсерами → хватит ли вашего сетевого канала
+для всей системы и ее критичных компонент.&lt;&#x2F;li&gt;
+&lt;li&gt;Как долго вам необходимо хранить данные: Data Retention Policy → бизнес-требования продукта,
+который вы разрабатываете и стоимость хранения данных, см. в том числе пункт первый.
+Кроме перечисленного не стоит забывать и про комплаенс.&lt;&#x2F;li&gt;
+&lt;li&gt;Нужны ли гарантии отправки сообщения: Acks → поиск баланса между временем ожидания latency и
+надежностью в рамках репликации durability.&lt;&#x2F;li&gt;
+&lt;li&gt;Гарантия доставки → насколько критично для нашей бизнес задачи потеря или дублирование сообщений,
+важны ли идемпотентность и транзакционность.&lt;&#x2F;li&gt;
+&lt;li&gt;Какая стратегия партиционирования будет использоваться продьюсерами — подходит ли стратегия по умолчанию.&lt;&#x2F;li&gt;
+&lt;li&gt;Для выбранного топика важно ли нам хранить весь лог сообщений или достаточно последних изменений
+→ см. Compacted Topics в официальной документации.&lt;&#x2F;li&gt;
+&lt;li&gt;Потребуется ли консьюмер-группа для ваших топиков; как вы планируете масштабировать консьюмеры
+и их пропускную способность; что будет в случае ребаласировки группы.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;За рамками чеклиста остаются вопросы шифрования данных, аутентификации и авторизации,
+а также траблшутинга — предполагая, что за вас это решит SRE или PAAS.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Полезные советы невролога о подушках</title>
+        <published>2021-07-03T00:00:00+00:00</published>
+        <updated>2021-07-03T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/son/" type="text/html"/>
+        <id>https://akrisanov.com/ru/son/</id>
+        
+        <content type="html">&lt;p&gt;Сон – это мегаважно. Не только его количество, но и качество. Если по количеству, все плюс-минус
+понятно – спи себе минимум 8 часов, то на качество влияет довольно много факторов.
+Один из них – ваша подушка и положение во сне.&lt;&#x2F;p&gt;
+&lt;p&gt;Общие советы:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Выбирайте простую пухо-перьевую подушку, не сентипоновую&lt;&#x2F;li&gt;
+&lt;li&gt;Размер 50x70, т. е. прямоугольной, не квадратной формы&lt;&#x2F;li&gt;
+&lt;li&gt;Наволочка не должна стискивать подушку&lt;&#x2F;li&gt;
+&lt;li&gt;Для ребенка подушка должна быть мягкой и тонкой – больше пуха или всего 30% пера&lt;&#x2F;li&gt;
+&lt;li&gt;Спать нужно на спине или на боку, не на животе, чтобы не выкручивать шею&lt;&#x2F;li&gt;
+&lt;li&gt;Лежа на боку плечо не должно лежать на подушке → подушка под шеей как валик, рука на плече&lt;&#x2F;li&gt;
+&lt;li&gt;Лежа на спине, подушка должна образовывать валик в области шеи&lt;&#x2F;li&gt;
+&lt;li&gt;Ортопедическая подушка пригодна только для сна на боку&lt;&#x2F;li&gt;
+&lt;li&gt;Подушка должна успевать проветриваться и сохнуть, а не лежать постоянно накрытой&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;div class=&quot;yv&quot;&gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.youtube-nocookie.com&#x2F;embed&#x2F;fZc9z9S04Uc&quot; title=&quot;Youtube&quot; class=&quot;yvi&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Сертификат для LDAPS в Keycloak</title>
+        <published>2021-05-15T00:00:00+00:00</published>
+        <updated>2021-05-15T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/keycloak-ldaps-cert/" type="text/html"/>
+        <id>https://akrisanov.com/ru/keycloak-ldaps-cert/</id>
+        
+        <content type="html">&lt;p&gt;В нескольких рабочих проектах я использую в качестве сервиса аутентификации &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.keycloak.org&#x2F;&quot;&gt;Keycloak&lt;&#x2F;a&gt;.
+Проект спонсируется компанией RedHat, активно развивается и адаптирован для cloud-native окружения.
+Хотя документация у Keycloak достаточная для основных пользовательских сценариев, иногда ее
+не хватает для решения специфичных вопросов. Последнее с чем я столкнулся — подключение
+Active Directory как User Federation через протокол LDAPS (LDAP over SSL).&lt;&#x2F;p&gt;
+&lt;p&gt;Как и полагается внутренним корпоративным сервисам, наш сервер LDAPS предоставляет самоподписанный сертификат.
+Keycloak в этом случае для успешного соединения с &lt;code&gt;ldaps:&#x2F;&#x2F;ldap.orgname.com:636&lt;&#x2F;code&gt; требует, чтобы
+сертификат находился в truststore. Вариантов конфигурирования несколько:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;глобальный cacerts ОС, в которой запускается сервис&lt;&#x2F;li&gt;
+&lt;li&gt;cacerts из каталога установленного JDK&lt;&#x2F;li&gt;
+&lt;li&gt;системное свойство &lt;code&gt;javax.net.ssl.trustStore&lt;&#x2F;code&gt; для JVM&lt;&#x2F;li&gt;
+&lt;li&gt;truststore в каталоге Keycloak&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Если вам необходимо просто добавить самоподписанный сертификат или root.crt, то самым простым
+способом будет добавление его в источники на уровне ОС и обновление списка доверенных сертификатов.
+Тогда вам не придется каждый раз искать где находиться JDK в системе, переписывать startup-скрипты
+сервиса или заботиться о безопасной работе с паролями для своего truststore.&lt;&#x2F;p&gt;
+&lt;p&gt;Для разворачивания в Kubernetes или OpenShift можно собрать образ следующим способом:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;Dockerfile&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-Dockerfile &quot;&gt;&lt;code class=&quot;language-Dockerfile&quot; data-lang=&quot;Dockerfile&quot;&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span&gt; jboss&#x2F;keycloak:13.0.0
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;USER &lt;&#x2F;span&gt;&lt;span&gt;root
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;ARG &lt;&#x2F;span&gt;&lt;span&gt;CERT=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;root.crt&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; $CERT &#x2F;etc&#x2F;pki&#x2F;ca-trust&#x2F;source&#x2F;anchors&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;update-ca-trust
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;USER &lt;&#x2F;span&gt;&lt;span&gt;1000
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Убедиться, что сертификат был добавлен в список доверенных:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;etc&#x2F;pki&#x2F;ca-trust&#x2F;extracted&#x2F;java
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;keytool&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; -list -keystore&lt;&#x2F;span&gt;&lt;span&gt; cacerts
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; Your &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;keystore&lt;&#x2F;span&gt;&lt;span&gt; contains 137 entries
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;В оригинальном образе их 136.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Синхронизация пользователей через LDAP в Keycloak</title>
+        <published>2021-05-14T00:00:00+00:00</published>
+        <updated>2021-05-14T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/keycloak-ldap-groups/" type="text/html"/>
+        <id>https://akrisanov.com/ru/keycloak-ldap-groups/</id>
+        
+        <content type="html">&lt;p&gt;Один из способов подключения провайдера существующих пользователей к Keycloak – механизм,
+который называется User Federation. Он позволяет используя Kerberos или LDAP синхронизировать
+учетные записи из корпоративного хранилища. Если пользователей в хранилище много, и оргструктура
+организации предполагает иерархию, то это может усложнить получение (под)группы учетных записей.&lt;&#x2F;p&gt;
+&lt;p&gt;Так, например, в Active Directory используются следующие сущности:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;CN&lt;&#x2F;code&gt; = Common Name&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;OU&lt;&#x2F;code&gt; = Organizational Unit&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;DC&lt;&#x2F;code&gt; = Domain Component&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Документация по LDAP с расшифровкой аббревиатур есть на сайте
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.microsoft.com&#x2F;en-us&#x2F;previous-versions&#x2F;windows&#x2F;desktop&#x2F;ldap&#x2F;distinguished-names&quot;&gt;Microsoft&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;В настройках LDAP провайдера необходимо указать &lt;code&gt;User DN&lt;&#x2F;code&gt;. Самый простой вариант – когда все учетные
+записи разложены по организационным единицам:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;Main,DC=Orgname,DC=ru
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;В этом случае Keycloak с легкостью найдет все учетные записи в юните, даже если внутри него есть
+какая-то вложенная структура. Для этого, правда, придется включить дополнительный
+параметр &lt;em&gt;Search Scope: Subtree&lt;&#x2F;em&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Но что делать если администраторы Active Directory вместо создания &lt;code&gt;OU&lt;&#x2F;code&gt; сущностей добавляют нужных
+вам пользователей в &lt;code&gt;CN&lt;&#x2F;code&gt;? Другого способа, как дополнить описанное выше решение дополнительным
+фильтром для LDAP, я не нашел. В настройке &lt;code&gt;Custom User LDAP Filter&lt;&#x2F;code&gt; можно прописать все &lt;code&gt;CN&lt;&#x2F;code&gt; группы
+через оператор «Или» &lt;code&gt;|&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;objectCategory&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;Person&lt;&#x2F;span&gt;&lt;span&gt;)(sAMAccountName=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span&gt;)(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;|&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;memberOf&lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;CN=CMS_EDITOR,OU=Security,OU=Groups,OU=Central,OU=Main,DC=Orgname,DC=ru&lt;&#x2F;span&gt;&lt;span&gt;)))
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;В примере указана только одна группа – &lt;code&gt;CMS_EDITOR&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>asdf — менеджер версий языков программирования</title>
+        <published>2021-05-07T00:00:00+00:00</published>
+        <updated>2021-05-07T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/asdf/" type="text/html"/>
+        <id>https://akrisanov.com/ru/asdf/</id>
+        
+        <content type="html">&lt;p&gt;Для установки пакетов на macOS я долгое время пользовался пакетным менеджером &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;brew.sh&#x2F;&quot;&gt;Homebrew&lt;&#x2F;a&gt;.
+Утилита позволяет устанавливать и обновлять не только актуальные, но и major-версии программ:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;brew&lt;&#x2F;span&gt;&lt;span&gt; install postgresql@12
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Однако, Homebrew не предоставляет функциональности для управления несколькими версиями пакетов,
+которые могут совместно существовать в пользовательском пространстве. Особенно, это критично,
+когда нет необходимости или желания использовать Docker, но есть потребность иметь разные версии
+языка программирования, например, для тестирования разрабатываемых библиотек или программного обеспечения.&lt;&#x2F;p&gt;
+&lt;p&gt;Чтобы решить данную проблему разработчики стали придумывать утилиты вокруг командной оболочки
+для своих языков и рантаймов: nvm для Node.js, rvm и rbenv для Ruby и т. д. Если вы работаете с
+несколькими языками одновременно, то тащить для каждого из них свою утилиту, да еще и добавлять в
+shell ее скрипты, не всегда удобно. Чтобы этого не делать, можно воспользоваться менеджером
+версий &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;asdf-vm.com&#x2F;&quot;&gt;asdf&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;asdf имеет хорошую документацию, совместим со всеми популярными командными оболочками и
+расширяем при помощи системы плагинов.&lt;&#x2F;p&gt;
+&lt;p&gt;Python и JDK устанавливаются следующим образом:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# Python
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; asdf plugin add python
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; asdf install python 3.9.4
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; asdf global python 3.9.4
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#6a7c81;&quot;&gt;# JDK
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; asdf plugin add java
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; asdf list-all java &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;grep &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;&amp;quot;openjdk-11&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; asdf install java openjdk-11
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; asdf global java openjdk-11
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; java&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --version
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Через &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;halcyon&#x2F;asdf-java#java_home&quot;&gt;плагин для Java&lt;&#x2F;a&gt; можно также конфигурировать
+переменную окружения &lt;code&gt;$JAVA_HOME&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>От задачи к релизу</title>
+        <published>2021-03-28T00:00:00+00:00</published>
+        <updated>2021-03-28T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/ot-zadachi-k-relizu/" type="text/html"/>
+        <id>https://akrisanov.com/ru/ot-zadachi-k-relizu/</id>
+        
+        <content type="html">&lt;p&gt;&lt;a href=&quot;&#x2F;ru&#x2F;jira-workflow&quot;&gt;В предыдущем посте&lt;&#x2F;a&gt; я рассказывал как выглядит
+Jira Workflow и пайплайн задач в кросс-функциональной команде разработки. В этой заметке, которая
+писалась как шпаргалка для внутреннего использования, приводится более полное описание процесса
+от момента постановки задачи до ее релиза. А еще, она точно не понравится адептам канонического Scrum.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;sostav-komandy&quot;&gt;Состав команды&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Владелец продукта&lt;&#x2F;li&gt;
+&lt;li&gt;Delivery-менеджер&lt;&#x2F;li&gt;
+&lt;li&gt;Тимлид&lt;&#x2F;li&gt;
+&lt;li&gt;Несколько бэкенд-разработчиков&lt;&#x2F;li&gt;
+&lt;li&gt;Несколько фронтенд-рабработчиков&lt;&#x2F;li&gt;
+&lt;li&gt;DevOps-инженер&lt;&#x2F;li&gt;
+&lt;li&gt;QA&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;dezhurnye-razrabotchiki&quot;&gt;Дежурные разработчики&lt;&#x2F;h2&gt;
+&lt;p&gt;Меняются каждую неделю как со стороны бэкенда, так и со стороны фронтенда.&lt;&#x2F;p&gt;
+&lt;p&gt;Задачи:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;следить за SLA ревью&lt;&#x2F;li&gt;
+&lt;li&gt;следить за событиями в Sentry, приоритизировать их с командой и при необходимости заводить задачи в Jira&lt;&#x2F;li&gt;
+&lt;li&gt;собирать и разворачивать сборки для тестирования или по запросу членов команды&lt;&#x2F;li&gt;
+&lt;li&gt;уведомлять о релизах в канале&lt;&#x2F;li&gt;
+&lt;li&gt;переводить задачи на QA&lt;&#x2F;li&gt;
+&lt;li&gt;собирать и разворачивать сборки для продакшен-окружения&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;При планировании спринта стоит учитывать нагрузку на дежурных разработчиков с учетом их
+дополнительных активностей в течение дежурной недели.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;instrumenty&quot;&gt;Инструменты&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Jira — таск-трекер&lt;&#x2F;li&gt;
+&lt;li&gt;Confluence — командная Wiki&lt;&#x2F;li&gt;
+&lt;li&gt;Slack — основной месседжер&lt;&#x2F;li&gt;
+&lt;li&gt;Gitlab — управление репозиториями кода и CI + CD&lt;&#x2F;li&gt;
+&lt;li&gt;Artifactory — репозиторий пакетов и Docker-образов&lt;&#x2F;li&gt;
+&lt;li&gt;Sentry — отслеживание исключений&lt;&#x2F;li&gt;
+&lt;li&gt;EFK — стек для сбора и обработки логов&lt;&#x2F;li&gt;
+&lt;li&gt;Prometheus + Graphana — метрики&lt;&#x2F;li&gt;
+&lt;li&gt;OpenShift — PaaS для cloud-native окружения&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Теперь о процессе. Самое важное — у каждого шага пайплайна есть владелец, который мониторит его
+выполнение и проталкивает дальше по цепочке.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;trebovaniia-k-zadache&quot;&gt;Требования к задаче&lt;&#x2F;h2&gt;
+&lt;p&gt;Каждая задача должна иметь как минимум:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Внятное короткое название&lt;&#x2F;li&gt;
+&lt;li&gt;Развернутое описание, желательно со ссылками на спецификацию и дополнительные материалы&lt;&#x2F;li&gt;
+&lt;li&gt;Компонент: бэкенд, фронтенд, инфраструктура&lt;&#x2F;li&gt;
+&lt;li&gt;Возможного исполнителя&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;planirovanie-i-sprint&quot;&gt;Планирование и спринт&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;em&gt;Задача привязана к эпику, эпик привязан к цели, цель — важная.&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Владелец: product owner ⇢ delivery manager ⇢ тимлид.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;tasks.png&quot; alt=&quot;Очередь работ&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;obshchii-protsess&quot;&gt;Общий процесс&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;В бэклог проекта (не спринта) могут добавляться задачи в любой момент времени.&lt;&#x2F;li&gt;
+&lt;li&gt;Product Owner определяет видение и будущие цели, которые разворачиваются в эпики (большие изменения).&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;storymap.png&quot; alt=&quot;Story Map&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;На основе эпиков предварительно создаются спецификации.&lt;&#x2F;li&gt;
+&lt;li&gt;Обсуждение спецификаций доступно всей команде, автор спецификации может обозначить SLA,
+по прошествию которого все обсуждения будут закрыты, т. е. спецификация считается готовой к реализации.&lt;&#x2F;li&gt;
+&lt;li&gt;В конце текущего спринта (последний рабочий день) команда планирует новый спринт на основе эпиков,
+отдельно взятых задач и задач, которые остались невыполненными в текущем спринте (их приоритет может быть пересмотрен).&lt;&#x2F;li&gt;
+&lt;li&gt;Владелец продукта и delivery manager определяют продуктовую цель спринта → создание спринта
+в Jira с указанием цели спринта на Scrum-доске.&lt;&#x2F;li&gt;
+&lt;li&gt;В процессе планирования выполняется декомпозиция и оценка задач командой.&lt;&#x2F;li&gt;
+&lt;li&gt;Для того, чтобы внести задачу в спринт, необходимо:&lt;&#x2F;li&gt;
+&lt;li&gt;Понять суть задачи ⇠ выяснить непонятные моменты, поговорить с коллегами, дополнить описание и документацию&lt;&#x2F;li&gt;
+&lt;li&gt;Проставить приоритет&lt;&#x2F;li&gt;
+&lt;li&gt;Добавить оценку в сторипойнтах (числа Фибоначчи)&lt;&#x2F;li&gt;
+&lt;li&gt;Выбрать спринт, сменить статус с Backlog на Todo, иначе она не будет отображена на Scrum-доске&lt;&#x2F;li&gt;
+&lt;li&gt;Delivery manager стартует новый спринт в понедельник в 12:00&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;paiplain&quot;&gt;Пайплайн&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;astonished-nuzhno-sdelat&quot;&gt;😲 Нужно сделать&lt;&#x2F;h3&gt;
+&lt;p&gt;Владелец:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;на этапе формирования: delivery manager ⇢ тимлид ⇢ члены команды&lt;&#x2F;li&gt;
+&lt;li&gt;на этапе спринта: QA ⇢ delivery manager &#x2F; тимлид ⇢ члены команды&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Данная колонка содержит бэклог спринта и формируется на основе предварительного планирования и
+декомпозиции. После старта спринта в нее могут добавляться только задачи высокого приоритета,
+например, неотложные баги.&lt;&#x2F;p&gt;
+&lt;p&gt;Исполнитель выполняет задачи в рамках указанного приоритета. За актуальностью следят владельцы
+бэклога, однако любой член команды в праве обсудить и аргументировать свое видение порядка выполнения задач.&lt;&#x2F;p&gt;
+&lt;p&gt;Крайне желательно избегать внеплановое пополнение спринта задачами на разработку новой функциональности.
+Такая ситуация может возникать в рамках плохого планирования и оценки. Под этим также понимается
+взаимодействие компонент проекта, например, бэкенда (API) и представления (фронтенд).&lt;&#x2F;p&gt;
+&lt;p&gt;На данном этапе QA уже может начинать работу над тест-кейсами.&lt;&#x2F;p&gt;
+&lt;p&gt;Совет: настроенные фильтрами позволяют увидеть статус по каждому члену команды.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;filters.png&quot; alt=&quot;Быстрые фильтры&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;muscle-skin-tone-2-v-rabote&quot;&gt;💪🏻 В работе&lt;&#x2F;h3&gt;
+&lt;p&gt;Владелец: исполнитель задачи.&lt;&#x2F;p&gt;
+&lt;p&gt;Задача, над которой в данный момент работает исполнитель, имеет соответствующий статус.
+В работе у исполнителя может быть одновременно не более двух задач. Идеальная ситуация — фокус на одной задаче.&lt;&#x2F;p&gt;
+&lt;p&gt;Если задача заблокирована какими-то внешними факторами, то она должна быть возвращена в колонку
+«😲 Нужно сделать» с указанием причины в комментариях. При возникновении внутренних факторов,
+следует указать на них на ежедневном стендапе или в командном чате.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;memo-rev-iu&quot;&gt;📝 Ревью&lt;&#x2F;h3&gt;
+&lt;p&gt;Владелец: ревьювер.&lt;&#x2F;p&gt;
+&lt;p&gt;Исполнитель задачи после ее выполнения оформляет merge request в Gitlab согласно заданному шаблону,
+убеждается в том, что на CI выполнены успешно все шаги сборки и назначает подходящего по его (ее)
+мнению ревьювера. Задача переходит в статус «📝 Ревью» и остается в нем до тех пор, пока автор
+не внесет правки согласно комментариям ревьювера и изменения не будут одобрены для тестирования.
+Достаточно одного одобрения 👍🏻&lt;&#x2F;p&gt;
+&lt;p&gt;SLA на ревью:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;блокер: 1 час — автор изменений связывается лично с ревьювером в общем чате&lt;&#x2F;li&gt;
+&lt;li&gt;высокий приоритет: 3 часа&lt;&#x2F;li&gt;
+&lt;li&gt;нормальный приоритет: 1 день&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;На ревью должно накапливаться не более трех открытых MR.&lt;&#x2F;p&gt;
+&lt;p&gt;Аналогичный процесс может быть не только для технических задач, но и, например, для спецификаций
+и документации.&lt;&#x2F;p&gt;
+&lt;p&gt;После получения одобрения изменений ветка сливается с мастером (squash commits, fast forward merge)
+и MR автоматически закрывается. Задача в Jira переходит в статус «К тестированию», на нее
+назначается дежурный разработчик.&lt;&#x2F;p&gt;
+&lt;p&gt;Совет: при создании MR Gitlab автоматически берет в качестве заголовка заголовок первого коммита.
+Поэтому старайтесь писать понятные и короткие сообщения коммитов. В большинстве ситуаций за
+сообщение коммита можно взять название задачи из тикета Jira.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;deploi-dlia-qa&quot;&gt;🟡 Деплой для QA&lt;&#x2F;h3&gt;
+&lt;p&gt;Владелец: разработчик, вмерживающий ветку в master.&lt;&#x2F;p&gt;
+&lt;p&gt;После прохождения ревью изменения попадают в мастер-ветку. Мастер-ветка всегда должна быть готова
+к развертыванию как минимум на тестовое окружение.&lt;&#x2F;p&gt;
+&lt;p&gt;Сборка и деплой на staging-окружение выполняется автоматически в рамках CI&#x2F;CD при мерже в master.&lt;&#x2F;p&gt;
+&lt;p&gt;Следует также учитывать fullstack-задачи, в случае которых бэкенд и фронтенд должны быть
+доставлены единовременно. В такой ситуации дежурные разработчики совместно обдумывают и выполняют
+план одновременного разворачивания приложений.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;inbox-tray-reliz-v-jira&quot;&gt;📥 Релиз в Jira&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Создать новый релиз с тэгом, соответствующим Docker-образу. Префикс компонента не требуется.
+&lt;img src=&quot;&#x2F;images&#x2F;releases.png&quot; alt=&quot;Создание нового релиза&quot; &#x2F;&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Проставить релиз в поле «Исправить в версиях: » всех развернутых задач&lt;&#x2F;li&gt;
+&lt;li&gt;Скопировать информацию о релизе из Jira и отправить в канал #releases: в списке релизов
+кликнуть на версию → на странице релиза нажать ссылку «Описание релиза» → скопировать описание.
+&lt;img src=&quot;&#x2F;images&#x2F;releases2.png&quot; alt=&quot;Копирование заметок о релизе&quot; &#x2F;&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Отправить скопированные release notes в канал.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;После разворачивания новых изменений и информирования о релизе в канале #releases задачи в Jira назначаются на QA.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;low-brightness-k-testirovaniiu&quot;&gt;🔅 К тестированию&lt;&#x2F;h3&gt;
+&lt;p&gt;Владелец: QA.&lt;&#x2F;p&gt;
+&lt;p&gt;Перед стартом тестирования QA проверяет:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Наличие всей необходимой информации по задаче — от описания до документации от разработчиков.
+Также полезно посмотреть на merge request в Gitlab и % покрытия тестами.&lt;&#x2F;li&gt;
+&lt;li&gt;Развернута ли задача на тестовом окружении, см. канал #releases&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;hamster-testirovanie&quot;&gt;🐹 Тестирование&lt;&#x2F;h3&gt;
+&lt;p&gt;Владелец: QA.&lt;&#x2F;p&gt;
+&lt;p&gt;Тест-кейсы создаются в отдельной системе.&lt;&#x2F;p&gt;
+&lt;p&gt;Все найденные дефекты указываются в комментариях к оригинальной задаче. Проблема должна быть внятно
+описана, указано окружение (ОС, браузер, разрешение экрана и пр.), при необходимости добавлены скриншоты.&lt;&#x2F;p&gt;
+&lt;p&gt;Если недочеты мелкие и не влияют напрямую на реализованную функциональность, то они могут быть
+вынесены в отдельные задачи в будущих спринтах с сохранением ссылки на оригинальную задачу.&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Успешно протестирования задача получает статус «Готово к релизу».&lt;&#x2F;li&gt;
+&lt;li&gt;Задача, по которой найдены дефекты, получает статус «Нужно сделать», и итерация начинается с начала&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;В обоих случаях задача назначается на исполнителя, который над ней работал. Тестирование на этом заканчивается.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;place-gotovo-k-relizu&quot;&gt;🚢 Готово к релизу&lt;&#x2F;h3&gt;
+&lt;p&gt;Владелец: дежурные разработчики.&lt;&#x2F;p&gt;
+&lt;p&gt;Как и в случае с тестовым окружением, релиз может быть выполнен в любое время как только для него
+будет сформирован список из минимум 3-4х задач.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;reliz&quot;&gt;🟢 Релиз&lt;&#x2F;h3&gt;
+&lt;p&gt;Владелец: дежурные разработчики.&lt;&#x2F;p&gt;
+&lt;p&gt;Не блокирующие друг-друга фронтенд и бэкенд могут развертываться независимо.&lt;&#x2F;p&gt;
+&lt;p&gt;Развертывание релиза в prod осуществляется в рамках CI&#x2F;CD, но, в отличии от развертывания на
+staging, только по ручной запуску соответствующего job’а в pipeline Gitlab.&lt;&#x2F;p&gt;
+&lt;p&gt;После сборки и успешного деплоя:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;статусы задач меняются на «Выполнено»&lt;&#x2F;li&gt;
+&lt;li&gt;релиз в Jira выпускается: список релизов →… (действия) → выпустить (желательно указать дату релиза)&lt;&#x2F;li&gt;
+&lt;li&gt;копируются release notes (см. выше)&lt;&#x2F;li&gt;
+&lt;li&gt;создается уведомление о релизе в канале #releases со списком доставленных для конечного пользователя задач&lt;&#x2F;li&gt;
+&lt;li&gt;привлекается QA (при желании и команда) для базового тестирования самой критичной с точки
+зрения конечного пользователя функциональности:
+&lt;ul&gt;
+&lt;li&gt;Успешная аутентификация в портальной части &#x2F; CMS&lt;&#x2F;li&gt;
+&lt;li&gt;Свой профиль&lt;&#x2F;li&gt;
+&lt;li&gt;На главной отображается список всех новостей&lt;&#x2F;li&gt;
+&lt;li&gt;Доступно главное меню&lt;&#x2F;li&gt;
+&lt;li&gt;…&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Найденные на этом этапе дефекты заводятся новыми задачами.&lt;&#x2F;p&gt;
+&lt;p&gt;В случае серьезного сбоя после развертывания изменений есть возможность откатиться на предыдущий
+тэг Docker-образа. Однако, для бэкенда необходимо поддерживать downgrade-миграции схемы данных.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fire-hotfixes&quot;&gt;🔥 Hotfixes&lt;&#x2F;h3&gt;
+&lt;p&gt;Если после выкатки релиза на прод обнаруживается наличие какого-то бага, который необходимо
+срочно поправить, то необходимо выполнить fix в коде, смержить его в master и тегнуть как
+v.0.59.1, где .1 — номер фикса. После того, как pipeline выполнит сборку образов запустить
+job’ы раскатки этого фикса на prod’e. Оформлять новый релиз при этом не нужно.&lt;&#x2F;p&gt;
+&lt;p&gt;Обратите внимание, что выполнить сборку фикса для prod можно не только из ветки master, но и ветки
+hotfix’a, не дожидаясь код-ревью. Для этого необходимо также как и описано выше назначить тег
+нужному коммиту в ветке hotfix’a.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;champagne-vypolneno&quot;&gt;🍾 Выполнено&lt;&#x2F;h3&gt;
+&lt;p&gt;Владелец: дежурные разработчики.&lt;&#x2F;p&gt;
+&lt;p&gt;Развернутые на продакшен-окружении задачи. На этом цикл разработки заканчивается.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;upravlenie-riskami&quot;&gt;Управление рисками&lt;&#x2F;h2&gt;
+&lt;p&gt;Владелец: исполнитель.&lt;&#x2F;p&gt;
+&lt;p&gt;См. &lt;a href=&quot;https:&#x2F;&#x2F;akrisanov.com&#x2F;ru&#x2F;risk-management&#x2F;&quot;&gt;Риск-менеджмент в продуктовой команде&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Jira Workflow</title>
+        <published>2021-03-27T00:00:00+00:00</published>
+        <updated>2021-03-27T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/jira-workflow/" type="text/html"/>
+        <id>https://akrisanov.com/ru/jira-workflow/</id>
+        
+        <content type="html">&lt;p&gt;Я стараюсь придерживаться принципа KISS (keep it stupid, keep it simple) не только при написании кода,
+но при выстраивании процессов внутри команд. Так, например, приведенный Jira Workflow имеет
+максимально прозрачный пайплайн выполнения задач.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;tipy-zaprosov&quot;&gt;Типы запросов&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Задача&lt;&#x2F;strong&gt; — задача, которую необходимо выполнить&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Подзадача&lt;&#x2F;strong&gt; — задача меньшего объема в рамках задачи&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Баг&lt;&#x2F;strong&gt; — проблема, которая влияет на функциональность сервиса&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Общая задача&lt;&#x2F;strong&gt; — активности, связанные с выяснением функциональных требований будущей спецификации
+Может выступать в роли спайка или исследовательской деятельности&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;User Story&lt;&#x2F;strong&gt; — новая функциональность продукта с точки зрения пользователя
+В нашей команде выполняет функцию эпика из-за специфики настройки корпоративной Jira&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Инцидент&lt;&#x2F;strong&gt; — системный сбой или инцидент&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;prioritety&quot;&gt;Приоритеты&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Блокер&lt;&#x2F;li&gt;
+&lt;li&gt;Высокий&lt;&#x2F;li&gt;
+&lt;li&gt;Нормальный&lt;&#x2F;li&gt;
+&lt;li&gt;Низкий&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;statusy-zadach&quot;&gt;Статусы задач&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;📥 Бэклог&lt;&#x2F;li&gt;
+&lt;li&gt;😲 To Do — бэклог спринта&lt;&#x2F;li&gt;
+&lt;li&gt;💪🏻 В работе&lt;&#x2F;li&gt;
+&lt;li&gt;📝 Ревью&lt;&#x2F;li&gt;
+&lt;li&gt;🔅 К тестированию ← только после выполнения автоматических тестов на CI и тестирования исполнителем&lt;&#x2F;li&gt;
+&lt;li&gt;🐹 Тестирование ← QA берет в работу&lt;&#x2F;li&gt;
+&lt;li&gt;🚢 Готово к релизу ← для планирования релиза и его деплоя на продакшен-окружение&lt;&#x2F;li&gt;
+&lt;li&gt;✅ Выполнено&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;workflow-dlia-zadachi-i-baga&quot;&gt;Workflow для задачи и бага&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;jira-task-bug.png&quot; alt=&quot;Workflow для задачи и бага&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;workflow-dlia-zadachi-obshchego-tipa&quot;&gt;Workflow для задачи общего типа&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;jira-task.png&quot; alt=&quot;Workflow для задачи общего типа&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;На основе перечисленных статусов задач команда может создавать Kanban и Scrum-доски для удобной
+визуализации пайплайна.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Wiki проекта</title>
+        <published>2021-03-12T00:00:00+00:00</published>
+        <updated>2021-03-12T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/wiki/" type="text/html"/>
+        <id>https://akrisanov.com/ru/wiki/</id>
+        
+        <content type="html">&lt;p&gt;Первое, что я делаю когда прихожу в новую команду — это смотрю на состояние документации и выступаю
+евангелистом корпоративной Wiki. Постепенно совместно с командой привожу документацию в порядок,
+и она начинает выглядеть следующим образом:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;wiki.png&quot; alt=&quot;Командная база знаний&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Когда в начале пандемии всех массово стали переводить на удаленку, мои команды уже были готовы к
+новому формату работы в том числе из-за отсутствия bus-фактора. В последствии не раз на ретроспективах
+было сказано друг другу «Спасибо» за туториалы, продуктовые спецификации, постмортем и заметки
+к принятым решениям.&lt;&#x2F;p&gt;
+&lt;p&gt;Не экономьте на документации. Да, в Agile-манифесте написано «Работающий продукт важнее
+исчерпывающей документации», но это не значит, что на нее не нужно выделять время команды.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Обусловлен ли срыв дедлайна ошибками менеджмента</title>
+        <published>2021-03-08T00:00:00+00:00</published>
+        <updated>2021-03-08T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/missing-deadlines/" type="text/html"/>
+        <id>https://akrisanov.com/ru/missing-deadlines/</id>
+        
+        <content type="html">&lt;p&gt;Некоторое время назад в своем маленьком Телеграм-канале я делал опрос на тему срыва дедлайнов и
+ответственности за них. Вопрос звучал так: «Обусловлен ли срыв дедлайна в большинстве случаев
+ошибками менеджмента, а не команды разработки?»&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;7% за ответ «Нет»&lt;&#x2F;li&gt;
+&lt;li&gt;20% за ответ «Да»&lt;&#x2F;li&gt;
+&lt;li&gt;73% за ответ «Все не так однозначно»&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Итак, почему я придерживаюсь позиции «Да».&lt;&#x2F;p&gt;
+&lt;p&gt;Давайте представим среднестатистическую кросс-функциональную команду разработки: продакт, возможно
+деливери менеджер, бэкенд, фронтенд, DevOps, QA, которые все дружно работают над новым проектом,
+фичей или серьезными изменениями в продукте.&lt;&#x2F;p&gt;
+&lt;p&gt;У бизнеса&lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; есть цель заработать денег или завоевать определенную долю пользователей или рынка,
+а лучше и то, и другое в некоторой временной перспективе. Таким образом, бизнес ставит задачу
+команде, а команда коммитится на результат. Погнали.&lt;&#x2F;p&gt;
+&lt;p&gt;Но уже на самом старте менеджмент может столкнуться со сложностями договоренностей с бизнесом.
+Как правило, менеджер продукта обсуждая с бизнесом результат, ставит перед собой и командой дедлайн.
+Бизнес, конечно же, не сильно интересует команда, ее состав, опыт, сработанность и др. факторы —
+он ожидает некую временную отсечку, после которой можно смотреть на достижение поставленных целей
+и дальнейшее изменение стратегии. Если менеджеры договорились между собой о дедлайне, не вовлекая
+в процесс оценки команду и не заложив дополнительное время на непредвиденные обстоятельства, то
+практически всегда мы в итоге получаем срыв этого самого дедлайна: скоуп задач оказался слишком большим,
+затянулись этапы подготовки (анализ, описание требований и спецификаций, инфраструктуры и др. операционные вопросы),
+команда посмотрев требования высказала свою точку зрения, оценки менеджера и команды разошлись и т. п.
+Приехали.&lt;&#x2F;p&gt;
+&lt;p&gt;Ок, даже если так случилось, и менеджер вдруг понял, что команда не вложится в оговоренные сроки,
+то вырулить все еще можно порезав скоуп задач и цели, а затем пойти передоговариваться с бизнесом
+(в счет не берем ситуации «сделай или умри», когда бизнес запускается под какой-то ивент).
+И на этом этапе решает умение управлять ожиданиями заказчика и стекхолдеров. Если менеджер этого
+не делает, то с большей вероятностью, исходная ситуация будет усугубляться при приближении даты
+дедлайна: менеджер и команда будут пытаться вкидывать больше ресурсов, принимать рискованные решения.
+За счет этого увеличиться уровень стресса и напряжения внутри команды. Здесь мы видим вторую ошибку
+менеджмента, которая может оказаться фатальной для всех — бизнеса, который пребывал в неведении и
+ждал результатов от команды; команды, которая в поте лица пыталась все же выполнить срок и выгорела;
+менеджера, который показал, что не в силах спланировать разработку, управлять ожиданиями и рисками.&lt;&#x2F;p&gt;
+&lt;p&gt;Вот и получается, что на малую часть срывов всех дедлайнов остаются внешние факторы, которые
+случились либо перед самым запуском: например, ваш провайдер инфраструктуры внезапно упал из-за
+урагана, либо кто-то из команды заболел (но и в этой ситуации вы, как менеджер, тоже просчитались
+— допустили bus factor на проекте), либо вы совместно с бизнесом поняли, что не стоит выпускать на
+рынок сырой продукт, и репутация компании стоит дороже тех изменений, которые вы планировали
+показать конечным пользователям.&lt;&#x2F;p&gt;
+&lt;div class=&quot;footnote-definition&quot; id=&quot;1&quot;&gt;&lt;sup class=&quot;footnote-definition-label&quot;&gt;1&lt;&#x2F;sup&gt;
+&lt;p&gt;Под бизнесом в нашем примере я понимаю либо топ-менеджмент компании, который отвечает за
+стратегию, либо владельца продукта, который отвечает за результат перед топ-менеджментом.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Запуск программы в виде демона</title>
+        <published>2020-08-03T00:00:00+00:00</published>
+        <updated>2020-08-03T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/unix-daemon/" type="text/html"/>
+        <id>https://akrisanov.com/ru/unix-daemon/</id>
+        
+        <content type="html">&lt;p&gt;В macOS и операционных системах семейства Unix для запуска программы в фоновом режиме достаточно
+добавить к команде знак амперсанда &lt;code&gt;&amp;amp;&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;sync&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --folder&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;home&#x2F;akrisanov&#x2F;downloads &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;amp;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;После ввода команды оболочка отвечает идентификатором процесса &lt;code&gt;PID&lt;&#x2F;code&gt;, который может быть использован
+в дальнейшем для прекращения работы процесса.&lt;&#x2F;p&gt;
+&lt;p&gt;Данный трюк часто бывает полезен при запуске серверов или других демонов.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Ежедневный стендап</title>
+        <published>2020-07-27T00:00:00+00:00</published>
+        <updated>2020-07-27T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/stand-up/" type="text/html"/>
+        <id>https://akrisanov.com/ru/stand-up/</id>
+        
+        <content type="html">&lt;p&gt;В командах, с которыми я работаю, мы стараемся придерживаться следующего подхода при проведении ежедневных стендапов:&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;format&quot;&gt;Формат&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Стендап всегда начинается в одно и то же время&lt;&#x2F;li&gt;
+&lt;li&gt;Начинаем с членами команды, которые присутствуют и не ждем остальных&lt;&#x2F;li&gt;
+&lt;li&gt;Продолжительность: 10-15 минут&lt;&#x2F;li&gt;
+&lt;li&gt;Важно не прерывать коллег и забыть на время стендапа про мобильные устройства и другие отвлекающие факторы&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;struktura&quot;&gt;Структура&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Прогресс по задачам с момента предыдущего стендапа&lt;&#x2F;li&gt;
+&lt;li&gt;Сложности, блокеры или необходимость помощи и поддержки&lt;&#x2F;li&gt;
+&lt;li&gt;Планы на сегодня для поддержания контекста команды&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;chem-ne-iavliaetsia-stendap&quot;&gt;Чем не является стендап&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Отчетом перед менеджментом, скрам-мастером, владельцем продукта&lt;&#x2F;li&gt;
+&lt;li&gt;Обсуждением новых идей, фич и т. д.&lt;&#x2F;li&gt;
+&lt;li&gt;Планированием&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Перформанс-ревью #2</title>
+        <published>2020-06-26T00:00:00+00:00</published>
+        <updated>2020-06-26T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/performance-review-2/" type="text/html"/>
+        <id>https://akrisanov.com/ru/performance-review-2/</id>
+        
+        <content type="html">&lt;p&gt;В кросс-функциональных командах задача разработчика не писать код, а создавать продукт.&lt;&#x2F;p&gt;
+&lt;p&gt;Это фундаментальная причина по которой любые попытки объективно измерить производительность
+программиста терпят неудачу. Если, например, для роли дизайнера мы понимаем, что он(а) не рисует
+мокапы и макеты, а проектирует пользовательский интерфейс, то вряд ли станем измерять продуктивность
+количеством выполненных экранов. Так почему тогда для разработчика в продуктовой команде мы все еще
+цепляемся за количественные метрики?&lt;&#x2F;p&gt;
+&lt;p&gt;Некоторые из таких метрик:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Рабочие часы&lt;&#x2F;li&gt;
+&lt;li&gt;Количество строк кода&lt;&#x2F;li&gt;
+&lt;li&gt;Количество или % багов&lt;&#x2F;li&gt;
+&lt;li&gt;Функциональные точки&lt;&#x2F;li&gt;
+&lt;li&gt;Стори-пойнты&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Все они могут быть полезными если их применить к команде или проекту.
+Тогда мы сможем представить общую картину, видеть как различные факторы влияют на продукт и бизнес,
+успешно адаптироваться к изменениям.&lt;&#x2F;p&gt;
+&lt;p&gt;Однако, метрики, как инструмент оценки уровня разработчика и его продвижения в рамках карьерного
+роста, — это не то, на что стоит делать упор в современных продуктовых командах.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Перформанс-ревью</title>
+        <published>2020-06-24T00:00:00+00:00</published>
+        <updated>2020-06-24T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/performance-review/" type="text/html"/>
+        <id>https://akrisanov.com/ru/performance-review/</id>
+        
+        <content type="html">&lt;p&gt;Большинство перформанс-ревью, которые проводятся по SMART раз в полгода или год, не приносят
+никакой пользы ни менеджерам, ни разработчикам, а скорее только демотивируют людей.
+На такое перформанс-ревью тратится большое количество времени, и вопросы нельзя назвать релевантными.&lt;&#x2F;p&gt;
+&lt;p&gt;CTO компании N26, с которой мне пару лет назад довелось разрабатывать совместный продукт,
+Патрик Куа, когда-то сказал:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Чем больше мы пытаемся сделать что-то повторно используемым, тем менее практичным и удобным это
+становится — продукт, программное обеспечение, код, перформанс-ревью.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Сделать хорошее перформанс-ревью сложно. До него нужно дорасти менеджеру и команде. Если в команде
+нет выстроенного процесса обратной связи и роста людей, то о каком перформарманс-ревью может идти речь?
+Видимо о таком, где под этим термином подразумевается что-то другое. Например, сделать так, чтобы
+люди на проектах были взаимозаменяемые и выступали в качестве ресурса.&lt;&#x2F;p&gt;
+&lt;p&gt;Перформанс-ревью должен же быть инструментом карьерного роста, что включает в себя постоянное
+профессиональное развитие, увеличение вклада в ценности и задачи компании, поощрение сотрудников.
+Оно идет бок о бок с прозрачностью, доверием и установкой карьерных ожиданий. Все перечисленное,
+а также матрица компетенций, составляют Career Growth Framework и позволяет инженерной организации
+успешно масштабироваться.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Основные ошибки начинающего people-менеджера</title>
+        <published>2020-05-11T00:00:00+00:00</published>
+        <updated>2020-05-11T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/manager-mistakes/" type="text/html"/>
+        <id>https://akrisanov.com/ru/manager-mistakes/</id>
+        
+        <content type="html">&lt;p&gt;Несколько лет назад мне впервые довелось руководить людьми. Началось все с пары человек — двух iOS
+разработчиков, которые вместе со мной создавали небольшие мобильные приложения для одной маленькой студии.
+С течением времени команда росла, становилась кросс-функциональной. Компания открыла местный офис,
+и мы стали заниматься разработкой под другие платформы, а также своими сложными продуктами.
+Когда я уходил, нас было порядка 30 человек.&lt;&#x2F;p&gt;
+&lt;p&gt;За тот период я, как people-менеджер, успел сделать кучу ошибок, поэтому делюсь опытом.
+Заметка не оградит вас от столкновения с перечисленными ниже сложностями, но, надеюсь, поможет
+вовремя сделать выводы и скорректировать свое поведение.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;otsutstvie-lichnogo-obshcheniia-s-chlenami-komandy&quot;&gt;Отсутствие личного общения с членами команды&lt;&#x2F;h3&gt;
+&lt;p&gt;Становясь руководителем, появляется возможность доносить общее виденье, цели и задачи компании
+выступая перед всей командой или офисом. Коммуникаций становится больше, многие из них перерастают
+в высокоуровневые — без погружения, например, в детали реализации функциональности продукта,
+и стратегические. Вы помогаете команде и компании достигать требуемых результатов параллельно
+улучшая или меняя существующие процессы, подходы и практики.&lt;&#x2F;p&gt;
+&lt;p&gt;Стоит помнить, что добиться озвученного без личного общения с каждым членом команды крайне сложно.
+Ваши 1:1 (one-on-one) и индивидуальные коммуникации с сотрудниками задают общий тон тому, как вся
+команда будет взаимодействовать друг с другом. Поэтому создание позитивных отношений с каждым из
+членов команды имеет решающее значение.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;В течение первого месяца запланируйте 1:1 встречи с каждым человеком, находящимся в вашей команде,
+чтобы познакомиться, лучше узнать друг друга и ответить на возникшие вопросы. Сделайте one-on-one
+периодическими и всегда будьте к ним подготовлены.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h3 id=&quot;zhelanie-nravit-sia-vmesto-formirovaniia-doveriia&quot;&gt;Желание нравиться вместо формирования доверия&lt;&#x2F;h3&gt;
+&lt;p&gt;В этом нет ничего плохого — в конце концов кто не хочет быть человеком, который нравится всем?
+Проблема возникает тогда, когда менеджер, стремясь понравиться команде и поддержать некий образ
+отличного руководителя, перестает быть открытым и умалчивает какие-то вещи, чтобы не испортить
+отношений с окружающими. Как можно догадаться, в долгосрочной перспективе ни к чему хорошему
+такая стратегия не приводит.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Фокусируйтесь на доверии людей к вам и вере в вас и ваше стратегическое виденье. Будьте открытым
+и всегда готовым прийти на помощь.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Нужно стремиться стать не лучшим менеджером для всей команды, а лучшим менеджером для каждого ее
+члена. Ведь люди уходят не из плохой компании — люди уходят от плохих менеджеров.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;neumenie-vyslushivat-chuzhuiu-tochku-zreniia&quot;&gt;Неумение выслушивать чужую точку зрения&lt;&#x2F;h3&gt;
+&lt;p&gt;У любого менеджера есть соблазн быть человеком, у которого всегда есть план и который лучше других
+понимает оптимальный путь решения задачи. Это мешает. Умение выслушивать других людей — важный и
+сложный (по крайней мере для меня) навык.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Вместо того, чтобы сразу предлагать варианты или приступать к действиям, постарайтесь понять
+человека и его мотивацию в контексте ситуации. Задавайте вопросы. Возможно вы чему-то даже научитесь.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h3 id=&quot;neumenie-govorit-ia-ne-znaiu&quot;&gt;Неумение говорить «Я не знаю»&lt;&#x2F;h3&gt;
+&lt;p&gt;Синдром самозванца есть у многих. Для начинающего руководителя кошмаром являются сомнения со
+стороны коллег и членов команды по поводу его профессионализма. Меньше всего хочется знать, что
+кто-то думает, что он (а) — не тот человек для этой работы. Поэтому многие боятся сказать правду.
+Неумение честно ответить «Я не знаю» может обернуться против самого менеджера и привести к поспешным
+и ошибочным действиям.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Все знать невозможно. Часто вещи приходят только с опытом. Не бойтесь признавать свое незнание
+перед другими людьми — командой, коллегой или вышестоящим менеджментом. Самое рациональное, что
+можно сделать в подобной ситуации — взять время на исследование задачи и поиск вариантов ее решения.
+«Я вернусь к вам с этим позже» — лучший ответ.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h3 id=&quot;prenebrezhenie-opytom-kolleg&quot;&gt;Пренебрежение опытом коллег&lt;&#x2F;h3&gt;
+&lt;p&gt;Если в компании вы выросли до менеджера, то, вероятно, вы не первый, кто занимает такую позицию,
+и есть более опытные коллеги, готовые поделиться своим опытом за чашкой кофе.
+Не пренебрегайте такой возможностью.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Попросите уделить вам 15-30 минут их драгоценного времени. Помните про умение слушать и говорить
+«я не знаю». Будьте благодарны за советы и цените опыт людей, которые пошли вам навстречу.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Популярные практики — не всегда хорошие</title>
+        <published>2020-05-05T00:00:00+00:00</published>
+        <updated>2020-05-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/when-python-practices-go-wrong/" type="text/html"/>
+        <id>https://akrisanov.com/ru/when-python-practices-go-wrong/</id>
+        
+        <content type="html">&lt;p&gt;Отличные доклад от Brandon Rhodes про популярные паттерны и практики в Python,
+которые не всегда являются хорошими с точки зрения разработки:&lt;&#x2F;p&gt;
+&lt;div class=&quot;yv&quot;&gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.youtube-nocookie.com&#x2F;embed&#x2F;S0No2zSJmks&quot; title=&quot;Youtube&quot; class=&quot;yvi&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Расширения для Jupyter Notebook</title>
+        <published>2020-03-30T00:00:00+00:00</published>
+        <updated>2020-03-30T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/jupyter-notebook-extensions/" type="text/html"/>
+        <id>https://akrisanov.com/ru/jupyter-notebook-extensions/</id>
+        
+        <content type="html">&lt;p&gt;Jupyter Notebook — один из часто используемых мною инструментов. Несмотря на всю мощь этого
+решения, «из коробки» иногда не хватает какой-нибудь маленькой, но полезной функциональности,
+например, генерации содержания по заголовкам разметки Markdown.&lt;&#x2F;p&gt;
+&lt;p&gt;К счастью исправить подобные мелочи отчасти помогают расширения, которые можно найти на Github.
+Существуют как официальные пакеты, поддерживаемые JupyterLab, так и созданные сообществом пакеты.&lt;&#x2F;p&gt;
+&lt;p&gt;Хороший пример
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ipython-contrib&#x2F;jupyter_contrib_nbextensions&quot;&gt;jupyter_contrib_nbextensions&lt;&#x2F;a&gt; —
+большая коллекция неофициальных дополнений к Jupyter. Полный список расширений доступен на
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;jupyter-contrib-nbextensions.readthedocs.io&#x2F;en&#x2F;latest&#x2F;nbextensions.html&quot;&gt;странице документации&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Для их подключения к вашему Jupyter Notebook потребуется выполнить три простых шага.&lt;&#x2F;p&gt;
+&lt;p&gt;Установить pip пакет с расширениями:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;pip3&lt;&#x2F;span&gt;&lt;span&gt; install jupyter_contrib_nbextensions
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Скопировать JavaScript и CSS файлы:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;jupyter&lt;&#x2F;span&gt;&lt;span&gt; contrib nbextension install&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; --user
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Активировать выбранное расширение:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;jupyter&lt;&#x2F;span&gt;&lt;span&gt; nbextension enable toc2&#x2F;main
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;В ответ вы должны получить следующее сообщение:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Enabling&lt;&#x2F;span&gt;&lt;span&gt; notebook extension toc2&#x2F;main...
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;-&lt;&#x2F;span&gt;&lt;span&gt; Validating: OK
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Запустив заново Jupyter Notebook, можно убедиться, что расширение было успешно установлено и активировано:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;jupyter.png&quot; alt=&quot;Сайдбар с оглавлением&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Удаленная работа</title>
+        <published>2020-03-18T00:00:00+00:00</published>
+        <updated>2020-03-18T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/remote/" type="text/html"/>
+        <id>https://akrisanov.com/ru/remote/</id>
+        
+        <content type="html">&lt;p&gt;Данное руководство опирается на личный опыт удаленной работы и организации асинхронных процессов
+в продуктовых командах. Список рекомендуемых ресурсов вы найдете в конце заметки.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;obshchie-printsipy&quot;&gt;Общие принципы&lt;&#x2F;h2&gt;
+&lt;p&gt;🔐 Получите доступ к VPN и другие необходимые доступы для подключения к внутренним
+ресурсам; обязательно ознакомьтесь с правилами работы с конфиденциальной информацией.&lt;&#x2F;p&gt;
+&lt;p&gt;⬆️ Эскалируйте проблемы с организацией удаленной работы на вышестоящий менеджмент.&lt;&#x2F;p&gt;
+&lt;p&gt;🕙 Организуйте ежедневные стендапы в формате видео-конференций: Zoom, Skype, MS Teams и т. д.&lt;&#x2F;p&gt;
+&lt;p&gt;🗣 Менеджерам: проводите еженедельные 1-on-1 с членами команды.&lt;&#x2F;p&gt;
+&lt;p&gt;🙇🏼‍♂️ Продуктовым командам: ретроспективы в конце спринта можно превратить в еженедельные ретроспективы
+по итогам работы.&lt;&#x2F;p&gt;
+&lt;p&gt;📃 При общении сместите приоритеты в сторону документирования и прозрачных коммуникаций.
+Одну из ценностей гибких методологий «работающее ПО важнее исчерпывающей документации» придется
+немного отодвинуть на второй план.&lt;&#x2F;p&gt;
+&lt;p&gt;💬 Выстраивайте асинхронную работу и общение через мессенджер.&lt;&#x2F;p&gt;
+&lt;p&gt;Крайне важно, чтобы менеджмент или сама команда понимали необходимость следования перечисленным
+базовым принципам, их внедрения в ежедневные процессы, а также поддержки и развития.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;rekomendatsii-menedzheram&quot;&gt;Рекомендации менеджерам&lt;&#x2F;h2&gt;
+&lt;p&gt;🕰 Установите core-часы, в течение которых вся команда должна быть на связи. Например, с 10:00 до 16:00.
+Это поможет оперативно решать большинство возникающих вопросов.&lt;&#x2F;p&gt;
+&lt;p&gt;☀️ Организуйте ежедневные стендапы в формате видео-конференций: Zoom, Skype, MS Teams и т. д.
+Формат видео-конференций помогает поддерживать личностное общение и подталкивает членов команды
+привести себя в порядок и не оставаться, например, в пижаме несколько дней подряд :)&lt;&#x2F;p&gt;
+&lt;p&gt;🗣 Проводите еженедельные 1-on-1 с членами своей команды. Важность индивидуальных разговоров при
+удаленном формате работы возрастает, т. к. люди сталкиваются с ощущением профессиональной изоляции
+и одиночества, что может привести к выгоранию.&lt;&#x2F;p&gt;
+&lt;p&gt;😊 Создавайте комфортную рабочую атмосферу не требующую постоянного мониторинга каналов в чате или
+сообщений в мобильном. Члены команды не должны чувствовать себя виноватыми за отсутствие у компьютера
+или работу в рамках своего комфортного графика. Каждый несет ответственность за результат, процессы
+коммуникации и их прозрачность.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;effektivnye-mitingi&quot;&gt;Эффективные митинги&lt;&#x2F;h2&gt;
+&lt;p&gt;🎥 Для того, чтобы лучше понять собеседника, используйте видео-конференции вместо чатов или голосовых
+звонков. Иногда невербальное общение (жесты, мимика лица и т. д.) лучше помогает достичь цели митинга.&lt;&#x2F;p&gt;
+&lt;p&gt;📝 Подготовьте список вещей, которые вы хотите обсудить с коллегами.&lt;&#x2F;p&gt;
+&lt;p&gt;📅 Если обсуждение не срочное, пришлите приглашение в календарь вместе с повесткой встречи и комментариями.&lt;&#x2F;p&gt;
+&lt;p&gt;📵 Внимательно слушайте коллег и не отвлекайтесь на чаты, Интернет, Instagram, ленту Facebook, написание кода и пр.&lt;&#x2F;p&gt;
+&lt;p&gt;📝 Запишите важные детали обсуждения и поделитесь ими со всеми участниками встречи после ее завершения.&lt;&#x2F;p&gt;
+&lt;p&gt;👉🏻 Составьте план действий и ответственных.&lt;&#x2F;p&gt;
+&lt;p&gt;⏱ Начинайте и заканчивайте вовремя — уважайте время друг друга.&lt;&#x2F;p&gt;
+&lt;p&gt;Заметьте, этикет дистанционных митингов мало чем отличается от тех, которые проводятся в офисе.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;dokumentirovanie-i-prozrachnye-kommunikatsii&quot;&gt;Документирование и прозрачные коммуникации&lt;&#x2F;h2&gt;
+&lt;p&gt;📃 Документируйте практически все: идеи, записи по итогам митингов, планы на будущее, технические
+и продуктовые руководства. Сделайте документацию незаменимым помощником, который экономит время не
+только вам, но и всей команде.&lt;&#x2F;p&gt;
+&lt;p&gt;⬜️ Объясняйте и описывайте задачи не только текстом, но и любыми другими средствами, упрощающими
+коллаборацию — визуализация, онлайн-доски совместного рисования, схемы и диаграммы, стримминг экрана,
+emoji в конце концов.&lt;&#x2F;p&gt;
+&lt;p&gt;✋🏻 Избегайте непрозрачных или скрытых коммуникаций, обсуждений в приватных чатах, формулировок,
+которые могут быть понятны только вам, а также ложных предположений.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;rabochii-protsess&quot;&gt;Рабочий процесс&lt;&#x2F;h2&gt;
+&lt;p&gt;💌 Проверяйте почту пару раз в день — этого достаточно, чтобы быть в курсе событий и отвечать
+на приглашения в календаре.&lt;&#x2F;p&gt;
+&lt;p&gt;📆 Принимайте важные встречи в календаре и объясняйте в комментариях почему отклонили остальные.&lt;&#x2F;p&gt;
+&lt;p&gt;💬 Научитесь использовать мессенджер эффективно и не бросаться отвечать на каждое входящее сообщение.&lt;&#x2F;p&gt;
+&lt;p&gt;👨🏼‍💻 Jira и Scrum &#x2F; Kanban доска отражают прогресс команды. Не забывайте обновлять статусы задач и
+оставлять комментарии.&lt;&#x2F;p&gt;
+&lt;p&gt;📤 Частые коммиты в репозиторий помогают избежать потери работы в случае выхода оборудования из строя.&lt;&#x2F;p&gt;
+&lt;p&gt;🌃 В конце дня кратко опишите прогресс по выполняемой задаче и возможные блокирующие факторы,
+если таковые имеются.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;balans-mezhdu-zhizn-iu-i-rabotoi&quot;&gt;Баланс между жизнью и работой&lt;&#x2F;h2&gt;
+&lt;p&gt;🕰 Сообщите коллегам о вашем стандартном графике работы, например, посредствам календаря или
+таблицы в Conflunce. Предупреждайте об его изменении и непредвиденных ситуациях.&lt;&#x2F;p&gt;
+&lt;p&gt;🍜 Не ешьте за рабочим столом. Пользуйтесь статусами в месседжере, если хотите предупредить,
+что вы оффлайн на ближайший час.&lt;&#x2F;p&gt;
+&lt;p&gt;⏰ Делайте регулярные перерывы — вставайте с рабочего места, общайтесь с ребенком или домашним
+питомцем, выполняйте какую-нибудь работу по дому, готовьте еду, спускайтесь на 10-15 минутную
+прогулку вокруг дома и т. д.&lt;&#x2F;p&gt;
+&lt;p&gt;👔 Одевайтесь. Наш мозг работает удивительным образом. Даже одеваясь на работу в одежду, отличную
+от домашней, мы подготавливаем себя к началу трудового дня.&lt;&#x2F;p&gt;
+&lt;p&gt;🎧 Фоновая музыка или звуки могут помочь настроиться на рабочий лад. Как и с одеждой, шум опенсейса,
+который мы так ненавидели в офисе, теперь может казаться не таким уж ужасным явлением. Пробуйте
+всякие ambient программы вместо похода в людные места. Например, под macOS смело рекомендую
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;noiz.io&#x2F;&quot;&gt;Noizio&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;🛏 Не работайте в кровати — она для других целей. Инвестируйте в свое рабочее место.
+Не обязательно покупать дорогой стол и кресло, но организовать удобный уголок, выйдя из которого
+вы снова возвращаетесь в личную обстановку, очень важно.&lt;&#x2F;p&gt;
+&lt;p&gt;Одним из явных минусов удаленной работы являются размытые границы между рабочим и личным временем.
+Из-за этого очень легко обрести привычки, которые могут негативно повлиять на вашу жизнь и здоровье.&lt;&#x2F;p&gt;
+&lt;p&gt;Простой пример: как часто вы проверяете почту во время еды, пишите код не отрываясь от перекуса или
+же проводите несколько часов подряд за рабочим столом без перерыва на прогулку?&lt;&#x2F;p&gt;
+&lt;p&gt;Чтобы этого не случилось, менеджмент должен определить core-часы, в течение которых все обязаны
+быть на связи и вне которых можно выстраивать личный комфортный график работы, а сотрудники в свою
+очередь учиться говорить STOP и оставлять незавершенную работу на следующий день.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;chto-eshche-pochitat-po-teme&quot;&gt;Что еще почитать по теме&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;akrisanov.ru&#x2F;all&#x2F;slack&#x2F;&quot;&gt;Slack в распределенной команде&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;hackernoon.com&#x2F;the-stress-of-remote-working-38be5bdcf4da&quot;&gt;The Stress of Remote Working&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;blog.digitalocean.com&#x2F;avoiding-burnout&#x2F;&quot;&gt;Helping Remote Developers Avoid Burnout&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;doist.com&#x2F;blog&#x2F;remote-work-habits&#x2F;&quot;&gt;5 Habits for Crafting the Perfect Remote Work Day&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;mikeindustries.com&#x2F;blog&#x2F;archive&#x2F;2019&#x2F;08&#x2F;a-year-of-working-remotely&quot;&gt;A Year of Working Remotely&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;spinscale.de&#x2F;posts&#x2F;2018-05-08-five-years-homeoffice.html&quot;&gt;Five Years Of Home Office — A Recap&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Добавление путей в переменную PATH на macOS X 10.8+</title>
+        <published>2020-03-08T00:00:00+00:00</published>
+        <updated>2020-03-08T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/macos-path/" type="text/html"/>
+        <id>https://akrisanov.com/ru/macos-path/</id>
+        
+        <content type="html">&lt;p&gt;Устанавливая некоторый софт на Mac OS, периодически возникает необходимость обращения к исполняемым
+файлам без указания полного пути. В операционной системе от Apple это можно сделать редактированием
+файла &lt;code&gt;&#x2F;etc&#x2F;paths&#x2F;&lt;&#x2F;code&gt;. Этот файл содержит список (по одному на строку) путей, которые добавляются к
+переменной &lt;code&gt;$PATH&lt;&#x2F;code&gt; в shell:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;echo &lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;PATH
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Допустим, мы хотим добавить каталог &lt;code&gt;$HOME&#x2F;.local&#x2F;bin&#x2F;&lt;&#x2F;code&gt; к уже существующему списку:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;&#x2F;usr&#x2F;local&#x2F;bin
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;&#x2F;usr&#x2F;bin
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;&#x2F;bin
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;&#x2F;usr&#x2F;sbin
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;&#x2F;sbin
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Для этого достаточно открыть файл &lt;code&gt;&#x2F;etc&#x2F;paths&#x2F;&lt;&#x2F;code&gt; в любом редакторе, например, nano:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; nano &#x2F;etc&#x2F;paths
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ul&gt;
+&lt;li&gt;вводим пароль пользователя&lt;&#x2F;li&gt;
+&lt;li&gt;в конце файла на новой строке добавляем необходимый путь&lt;&#x2F;li&gt;
+&lt;li&gt;нажимаем сочетание клавиш Ctrl+X&lt;&#x2F;li&gt;
+&lt;li&gt;подтверждаем сохранение вводом Y&lt;&#x2F;li&gt;
+&lt;li&gt;проверяем изменения посредством команды &lt;code&gt;echo $PATH&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Мечты Дзиро о суши</title>
+        <published>2020-02-25T00:00:00+00:00</published>
+        <updated>2020-02-25T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/miechty-dziro-o-sushi/" type="text/html"/>
+        <id>https://akrisanov.com/ru/miechty-dziro-o-sushi/</id>
+        
+        <content type="html">&lt;p&gt;Замечательный документальный фильм, который не может не подталкивать к размышлениям о работе,
+мастерстве, перфекционизме и отношению к жизни в целом.&lt;&#x2F;p&gt;
+&lt;div class=&quot;yv&quot;&gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.youtube-nocookie.com&#x2F;embed&#x2F;BuFCH9T3YRs&quot; title=&quot;Youtube&quot; class=&quot;yvi&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Три важных доклада от Вадима Макишвили</title>
+        <published>2020-02-08T00:00:00+00:00</published>
+        <updated>2020-02-08T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/tri-vazhnykh-doklada-ot-vadima-makishvili/" type="text/html"/>
+        <id>https://akrisanov.com/ru/tri-vazhnykh-doklada-ot-vadima-makishvili/</id>
+        
+        <content type="html">&lt;p&gt;&lt;div class=&quot;yv&quot;&gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.youtube-nocookie.com&#x2F;embed&#x2F;iBHr8gKc5L8&quot; title=&quot;Youtube&quot; class=&quot;yvi&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+
+&lt;br&gt;
+&lt;div class=&quot;yv&quot;&gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.youtube-nocookie.com&#x2F;embed&#x2F;nIFClfBXuIQ&quot; title=&quot;Youtube&quot; class=&quot;yvi&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+
+&lt;br&gt;
+&lt;div class=&quot;yv&quot;&gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.youtube-nocookie.com&#x2F;embed&#x2F;ytX7Dv3K7Go&quot; title=&quot;Youtube&quot; class=&quot;yvi&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Как отвлечь разработчика</title>
+        <published>2020-01-22T00:00:00+00:00</published>
+        <updated>2020-01-22T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/kak-otvliech-razrabotchika/" type="text/html"/>
+        <id>https://akrisanov.com/ru/kak-otvliech-razrabotchika/</id>
+        
+        <content type="html">&lt;p&gt;Вещи, которые отвлекают разработчика и влияют на его продуктивность:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Уведомления — привет, Slack и другие месседжеры!&lt;&#x2F;li&gt;
+&lt;li&gt;Частые встречи&lt;&#x2F;li&gt;
+&lt;li&gt;Электронная почта&lt;&#x2F;li&gt;
+&lt;li&gt;Случайные выдергивания коллегой, менеджером и другие подобные прерывания&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Хороший руководитель старается минимизировать перечисленное, плохой — создает.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>В тимлиды? Почему?</title>
+        <published>2020-01-18T00:00:00+00:00</published>
+        <updated>2020-01-18T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/v-timlidy-pochiemu/" type="text/html"/>
+        <id>https://akrisanov.com/ru/v-timlidy-pochiemu/</id>
+        
+        <content type="html">&lt;p&gt;Делая повышение или нанимая разработчика, который хочет стать тимлидом или другим техническим
+менеджером, обязательно задайте ему вопрос: «Почему?». Выслушайте мотивацию.&lt;&#x2F;p&gt;
+&lt;p&gt;Желание управлять людьми или чем-то, на мой взгляд, — плохая мотивация, как и
+«упёрся в потолок по зарплате». В карьерном росте нет ничего плохого. Однако, возможность
+за счет расширения зоны ответственности и влияния сделать больше для продукта, компании и команды,
+а также эмпатия и способность делиться знаниями — вот что должно в первую очередь двигать
+адекватными кандидатами.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Риск-менеджмент в продуктовой команде</title>
+        <published>2020-01-17T00:00:00+00:00</published>
+        <updated>2020-01-17T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/risk-management/" type="text/html"/>
+        <id>https://akrisanov.com/ru/risk-management/</id>
+        
+        <content type="html">&lt;p&gt;Индивидуальные контрибьюторы в продуктовых командах (разработчики, дизайнеры, QA и т. д.) редко
+задумываются о риск-менеджменте и предпочитают фокусироваться на реализации своих задач.
+Как следствие, о возникновении сложностей или ошибочной оценке менеджер и команда узнают поздно.
+А внезапно всплывающие факторы блокируют релизы, и планы летят под откос.&lt;&#x2F;p&gt;
+&lt;p&gt;Избежать или, по крайней мере, минимизировать риски можно следующими способами:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Следите за тем, что происходит в проекте и вокруг него.&lt;&#x2F;li&gt;
+&lt;li&gt;Перед выполнением новой задачи сделайте небольшое исследование, проясните непонятные
+моменты и только потом выставьте оценку с учетом рисков.&lt;&#x2F;li&gt;
+&lt;li&gt;Честно подсвечивайте риски при их появлении на горизонте. Чем раньше вы это сделаете, тем лучше.&lt;&#x2F;li&gt;
+&lt;li&gt;Если вы понимаете, что что-то пошло не так, разберитесь в причинах и предложите альтернативные
+варианты решения. Умение адаптироваться к изменениям — один из ключевых навыков сильной команды.&lt;&#x2F;li&gt;
+&lt;li&gt;Понимайте проект, над которым работаете — от технической реализации до влияния на бизнес.&lt;&#x2F;li&gt;
+&lt;li&gt;Документируйте хотя бы самые важные моменты — архитектуру и узкие места, а также практики, принятые в команде.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Мысли по поводу Scrum</title>
+        <published>2019-11-13T00:00:00+00:00</published>
+        <updated>2019-11-13T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/scrum/" type="text/html"/>
+        <id>https://akrisanov.com/ru/scrum/</id>
+        
+        <content type="html">&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Не обязательно на 100% следовать методологии и внедрять сразу все ее элементы.
+Команда должна сама найти для себя то, что может быть выполнено в текущих реалиях.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Работая над проектом, вы создаете некое ментальное пространство. Поэтому, если возможно,
+нанимайте людей на проект исходя из этого. Вы должны знать какой специалист вам нужен и какими
+качествами обладает. Быстрый найм, чтобы закрыть позицию — это путь в никуда.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Размер команды играет значение. Оптимальный вариант — 5-7 человек (гуглите &lt;em&gt;pizza size team&lt;&#x2F;em&gt;).&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Первым делом ищите владельца продукта для реализации своей идеи. Еще раз: не технического
+директора, не тимлида, не разработчиков, а владельца продукта! Без него велик шанс прошляпить
+концепцию и, как следствие, приоритизацию задач и сроки.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Без Scrum—мастера можно жить! Особенно если продакт и, например, тимлид могут вести команду к
+непрерывному совершенствованию, регулярно искать ответ на вопрос: «Как нам сделать еще лучше то,
+что мы делаем уже хорошо?», а также устранять помехи, мешающие команде двигаться вперед. К слову,
+самые крутые команды сами себе Scrum-мастер.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Оценить сроки проекта можно только после того, как увидели насколько эффективно работает команда
+и как меняется ее динамика. Обычно на это уходит несколько спринтов. Оценка сроков перед стартом
+работ над проектом или в самом его начале в большинстве случаев будет ошибочна.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Только тот, кто непосредственно выполняет проект и задачу, знает, сколько на это потребуется
+времени и сил. В этом вопросе доверяйте команде, а не людям со стороны.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Приоритезируйте. А на этапе MVP вообще старайтесь выбросить все, что не приносит ценности для
+пользователя. Как мы все знаем, 80% успеха и ценности любого продукта заложены в 20% его
+функциональности. Довольно часто функции, считающиеся важными, в результате таковыми не являются.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Приоритезируя, объясняйте команде зачем нужна та или иная функция и какую ценность она несет.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;На этапе грумминга задач команда должна ответить на вопросы:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Выполнима ли задача в принципе?&lt;&#x2F;li&gt;
+&lt;li&gt;Достаточно ли информации, чтобы выполнить задачу?&lt;&#x2F;li&gt;
+&lt;li&gt;Можно ли ее оценить?&lt;&#x2F;li&gt;
+&lt;li&gt;Есть ли критерии выполненности?&lt;&#x2F;li&gt;
+&lt;li&gt;Создается ли при этом действительная ценность?&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Команды, которое придерживаются открытости и не боятся, что кто-то со стороны внутри компании
+может увидеть на каком этапе находится их работа над продуктом, как правило, более продуктивны.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Ежедневные стендапы — это не отчетность перед менеджером,
+а инструмент синхронизации команды.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Не беритесь за все сразу. В режиме многозадачности очень сложно работать. В конечном итоге
+можно получить посредственное качество продукта и выгорание.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Ретроспектива — не менее важный инструмент процесса разработки. Периодически задавайте себе,
+как команде, следующий вопрос: «Что может повысить эффективность ежедневной работы и ее ценность?».
+О важности улучшения повседневных рабочих процессов есть замечательная книга
+«The Phoenix Project: A Novel About IT, DevOps, and Helping Your Business Win». На ретроспективе
+нужно обсуждать не продукт, а каким образом он делается, т. е. выявлять факторы, замедляющие
+трудовой процесс, и избавляться от них в каждом последующем спринте.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Сделанная наполовину фича никому не нужна. Результат либо есть, либо его нет. Поэтому часы,
+отражающие лишь затраты, ценности не несут. Гораздо важнее уметь измерить скорость и качество.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Нужно дать людям свободу, уважение, право делать свое дело самостоятельно и
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.mann-ivanov-ferber.ru&#x2F;books&#x2F;ne-shodite-s-uma-na-rabote&#x2F;&quot;&gt;не сходить с ума по работе&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Тимлидам и прочим менеджерам стоит стремиться делать так, чтобы команда и без них работала успешно.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Важно уметь радоваться своим достижениям по ходу работы как личностно, так и командно.
+Мудрые люди говорят, что истинное счастье можно найти в пути, а в не в его завершении.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;Не нужно слушать циников, которые говорят вам, что что-то не может быть сделано.
+«В этой компании так не работает» — знакомая фраза, да?&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Депрессия и профессиональное выгорание</title>
+        <published>2019-10-21T00:00:00+00:00</published>
+        <updated>2019-10-21T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/depression/" type="text/html"/>
+        <id>https://akrisanov.com/ru/depression/</id>
+        
+        <content type="html">&lt;p&gt;Важный доклад на тему профессионального выгорания и депрессии от бывшего инженера Docker:&lt;&#x2F;p&gt;
+&lt;div class=&quot;yv&quot;&gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.youtube-nocookie.com&#x2F;embed&#x2F;m20KBFUuw-w&quot; title=&quot;Youtube&quot; class=&quot;yvi&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;В слайдах есть отсылка не несколько других выступлений.&lt;&#x2F;p&gt;
+&lt;p&gt;Основной вывод — к своему ментальному здоровью нужно относиться не с меньшим вниманием, чем к физическому.&lt;&#x2F;p&gt;
+&lt;p&gt;В дополнение к докладу рекомендую посты от небезизвестного Никиты Прокопова:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tonsky.livejournal.com&#x2F;317265.html&quot;&gt;История одной депрессии&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tonsky.livejournal.com&#x2F;322986.html&quot;&gt;Депрессия год спустя&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Семь причин не быть тимлидом</title>
+        <published>2019-10-06T00:00:00+00:00</published>
+        <updated>2019-10-06T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/siem-prichin-nie-byt-timlidom/" type="text/html"/>
+        <id>https://akrisanov.com/ru/siem-prichin-nie-byt-timlidom/</id>
+        
+        <content type="html">&lt;h3 id=&quot;1-vam-nravitsia-programmirovat&quot;&gt;1. Вам нравится программировать&lt;&#x2F;h3&gt;
+&lt;p&gt;Программисты любят решать сложные технические задачи, создавать что-то новое и писать код.
+Становясь менеджером, разработчик может создавать что-то новое только руками команды. Поэтому
+случается, что менеджер со временем понимает, что разработчиком он чувствовал себя более
+удовлетворенным от своей работы, нежели в новой роли.&lt;&#x2F;p&gt;
+&lt;p&gt;Я знаю людей, которые были классными программистами, перешли на руководящие должности и после пары
+лет вернулись к позиции ведущих разработчиков. Ничего плохого в этом нет — нужно слушать свой
+внутренний голос.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-naiti-rabotu-razrabotchikom-gorazdo-legche&quot;&gt;2. Найти работу разработчиком гораздо легче&lt;&#x2F;h3&gt;
+&lt;p&gt;Поиск первой работы в IT может быть долгим и сложным, но после того, как у разработчика появляется
+реальный опыт, найти новую работу не составляет труда. Рынок сейчас такой, что все ищут
+специалистов, и спрос в разы превышает количество кандидатов.&lt;&#x2F;p&gt;
+&lt;p&gt;Менеджеру же, найти новую работу обычно сложнее. Если вы думаете, что большинство собеседований
+разработчиков плохие, странные и вообще не связаны с реальными задачами, то собеседования менеджеров
+еще хуже и менее предсказуемые. Навыки менеджера не так переносимы, как инженерные, и связаны
+с многими вещами, которые могут эффективно работать в одной компании, но совсем не подходят для другой.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-smena-mesta-raboty-ne-tak-effektivna&quot;&gt;3. Смена места работы не так эффективна&lt;&#x2F;h3&gt;
+&lt;p&gt;Все мы уже привыкли, что разработчики и другие ИТ-специалисты меняют место работы раз в 1-2 года.
+За этот период люди успевают наработать новые навыки и уйти в другую компанию с повышением зарплаты.&lt;&#x2F;p&gt;
+&lt;p&gt;Рекрутеры же рассматривают менеджеров, у которых в резюме подобная история, скорее с отрицательной стороны.
+Если сделать выборку по сотрудникам компаний с позициями Engineering Manager &#x2F; CIO &#x2F; CTO и пр.,
+например, на LinkedIn, то можно увидеть, что в среднем успешный менеджер остается в компании
+в 2-3 раза дольше, чем успешный инженер.&lt;&#x2F;p&gt;
+&lt;p&gt;Это связано, на мой взгляд, с тем, что менеджеру нужен год или даже больше на завоевание доверия
+в своей команде, построение коммуникаций со смежными командами, а также топ-менеджментом.
+И ценность менеджера для организации действительно возрастает со временем его работы в компании и
+вклада в ее цели и достижения.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;4-dlia-razrabotchikov-vy-uzhe-ne-odin-iz-nikh&quot;&gt;4. Для разработчиков вы уже не один из них&lt;&#x2F;h3&gt;
+&lt;p&gt;Есть такой тип инженеров, которые немного с насмешкой относятся к менеджерам. Ну вы знаете —
+«менеджеры не делают настоящую работу», «только болтают», нифига не понимают в технологиях &#x2F;
+архитектуре &#x2F; языке программирования и т. д. Да и вообще этот вечный вопрос: должен ли менеджер
+быть одновременно и классным технарем? Как показывает статистика и случайный опрос знакомых,
+большинство хороших менеджеров не фокусируются на hard skills, хотя и могут говорить с командой
+на одном языке. Если у менеджера отсутствует технический бэкграунд, доверие со стороны команды
+придется заслуживать дольше.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;5-slozhnykh-razgovorov-stanet-bol-she&quot;&gt;5. Сложных разговоров станет больше&lt;&#x2F;h3&gt;
+&lt;p&gt;Есть такое мнение, что менеджер зарабатывает на жизнь сложными разговорами. Если вы не планируете
+их проводить или участвовать в таковых, то, возможно, вам не стоит быть менеджером. Если вам
+нравятся подобные беседы, то, возможно, вам тоже не стоит быть менеджером.&lt;&#x2F;p&gt;
+&lt;p&gt;Менеджер вступает в конфронтации когда этого требует ситуация. Приходится давать обратную связь
+людям, которую они не хотят слышать. Всегда хочется думать, что таких моментов будет немного.
+Когда они случаются, то имеют большое значение для команды, проекта, компании.&lt;&#x2F;p&gt;
+&lt;p&gt;Наличие менеджера, который избегает конструктивной критики, лишает возможности корректировать
+работу команды и приводит к серьезным проблемам и непредвиденным последствиям.&lt;&#x2F;p&gt;
+&lt;p&gt;Быть хорошим менеджером требует эмоциональной зрелости. Справляться достойно с межличностными
+коммуникациями — изматывающая часть работы.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;6-men-she-pokhvaly-bol-she-poritsaniia&quot;&gt;6. Меньше похвалы, больше порицания&lt;&#x2F;h3&gt;
+&lt;p&gt;Когда все идет хорошо, то задача менеджера — отдать должное людям, которые непосредственно
+выполняли работу, и сделать их достижения видимыми для всех как внутри, так и вне команды, группы,
+проекта. Но если команде, ее члену или самому менеджеру не удалось выполнить какие-то задачи —
+ответственность всегда лежит на менеджере.&lt;&#x2F;p&gt;
+&lt;p&gt;Поэтому, можно считать, что менеджмент — это своего рода плохая экономическая сделка.
+Вы получаете в разы больше стресса и ответственности не всегда при аналогичном повышении зарплаты.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;7-bol-shoe-kolichestvo-vstrech-i-mitingov&quot;&gt;7. Большое количество встречь и митингов&lt;&#x2F;h3&gt;
+&lt;p&gt;Инженеры всегда жалуются на большое количество митингов. За 10 лет карьеры я встречал не так много
+разработчиков, которые считали встречи и обсуждения — полезной тратой времени.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Многие разработчики стремятся стать тимлидами</title>
+        <published>2019-09-14T00:00:00+00:00</published>
+        <updated>2019-09-14T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/mnoghiie-razrabotchiki-striemiatsia-stat-timlidami/" type="text/html"/>
+        <id>https://akrisanov.com/ru/mnoghiie-razrabotchiki-striemiatsia-stat-timlidami/</id>
+        
+        <content type="html">&lt;p&gt;Многие разработчики стремятся стать (тим)лидами, техническими директорами или другими менеджерами
+и видят в этом естественный путь развития своей карьеры. Однако, только часть осознает, что быть
+менеджером — огромная ответственность и, вообще-то, эмоционально сложно: &lt;a href=&quot;&#x2F;ru&#x2F;bolshe-ne-programmist&#x2F;&quot;&gt;пруф&lt;&#x2F;a&gt;.
+Да и финансовая сторона не всегда выходит в пользу руководителя.&lt;&#x2F;p&gt;
+&lt;p&gt;Задайте себе следующий вопрос: есть ли у вас проблемы с отстаиванием своего мнения, нужд,
+карьерных целей и результатов работы. В случае положительного ответа у вас вряд ли будет возможность
+сделать тоже самое для людей, за которых вы отвечаете.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Научись учиться</title>
+        <published>2019-09-01T00:00:00+00:00</published>
+        <updated>2019-09-01T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/nauchis-uchitsia/" type="text/html"/>
+        <id>https://akrisanov.com/ru/nauchis-uchitsia/</id>
+        
+        <content type="html">&lt;p&gt;Многие из нас не умеют продуктивно учиться и находят кучу причин почему им не удается освоить
+какие-то навыки или профессию. Уверен, что в вашей голове периодически возникают похожие мысли:
+«Да я просто не предрасположен (а) к математике. Это не мое.» или «У этой девушки с рождения талант.
+Я никогда не буду также хорош в английском.». Этими мыслями мы часто успокаиваем себя и со спокойной
+душой прокрастинируем. Проблема заключается еще и в том, что в школах и университетах нам не объясняют
+как нужно учиться и, как результат, мы плохо помним изучаемые когда-то предметы, которые уже в зрелом
+возрасте оказываются нужны в работе, хобби или помощи ребенку с домашним заданием.&lt;&#x2F;p&gt;
+&lt;p&gt;Почему я вообще решил написать эту заметку? Она основана на личном ощущении, что я постоянно откладываю
+изучение каких-то нужных вещей, которые мне кажутся недостижимыми и сложными, в долгий ящик.&lt;&#x2F;p&gt;
+&lt;p&gt;Ситуацию усугубляет нехватка свободного времени — семья, ребенок, работа. Пытаясь найти ответ на
+вопрос эффективного самообразования, я случайно наткнулся на замечательный курс
+&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.coursera.org&#x2F;learn&#x2F;learning-how-to-learn&quot;&gt;Learning How to Learn&lt;&#x2F;a&gt; на Coursera и всячески
+его рекомендую абсолютно всем — школьникам, студентам, работающим людям и тем, кто еще в поисках себя.
+Мне он очень помог в осознании, в первую очередь, своей мотивации и приведении в порядок мыслей и
+своего режима.&lt;&#x2F;p&gt;
+&lt;p&gt;Ниже mind-карта, выступающая для меня recall-шпаргалкой после прохождения курса.
+Возможно она вам тоже пригодится.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;learning-how-to-learn.png&quot; alt=&quot;Recall-шпаргалка после прохождения курса «Learning How To Learn»&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Программировать было гораздо проще</title>
+        <published>2019-08-09T00:00:00+00:00</published>
+        <updated>2019-08-09T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/bolshe-ne-programmist/" type="text/html"/>
+        <id>https://akrisanov.com/ru/bolshe-ne-programmist/</id>
+        
+        <content type="html">&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;eliast.png&quot; alt=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;eliast&#x2F;status&#x2F;1159487936238411778&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Фаундер Drift в своем Twitter пишет:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Мои дни программирования закончились, и большую часть времени я провожу общаясь. Угадайте что?&lt;&#x2F;p&gt;
+&lt;p&gt;Программировать было намного проще. Теперь вместо того, чтобы читать книги по программированию,
+я читаю книги о том, как научиться лучше общаться. Впереди долгий путь.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Обнимемся!&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>О найме</title>
+        <published>2019-06-18T00:00:00+00:00</published>
+        <updated>2019-06-18T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/o-naime/" type="text/html"/>
+        <id>https://akrisanov.com/ru/o-naime/</id>
+        
+        <content type="html">&lt;p&gt;Все мы постоянно ищем хороших кандидатов и осознаем насколько сложно это становится делать.
+Ребята правильно говорят:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Чуваки, смиритесь, мы в жопе! &lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;У большинства хороших компаний плюс-минус одни и те же задачи, условия и компенсация труда, а также
+какие-то дополнительные плюшки. Rocket science далеко не у всех, а конкуренция за кандидатов большая.&lt;&#x2F;p&gt;
+&lt;p&gt;Для того чтобы нанять человека, ему нужно «продавать» не столько компанию, сколько продукт
+и задачи, над которыми он будет работать, возможность профессионального и материального роста, и,
+самое главное, команду.&lt;&#x2F;p&gt;
+&lt;p&gt;Будем реалистами — часто люди приходят в компанию на время (год-два, уже может и меньше), и если
+компания не помогает расти и достигать личностных целей, вряд ли человек будет мотивирован
+в трудоустройстве.&lt;&#x2F;p&gt;
+&lt;div class=&quot;footnote-definition&quot; id=&quot;1&quot;&gt;&lt;sup class=&quot;footnote-definition-label&quot;&gt;1&lt;&#x2F;sup&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;vc.ru&#x2F;hr&#x2F;71793-analitika-zarplat-dlya-hantinga-2019g&quot;&gt;Аналитика зарплат для хантинга, 2019 г&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Должен ли тимлид писать код</title>
+        <published>2019-06-17T00:00:00+00:00</published>
+        <updated>2019-06-17T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/dolzhien-li-timlid-pisat-kod/" type="text/html"/>
+        <id>https://akrisanov.com/ru/dolzhien-li-timlid-pisat-kod/</id>
+        
+        <content type="html">&lt;p&gt;Должен ли технический менеджер или тимлид писать production-код? Мой ответ — «Нет».&lt;&#x2F;p&gt;
+&lt;p&gt;На это есть две основные причины:&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-teriaetsia-fokus-kotoryi-napravlen-na-komandu-i-kommunikatsii&quot;&gt;1. Теряется фокус, который направлен на команду и коммуникации&lt;&#x2F;h3&gt;
+&lt;p&gt;По моим наблюдениям, разработчику необходимо ~3-4 часа в рамках рабочего дня для того, чтобы
+сосредоточиться и успешно выполнить поставленные задачи. Поэтому хороший менеджер всегда старается
+оградить команду от внешних «раздражителей». Как только у менеджера становится меньше времени на
+подобные активности, это сразу же сказывается на всей команде.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-poiavliaetsia-effekt-butylochnogo-gorlyshka&quot;&gt;2. Появляется эффект бутылочного горлышка&lt;&#x2F;h3&gt;
+&lt;p&gt;Команда ждет задачи, которые взялся пилить менеджер в свое ограниченное время, что зачастую
+блокирует другие активности, например, релиз. Менеджер же, борясь с частой сменой контекста и
+выполняя свои менеджерские обязанности, не в силах выдержать сроки без переработок.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;chto-delat-esli-vam-kak-menedzheru-khochetsia-prodolzhat-pisat-kod&quot;&gt;Что делать если вам как менеджеру хочется продолжать писать код&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Не берите на себя критичные задачи, чтобы не создавать эффект бутылочного горлышка.&lt;&#x2F;li&gt;
+&lt;li&gt;Оставляйте себе скучные и рутинные вещи, за которые мало кто из разработчиков хотел бы взяться.&lt;&#x2F;li&gt;
+&lt;li&gt;Помогайте команде с баг-фиксами.&lt;&#x2F;li&gt;
+&lt;li&gt;Участвуйте в code-review совместно с разработчиками.&lt;&#x2F;li&gt;
+&lt;li&gt;Улучшайте используемый инструментарий, например, CI и процессы вокруг него — все, что поможет
+команде быть более продуктивной.&lt;&#x2F;li&gt;
+&lt;li&gt;Пишите код в свободное время.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Техлид или тимлид</title>
+        <published>2019-06-12T00:00:00+00:00</published>
+        <updated>2019-06-12T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/techlead-vs-teamlead/" type="text/html"/>
+        <id>https://akrisanov.com/ru/techlead-vs-teamlead/</id>
+        
+        <content type="html">&lt;p&gt;В России в большинстве компаний нет четкого разделения между техлидом и тимлидом. Часто
+подразумевается, что многие функциональные обязанности технического менеджера в команде берет на
+себя наиболее опытный и технически сильный разработчик, которого сделали менеджером.&lt;&#x2F;p&gt;
+&lt;p&gt;Требования к техническому менеджеру у каждой компании свои, и как только вы получаете промоушен или
+же проходите собеседование на подобную позицию, обязательно выясните у будущих коллег и вашего
+менеджера ожидания, обязанности и ближайшие задачи.&lt;&#x2F;p&gt;
+&lt;p&gt;А сейчас попробуем немного разобраться в формальных описаниях позиций.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;tekhlid&quot;&gt;Техлид&lt;&#x2F;h3&gt;
+&lt;p&gt;Техлид — это, прежде всего, эксперт в определенной технической области.&lt;&#x2F;p&gt;
+&lt;p&gt;Одна из основных его функций — следить за трендами технологий и достижений в том направлении,
+которое тесно связано с работой команды. Это подразумевает постоянное развитие технических навыков,
+т. е. hard skills.&lt;&#x2F;p&gt;
+&lt;p&gt;Техлид ответственен за внедрение новых или более подходящих инструментов — языки программирования,
+фреймворки, библиотеки и тулинг, а также за создание и улучшение архитектуры и инфраструктуры.&lt;&#x2F;p&gt;
+&lt;p&gt;Он(а) помогает команде в решении сложных технических задач и проблем. Техлид не может существовать
+в отрыве от специализации команды, например, бэкенда или мобильной разработки.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;timlid&quot;&gt;Тимлид&lt;&#x2F;h3&gt;
+&lt;p&gt;Технический менеджер &#x2F; тимлид фокусируется на людях, их развитии, коммуникациях и успехе — в
+основном на членах команды и, в меньшей степени, на тех, с кем приходиться постоянно
+взаимодействовать за ее рамками.&lt;&#x2F;p&gt;
+&lt;p&gt;Хороший тимлид поддерживает свои технические навыки, но не делает их первостепенными. Маловероятно,
+что ему представится возможность улучшить свои навыки программирования и разработки в рабочее время.
+Однако, когда команда еще формируется и срабатывается, тимлид может и должен взять на себя роль
+играющего тренера и помочь выстроить необходимые процессы, принять участие в решении сложных технических
+задач, параллельно продолжая выполнять свои менеджерские активности. К слову, практически любое интервью
+в FAANG на позицию технического менеджера включает в себя coding skills и system design. Поэтому важно,
+чтобы тимлид имел существенный опыт разработки и мог «засучить рукава» когда этого требует ситуация —
+молодая команда, временное отсутствие техлида или ведущего разработчика.&lt;&#x2F;p&gt;
+&lt;p&gt;Успех и результат работы технического менеджера заметен не сразу и его сложно распознать как некий
+индивидуальный вклад в работу команды.&lt;&#x2F;p&gt;
+&lt;p&gt;В дополнение к заметке посмотрите следующий доклад:&lt;&#x2F;p&gt;
+&lt;div class=&quot;yv&quot;&gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.youtube-nocookie.com&#x2F;embed&#x2F;Fb8pwgtRpFs&quot; title=&quot;Youtube&quot; class=&quot;yvi&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Slack в распределенной команде</title>
+        <published>2019-06-08T00:00:00+00:00</published>
+        <updated>2019-06-08T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://akrisanov.com/ru/slack/" type="text/html"/>
+        <id>https://akrisanov.com/ru/slack/</id>
+        
+        <content type="html">&lt;p&gt;Вот уже несколько лет я работаю удаленно, и все коммуникации даже в текущей компании мы строим на
+основе асинхронного подхода. Делаем мы это умышленно и стараемся предоставить сотрудникам возможность
+сфокусироваться на своих задачах, при этом не блокируя других членов команды, которые от них зависят.&lt;&#x2F;p&gt;
+&lt;p&gt;Slack для нас — основной инструмент коммуникации. Он позволяет команде общаться в течение дня
+используя правильные каналы для организации диалогов. В Slack мы синхронизируем рабочий процесс,
+договариваемся о звонках, или просто общаемся на отвлеченные темы. При этом, мы условились, что
+Slack не является:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;потоком сообщений, которые нужно постоянно проверять и немедленно реагировать на них&lt;&#x2F;li&gt;
+&lt;li&gt;местом для хранения важных ссылок, документации и обратной связи сотрудников&lt;&#x2F;li&gt;
+&lt;li&gt;местом для принятия важных решений&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Как и любой чат, Slack нельзя назвать асинхронным, что усложняет наше виденье распределенной команды.
+Основные причины этому — частые прерывания и многозадачность. Довольно быстро можно заметить что
+работая удаленно и используя чат по назначению, коллеги ожидают от вас почти немедленного ответа.
+При этом люди не учитывают и не знают заняты ли вы сейчас, общаетесь ли вы с другим членом команды,
+или же сделали небольшой перерыв. Подобное общение может вызывать стресс и мало отличаться от
+офисной трясины митингов, и снова возникает ощущение, что планируемая работа не завершена к концу дня.&lt;&#x2F;p&gt;
+&lt;p&gt;Однако, при правильном подходе, которому придерживается вся команда и руководство, Slack тоже может
+быть асинхронным. Ниже я привожу несколько практик, которые направлены на создание такого процесса.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;upravliaite-svoim-otsutstviem&quot;&gt;Управляйте своим отсутствием&lt;&#x2F;h3&gt;
+&lt;p&gt;Если все члены команды будут ответственны за оффлайн-режим, то это подарит команде свободу в коммуникациях. Ответственность заключается в том, чтобы разобрать полученные сообщениями тогда, когда это удобно именно вам.&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Установите &lt;code&gt;Do Not Disturb&lt;&#x2F;code&gt; режим в случае оффлайна или нерабочего времени&lt;&#x2F;li&gt;
+&lt;li&gt;Настройте нотификации на мобильном, если боитесь пропустить что-то важное&lt;&#x2F;li&gt;
+&lt;li&gt;Помечайте сообщения как непрочитанные, кликайте на звездочку чтобы сохранить их на потом,
+или ставьте напоминание для того, чтобы позже вернуться к нужному обсуждению&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;ispol-zuite-publichnye-kanaly&quot;&gt;Используйте публичные каналы&lt;&#x2F;h3&gt;
+&lt;p&gt;Всегда старайтесь делать коммуникации общедоступными и прозрачными, чтобы любой член команды мог их
+увидеть, осознать, и, возможно, дополнить своими предложениями и вопросами. Только приватные
+обсуждения должны оставаться в стороне.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ispol-zuite-status-i-profil-kak-indikator-dostupnosti&quot;&gt;Используйте статус и профиль как индикатор доступности&lt;&#x2F;h3&gt;
+&lt;p&gt;Заполните свой профиль — аватар, реальное имя, часовой пояс, роль, телефонный номер, Skype или
+Telegram (опционально).&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;slackhq.com&#x2F;set-your-status-in-slack-28a793914b98&quot;&gt;Делитесь своим статусом с коллегами&lt;&#x2F;a&gt; —
+дайте знать если вы заболели, в отпуске, работаете в своем нестандартном режиме, или вам просто
+нужен период для фокуса над задачами.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;slack-status.png&quot; alt=&quot;Установка информативного статуса в Slack&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;nastroite-uvedomleniia&quot;&gt;Настройте уведомления&lt;&#x2F;h3&gt;
+&lt;p&gt;Убедитесь, что ваши настройки соответствуют рекомендованным Slack: только прямые (direct)
+сообщения, &lt;code&gt;@you&lt;&#x2F;code&gt; и подсвечиваемые слова (highlight words). Эти настройки позволяют фокусироваться
+на важных сообщениях и не беспокоиться, что вы что-то пропустили когда находитесь не у компьютера.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;slack-notifications.png&quot; alt=&quot;Настройка уведомлений в Slack&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;obshchaites-proaktivno&quot;&gt;Общайтесь проактивно&lt;&#x2F;h3&gt;
+&lt;p&gt;Когда вы отправляете кому-нибудь сообщение, старайтесь давать этому человеку больше контекста.
+Особенно это важно при асинхронных ответах, например, если у коллеги другой часовой пояс.
+Добавляйте ссылки, документы, ваш дедлайн по проблеме или желаемое время ответа на ваше сообщение
+— все что может продвинуть обсуждение вперед в асинхронном режиме.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;sozdavaite-tredy-kogda-eto-vozmozhno&quot;&gt;Создавайте треды когда это возможно&lt;&#x2F;h3&gt;
+&lt;p&gt;Когда вы ведете обсуждение с несколькими людьми одновременно, бывает довольно сложно уследить за
+ответами конкретным лицам в рамках обсуждения. Идеи и мысли могут теряться в потоке сообщений.
+Использование тредов позволяет структурировать общение.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;slack-threads.png&quot; alt=&quot;Пример треда с двумя вложенными сообщениями&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ispol-zuite-away-rezhim-kogda-vam-nuzhen-fokus&quot;&gt;Используйте away режим когда вам нужен фокус&lt;&#x2F;h3&gt;
+&lt;p&gt;Несколько опций, которые позволят вам сфокусироваться:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Установка away статуса в вашем профиле&lt;&#x2F;li&gt;
+&lt;li&gt;Режим «Не беспокоить» — &lt;code&gt;Do Not Disturb&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Явное сообщение, чтобы коллеги знали, что вас не стоит отвлекать&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;perestan-te-postoianno-proveriat-soobshcheniia&quot;&gt;Перестаньте постоянно проверять сообщения&lt;&#x2F;h3&gt;
+&lt;p&gt;Наличие непрочитанных сообщений в Slack не означает, что их нужно прочитать немедленно!
+Дайте людям возможность выполнять их задачи, пока вы выполняете свои.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;channel-ili-here&quot;&gt;@channel или @here&lt;&#x2F;h3&gt;
+&lt;p&gt;Включение &lt;code&gt;@channel&lt;&#x2F;code&gt; в сообщение уведомит всех членов чата, в то время как &lt;code&gt;@here&lt;&#x2F;code&gt; только тех, кто
+сейчас находится онлайн. @channel и @everyone всегда лучше использовать только для важных анонсов —
+Slack отсылает пуш-уведомление и email каждому, включая людей, которые находятся оффлайн или в отпуске.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;otvechaite-k-kontsu-svoego-rabochego-dnia&quot;&gt;Отвечайте к концу своего рабочего дня&lt;&#x2F;h3&gt;
+&lt;p&gt;Отправляя сообщение вы должны ожидать, что ответ будет сделан в концу рабочего дня если:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;вы связались с коллегой используя &lt;code&gt;@&lt;&#x2F;code&gt; или написав личное сообщение если контент приватный&lt;&#x2F;li&gt;
+&lt;li&gt;вы не установили дедлайн для ответа — старайтесь всегда делать это&lt;&#x2F;li&gt;
+&lt;li&gt;коллега работает обычный день — не болен&#x2F;отъезде&#x2F;отпуске и т. д.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;nepredvidennye-situatsii&quot;&gt;Непредвиденные ситуации&lt;&#x2F;h3&gt;
+&lt;p&gt;Используйте &lt;code&gt;@channel&lt;&#x2F;code&gt;, &lt;code&gt;@everyone&lt;&#x2F;code&gt;, а также слово СРОЧНО в своем сообщении. Если вам нужно связаться
+с коллегой после рабочих часов или в рамках режима «Не беспокоить», все равно отправьте сообщение —
+Slack бот попросит подтвердить ваши намерения. Используйте телефонный номер, указанный в профиле.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;zakliuchenie&quot;&gt;Заключение&lt;&#x2F;h2&gt;
+&lt;p&gt;Все вышеперечисленные советы работают не только для Slack, но и для любого другого мессенджера.
+Их можно адаптировать для &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;mattermost.com&#x2F;&quot;&gt;Mattermost&lt;&#x2F;a&gt;, Zoolip или Telegram.&lt;&#x2F;p&gt;
+&lt;p&gt;Основная идея — сделать коммуникации эффективными, асинхронными и прозрачными, а не переживать
+по поводу онлайн-статуса или неотвеченных вообщений.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
