@@ -37,13 +37,16 @@
 {%- endblock comments_init %}
 
 {%- block content %}
-    <article>
-    {{- macros::title_post(page=page, config=config) }}
+  <article>
+
+  {%- block page_header %}
+  {{- macros::title_post(page=page, config=config) }}
 
     {%- if config.extra.meta_post.position %}
     {%- if config.extra.meta_post.position == "top" or config.extra.meta_post.position == "both" %}
-    {{- macros::meta_post(page=page, config=config) }}
-    {%- endif %}{%- endif %}
+  {{- macros::meta_post(page=page, config=config) }}
+  {%- endif %}{%- endif %}
+  {%- endblock page_header %}
 
     {# In Page Series Navigation #}
     {%- if config.extra.series | default(value=true) %}
@@ -60,17 +63,15 @@
 
     <div class="block">
       <div class="blockdiv">
-        <a class="b s150" href="{{ tag.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ tag.name }} ({{ parts_string }})</a>
-        <ol>
+  <a class="b s150" href="{{ tag.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ tag.name }} ({{ parts_string }})</a><br>
         {%- for inner in tag.pages | sort(attribute="date") %}
           {%- if inner.content == page.content %}
-            <li><a class="scur" href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ inner.title }}</a></li>
+            <a class="scur" href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ inner.title }}</a><br>
             {%- set_global current_section_index = loop.index0 %} {# Finds the current section, needed for pagination logic later #}
           {% else %}
-            <li><a href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ inner.title }}</a></li>
+            <a href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ inner.title }}</a><br>
           {%- endif %}
         {%- endfor %}
-        </ol>
       </div>
     </div>
     {%- endif %}
