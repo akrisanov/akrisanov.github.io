@@ -45,6 +45,7 @@ if config.extra.comments.hyvor %}
       <a
         class="scur"
         href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}"
+        aria-current="page"
         >{{ inner.title }}</a
       ><br />
       {%- set_global current_section_index = loop.index0 %} {# Finds the current

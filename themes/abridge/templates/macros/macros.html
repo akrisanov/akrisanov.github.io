@@ -18,7 +18,8 @@
 {%- if config.extra.search_library %}{%- if config.extra.search_library == "offline" %}{% set uglyurls = true %}{% endif
 %}{% endif %}
 {%- if inner.content == page.content %}
-<a class="scur" href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}" aria-current="page">{{ inner.title }}</a><br>
+<a class="scur" href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}" aria-current="page">{{
+  inner.title }}</a><br>
 {% else %}
 <a href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ inner.title }}</a><br>
 {%- endif %}
