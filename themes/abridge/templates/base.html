@@ -188,7 +188,7 @@
       {%- if config.extra.footer_credit_override %}
       {{ config.extra.footer_credit_override | safe }}
       {%- else %}
-      <p{%- if config.extra.footer_size %} class="{{ config.extra.footer_size }}"{% endif %}>{{ macros::translate(key="Powered_by", default="Powered by", i18n=i18n) }} <a href="https://www.getzola.org/" target="_blank">Zola</a> {{ macros::translate(key="and", default="and", i18n=i18n) }} <a href="https://github.com/jieiku/abridge/" target="_blank">Abridge</a></p>
+  <p{%- if config.extra.footer_size %} class="{{ config.extra.footer_size }}"{% endif %}>{{ macros::translate(key="Powered_by", default="Powered by", i18n=i18n) }} <a href="https://www.getzola.org/" target="_blank" rel="noopener noreferrer">Zola</a> {{ macros::translate(key="and", default="and", i18n=i18n) }} <a href="https://github.com/jieiku/abridge/" target="_blank" rel="noopener noreferrer">Abridge</a></p>
       {%- endif %}
       {%- endif %}
     </div>

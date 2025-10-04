@@ -18,7 +18,7 @@
 {%- if config.extra.search_library %}{%- if config.extra.search_library == "offline" %}{% set uglyurls = true %}{% endif
 %}{% endif %}
 {%- if inner.content == page.content %}
-<a class="scur" href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ inner.title }}</a><br>
+<a class="scur" href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}" aria-current="page">{{ inner.title }}</a><br>
 {% else %}
 <a href="{{ inner.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ inner.title }}</a><br>
 {%- endif %}
@@ -296,7 +296,7 @@
 
           {%- for i in range(start=start, end=end+1) -%}
           {%- if i == paginator.current_index -%}
-          <a class="inp on cnav" href="#">{{i}}</a>
+          <a class="inp on cnav" href="#" aria-current="page">{{i}}</a>
           {%- elif i > 1 -%}
           <a class="inp on"
             href="{{ paginator.base_url | safe }}{{ i ~ '/' }}{%- if uglyurls %}index.html{%- endif %}">{{i}}</a>
@@ -390,7 +390,7 @@
 
                 {%- for i in range(start=start, end=end+1) -%}
                 {%- if i == paginator.current_index -%}
-                <a class="inp on cnav" href="#">{{i}}</a>
+                <a class="inp on cnav" href="#" aria-current="page">{{i}}</a>
                 {%- elif i > 1 -%}
                 <a class="inp on"
                   href="{{ paginator.base_url | safe }}{{ i ~ '/' }}{%- if uglyurls %}index.html{%- endif %}"
