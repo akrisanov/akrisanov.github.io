@@ -41,7 +41,12 @@ description=description, is_home=true) }} {%- endblock seo %} {%- block content
     config.extra.meta_index.position == "both" %} {{-
     macros::meta_index(page=page, config=config) }} {%- endif %} {%- endif %}
   </article>
-  {%- endfor %} {{- macros::pagination(paginator=paginator, config=config) }}
+  {%- endfor %}
+  {%- if config.extra.numpagination | default(value=false) %}
+    {{- macros::numpagination(paginator=paginator, config=config) }}
+  {%- else %}
+    {{- macros::pagination(paginator=paginator, config=config) }}
+  {%- endif %}
 </div>
 {%- if config.extra.recent | default(value=true) %} {#- The following line is
 checking if the template is being used for the root or a section #} {%- if
