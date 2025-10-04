@@ -80,6 +80,7 @@
     object-fit: cover;
     display: block;
     border-radius: 8px;
+    transition: transform 180ms ease-out, filter 180ms ease-out;
 }
 
 .index-card .card-body {
@@ -91,6 +92,16 @@
     line-height: 1.25;
     word-break: break-word;
     hyphens: auto;
+}
+
+.index-card big a {
+    text-decoration: none;
+}
+
+.index-card big a:hover,
+.index-card big a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 .index-card .sum {
@@ -111,6 +122,12 @@
     overflow: hidden;
 }
 
+.index-card .card-body > span { /* meta_index macro output */
+    display: block;
+    margin-top: .25rem;
+    opacity: .9;
+}
+
 .index-card .more {
     display: inline-flex;
     align-items: center;
@@ -118,6 +135,7 @@
     font-weight: 500;
     text-decoration: none;
     border-bottom: 1px solid transparent;
+    margin-top: .15rem;
 }
 
 .index-card .more:hover,
@@ -132,6 +150,16 @@
     .index-card .thumb {
         width: 100%;
     }
+    .index-card .sum p {
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+    }
+}
+
+/* Subtle hover effect */
+.index-card:hover .thumb img,
+.index-card:focus-within .thumb img {
+    transform: scale(1.02);
 }
 
 /* Accessibility ------------------------------------------------------------------------------ */
