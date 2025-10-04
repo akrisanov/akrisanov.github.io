@@ -26,7 +26,7 @@ it’s a concise cheat sheet for everyday use.
 
 ## Installation & Updates
 
-```shell
+```bash
 # Install
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
@@ -38,7 +38,7 @@ uv self update
 
 Instead of juggling tools like pyenv, mise, asdf, or OS‑specific hacks, you can simply use uv:
 
-```shell
+```bash
 # List available versions
 uv python list
 
@@ -56,27 +56,27 @@ You can also use [mise](https://github.com/jdx/mise) alongside uv if you prefer 
 
 Initialize a new project (creates a pyproject.toml automatically):
 
-```shell
+```bash
 uv init myproject or # uv init -p 3.13 --name myproject
 cd myproject
 ```
 
 Sync dependencies (similar to `pip install -r requirements.txt`, but faster and more reliable):
 
-```shell
+```bash
 uv sync
 ```
 
 Add dependencies:
 
-```shell
+```bash
 uv add litestar
 uv add pytest --dev
 ```
 
 Lock dependencies (generates a cross‑platform lockfile, like Pipfile.lock or poetry.lock):
 
-```shell
+```bash
 uv lock
 ```
 
@@ -84,7 +84,7 @@ uv lock
 
 ## Fast Virtual Environments
 
-```shell
+```bash
 # Create & activate venv automatically
 uv venv
 source .venv/bin/activate
@@ -95,7 +95,7 @@ uv run python app.py
 
 ## Scripts
 
-```shell
+```bash
 # Create a new script
 uv init --script
 ```
@@ -114,7 +114,7 @@ print(requests.get("https://akrisanov.com"))
 
 Run single‑file scripts with automatic dependency installation:
 
-```shell
+```bash
 uv run script.py
 ```
 
@@ -140,7 +140,7 @@ uv run --with jupyter jupyter notebook
 
 If you're developing a CLI tool, uv can help minimize the friction:
 
-```shell
+```bash
 uv init --package your_tool
 uv tool install . -e
 ```
@@ -149,14 +149,14 @@ See the [tools documentation](https://docs.astral.sh/uv/concepts/tools/)
 
 ## Replacing pip-tools
 
-```shell
+```bash
 uv pip compile # replaces pip-tools compile
 uv pip sync    # replaces pip-tools sync
 ```
 
 ## Building and publishing packages
 
-```shell
+```bash
 # Build a `.whl` package for PyPI
 uv build
 # Upload your Python package to PyPI
@@ -165,7 +165,7 @@ uv publish
 
 ## Pre-commit hooks
 
-```shell
+```bash
 uv run --with pre-commit-uv pre-commit run --all-files
 pre-commit-uv
 ```

@@ -28,7 +28,7 @@ to keep an eye on security. But without automation, it's too easy to forget abou
 
 My first local scan produced the following result:
 
-```shell
+```bash
 ...
 Project `X.Infrastructure.Calendar` has the following vulnerable packages
    [net6.0]:
@@ -68,7 +68,7 @@ As you can see, there are several projects vulnerable to [CVE-2022-41064](https:
 
 To get rid of the issue, it's enough to upgrade the package:
 
-```shell
+```bash
 dotnet add package System.Data.SqlClient -v 4.8.6
 ```
 
