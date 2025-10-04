@@ -50,6 +50,90 @@
     }
 }
 
+/* Homepage cards ----------------------------------------------------------------------------- */
+
+.index-card {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 1rem 1.25rem;
+    align-items: start;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.index-card.no-thumb {
+    grid-template-columns: 1fr;
+}
+
+.index-card .thumb {
+    display: block;
+    width: 160px;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f6f6f9;
+}
+
+.index-card .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 8px;
+}
+
+.index-card .card-body {
+    min-width: 0; /* enable text overflow handling */
+}
+
+.index-card h1, /* macro title_index renders a big link within h1-ish semantics */
+.index-card big {
+    line-height: 1.25;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+.index-card .sum {
+    margin-top: .35rem;
+}
+
+.index-card .sum p {
+    margin: 0.35rem 0 0.25rem;
+    line-height: 1.6;
+    color: inherit;
+}
+
+.index-card .sum p {
+    display: -webkit-box;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.index-card .more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.index-card .more:hover,
+.index-card .more:focus-visible {
+    border-bottom-color: currentColor;
+}
+
+@media (max-width: 720px) {
+    .index-card {
+        grid-template-columns: 1fr;
+    }
+    .index-card .thumb {
+        width: 100%;
+    }
+}
+
 /* Accessibility ------------------------------------------------------------------------------ */
 
 /* Visually hidden utility, becomes visible when focused (for skip links etc.) */
