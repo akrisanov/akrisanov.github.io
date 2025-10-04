@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {%- set uglyurls = config.extra.uglyurls | default(value=false) -%}
-{%- if config.extra.search_library %}{%- if config.extra.search_library == "offline" %}{% set uglyurls = true %}{% endif %}{% endif %}
+{%- if config.extra.search_library %}{%- if config.extra.search_library == "offline" %}{% set uglyurls = true %}{% endif
+%}{% endif %}
 
 {%- block seo %}
 {{- super() }}
