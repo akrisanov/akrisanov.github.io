@@ -170,7 +170,11 @@
               {%- set furl=get_url(path=i.url, trailing_slash=i.slash) %}
             {%- endif %}
           {%- endif %}
-          <a{%- if config.extra.footer_size %} class="{{ config.extra.footer_size }}"{% endif %} href="{{ furl | safe }}{%- if i.slash and uglyurls %}index.html{%- endif %}"{% if i.blank %} target="_blank"{% endif %}><i class="fa fa-{{ i.icon }}" aria-hidden="true" title="{% if lang != config.default_language %} {{ macros::translate(key=i.name|safe, default=i.name|safe, i18n=i18n) }} {% else %} {{ i.name | safe }} {% endif %}"></i></a>
+          <a{%- if config.extra.footer_size %} class="{{ config.extra.footer_size }}"{% endif %}
+            href="{{ furl | safe }}{%- if i.slash and uglyurls %}index.html{%- endif %}"
+            {% if i.blank %} target="_blank"{% endif %}
+            aria-label="{% if lang != config.default_language %} {{ macros::translate(key=i.name|safe, default=i.name|safe, i18n=i18n) }} {% else %} {{ i.name | safe }} {% endif %}"
+          ><i class="fa fa-{{ i.icon }}" aria-hidden="true" title="{% if lang != config.default_language %} {{ macros::translate(key=i.name|safe, default=i.name|safe, i18n=i18n) }} {% else %} {{ i.name | safe }} {% endif %}"></i></a>
         {%- endfor %}
       </nav>
       {%- endif %}
