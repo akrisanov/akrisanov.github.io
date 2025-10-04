@@ -1,14 +1,17 @@
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker
-        .register("/sw.js?v=3.12.0",
-            { scope: "/" })
-        .then(() => {
-            console.info("SW Loaded");
-        }, err => console.error("SW error: ", err));
+    const ver = "3.12.0";
+    const tryRegister = (url) => navigator.serviceWorker
+      .register(url, { scope: "/" })
+      .then(() => console.info("SW Loaded:" , url))
+      .catch((err) => {
+        console.warn("SW register failed for", url, err);
+        throw err;
+      });
 
-    navigator.serviceWorker
-        .ready
-        .then(() => {
-            console.info("SW Ready");
-        });
+    // Prefer minified in production; fallback to unminified if needed.
+    tryRegister(`/sw.min.js?v=${ver}`).catch(() => tryRegister(`/sw.js?v=${ver}`));
+
+    navigator.serviceWorker.ready.then(() => {
+        console.info("SW Ready");
+    });
 }

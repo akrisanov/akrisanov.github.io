@@ -6,7 +6,8 @@
   "license": "MIT",
   "homepage": "https://github.com/Jieiku/abridge",
   "scripts": {
-    "abridge": "node -e \"if ( require('fs').existsSync('./themes/abridge/package_abridge.js')) {require('fs').copyFileSync('./themes/abridge/package_abridge.js', './package_abridge.js')}\" && node package_abridge.js"
+    "abridge": "node -e \"if ( require('fs').existsSync('./themes/abridge/package_abridge.js')) {require('fs').copyFileSync('./themes/abridge/package_abridge.js', './package_abridge.js')}\" && node package_abridge.js",
+    "minify:sw": "node scripts/minify-sw.js"
   },
   "dependencies": {
     "fast-toml": "^0.5.4",
