@@ -117,7 +117,15 @@
 
 {#- SEO MEDIA END #}
   <meta property="og:site_name" content="{{ config.title }}" />
-  <meta property="og:locale" content="en_US" />
+  {# Determine locale: prefer config.extra.open.locale, else map language to a sensible default, else en_US #}
+  {%- if config.extra.open and config.extra.open.locale %}
+  <meta property="og:locale" content="{{ config.extra.open.locale }}" />
+  {%- else %}
+    {%- set og_locale = "en_US" -%}
+    {%- if lang == "ru" -%}{% set og_locale = "ru_RU" %}{%- endif -%}
+    {%- if lang == "en" -%}{% set og_locale = "en_US" %}{%- endif -%}
+    <meta property="og:locale" content="{{ og_locale }}" />
+  {%- endif %}
   <meta property="og:type" content="website" />
 {%- if page.updated %}
   <meta property="og:updated_time" content="{{ page.updated | date(format='%F') }}" />

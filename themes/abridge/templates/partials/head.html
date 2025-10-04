@@ -130,7 +130,7 @@
 
 
 {#- Rss / Atom Feed #}
-{%- if config.generate_feed %}
+{%- if config.generate_feeds %}
 {%- set feed_file = "atom.xml" -%}
 <link rel="alternate" type="application/atom+xml" title="{{ config.title }} Atom/RSS Feed"
   href="{{ get_url(path=feed_file, trailing_slash=false, lang=lang) | safe }}" />
