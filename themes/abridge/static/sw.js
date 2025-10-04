@@ -34,7 +34,7 @@ class Pwa {
         this.NORM_TTL = 0;
         this.LONG_TTL = 0;
         // keep the ttl on these lower:
-        this.TTL_NORM = ["sw.min.js", "sw_load.min.js"];
+    this.TTL_NORM = ["sw.js", "sw.min.js", "sw_load.js", "sw_load.min.js"];
         // rarely change, may be a good idea to periodically refresh, incase I change these and forget to increment service worker version:
         this.TTL_LONG = ["jpg", "jpeg", "png", "gif", "webp", "avif", "ico", "svg", "xsl", "txt"];
         // never change, cache forever unless service worker version is incremented:
