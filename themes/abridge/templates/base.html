@@ -112,11 +112,11 @@
           <div>
             <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}">
               <div class="searchd">
-                <input id="searchinput" type="text" placeholder="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}"
-                       aria-label="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}" title="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}"{% if config.extra.search_library %}{% if config.extra.search_library == "stork" %} data-stork="stork" {% endif %}{% endif %} />
+      <input id="searchinput" type="text" placeholder="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}"
+        aria-label="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}" title="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}" />
                 <button type="submit" title="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}" aria-label="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}" class="{%- if icon_search -%}{{ icon_search }}{%- else -%}si{%- endif -%}">{%- if not icon_search -%}&#8981;{%- endif -%}</button>
               </div>
-              <div class="results"><div id="suggestions"{% if config.extra.search_library %}{% if config.extra.search_library == "stork" %} data-stork="stork-output" {% endif %}{% endif %}></div></div>
+              <div class="results"><div id="suggestions"></div></div>
             </form>
           </div>
           {%- endif %}

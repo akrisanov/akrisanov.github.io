@@ -1275,14 +1275,7 @@ $syntax: true !default; //syntax highlighting for code blocks
     display: none;
   }
 
-  .stork-close-button {
-    display: none;
-  }
-
-  .stork-title p {
-    color: var(--a1);
-    font-weight: var(--fh);
-  }
+  /* stork-specific selectors removed */
 
   #suggestions {
     z-index: 9;

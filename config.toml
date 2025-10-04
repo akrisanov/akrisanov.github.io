@@ -12,6 +12,7 @@ compile_sass = true
 minify_html = false
 build_search_index = true
 generate_feeds = true
+feed_filenames = ["atom.xml", "rss.xml"]
 taxonomies = [{ name = "tags", feed = true }]
 
 # feed_filename = "atom.xml"
@@ -212,7 +213,7 @@ pwa_TTL_LONG = '"jpg", "jpeg", "png", "gif", "webp", "avif", "ico", "svg", "xsl"
 pwa_TTL_EXEMPT = '"js", "css", "otf", "eot", "ttf", "woff", "woff2", "mp4", "webm", "mp3", "ogg"'
 
 ### If set to true then the entire site is cached. (useful for making an entire site usable while offline)
-pwa_cache_all = true
+pwa_cache_all = false
 
 ### List of Files for the PWA to initially Cache, used if pwa_cache_all = false
 pwa_BASE_CACHE_FILES = "'/js/theme.min.js','/js/theme_light.min.js','/abridge.css','/js/abridge.min.js','/','/404.html','/offline/','/manifest.min.json'"
