@@ -27,14 +27,14 @@ class Pwa {
         ];
         this.host = `${self.location.protocol}//${self.location.host}`;
         console.info(`Host: ${this.host}`);
-    this.OFFLINE_PAGE = '/offline/';
+        this.OFFLINE_PAGE = '/offline/';
         this.NOT_FOUND_PAGE = '/404.html';
         this.CACHE_NAME = `content-v${this.CACHE_VERSION}`;
         // 3600=1hour, 28800=8hours, 86400=1day, 604800=1week, 1209600=2weeks
         this.NORM_TTL = 0;
         this.LONG_TTL = 0;
         // keep the ttl on these lower:
-    this.TTL_NORM = ["sw.js", "sw.min.js", "sw_load.js", "sw_load.min.js"];
+        this.TTL_NORM = ["sw.js", "sw.min.js", "sw_load.js", "sw_load.min.js"];
         // rarely change, may be a good idea to periodically refresh, incase I change these and forget to increment service worker version:
         this.TTL_LONG = ["jpg", "jpeg", "png", "gif", "webp", "avif", "ico", "svg", "xsl", "txt"];
         // never change, cache forever unless service worker version is incremented:
@@ -135,7 +135,7 @@ class Pwa {
                     this.installServiceWorker(),
                     this.scope.skipWaiting(),
                 ]));
-                console.info('SW Installed');
+            console.info('SW Installed');
         });
 
         this.scope.addEventListener('activate', event => {
@@ -192,7 +192,7 @@ class Pwa {
                         // if we made it here then we were unable to fetch the resource.
                         // maybe we were only fetching because of expired TTL, so use the cache regardless of TTL:
                         if (typeof event.request.url === 'string') {
-                            console.info("url: "+event.request.url)
+                            console.info("url: " + event.request.url)
                         }
                         if (response) {
                             return response;

@@ -1,7 +1,7 @@
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker
         .register("/sw.js?v=3.12.0",
-                  { scope: "/" })
+            { scope: "/" })
         .then(() => {
             console.info("SW Loaded");
         }, err => console.error("SW error: ", err));

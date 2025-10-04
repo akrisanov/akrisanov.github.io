@@ -1,9 +1,12 @@
-on: push
+on:
+  push:
+    branches: [master]
 name: Build and deploy on Github Pages
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    permissions:
+      contents: write
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -13,6 +16,6 @@ jobs:
           # Target branch
           PAGES_BRANCH: gh-pages
           # Provide personal access token
-          TOKEN: ${{ secrets.TOKEN }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Or if publishing to the same repo, use the automatic token
           # TOKEN: ${{ secrets.GITHUB_TOKEN }}
