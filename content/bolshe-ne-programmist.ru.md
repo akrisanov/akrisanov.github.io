@@ -10,6 +10,7 @@ tags = ["менеджмент"]
 [extra]
 keywords = "техлид, тимлид, технический менеджер"
 toc = false
+static_thumbnail = "/images/eliast.png"
 +++
 
 ![https://twitter.com/eliast/status/1159487936238411778](/images/eliast.png)

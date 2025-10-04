@@ -4,7 +4,7 @@ base_url = "https://akrisanov.com" # do NOT include a trailing slash on the base
 # If you use the npm/node script then all you have to do is set offline = true, and everything else is automatic.
 
 title = "Andrey Krisanov"
-description = ""
+description = "Articles on software engineering leadership, backend architecture, DevOps, reliability, and productivity by Andrey Krisanov."
 theme = "abridge"
 
 default_language = "en"
@@ -47,6 +47,7 @@ search.include_description = true # include description of page/section in index
 search.include_content = true     # include rendered content of page/section in index
 # search.truncate_content_length = 100 # Truncate at nth character. May be useful if index is getting too large.
 taxonomies = [{ name = "tags", feed = true }]
+description = "Заметки о техническом лидерстве, бэкенде, надежности, DevOps и продуктивности от Андрея Крисанова."
 
 [extra]
 ####################################################################################################
@@ -114,7 +115,7 @@ copyright_override = '© $CURRENT_YEAR $SITE_TITLE'
 title_separator = "|"                          # Separator between title and title_addition, set as |, -, _, etc
 title_addition = ""                            # a default value for title addition
 author = "Andrey Krisanov"                     # Put Your Name here
-keywords = ""                                  # used for the primary site index
+keywords = "software engineering, leadership, backend, devops, reliability, productivity, python, docker, kafka"                                  # used for the primary site index
 banner = "images/photo.webp"                   # Used as default image for OpenGraph/Twitter if page specific image is undefined.
 twitter_meta = "_akrisanov"                    # for SEO: twitter:site and twitter:creator
 google = "Your Google Site verification code."
@@ -201,7 +202,7 @@ pwa_VER = '3.12.0' # Service Worker cache version. (increment if you need to for
 
 ### 3600=1hour, 28800=8hours, 86400=1day, 604800=1week, 1209600=2weeks
 pwa_NORM_TTL = 0 #  86400 is reasonable. html, json, xml, anything else undefined
-pwa_LONG_TTL = 0 # 604800 is reasonable.
+pwa_LONG_TTL = 604800 # 1 week for images and other static assets
 
 ### list of files that overrides TTL_LONG/TTL_EXEMPT to be a NORM TTL.
 pwa_TTL_NORM = '"sw.min.js", "sw_load.min.js"'

@@ -32,7 +32,7 @@ class Pwa {
         this.CACHE_NAME = `content-v${this.CACHE_VERSION}`;
         // 3600=1hour, 28800=8hours, 86400=1day, 604800=1week, 1209600=2weeks
         this.NORM_TTL = 0;
-        this.LONG_TTL = 0;
+        this.LONG_TTL = 604800; // 1 week for images and similar static assets
         // keep the ttl on these lower:
         this.TTL_NORM = ["sw.js", "sw.min.js", "sw_load.js", "sw_load.min.js"];
         // rarely change, may be a good idea to periodically refresh, incase I change these and forget to increment service worker version:
@@ -197,6 +197,7 @@ class Pwa {
                         if (response) {
                             return response;
                         }
+
                         // if we made it here then we were unable to fetch the resource and do not have it cached.
                         console.error(`Error fetching ${event.request.url} resulted in offline`, err);
                         // try language-aware offline page fallback

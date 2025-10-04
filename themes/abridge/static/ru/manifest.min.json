@@ -1,14 +1,14 @@
 {
-    "name": "Andrey Krisanov",
+    "name": "Андрей Крисанов",
     "short_name": "akrisanov",
     "description": "Engineering Manager · CTO",
     "background_color": "#111111",
     "theme_color": "#333333",
     "display": "standalone",
     "orientation": "any",
-    "start_url": "/",
-    "scope": "/",
-    "lang": "en",
+    "start_url": "/ru/",
+    "scope": "/ru/",
+    "lang": "ru",
     "dir": "ltr",
     "categories": [
         "developer",

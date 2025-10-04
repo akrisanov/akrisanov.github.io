@@ -10,6 +10,7 @@ tags = ["apple", "music", "ffmpeg"]
 [extra]
 keywords = "apple, music, ffmpeg, lossless, audio"
 toc = false
+static_thumbnail = "/images/Screenshot-2023-10-22-at-18.26.25.png"
 +++
 
 I'm a longtime Apple Music user. Most of my so-called music collection is on the streaming service.

@@ -10,6 +10,7 @@ tags = ["менеджмент", "jira"]
 [extra]
 keywords = "менеджмент, jira, workflow"
 toc = true
+static_thumbnail = "/images/storymap.png"
 +++
 
 [В предыдущем посте](/ru/jira-workflow) я рассказывал как выглядит

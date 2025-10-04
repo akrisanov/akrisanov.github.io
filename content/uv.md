@@ -8,7 +8,7 @@ draft = false
 tags = ["python", "tooling", "cheat-sheet"]
 
 [extra]
-keywords = ["python", "virtualenv", "pip", "pipx", "poetry", "uv", "packaging", "cheat-sheet"]
+keywords = "python, virtualenv, pip, pipx, poetry, uv, packaging, cheat-sheet"
 toc = true
 +++
 

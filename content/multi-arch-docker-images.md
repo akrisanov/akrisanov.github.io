@@ -10,6 +10,7 @@ tags = ["docker", "devops"]
 [extra]
 keywords = "docker, devops, arm, x86, multi-arch"
 toc = false
+static_thumbnail = "/images/docker-arm-build.png"
 +++
 
 At work, I am involved in the development of a machine learning SDK and cloud services for

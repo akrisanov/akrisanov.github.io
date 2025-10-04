@@ -1364,6 +1364,24 @@ $syntax: true !default; //syntax highlighting for code blocks
   }
 }
 
+/* a11y: focus visibility and skip link helper */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--a1, #ff9900);
+  outline-offset: 2px;
+}
+
 @if $blocks {
   .sticky {
     position: sticky;
@@ -1525,6 +1543,7 @@ $syntax: true !default; //syntax highlighting for code blocks
   @if $icon-adjust {
     .adjust {
       -webkit-mask: functions.icon(adjust, "none", 1, "%23000", $ic);
+      mask: functions.icon(adjust, "none", 1, "%23000", $ic);
       background: var(--f2)
     }
   }
@@ -1533,6 +1552,7 @@ $syntax: true !default; //syntax highlighting for code blocks
   @if $icon-angl {
     .angl {
       -webkit-mask: functions.icon(angl, "%23000", 3, "none", $ic);
+      mask: functions.icon(angl, "%23000", 3, "none", $ic);
       background: var(--f2)
     }
   }
@@ -1541,6 +1561,7 @@ $syntax: true !default; //syntax highlighting for code blocks
   @if $icon-angll {
     .angll {
       -webkit-mask: functions.icon(angll, "%23000", 3, "none", $ic);
+      mask: functions.icon(angll, "%23000", 3, "none", $ic);
       background: var(--f2)
     }
   }
@@ -1549,6 +1570,7 @@ $syntax: true !default; //syntax highlighting for code blocks
   @if $icon-angr {
     .angr {
       -webkit-mask: functions.icon(angr, "%23000", 3, "none", $ic);
+      mask: functions.icon(angr, "%23000", 3, "none", $ic);
       background: var(--f2)
     }
   }
@@ -1557,6 +1579,7 @@ $syntax: true !default; //syntax highlighting for code blocks
   @if $icon-angrr {
     .angrr {
       -webkit-mask: functions.icon(angrr, "%23000", 3, "none", $ic);
+      mask: functions.icon(angrr, "%23000", 3, "none", $ic);
       background: var(--f2)
     }
   }
@@ -1565,6 +1588,7 @@ $syntax: true !default; //syntax highlighting for code blocks
   @if $icon-angu {
     .angu {
       -webkit-mask: functions.icon(angu, "%23000", 3, "none", $ic);
+      mask: functions.icon(angu, "%23000", 3, "none", $ic);
       background: var(--f2)
     }
   }
@@ -1573,6 +1597,7 @@ $syntax: true !default; //syntax highlighting for code blocks
   @if $icon-world {
     .world {
       -webkit-mask: functions.icon(world, "%23000", 2, "none", $ic);
+      mask: functions.icon(world, "%23000", 2, "none", $ic);
       background: var(--f2)
     }
   }
@@ -1583,16 +1608,19 @@ $syntax: true !default; //syntax highlighting for code blocks
     //copy icons for code blocks
     .copy {
       -webkit-mask: functions.icon(copy, "%23000", 2, "none", $ic);
+      mask: functions.icon(copy, "%23000", 2, "none", $ic);
       background: var(--f2)
     }
 
     .copy.yes {
       -webkit-mask: functions.icon(copy-yes, "%23000", 2, "none", $ic);
+      mask: functions.icon(copy-yes, "%23000", 2, "none", $ic);
       background: var(--cg)
     }
 
     .copy.err {
       -webkit-mask: functions.icon(copy-err, "%23000", 2, "none", $ic);
+      mask: functions.icon(copy-err, "%23000", 2, "none", $ic);
       background: var(--cr)
     }
   }
@@ -1600,6 +1628,7 @@ $syntax: true !default; //syntax highlighting for code blocks
   @if $icon-search {
     .search {
       -webkit-mask: functions.icon(search, "%23000", 3, "none", $ic);
+      mask: functions.icon(search, "%23000", 3, "none", $ic);
       background: var(--f2)
     }
   }

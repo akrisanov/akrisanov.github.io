@@ -10,6 +10,7 @@ tags = ["менеджмент", "jira"]
 [extra]
 keywords = "менеджмент, jira, workflow"
 toc = false
+static_thumbnail = "/images/jira-task-bug.png"
 +++
 
 Я стараюсь придерживаться принципа KISS (keep it stupid, keep it simple) не только при написании кода,

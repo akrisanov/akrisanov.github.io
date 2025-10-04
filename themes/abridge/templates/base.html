@@ -27,6 +27,7 @@
 </head>
 <body>
 {%- block header %}
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
   <header>
     <nav>
       <div>
@@ -55,8 +56,22 @@
             {%- set js_switcher=config.extra.js_switcher | default(value=true) %}
             {%- if config.extra.menu %}
               {%- for i in config.extra.menu -%}
-                <li><a{%- if i.size %} class="{{ i.size }}"{% endif %} href="{%- if i.url is matching("^http[s]?://") %}{{ i.url }}{%- else -%}{{ get_url(path=i.url, lang=lang, trailing_slash=i.slash) }}{%- if i.slash and uglyurls %}index.html{%- endif %}{%- endif %}"
-                  {% if i.blank %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                {%- set link_url = "" -%}
+                {%- if i.url is matching("^http[s]?://") -%}
+                  {%- set link_url = i.url -%}
+                {%- else -%}
+                  {%- set link_url = get_url(path=i.url, lang=lang, trailing_slash=i.slash) -%}
+                  {%- if i.slash and uglyurls -%}
+                    {%- set link_url = link_url ~ "index.html" -%}
+                  {%- endif -%}
+                {%- endif -%}
+                {%- if current_url -%}
+                  {%- set current_url_norm = current_url | replace(from='/index.html', to='/') -%}
+                  {%- set link_url_norm = link_url | replace(from='/index.html', to='/') -%}
+                {%- endif -%}
+                <li><a{%- if i.size %} class="{{ i.size }}"{% endif %} href="{{ link_url | safe }}"
+                  {% if i.blank %} target="_blank" rel="noopener noreferrer"{% endif %}
+                  {%- if current_url and current_url_norm == link_url_norm -%} aria-current="page"{%- endif -%}>
                 {%- if i.icon %}
                 <i class="fa fa-{{ i.icon }}" aria-hidden="true" title="{% if lang != config.default_language %}{{ macros::translate(key=i.name|safe, default=i.name|safe, i18n=i18n) }}{% else %}{{ i.name | safe }}{% endif %}"></i>
                 {% else %}
@@ -116,7 +131,7 @@
         aria-label="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}" title="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}" />
                 <button type="submit" title="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}" aria-label="{{ macros::translate(key="Search", default="Search", i18n=i18n) }}" class="{%- if icon_search -%}{{ icon_search }}{%- else -%}si{%- endif -%}">{%- if not icon_search -%}&#8981;{%- endif -%}</button>
               </div>
-              <div class="results"><div id="suggestions"></div></div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
             </form>
           </div>
           {%- endif %}
@@ -134,7 +149,7 @@
     {%- endif %}
   </header>
 {%- endblock header %}
-  <main>
+  <main id="main-content">
   {%- block content %}
   {%- endblock content %}
   </main>

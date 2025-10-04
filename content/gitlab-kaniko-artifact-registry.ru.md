@@ -10,6 +10,7 @@ tags = ["devops", "docker", "gitlab", "Google Cloud"]
 [extra]
 keywords = "docker, gitlab, CI, Google Cloud, GCP, Artifact Registry"
 toc = false
+static_thumbnail = "/images/kaniko-build-pipeline.png"
 +++
 
 Пару дней назад потребовалось автоматизировать сборку образов для контейнеров веб-платформы, которая

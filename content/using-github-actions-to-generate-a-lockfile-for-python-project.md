@@ -10,6 +10,7 @@ tags = ["python", "github-actions"]
 [extra]
 keywords = "python, github-actions, lockfile"
 toc = false
+static_thumbnail = "/images/gh-actions-lockfile.png"
 +++
 
 If you're working on a project that needs to be packaged for a specific environment other than your

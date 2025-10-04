@@ -43,6 +43,46 @@ updated_time="2023-05-15T07:07:00-07:00" ) %}
 <meta name="description" content="{{ config.description }}" />
 {%- endif %}
 <link rel="canonical" href="{{ page_url | safe }}" />
+{#- hreflang alternates -#}
+{%- if page is defined %}
+<link rel="alternate" hreflang="{{ lang }}" href="{{ page_url | safe }}" />
+{# x-default should point to the default language version #}
+{%- if config.default_language == lang -%}
+<link rel="alternate" hreflang="x-default" href="{{ page_url | safe }}" />
+{%- elif page.translations -%}
+{%- for t in page.translations -%}
+{%- if t.lang == config.default_language -%}
+<link rel="alternate" hreflang="x-default" href="{{ t.permalink | safe }}" />
+{%- endif -%}
+{%- endfor -%}
+{%- endif -%}
+{%- if page.translations -%}
+{%- for t in page.translations -%}
+{%- if t.lang != lang -%}
+<link rel="alternate" hreflang="{{ t.lang }}" href="{{ t.permalink | safe }}" />
+{%- endif -%}
+{%- endfor -%}
+{%- endif -%}
+{%- elif section is defined %}
+<link rel="alternate" hreflang="{{ lang }}" href="{{ page_url | safe }}" />
+{# x-default should point to the default language version #}
+{%- if config.default_language == lang -%}
+<link rel="alternate" hreflang="x-default" href="{{ page_url | safe }}" />
+{%- elif section.translations -%}
+{%- for t in section.translations -%}
+{%- if t.lang == config.default_language -%}
+<link rel="alternate" hreflang="x-default" href="{{ t.permalink | safe }}" />
+{%- endif -%}
+{%- endfor -%}
+{%- endif -%}
+{%- if section.translations -%}
+{%- for t in section.translations -%}
+{%- if t.lang != lang -%}
+<link rel="alternate" hreflang="{{ t.lang }}" href="{{ t.permalink | safe }}" />
+{%- endif -%}
+{%- endfor -%}
+{%- endif -%}
+{%- endif %}
 {%- if page.extra.keywords and config.extra.keywords %}
 <meta name="keywords" content="{{ page.extra.keywords }}, {{ config.extra.keywords }}" />
 {%- elif page.extra.keywords %}
@@ -125,6 +165,32 @@ updated_time="2023-05-15T07:07:00-07:00" ) %}
 {#- SEO MEDIA END #}
 <meta property="og:site_name" content="{{ config.title }}" />
 <meta property="og:locale" content="{{ lang_locale }}" />
+{#- og:locale alternates for translations -#}
+{%- if page is defined and page.translations %}
+{%- for t in page.translations -%}
+{%- if t.lang != lang -%}
+{%- set i18n_alt = load_data(path="i18n/" ~ t.lang ~ '.toml', required=false) -%}
+{%- if not i18n_alt -%}{%- set i18n_alt = load_data(path="themes/abridge/i18n/" ~ t.lang ~ ".toml", required=false)
+-%}{%- endif -%}
+{%- set alt_locale = macros::translate(key='date_locale', default='en_US', i18n=i18n_alt) -%}
+{%- if alt_locale != lang_locale -%}
+<meta property="og:locale:alternate" content="{{ alt_locale }}" />
+{%- endif -%}
+{%- endif -%}
+{%- endfor -%}
+{%- elif section is defined and section.translations %}
+{%- for t in section.translations -%}
+{%- if t.lang != lang -%}
+{%- set i18n_alt = load_data(path="i18n/" ~ t.lang ~ '.toml', required=false) -%}
+{%- if not i18n_alt -%}{%- set i18n_alt = load_data(path="themes/abridge/i18n/" ~ t.lang ~ ".toml", required=false)
+-%}{%- endif -%}
+{%- set alt_locale = macros::translate(key='date_locale', default='en_US', i18n=i18n_alt) -%}
+{%- if alt_locale != lang_locale -%}
+<meta property="og:locale:alternate" content="{{ alt_locale }}" />
+{%- endif -%}
+{%- endif -%}
+{%- endfor -%}
+{%- endif %}
 <meta property="og:type" content="website" />
 {%- if page.updated %}
 <meta property="og:updated_time" content="{{ page.updated | date(format='%F') }}" />
@@ -144,4 +210,68 @@ updated_time="2023-05-15T07:07:00-07:00" ) %}
 {%- endif %}
 {%- endif %}
 {#- Extra SEO END #}
+
+{#- JSON-LD Schema.org -#}
+{%- if is_home %}
+<script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	"name": {{ config.title | json_encode | safe }},
+	"url": {{ get_url(path="/", lang=lang) | json_encode | safe }}
+}
+</script>
+{%- endif %}
+
+{%- if page is defined %}
+{%- set headline_val = page.title -%}
+{%- if not headline_val -%}{%- set headline_val = config.title -%}{%- endif -%}
+{%- set author_name = config.extra.author -%}
+{%- if not author_name -%}{%- set author_name = config.title -%}{%- endif -%}
+{%- set image_url = "" -%}
+{%- if page.extra.thumbnail -%}
+{%- set image_url = get_url(path=page.path ~ page.extra.thumbnail, trailing_slash=false) -%}
+{%- elif page.extra.static_thumbnail -%}
+{%- if page.extra.static_thumbnail is matching("^http[s]?://") -%}
+{%- set image_url = page.extra.static_thumbnail -%}
+{%- else -%}
+{%- set image_url = get_url(path=page.extra.static_thumbnail, trailing_slash=false) -%}
+{%- endif -%}
+{%- elif config.extra.banner -%}
+{%- set image_url = get_url(path=config.extra.banner, trailing_slash=false) -%}
+{%- endif -%}
+
+{%- set published_str = "" -%}
+{%- if page.date -%}
+{%- set published_str = page.date | date(format="%FT%T%:z") -%}
+{%- endif -%}
+{%- set modified_raw = page.updated -%}
+{%- if not modified_raw and page.date -%}{%- set modified_raw = page.date -%}{%- endif -%}
+{%- set modified_str = "" -%}
+{%- if modified_raw -%}
+{%- set modified_str = modified_raw | date(format="%FT%T%:z") -%}
+{%- endif -%}
+<script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": {{ headline_val | json_encode | safe }},
+	"url": {{ page_url | json_encode | safe }},
+	"inLanguage": {{ lang | json_encode | safe }},
+	"author": {
+		"@type": "Person",
+		"name": {{ author_name | json_encode | safe }}
+	}
+	{%- if image_url and image_url != "" -%},
+	"image": {{ image_url | json_encode | safe }}
+	{%- endif -%}
+	{%- if published_str and published_str != "" -%},
+	"datePublished": {{ published_str | json_encode | safe }}
+	{%- endif -%}
+	{%- if modified_str and modified_str != "" -%},
+	"dateModified": {{ modified_str | json_encode | safe }}
+	{%- endif -%}
+}
+</script>
+{%- endif %}
 {%- endmacro %}

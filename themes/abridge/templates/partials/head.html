@@ -38,6 +38,8 @@ endif %}{% endif %}
 <meta http-equiv="x-ua-compatible" content="ie=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="base" content="{{ config.base_url | safe }}" />
+{# Optional: declare primary content language for the current document #}
+<meta name="content-language" content="{{ lang }}" />
 <meta name="HandheldFriendly" content="True" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -69,7 +71,12 @@ endif %}{% endif %}
 {%- endif %}
 
 {%- if config.extra.webmanifest %}
+{# Serve locale-specific manifest if not default language #}
+{%- if lang != config.default_language -%}
+<link rel="manifest" href="{{ get_url(path=lang ~ '/' ~ config.extra.webmanifest, trailing_slash=false) | safe }}" />
+{%- else -%}
 <link rel="manifest" href="{{ get_url(path=config.extra.webmanifest, trailing_slash=false) | safe }}" />
+{%- endif -%}
 {%- endif %}
 
 {%- if config.extra.favicon_mask and config.extra.favicon_mask_color %}

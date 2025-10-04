@@ -1,0 +1,9 @@
+# Lychee configuration (optional). Adjust as needed.
+# Accept common non-200 statuses for rate-limited or protected endpoints
+accept = [200, 403, 429]
+# Increase concurrency for faster checks
+max_concurrency = 20
+# Exclude paths/patterns if they produce false positives
+exclude_path = ["node_modules", "public/js", "themes/abridge/static/js"]
+# You can add excluded patterns (domains) like:
+# exclude = ["https://fonts.gstatic.com", "https://fonts.googleapis.com"]

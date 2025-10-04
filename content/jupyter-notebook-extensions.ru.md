@@ -10,6 +10,7 @@ tags = ["jupyter", "анализ данных"]
 [extra]
 keywords = "jupyter, jupyter notebook, анализ данных, python"
 toc = false
+static_thumbnail = "/images/jupyter.png"
 +++
 
 Jupyter Notebook — один из часто используемых мною инструментов. Несмотря на всю мощь этого

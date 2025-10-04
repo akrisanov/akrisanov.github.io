@@ -134,19 +134,7 @@ endif %}{% endif %}
   integrity="sha384-{{ get_hash(path='search_index.' ~ lang ~ '.js'  , sha_type=384, base64=true) | safe }}" {%- endif
   %}></script>
 
-{%- if uglyurls %}
-<script defer
-  src="{{               get_url(path='js/searchjavaugly.js'          , trailing_slash=false, cachebust=true) | safe }}"
-  {%- if integrity %}
-  integrity="sha384-{{ get_hash(path='js/searchjavaugly.js'          , sha_type=384, base64=true) | safe }}" {%- endif
-  %}></script>
-{%- else %}
-<script defer
-  src="{{               get_url(path='js/searchjava.js'              , trailing_slash=false, cachebust=true) | safe }}"
-  {%- if integrity %}
-  integrity="sha384-{{ get_hash(path='js/searchjava.js'              , sha_type=384, base64=true) | safe }}" {%- endif
-  %}></script>
-{%- endif %}
+{# Removed legacy searchjava loaders; javascript index format is not used in this site #}
 
 {%- else %}
 <script defer

@@ -238,11 +238,8 @@ function bundle(bpath, js_prestyle, js_switcher, js_email_encode, js_copycode, s
       minify_files.push(bpath + 'static/js/elasticlunr.min.js');
       minify_files.push(bpath + 'static/js/searchjavaugly.js');
     } else if (search_library === 'elasticlunr' && index_format === 'elasticlunr_javascript') {
-      minify_files.push('public/search_index.en.js');
-      minify_files.push(bpath + 'static/js/elasticlunr.min.js');
-      minify_files.push(bpath + 'static/js/searchjava.js');
-    } else if (search_library === 'elasticlunr') {//abridge default
-      minify_files.push(bpath + 'static/js/elasticlunr.min.js');
+      // javascript index format not used in this site; skip legacy assets
+    } else if (search_library === 'elasticlunr') {// abridge default (JSON index)
       minify_files.push(bpath + 'static/js/search.js');
     } else if (search_library === 'stork') {
       minify_files.push(bpath + 'static/js/stork.js');

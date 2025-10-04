@@ -10,6 +10,7 @@ tags = ["slack", "remote"]
 [extra]
 keywords = "slack, mattermost, удаленная работа, распределенная команда, эффективная коммуникация"
 toc = true
+static_thumbnail = "/images/slack-status.png"
 +++
 
 Вот уже несколько лет я работаю удаленно, и все коммуникации даже в текущей компании мы строим на
