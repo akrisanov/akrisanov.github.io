@@ -141,7 +141,7 @@ emoji в конце концов.
 
 ## Что еще почитать по теме
 
-- [Slack в распределенной команде](https://akrisanov.ru/all/slack/)
+- [Slack в распределенной команде](https://akrisanov.com/ru/slack/)
 - [The Stress of Remote Working](https://hackernoon.com/the-stress-of-remote-working-38be5bdcf4da)
 - [Helping Remote Developers Avoid Burnout](https://blog.digitalocean.com/avoiding-burnout/)
 - [5 Habits for Crafting the Perfect Remote Work Day](https://doist.com/blog/remote-work-habits/)

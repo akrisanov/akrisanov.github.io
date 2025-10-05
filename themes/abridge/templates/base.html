@@ -24,6 +24,20 @@
   {%- endblock comments_init %}
 
   {%- include "partials/head_js.html" %}
+  {# Optional: apply a body font class based on config.extra.font_family ("sans", "serif", "serif-modern") #}
+  <script>
+    (function(){
+      try {
+        var pref = "{{ config.extra.font_family | default(value="") }}";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
 </head>
 <body>
 {%- block header %}
