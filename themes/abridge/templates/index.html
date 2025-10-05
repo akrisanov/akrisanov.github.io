@@ -4,65 +4,88 @@ or as the rendering template for Sections, eg: example.com/blog/
 example.com/software/ #} {%- extends "base.html" %} {%- set uglyurls =
 config.extra.uglyurls | default(value=false) -%} {%- if
 config.extra.search_library %}{%- if config.extra.search_library == "offline"
--%}{% set uglyurls = true %}{% endif %}{% endif %} {%- block seo %} {{- super()
-}} {%- if config.title %} {%- set title = config.title %} {%- else %} {%- set
-title = "" %} {%- endif %} {%- if config.extra.title_addition and title %} {%-
-set title_addition = title_separator ~ config.extra.title_addition %} {%- elif
+%}{% set uglyurls = true %}{% endif %}{% endif %} {%- block seo %} {{- super()
+}} {%- if config.title %}{%- set title = config.title %}{%- else %}{%- set title
+= "" %}{%- endif %} {%- if config.extra.title_addition and title %} {%- set
+title_addition = title_separator ~ config.extra.title_addition %} {%- elif
 config.extra.title_addition %} {%- set title_addition =
 config.extra.title_addition %} {%- else %} {%- set title_addition = "" %} {%-
 endif %} {%- set description = config.description %} {{-
 macros_seo::seo(config=config, title=title, title_addition=title_addition,
 description=description, is_home=true) }} {%- endblock seo %} {%- block content
-%}
+%} {%- set home_layout = config.extra.home_layout | default(value="classic") -%}
+{%- set show_recent = config.extra.recent | default(value=true) -%}
 <div>
-  {%- for page in paginator.pages %}
-  <article class="index-card{%- if not page.extra.static_thumbnail %} no-thumb{%- endif %}">
-    {# Optional thumbnail on the left #}
+  {%- if home_layout == "cards" -%} {%- for page in paginator.pages %}
+  <article
+    class="index-card{%- if not page.extra.static_thumbnail %} no-thumb{%- endif %}"
+  >
     {%- if page.extra.static_thumbnail %}
-    <a class="thumb" href="{{ page.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">
-      <img src="{{ get_url(path=page.extra.static_thumbnail) }}" alt="{{ page.title | striptags }}" loading="lazy" decoding="async" />
+    <a
+      class="thumb"
+      href="{{ page.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}"
+    >
+      <img
+        src="{{ get_url(path=page.extra.static_thumbnail) }}"
+        alt="{{ page.title | striptags }}"
+        loading="lazy"
+        decoding="async"
+      />
     </a>
     {%- endif %}
-
     <div class="card-body">
-      {{- macros::title_index(page=page, config=config) }}
-      {%- if config.extra.meta_index.position %}
-        {%- if config.extra.meta_index.position == "top" or config.extra.meta_index.position == "both" %}
-          {{- macros::meta_index(page=page, config=config) }}
-        {%- endif %}
-      {%- endif %}
-
+      {{- macros::title_index(page=page, config=config) }} {%- if
+      config.extra.meta_index.position %} {%- if
+      config.extra.meta_index.position == "top" or
+      config.extra.meta_index.position == "both" %} {{-
+      macros::meta_index(page=page, config=config) }} {%- endif %} {%- endif %}
       <div class="sum">
         <p>
-          {%- if page.summary %}
-            {{ page.summary | markdown(inline=true) | safe }}
-          {%- elif page.description %}
-            {{ page.description | markdown(inline=true) | safe }}
-          {%- elif page.content %}
-            {{ page.content | striptags | truncate(length=220) | markdown(inline=true) | safe }}
-          {%- endif %}
+          {%- if page.summary %} {{ page.summary | markdown(inline=true) | safe
+          }} {%- elif page.description %} {{ page.description |
+          markdown(inline=true) | safe }} {%- elif page.content %} {{
+          page.content | striptags | truncate(length=220) |
+          markdown(inline=true) | safe }} {%- endif %}
         </p>
-  <a class="more" href="{{ page.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}" aria-label="{{ macros::translate(key='more', default='more', i18n=i18n) }}: {{ page.title | striptags }}">
+        <a
+          class="more"
+          href="{{ page.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}"
+          aria-label="{{ macros::translate(key='more', default='more', i18n=i18n) }}: {{ page.title | striptags }}"
+        >
           {{ macros::translate(key="more", default="more", i18n=i18n) }} →
         </a>
       </div>
-
-      {%- if config.extra.meta_index.position %}
-        {%- if config.extra.meta_index.position == "bottom" or config.extra.meta_index.position == "both" %}
-          {{- macros::meta_index(page=page, config=config) }}
-        {%- endif %}
-      {%- endif %}
+      {%- if config.extra.meta_index.position %} {%- if
+      config.extra.meta_index.position == "bottom" or
+      config.extra.meta_index.position == "both" %} {{-
+      macros::meta_index(page=page, config=config) }} {%- endif %} {%- endif %}
     </div>
   </article>
-  {%- endfor %}
-
-  {%- if config.extra.numpagination | default(value=false) %}
-    {{- macros::numpagination(paginator=paginator, config=config) }}
-  {%- else %}
-    {{- macros::pagination(paginator=paginator, config=config) }}
-  {%- endif %}
+  {%- endfor %} {%- else -%} {%- for page in paginator.pages %}
+  <article class="home-item">
+    <h2 class="home-title">
+      <a
+        href="{{ page.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}"
+        >{{ page.title | markdown(inline=true) | safe }}</a
+      >
+    </h2>
+    <div class="home-meta">
+      {{- macros::meta_index(page=page, config=config) -}}
+    </div>
+    <p class="home-summary">
+      {%- if page.summary %} {{ page.summary | markdown(inline=true) | safe }}
+      {%- elif page.description %} {{ page.description | markdown(inline=true) |
+      safe }} {%- elif page.content %} {{ page.content | striptags |
+      truncate(length=240) | markdown(inline=true) | safe }} {%- endif %}
+    </p>
+  </article>
+  {%- endfor %} {%- endif -%} {%- if config.extra.numpagination |
+  default(value=false) %} {{- macros::numpagination(paginator=paginator,
+  config=config) }} {%- else %} {{- macros::pagination(paginator=paginator,
+  config=config) }} {%- endif %}
 </div>
-{%- if config.extra.recent | default(value=true) %} {#- The following line is
+
+{%- if show_recent and home_layout == "cards" %} {#- The following line is
 checking if the template is being used for the root or a section #} {%- if
 current_path is matching("^(/[[:alpha:]][[:alpha:]])?(/page/[[:digit:]]+)?/$")
 %} {%- set sec = "" %} {%- else %} {%- if lang == config.default_language %} {%-

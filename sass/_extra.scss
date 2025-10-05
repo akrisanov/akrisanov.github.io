@@ -162,6 +162,22 @@
     transform: scale(1.02);
 }
 
+/* Classic list layout for home (lucumr-like) ----------------------------------------------- */
+.home-item { padding: 0.85rem 0 1.35rem; border-bottom: 1px solid rgba(0,0,0,0.08); }
+.home-title { margin: 0 0 0.35rem; font-weight: 600; line-height: 1.25; text-wrap: balance; }
+.home-title a { text-decoration: none; }
+.home-title a:hover, .home-title a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+.home-meta { opacity: .9; margin-bottom: 0.4rem; }
+.home-summary { margin: 0.4rem 0 0.3rem; line-height: 1.7; max-width: 70ch; text-wrap: pretty; }
+
+/* Slightly larger article text for comfortable reading */
+main article:not(.index-card) { font-size: 1.0625rem; }
+@media (min-width: 700px) {
+    main article:not(.index-card) { font-size: 1.125rem; }
+}
+/* Tweak classic home title sizing */
+.home-title { font-size: clamp(1.25rem, 1.1rem + 0.8vw, 1.6rem); }
+
 /* Accessibility ------------------------------------------------------------------------------ */
 
 /* Visually hidden utility, becomes visible when focused (for skip links etc.) */
@@ -339,5 +355,59 @@ main * {
     /* Make all right containers behave like the left ones */
     .right {
         left: 0%;
+    }
+}
+
+/* Modern readable typography --------------------------------------------------------------- */
+
+:root {
+    /* Screen-friendly sans (default) */
+    --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans",
+                             "Helvetica Neue", Arial, ui-sans-serif, sans-serif;
+    /* Classic serif */
+    --font-serif: "Iowan Old Style", "Palatino", "Baskerville", Georgia,
+                                "Times New Roman", Cambria, "Noto Serif", "DejaVu Serif",
+                                "Liberation Serif", serif;
+    /* Modern readable serif akin to Charter/Source Serif */
+    --font-serif-modern: "Charter", "Charter BT", "Source Serif 4", "Source Serif Pro",
+                                             "Newsreader", "PT Serif", Georgia, serif;
+}
+
+/* Default to modern sans on screens */
+body { 
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-kerning: normal;
+    font-variant-ligatures: common-ligatures;
+    font-optical-sizing: auto;
+}
+
+/* Optional toggles */
+body.serif, body.book { font-family: var(--font-serif); }
+body.serif-modern { font-family: var(--font-serif-modern); }
+body.sans { font-family: var(--font-sans); }
+
+/* Comfortable reading rhythm for article content (exclude index cards) */
+main article:not(.index-card) p {
+    line-height: 1.7;
+    hyphens: auto;
+    letter-spacing: 0.003em;
+    text-wrap: pretty;
+}
+
+main article:not(.index-card) li { line-height: 1.6; }
+
+/* Balance long headings where supported */
+main article:not(.index-card) h1,
+main article:not(.index-card) h2,
+main article:not(.index-card) h3 { text-wrap: balance; }
+
+/* Limit line length for comfortable measure on larger screens */
+@media (min-width: 920px) {
+    main article:not(.index-card) p,
+    main article:not(.index-card) blockquote {
+        max-width: 70ch;
     }
 }

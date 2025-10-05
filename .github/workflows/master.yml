@@ -15,7 +15,7 @@ jobs:
       - name: Install Zola
         uses: taiki-e/install-action@v2
         with:
-          tool: zola@v0.21.0
+          tool: zola@0.21.0
       - name: Build site
         run: zola build
       - name: Link check with lychee
@@ -43,7 +43,7 @@ jobs:
       - name: Install Zola
         uses: taiki-e/install-action@v2
         with:
-          tool: zola@v0.21.0
+          tool: zola@0.21.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
