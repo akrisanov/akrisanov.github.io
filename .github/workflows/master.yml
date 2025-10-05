@@ -49,9 +49,13 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-          cache-dependency-path: package-lock.json
       - name: Install dependencies
-        run: npm ci || npm i
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm i --no-audit --fund=false
+          fi
       - name: Zola check
         run: zola check
       - name: Minify service worker
