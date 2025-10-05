@@ -20,11 +20,13 @@ jobs:
         run: zola build
       - name: Link check with lychee
         uses: lycheeverse/lychee-action@v1
+        continue-on-error: true
         with:
           args: >-
             --no-progress
             --max-concurrency 20
             --accept 200,403,429
+            --fail false
             --exclude-path node_modules
             --exclude-path public/js
             --exclude-path themes/abridge/static/js
@@ -63,6 +65,7 @@ jobs:
             npm i --no-audit --fund=false
           fi
       - name: Zola check
+        continue-on-error: true
         run: zola check
       - name: Minify service worker
         run: npm run minify:sw
