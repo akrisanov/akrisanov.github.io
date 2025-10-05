@@ -4,7 +4,7 @@ base_url = "https://akrisanov.com" # do NOT include a trailing slash on the base
 # If you use the npm/node script then all you have to do is set offline = true, and everything else is automatic.
 
 title = "Andrey Krisanov"
-description = "Articles on software engineering leadership, backend architecture, DevOps, reliability, and productivity by Andrey Krisanov."
+description = "Engineering notes and essays on AI infrastructure, large-scale inference systems, and production-grade backend design — from distributed serving and observability to performance tuning and reliability. Written by Andrey Krisanov."
 theme = "abridge"
 
 default_language = "en"
@@ -47,7 +47,7 @@ search.include_description = true # include description of page/section in index
 search.include_content = true     # include rendered content of page/section in index
 # search.truncate_content_length = 100 # Truncate at nth character. May be useful if index is getting too large.
 taxonomies = [{ name = "tags", feed = true }]
-description = "Заметки о техническом лидерстве, бэкенде, надежности, DevOps и продуктивности от Андрея Крисанова."
+description = "Заметки об AI-инфраструктуре, системах инференса и промышленной архитектуре бэкенда — от распределённого сервинга и наблюдаемости до оптимизации производительности и надежности. Автор — Андрей Крисанов."
 
 [extra]
 ####################################################################################################
@@ -115,7 +115,7 @@ copyright_override = '© $CURRENT_YEAR $SITE_TITLE'
 title_separator = "|"                          # Separator between title and title_addition, set as |, -, _, etc
 title_addition = ""                            # a default value for title addition
 author = "Andrey Krisanov"                     # Put Your Name here
-keywords = "software engineering, leadership, backend, devops, reliability, productivity, python, docker, kafka"                                  # used for the primary site index
+keywords = "AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI/CD, cloud infrastructure, platform engineering"
 banner = "images/photo.png"                   # Used as default image for OpenGraph/Twitter if page specific image is undefined.
 twitter_meta = "_akrisanov"                    # for SEO: twitter:site and twitter:creator
 google = "Your Google Site verification code."

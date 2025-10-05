@@ -5,40 +5,50 @@ template = "pages.html"
 draft = false
 +++
 
-
 ## Hi, I'm Andrey
 
-I'm an engineering manager focused on shipping products and delivering value to customers.
+I'm a **backend** engineer with over 15 years of experience building and scaling SaaS products.
+Currently, I'm the **CTO at [planfact.io](https://planfact.io)** — a profitable B2B company helping thousands of small
+and midsize businesses manage their finances efficiently.
 
-With experience working in distributed teams and remotely, I'm an advocate of transparency and
-trust, asynchronous communication, thorough documentation, and pragmatism.
+At Planfact, I lead a 25-person engineering team and stay hands-on with **architecture, infrastructure, and backend systems**.
+Over the past years, I’ve driven key transformations:
 
-Collaborative software, data processing, applied AI, and fintech are my main areas of interest.
+- Migration from on-premise Windows Server to **Kubernetes on Linux**, improving scalability and reliability
+- Design and rollout of a full **observability stack (ClickStack + Sentry)** achieving 99.998% uptime
+- Adoption of **Terraform + Ansible** for reproducible IaC environments
+- Reference modular architecture for all backend services (**.NET 9**)
+- Migration of core services from **.NET 6 → 9**, **Angular 15 → 19**
+- Building a **remote-first engineering culture** with RFCs, async communication, and strong ownership
 
-I'm currently a [CTO at planfact.io](/planfact), helping the company to scale its engineering
-team and processes for the next stage of growth.
+## Transition and Focus
 
-## Past work
+My current professional focus is on **AI Infrastructure and Inference Engineering** — where backend systems,
+cloud-native infrastructure, and machine learning serving converge.
 
-I have been working in the technology industry for over a decade now. The first significant
-commercial project I developed was a desktop application for a network of pharmacies in Ireland.
-It was written in C#, WPF, and the .NET Framework. I was in my third year at university at the time.
+I’m building hands-on expertise in:
 
-Since graduating, I have worked for a few small companies in my hometown, international startups
-both locally and abroad, and one of the largest retail companies in the EMEA region, using various
-technologies from Objective-C to Python and often managing projects and people.
+- **LLM and model serving** (vLLM, Triton, Ray Serve)
+- **Observability and performance** for GPU inference workloads
+- **Distributed systems** and **scalable compute pipelines**
+- **Infrastructure as Code**, container orchestration, and reproducible environments
 
-I have a degree in Applied Mathematics and Computer Science from Bryansk State University.
-I have been fascinated by computers since I saw one in 2000. That's why my programming skills are
-better than my understanding and knowledge of mathematics – such a pity.
+My long-term goal is to **contribute to frontier AI labs** and help scale intelligent applications from research
+to reliable production systems.
 
-You can find information about my professional experience on Linkedin [@akrisanov](http://linkedin.com/in/akrisanov/).
+## Background
 
-## This site
+Before Planfact, I worked in startups and enterprise environments across **Germany and Russia** — from fintech and
+data privacy to retail and media.
 
-This website is online since July 2023. It is another attempt to write about things related to my
-career and topics that interest me in English. The content varies from short essays to technical
-articles with lots of code snippets. I only post when I want to express myself, reflect on
-an experience, or document useful aspects of my work. So please don't expect regular posts here.
+Some highlights include:
 
-Cheers!
+- **Statice.ai** — Designed backend and infra components for a data privacy platform (Python, FastAPI, K8s, GCP)
+- **X5 Retail Group** — Launched *food.ru*, #1 media platform about food in Russia, awarded *Runet Prize 2021*
+- **Clark.de (Series A)** — Built integrations with **N26 Bank**, enabling in-app insurance sign-up
+- **Payler** — Designed and launched a payment gateway, transforming the company into an international payment provider
+
+## Education
+
+Master’s degree in **Applied Mathematics and Computer Science** from *Bryansk State University*.
+Since 2024, I’ve been continuously expanding my knowledge in **ML systems** and **AI infrastructure design**.
