@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Andrey Krisanov - DevOpsSec</title>
+    <subtitle>Engineering notes and essays on AI infrastructure, large-scale inference systems, and production-grade backend design — from distributed serving and observability to performance tuning and reliability. Written by Andrey Krisanov.</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://akrisanov.com/tags/devopssec/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2024-05-07T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/tags/devopssec/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Identifying Vulnerable Dependencies In .NET Projects</title>
+        <published>2024-05-07T00:00:00+00:00</published>
+        <updated>2024-05-07T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/dotnet-list-vulnerable-packages/"/>
+        <id>https://akrisanov.com/dotnet-list-vulnerable-packages/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/dotnet-list-vulnerable-packages/">&lt;p&gt;Some time ago, I was working in a company that was building a SaaS that was written in .NET.
+The code base was a decade old, and like many companies using Microsoft technologies,
+it had been through a few framework upgrades. The intent was to move to modern technologies and
+refactor outdated components, but the execution was rather poor. By the time I put on my engineering
+manager&#x27;s hat, many of the NuGet packages in the solution were out of date and even deprecated.&lt;&#x2F;p&gt;
+&lt;p&gt;In Python and Go projects, I rely heavily on linting, static analysis, and formatting tools.
+Not having these essentials would make me and my teams less productive. So the first thing I did
+was understand what modern .NET brings to the table in this area. And I started by scanning the
+NuGet packages we use in all of our projects in a single solution for potential vulnerabilities.&lt;&#x2F;p&gt;
+&lt;p&gt;It turned out that developers could simply run &lt;code&gt;dotnet list package --vulnerable&lt;&#x2F;code&gt; locally
+to keep an eye on security. But without automation, it&#x27;s too easy to forget about that.&lt;&#x2F;p&gt;
+&lt;p&gt;My first local scan produced the following result:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Project &lt;&#x2F;span&gt;&lt;span&gt;`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;X.Infrastructure.Calendar&lt;&#x2F;span&gt;&lt;span&gt;` has the following vulnerable packages
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;[net6.0]:
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Top-level&lt;&#x2F;span&gt;&lt;span&gt; Package            Requested   Resolved   Severity   Advisory URL
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; System.Data.SqlClient      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;4.8.3&lt;&#x2F;span&gt;&lt;span&gt;       4.8.3      Moderate   https:&#x2F;&#x2F;github.com&#x2F;advisories&#x2F;GHSA-8g2p-5pqh-5jmc
+&lt;&#x2F;span&gt;&lt;span&gt;                                                       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;High&lt;&#x2F;span&gt;&lt;span&gt;       https:&#x2F;&#x2F;github.com&#x2F;advisories&#x2F;GHSA-98g6-xh36-x2p7
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;The&lt;&#x2F;span&gt;&lt;span&gt; given project `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;X.Infrastructure.Common&lt;&#x2F;span&gt;&lt;span&gt;` has no vulnerable packages given the current sources.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Project &lt;&#x2F;span&gt;&lt;span&gt;`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;X.Infrastructure.Currency&lt;&#x2F;span&gt;&lt;span&gt;` has the following vulnerable packages
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;[net6.0]:
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Top-level&lt;&#x2F;span&gt;&lt;span&gt; Package            Requested   Resolved   Severity   Advisory URL
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; System.Data.SqlClient      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;4.8.3&lt;&#x2F;span&gt;&lt;span&gt;       4.8.3      Moderate   https:&#x2F;&#x2F;github.com&#x2F;advisories&#x2F;GHSA-8g2p-5pqh-5jmc
+&lt;&#x2F;span&gt;&lt;span&gt;                                                       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;High&lt;&#x2F;span&gt;&lt;span&gt;       https:&#x2F;&#x2F;github.com&#x2F;advisories&#x2F;GHSA-98g6-xh36-x2p7
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Project &lt;&#x2F;span&gt;&lt;span&gt;`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;X.Infrastructure.Locker&lt;&#x2F;span&gt;&lt;span&gt;` has the following vulnerable packages
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;[net6.0]:
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Top-level&lt;&#x2F;span&gt;&lt;span&gt; Package            Requested   Resolved   Severity   Advisory URL
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; System.Data.SqlClient      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;4.8.3&lt;&#x2F;span&gt;&lt;span&gt;       4.8.3      Moderate   https:&#x2F;&#x2F;github.com&#x2F;advisories&#x2F;GHSA-8g2p-5pqh-5jmc
+&lt;&#x2F;span&gt;&lt;span&gt;                                                       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;High&lt;&#x2F;span&gt;&lt;span&gt;       https:&#x2F;&#x2F;github.com&#x2F;advisories&#x2F;GHSA-98g6-xh36-x2p7
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;The&lt;&#x2F;span&gt;&lt;span&gt; given project `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;X.Infrastructure.Locker.Tests.Unit&lt;&#x2F;span&gt;&lt;span&gt;` has no vulnerable packages given the current sources.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;The&lt;&#x2F;span&gt;&lt;span&gt; given project `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;X.Infrastructure.Pool&lt;&#x2F;span&gt;&lt;span&gt;` has no vulnerable packages given the current sources.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Project &lt;&#x2F;span&gt;&lt;span&gt;`&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;X.Infrastructure.Repositories&lt;&#x2F;span&gt;&lt;span&gt;` has the following vulnerable packages
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;[net6.0]:
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;Top-level&lt;&#x2F;span&gt;&lt;span&gt; Package            Requested   Resolved   Severity   Advisory URL
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; System.Data.SqlClient      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;4.8.3&lt;&#x2F;span&gt;&lt;span&gt;       4.8.3      Moderate   https:&#x2F;&#x2F;github.com&#x2F;advisories&#x2F;GHSA-8g2p-5pqh-5jmc
+&lt;&#x2F;span&gt;&lt;span&gt;                                                       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;High&lt;&#x2F;span&gt;&lt;span&gt;       https:&#x2F;&#x2F;github.com&#x2F;advisories&#x2F;GHSA-98g6-xh36-x2p7
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;The&lt;&#x2F;span&gt;&lt;span&gt; given project `&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;X.Infrastructure.Rules&lt;&#x2F;span&gt;&lt;span&gt;` has no vulnerable packages given the current sources.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;As you can see, there are several projects vulnerable to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;devhub.checkmarx.com&#x2F;cve-details&#x2F;CVE-2022-41064&#x2F;&quot;&gt;CVE-2022-41064&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;.NET Framework System.Data.SqlClient versions prior to 4.8.5 and Microsoft.Data.SqlClient
+versions prior to 1.1.4 and 2.0.0 prior to 2.1.2 is vulnerable to Information Disclosure Vulnerability.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;To get rid of the issue, it&#x27;s enough to upgrade the package:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#a4a0e8;&quot;&gt;dotnet&lt;&#x2F;span&gt;&lt;span&gt; add package System.Data.SqlClient&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#a4a0e8;&quot;&gt; -v&lt;&#x2F;span&gt;&lt;span&gt; 4.8.6
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now, how can developers prevent such situations? You already know the answer: automation!&lt;&#x2F;p&gt;
+&lt;p&gt;After sharing my observations with the team, I created a merge request with a new GitLab pipeline
+that runs for every open merge request and master branch.&lt;&#x2F;p&gt;
+&lt;p&gt;These are the changes in the &lt;code&gt;.gitlab-ci.yml&lt;&#x2F;code&gt; manifest:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;yaml&quot; style=&quot;background-color:#3b224c;color:#dbbfef;&quot; class=&quot;language-yaml &quot;&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;stages&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;security
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;vulnarable-dependencies&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;stage&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;security
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;image&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;mcr.microsoft.com&#x2F;dotnet&#x2F;sdk:6.0-bullseye-slim
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;before_script&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;dotnet restore
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;dotnet list package --vulnerable 2&amp;gt;&amp;amp;1 | tee vulnerable-packages.log
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#eccdbb;&quot;&gt;&amp;gt;-
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;      ! grep -qiw &amp;quot;critical\|high\|moderate\|low&amp;quot; vulnerable-packages.log;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;      if [ $? -ne 0 ]; then
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;        echo &amp;quot;🚨 Found vulnarable packages&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;        exit 1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;      else
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;        exit 0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;      fi
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;artifacts&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;when&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;always
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;expire_in&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;12h
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;paths&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;      - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;vulnerable-packages.log
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;only&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;master
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;merge_requests
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ffffff;&quot;&gt;tags&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;    - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#cccccc;&quot;&gt;docker
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The pipeline will fail if any of the projects in the solution have vulnerable packages.
+The downloadable log file contains the list of vulnerabilities and their severity.&lt;&#x2F;p&gt;
+&lt;p&gt;This way, the team is always aware of the state of the dependencies and can take action to fix them.&lt;&#x2F;p&gt;
+&lt;p&gt;References:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;devblogs.microsoft.com&#x2F;nuget&#x2F;how-to-scan-nuget-packages-for-security-vulnerabilities&#x2F;&quot;&gt;How to Scan NuGet Packages for Security Vulnerabilities&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+</feed>
