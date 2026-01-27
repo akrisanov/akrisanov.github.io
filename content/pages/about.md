@@ -5,50 +5,41 @@ template = "pages.html"
 draft = false
 +++
 
-## Hi, I'm Andrey
+## Hi, I’m Andrey
 
-I'm a **backend** engineer with over 15 years of experience building and scaling SaaS products.
-Currently, I'm the **CTO at [planfact.io](https://planfact.io)** — a profitable B2B company helping thousands of small
-and midsize businesses manage their finances efficiently.
+I'm a backend and platform engineer who likes turning complex systems into something boring, reliable, and easy to reason about.
 
-At Planfact, I lead a 25-person engineering team and stay hands-on with **architecture, infrastructure, and backend systems**.
-Over the past years, I’ve driven key transformations:
+For the last 15+ years I've been building and scaling SaaS products — mostly on the backend side, often close to
+infrastructure, and frequently in roles where someone has to take responsibility when things get messy.
 
-- Migration from on-premise Windows Server to **Kubernetes on Linux**, improving scalability and reliability
-- Design and rollout of a full **observability stack (ClickStack + Sentry)** achieving 99.998% uptime
-- Adoption of **Terraform + Ansible** for reproducible IaC environments
-- Reference modular architecture for all backend services (**.NET 9**)
-- Migration of core services from **.NET 6 → 9**, **Angular 15 → 19**
-- Building a **remote-first engineering culture** with RFCs, async communication, and strong ownership
+Right now, I work on **AI platforms and LLM serving**: running models on Kubernetes, designing inference infrastructure,
+setting up observability for GPU workloads, and making sure systems behave predictably in production — not just in demos.
 
-## Transition and Focus
+## What I care about
 
-My current professional focus is on **AI Infrastructure and Inference Engineering** — where backend systems,
-cloud-native infrastructure, and machine learning serving converge.
+I'm especially interested in the space where **backend engineering, infrastructure, and applied AI** meet:
 
-I’m building hands-on expertise in:
+- LLM serving and inference systems (latency, throughput, cost)
+- Production-grade AI platforms, not toy setups
+- Observability, evaluation, and failure modes
+- Distributed systems that are simple enough to maintain
+- Tooling that helps teams move fast *without* breaking everything
 
-- **LLM and model serving** (vLLM, Triton, Ray Serve)
-- **Observability and performance** for GPU inference workloads
-- **Distributed systems** and **scalable compute pipelines**
-- **Infrastructure as Code**, container orchestration, and reproducible environments
+I enjoy work that's close to real users and real constraints — whether that's internal platforms or customer-facing products.
 
-My long-term goal is to **contribute to frontier AI labs** and help scale intelligent applications from research
-to reliable production systems.
+## A bit of background
 
-## Background
+Over the years I've worked in startups and large companies across **Russia and Germany**, including fintech, data privacy,
+media, and B2B SaaS.
 
-Before Planfact, I worked in startups and enterprise environments across **Germany and Russia** — from fintech and
-data privacy to retail and media.
+I've been a CTO, a principal engineer, and an individual contributor — and I'm most comfortable in roles where I can
+combine technical depth with systems thinking and pragmatic decision‑making.
 
-Some highlights include:
+Somewhere along the way I learned that clean abstractions matter, but boring infrastructure matters more.
 
-- **Statice.ai** — Designed backend and infra components for a data privacy platform (Python, FastAPI, K8s, GCP)
-- **X5 Retail Group** — Launched *food.ru*, #1 media platform about food in Russia, awarded *Runet Prize 2021*
-- **Clark.de (Series A)** — Built integrations with **N26 Bank**, enabling in-app insurance sign-up
-- **Payler** — Designed and launched a payment gateway, transforming the company into an international payment provider
+## Outside of work
 
-## Education
+I like spending time with my family, reading books and articles on the Internet, and exploring new places and cultures.
+Nothing fancy, I guess.
 
-Master’s degree in **Applied Mathematics and Computer Science** from *Bryansk State University*.
-Since 2024, I’ve been continuously expanding my knowledge in **ML systems** and **AI infrastructure design**.
+This site is a place where I share notes, ideas, and things I've learned — mostly for myself, but hopefully useful to others too.
