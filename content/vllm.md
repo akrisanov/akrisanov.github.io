@@ -1,7 +1,7 @@
 +++
 title = "Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference"
 description = "Why traditional LLM serving wastes GPU memory – and how vLLM’s PagedAttention model enables larger batches, higher throughput, and more predictable latency."
-date = 2025-09-10
+date = 2026-01-27
 draft = false
 
 [taxonomies]
