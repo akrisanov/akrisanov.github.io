@@ -1,0 +1,548 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=7cb460406165e24193ad" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="en" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Andrey Krisanov Atom Feed"
+  href="https://akrisanov.com/atom.xml" />
+<link rel="alternate" type="application/rss+xml" title="Andrey Krisanov RSS Feed"
+  href="https://akrisanov.com/rss.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>vLLM Metrics in Production | Andrey Krisanov</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Andrey Krisanov" />
+<meta name="description" content="A hands-on guide to vLLM monitoring: the key Prometheus metrics (TTFT, TPOT, queueing, KV cache, swapping), Grafana panels, and alert rules that help you debug latency and plan capacity." />
+<link rel="canonical" href="https://akrisanov.com/vllm-metrics/" />
+<link rel="alternate" hreflang="en" href="https://akrisanov.com/vllm-metrics/" />
+<link rel="alternate" hreflang="x-default" href="https://akrisanov.com/vllm-metrics/" />
+<meta name="keywords" content="vLLM metrics, vLLM monitoring, Prometheus, Grafana, TTFT, time to first token, TPOT, time per output token, KV cache, swapping, LLM latency, LLM throughput, inference performance, capacity planning, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/vllm-metrics/" />
+<meta name="twitter:url" content="https://akrisanov.com/vllm-metrics/" />
+<meta property="og:description" content="A hands-on guide to vLLM monitoring: the key Prometheus metrics (TTFT, TPOT, queueing, KV cache, swapping), Grafana panels, and alert rules that help you debug latency and plan capacity." />
+<meta name="twitter:description" content="A hands-on guide to vLLM monitoring: the key Prometheus metrics (TTFT, TPOT, queueing, KV cache, swapping), Grafana panels, and alert rules that help you debug latency and plan capacity." />
+<meta property="og:title" content="vLLM Metrics in Production | Andrey Krisanov" />
+<meta name="twitter:title" content="vLLM Metrics in Production | Andrey Krisanov" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:site_name" content="Andrey Krisanov" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2026-01-28" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "vLLM Metrics in Production",
+	"url": "https://akrisanov.com/vllm-metrics/",
+	"inLanguage": "en",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/photo.png",
+	"datePublished": "2026-01-28T00:00:00+00:00",
+	"dateModified": "2026-01-28T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com" title="Andrey Krisanov"><big>Andrey Krisanov</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/about/"
+                  > About 
+                </a></li><li><a class="s95" href="https://akrisanov.com/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true" title="Posts"></i>
+                
+                </a></li>
+            <li><div class="dropdown"><i class="svgs world" type="reset" role="button" tabindex="0" aria-label="English"></i>
+                <div class="dropdown-content">
+                <span>English</span><a href="https://akrisanov.com/ru/vllm-metrics/">Русский</a></div>
+            </div></li><li>
+          <i type="reset" id="mode" class="js svgs adjust" role="button" tabindex="0"
+            title="Switch Mode"
+            aria-label="Switch Mode"></i></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Search">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Search"
+        aria-label="Search" title="Search" />
+                <button type="submit" title="Search" aria-label="Search" class="svgs search"></button>
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/vllm-metrics/">vLLM Metrics in Production</a></h1>
+
+<span class="s95" > January 28, 2026<span class="hpad">·</span> #<a
+    href="https://akrisanov.com/tags/vllm/">vllm</a>  #<a
+    href="https://akrisanov.com/tags/llm/">llm</a>  #<a
+    href="https://akrisanov.com/tags/inference/">inference</a>  #<a
+    href="https://akrisanov.com/tags/metrics/">metrics</a>  #<a
+    href="https://akrisanov.com/tags/performance/">performance</a>  #<a
+    href="https://akrisanov.com/tags/monitoring/">monitoring</a> </span>  <h2 id="why-this-cheat-sheet-exists">Why this cheat sheet exists</h2>
+<p>If you operate vLLM in production, you already know the feeling: the model is "up", GPUs look busy,
+but users complain that the chat is sluggish. Someone suggests "add more GPUs", someone else says
+"the prompts got longer", and the discussion goes in circles.</p>
+<p>The fastest way to stop guessing is to watch a small set of vLLM metrics and interpret them consistently.</p>
+<p>This post is a practical playbook for software and AI engineers:</p>
+<ul>
+<li>what each metric <em>really</em> tells you</li>
+<li>how to query it in Prometheus</li>
+<li>what actions typically fix the problem</li>
+</ul>
+<p>It's intentionally opinionated and optimized for on-call reality.</p>
+<h2 id="how-vllm-metrics-are-named">How vLLM metrics are named</h2>
+<p>vLLM exports Prometheus metrics with the <code>vllm:</code> prefix. When Prometheus scrapes them, the colon becomes an underscore.</p>
+<ul>
+<li><code>vllm:num_requests_running</code> becomes <code>vllm_num_requests_running</code></li>
+</ul>
+<p>Also pay attention to <strong>metric types</strong>, because they decide how you query:</p>
+<ul>
+<li><strong>Latency</strong> metrics are <strong>histograms</strong> (<code>*_seconds_bucket</code>). You compute percentiles with <code>histogram_quantile()</code>.</li>
+<li><strong>Throughput</strong> metrics are <strong>counters</strong> (<code>*_total</code>). You compute rates with <code>rate()</code>.</li>
+<li><strong>State / saturation</strong> metrics are <strong>gauges</strong>. You graph them directly and alert on thresholds.</li>
+</ul>
+<p>One more thing: vLLM shows you what happens <strong>inside the inference engine</strong>. For end-to-end production visibility,
+you still need gateway metrics (HTTP status codes, upstream latency, timeouts) and infrastructure metrics
+(GPU clocks/thermals/memory).</p>
+<h2 id="the-two-latency-numbers-that-define-user-experience">The two latency numbers that define user experience</h2>
+<p>In practice, you can reduce "LLM feels slow" to two metrics:</p>
+<p><strong>TTFT (Time To First Token)</strong> — how quickly the user sees <em>anything</em></p>
+<ul>
+<li>Metric: <code>vllm:time_to_first_token_seconds</code></li>
+<li>Includes queueing + prefill</li>
+<li>This is the metric that makes chat feel "snappy" or "dead"</li>
+</ul>
+<p><strong>TPOT (Time Per Output Token)</strong> — how fast text streams once it starts</p>
+<ul>
+<li>Metric: <code>vllm:time_per_output_token_seconds</code></li>
+<li>Mostly decode phase</li>
+<li>This is what users perceive as "typing speed"</li>
+</ul>
+<p>There are also two supporting latency metrics that help you pinpoint the cause:</p>
+<ul>
+<li><strong>Queue Time</strong>: <code>vllm:request_queue_time_seconds</code></li>
+<li><strong>E2E latency</strong>: <code>vllm:e2e_request_latency_seconds</code></li>
+</ul>
+<h3 id="promql-the-percentile-queries-you-ll-actually-use">PromQL: the percentile queries you'll actually use</h3>
+<h3 id="p95-ttft">P95 TTFT</h3>
+<pre data-lang="promql" style="background-color:#3b224c;color:#dbbfef;" class="language-promql "><code class="language-promql" data-lang="promql"><span>histogram_quantile(
+</span><span>  0.95,
+</span><span>  sum by (le) (rate(vllm_time_to_first_token_seconds_bucket[5m]))
+</span><span>)
+</span></code></pre>
+<h3 id="p99-tpot">P99 TPOT</h3>
+<pre data-lang="promql" style="background-color:#3b224c;color:#dbbfef;" class="language-promql "><code class="language-promql" data-lang="promql"><span>histogram_quantile(
+</span><span>  0.99,
+</span><span>  sum by (le) (rate(vllm_time_per_output_token_seconds_bucket[5m]))
+</span><span>)
+</span></code></pre>
+<h3 id="p95-queue-time">P95 Queue Time</h3>
+<pre data-lang="promql" style="background-color:#3b224c;color:#dbbfef;" class="language-promql "><code class="language-promql" data-lang="promql"><span>histogram_quantile(
+</span><span>  0.95,
+</span><span>  sum by (le) (rate(vllm_request_queue_time_seconds_bucket[5m]))
+</span><span>)
+</span></code></pre>
+<blockquote>
+<p>vLLM reports latencies in <strong>seconds</strong>. If your brain works in milliseconds, just set the Grafana panel unit to <code>Time → milliseconds (ms)</code>.</p>
+</blockquote>
+<h3 id="the-interpretation-shortcut">The interpretation shortcut</h3>
+<p>This is the fastest diagnostic rule I know:</p>
+<ul>
+<li><strong>Queue Time grows, TPOT stays stable</strong> → you're short on <em>capacity</em> (not enough vLLM replicas / GPU capacity)</li>
+<li><strong>TPOT grows</strong> → generation slowed down (often long contexts, GPU contention, throttling, or overly aggressive concurrency)</li>
+</ul>
+<p>Keep that in your head. It prevents most "random tuning".</p>
+<h2 id="throughput-are-we-doing-useful-work">Throughput: are we doing useful work?</h2>
+<p>Latency tells you what users feel. Throughput tells you whether your system is doing real work.</p>
+<p>vLLM exposes token counters:</p>
+<ul>
+<li>Prompt (input) tokens: <code>vllm:prompt_tokens_total</code></li>
+<li>Generated (output) tokens: <code>vllm:generation_tokens_total</code></li>
+</ul>
+<h3 id="promql">PromQL</h3>
+<h3 id="input-tokens-per-second">Input tokens per second</h3>
+<pre data-lang="promql" style="background-color:#3b224c;color:#dbbfef;" class="language-promql "><code class="language-promql" data-lang="promql"><span>sum(rate(vllm_prompt_tokens_total[5m]))
+</span></code></pre>
+<h3 id="output-tokens-per-second">Output tokens per second</h3>
+<pre data-lang="promql" style="background-color:#3b224c;color:#dbbfef;" class="language-promql "><code class="language-promql" data-lang="promql"><span>sum(rate(vllm_generation_tokens_total[5m]))
+</span></code></pre>
+<p>If output tokens/s drops while traffic stays similar, you're usually looking at <strong>cache pressure</strong>,
+<strong>swapping</strong>, or <strong>too much concurrency</strong>.</p>
+<h2 id="saturation-concurrency-how-close-are-we-to-the-cliff">Saturation &amp; concurrency: how close are we to the cliff?</h2>
+<p>When a system degrades, it rarely does it politely. For vLLM, the "cliff" is typically KV cache pressure and swapping.</p>
+<h3 id="request-state-scheduler-pressure">Request state (scheduler pressure)</h3>
+<ul>
+<li><strong>Running</strong>: <code>vllm:num_requests_running</code> — requests actively executing on GPU</li>
+<li><strong>Waiting</strong>: <code>vllm:num_requests_waiting</code> — queue size; if it's consistently &gt; 0, you're operating at/above capacity</li>
+<li><strong>Swapped</strong>: <code>vllm:num_requests_swapped</code> — requests evicted to CPU RAM (this is bad)</li>
+</ul>
+<p>If you only alert on one gauge, make it this:</p>
+<blockquote>
+<p><strong>Any swapped requests (<code>num_requests_swapped &gt; 0</code>) should be treated as a production incident.</strong></p>
+</blockquote>
+<h3 id="kv-cache-pressure-the-silent-killer">KV cache pressure (the silent killer)</h3>
+<ul>
+<li><strong>GPU cache usage</strong>: <code>vllm:gpu_cache_usage_perc</code> (0.0–1.0)
+<ul>
+<li>Under sustained load, a stable zone is often <strong>0.7–0.9</strong></li>
+<li>If it sits at <strong>1.0</strong>, swapping becomes likely</li>
+</ul>
+</li>
+<li><strong>CPU cache usage</strong>: <code>vllm:cpu_cache_usage_perc</code></li>
+</ul>
+<p>The reason this matters: once swapping starts, you'll see brutal latency spikes because you're moving blocks between GPU and CPU.</p>
+<h2 id="errors-why-requests-finish-and-what-abort-usually-means">Errors: why requests finish (and what "abort" usually means)</h2>
+<p>vLLM tracks why requests stop via:</p>
+<ul>
+<li><code>vllm:finished_request_total{finish_reason="..."}</code></li>
+</ul>
+<p>Common reasons:</p>
+<ul>
+<li><code>stop</code> — normal completion (EOS)</li>
+<li><code>length</code> — hit <code>max_tokens</code></li>
+<li><code>abort</code> — cancelled by user or failed due to an error</li>
+</ul>
+<h3 id="promql-breakdown-by-finish-reason">PromQL: breakdown by finish reason</h3>
+<pre data-lang="promql" style="background-color:#3b224c;color:#dbbfef;" class="language-promql "><code class="language-promql" data-lang="promql"><span>sum by (finish_reason) (rate(vllm_finished_request_total[5m]))
+</span></code></pre>
+<p>What I've seen in production:</p>
+<ul>
+<li>Spikes in <code>length</code> often mean your <code>max_tokens</code> default is too low for a real workload</li>
+<li>Spikes in <code>abort</code> often correlate with gateway timeouts, client disconnects, or engine-level failures</li>
+</ul>
+<h2 id="the-golden-signals-dashboard-for-vllm">The "golden signals" dashboard for vLLM</h2>
+<p>If you want one dashboard that's worth opening during an incident, build it around these signals:</p>
+<ol>
+<li><strong>P95 TTFT</strong> — responsiveness</li>
+<li><strong>P99 TPOT</strong> — generation speed stability</li>
+<li><strong>Queue size</strong> (<code>num_requests_waiting</code>) — capacity pressure</li>
+<li><strong>Swapped requests</strong> — must be zero</li>
+<li><strong>GPU KV cache usage</strong> — predictive saturation</li>
+<li><strong>Token throughput</strong> — real work (input/output tokens per second)</li>
+</ol>
+<h3 id="a-practical-grafana-dashboard-json">A practical Grafana dashboard JSON</h3>
+<p>You can import this as a starting point:</p>
+<pre data-lang="json" style="background-color:#3b224c;color:#dbbfef;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>  </span><span style="color:#cccccc;">&quot;dashboard&quot;</span><span>: {
+</span><span>    </span><span style="color:#cccccc;">&quot;id&quot;</span><span>: </span><span style="color:#efba5d;">null</span><span>,
+</span><span>    </span><span style="color:#cccccc;">&quot;title&quot;</span><span>: </span><span style="color:#cccccc;">&quot;vLLM Production Golden Signals&quot;</span><span>,
+</span><span>    </span><span style="color:#cccccc;">&quot;tags&quot;</span><span>: [</span><span style="color:#cccccc;">&quot;vllm&quot;</span><span>, </span><span style="color:#cccccc;">&quot;llm&quot;</span><span>, </span><span style="color:#cccccc;">&quot;inference&quot;</span><span>],
+</span><span>    </span><span style="color:#cccccc;">&quot;timezone&quot;</span><span>: </span><span style="color:#cccccc;">&quot;browser&quot;</span><span>,
+</span><span>    </span><span style="color:#cccccc;">&quot;schemaVersion&quot;</span><span>: </span><span style="color:#efba5d;">38</span><span>,
+</span><span>    </span><span style="color:#cccccc;">&quot;panels&quot;</span><span>: [
+</span><span>      {
+</span><span>        </span><span style="color:#cccccc;">&quot;title&quot;</span><span>: </span><span style="color:#cccccc;">&quot;System Saturation (GPU Cache &amp; Swapping)&quot;</span><span>,
+</span><span>        </span><span style="color:#cccccc;">&quot;type&quot;</span><span>: </span><span style="color:#cccccc;">&quot;gauge&quot;</span><span>,
+</span><span>        </span><span style="color:#cccccc;">&quot;gridPos&quot;</span><span>: { </span><span style="color:#cccccc;">&quot;h&quot;</span><span>: </span><span style="color:#efba5d;">8</span><span>, </span><span style="color:#cccccc;">&quot;w&quot;</span><span>: </span><span style="color:#efba5d;">12</span><span>, </span><span style="color:#cccccc;">&quot;x&quot;</span><span>: </span><span style="color:#efba5d;">0</span><span>, </span><span style="color:#cccccc;">&quot;y&quot;</span><span>: </span><span style="color:#efba5d;">0 </span><span>},
+</span><span>        </span><span style="color:#cccccc;">&quot;targets&quot;</span><span>: [
+</span><span>          { </span><span style="color:#cccccc;">&quot;expr&quot;</span><span>: </span><span style="color:#cccccc;">&quot;vllm_gpu_cache_usage_perc * 100&quot;</span><span>, </span><span style="color:#cccccc;">&quot;legendFormat&quot;</span><span>: </span><span style="color:#cccccc;">&quot;GPU Cache Fill %&quot; </span><span>}
+</span><span>        ],
+</span><span>        </span><span style="color:#cccccc;">&quot;fieldConfig&quot;</span><span>: {
+</span><span>          </span><span style="color:#cccccc;">&quot;defaults&quot;</span><span>: {
+</span><span>            </span><span style="color:#cccccc;">&quot;min&quot;</span><span>: </span><span style="color:#efba5d;">0</span><span>, </span><span style="color:#cccccc;">&quot;max&quot;</span><span>: </span><span style="color:#efba5d;">100</span><span>, </span><span style="color:#cccccc;">&quot;unit&quot;</span><span>: </span><span style="color:#cccccc;">&quot;percent&quot;</span><span>,
+</span><span>            </span><span style="color:#cccccc;">&quot;thresholds&quot;</span><span>: {
+</span><span>              </span><span style="color:#cccccc;">&quot;mode&quot;</span><span>: </span><span style="color:#cccccc;">&quot;absolute&quot;</span><span>,
+</span><span>              </span><span style="color:#cccccc;">&quot;steps&quot;</span><span>: [
+</span><span>                { </span><span style="color:#cccccc;">&quot;color&quot;</span><span>: </span><span style="color:#cccccc;">&quot;green&quot;</span><span>, </span><span style="color:#cccccc;">&quot;value&quot;</span><span>: </span><span style="color:#efba5d;">null </span><span>},
+</span><span>                { </span><span style="color:#cccccc;">&quot;color&quot;</span><span>: </span><span style="color:#cccccc;">&quot;orange&quot;</span><span>, </span><span style="color:#cccccc;">&quot;value&quot;</span><span>: </span><span style="color:#efba5d;">80 </span><span>},
+</span><span>                { </span><span style="color:#cccccc;">&quot;color&quot;</span><span>: </span><span style="color:#cccccc;">&quot;red&quot;</span><span>, </span><span style="color:#cccccc;">&quot;value&quot;</span><span>: </span><span style="color:#efba5d;">95 </span><span>}
+</span><span>              ]
+</span><span>            }
+</span><span>          }
+</span><span>        }
+</span><span>      },
+</span><span>      {
+</span><span>        </span><span style="color:#cccccc;">&quot;title&quot;</span><span>: </span><span style="color:#cccccc;">&quot;Active &amp; Waiting Requests&quot;</span><span>,
+</span><span>        </span><span style="color:#cccccc;">&quot;type&quot;</span><span>: </span><span style="color:#cccccc;">&quot;timeseries&quot;</span><span>,
+</span><span>        </span><span style="color:#cccccc;">&quot;gridPos&quot;</span><span>: { </span><span style="color:#cccccc;">&quot;h&quot;</span><span>: </span><span style="color:#efba5d;">8</span><span>, </span><span style="color:#cccccc;">&quot;w&quot;</span><span>: </span><span style="color:#efba5d;">12</span><span>, </span><span style="color:#cccccc;">&quot;x&quot;</span><span>: </span><span style="color:#efba5d;">12</span><span>, </span><span style="color:#cccccc;">&quot;y&quot;</span><span>: </span><span style="color:#efba5d;">0 </span><span>},
+</span><span>        </span><span style="color:#cccccc;">&quot;targets&quot;</span><span>: [
+</span><span>          { </span><span style="color:#cccccc;">&quot;expr&quot;</span><span>: </span><span style="color:#cccccc;">&quot;vllm_num_requests_running&quot;</span><span>, </span><span style="color:#cccccc;">&quot;legendFormat&quot;</span><span>: </span><span style="color:#cccccc;">&quot;Running (Concurrency)&quot; </span><span>},
+</span><span>          { </span><span style="color:#cccccc;">&quot;expr&quot;</span><span>: </span><span style="color:#cccccc;">&quot;vllm_num_requests_waiting&quot;</span><span>, </span><span style="color:#cccccc;">&quot;legendFormat&quot;</span><span>: </span><span style="color:#cccccc;">&quot;Waiting in Queue&quot; </span><span>},
+</span><span>          { </span><span style="color:#cccccc;">&quot;expr&quot;</span><span>: </span><span style="color:#cccccc;">&quot;vllm_num_requests_swapped&quot;</span><span>, </span><span style="color:#cccccc;">&quot;legendFormat&quot;</span><span>: </span><span style="color:#cccccc;">&quot;Swapped (Preemption!)&quot; </span><span>}
+</span><span>        ]
+</span><span>      },
+</span><span>      {
+</span><span>        </span><span style="color:#cccccc;">&quot;title&quot;</span><span>: </span><span style="color:#cccccc;">&quot;Latency P95 (TTFT vs TPOT)&quot;</span><span>,
+</span><span>        </span><span style="color:#cccccc;">&quot;type&quot;</span><span>: </span><span style="color:#cccccc;">&quot;timeseries&quot;</span><span>,
+</span><span>        </span><span style="color:#cccccc;">&quot;gridPos&quot;</span><span>: { </span><span style="color:#cccccc;">&quot;h&quot;</span><span>: </span><span style="color:#efba5d;">8</span><span>, </span><span style="color:#cccccc;">&quot;w&quot;</span><span>: </span><span style="color:#efba5d;">12</span><span>, </span><span style="color:#cccccc;">&quot;x&quot;</span><span>: </span><span style="color:#efba5d;">0</span><span>, </span><span style="color:#cccccc;">&quot;y&quot;</span><span>: </span><span style="color:#efba5d;">8 </span><span>},
+</span><span>        </span><span style="color:#cccccc;">&quot;targets&quot;</span><span>: [
+</span><span>          {
+</span><span>            </span><span style="color:#cccccc;">&quot;expr&quot;</span><span>: </span><span style="color:#cccccc;">&quot;histogram_quantile(0.95, sum by (le) (rate(vllm_time_to_first_token_seconds_bucket[5m])))&quot;</span><span>,
+</span><span>            </span><span style="color:#cccccc;">&quot;legendFormat&quot;</span><span>: </span><span style="color:#cccccc;">&quot;P95 TTFT&quot;
+</span><span>          },
+</span><span>          {
+</span><span>            </span><span style="color:#cccccc;">&quot;expr&quot;</span><span>: </span><span style="color:#cccccc;">&quot;histogram_quantile(0.95, sum by (le) (rate(vllm_time_per_output_token_seconds_bucket[5m])))&quot;</span><span>,
+</span><span>            </span><span style="color:#cccccc;">&quot;legendFormat&quot;</span><span>: </span><span style="color:#cccccc;">&quot;P95 TPOT&quot;
+</span><span>          }
+</span><span>        ],
+</span><span>        </span><span style="color:#cccccc;">&quot;fieldConfig&quot;</span><span>: { </span><span style="color:#cccccc;">&quot;defaults&quot;</span><span>: { </span><span style="color:#cccccc;">&quot;unit&quot;</span><span>: </span><span style="color:#cccccc;">&quot;s&quot; </span><span>} }
+</span><span>      },
+</span><span>      {
+</span><span>        </span><span style="color:#cccccc;">&quot;title&quot;</span><span>: </span><span style="color:#cccccc;">&quot;Token Throughput&quot;</span><span>,
+</span><span>        </span><span style="color:#cccccc;">&quot;type&quot;</span><span>: </span><span style="color:#cccccc;">&quot;timeseries&quot;</span><span>,
+</span><span>        </span><span style="color:#cccccc;">&quot;gridPos&quot;</span><span>: { </span><span style="color:#cccccc;">&quot;h&quot;</span><span>: </span><span style="color:#efba5d;">8</span><span>, </span><span style="color:#cccccc;">&quot;w&quot;</span><span>: </span><span style="color:#efba5d;">12</span><span>, </span><span style="color:#cccccc;">&quot;x&quot;</span><span>: </span><span style="color:#efba5d;">12</span><span>, </span><span style="color:#cccccc;">&quot;y&quot;</span><span>: </span><span style="color:#efba5d;">8 </span><span>},
+</span><span>        </span><span style="color:#cccccc;">&quot;targets&quot;</span><span>: [
+</span><span>          { </span><span style="color:#cccccc;">&quot;expr&quot;</span><span>: </span><span style="color:#cccccc;">&quot;sum(rate(vllm_generation_tokens_total[5m]))&quot;</span><span>, </span><span style="color:#cccccc;">&quot;legendFormat&quot;</span><span>: </span><span style="color:#cccccc;">&quot;Output Tokens/s&quot; </span><span>},
+</span><span>          { </span><span style="color:#cccccc;">&quot;expr&quot;</span><span>: </span><span style="color:#cccccc;">&quot;sum(rate(vllm_prompt_tokens_total[5m]))&quot;</span><span>, </span><span style="color:#cccccc;">&quot;legendFormat&quot;</span><span>: </span><span style="color:#cccccc;">&quot;Input Tokens/s&quot; </span><span>}
+</span><span>        ]
+</span><span>      }
+</span><span>    ],
+</span><span>    </span><span style="color:#cccccc;">&quot;templating&quot;</span><span>: {
+</span><span>      </span><span style="color:#cccccc;">&quot;list&quot;</span><span>: [
+</span><span>        {
+</span><span>          </span><span style="color:#cccccc;">&quot;name&quot;</span><span>: </span><span style="color:#cccccc;">&quot;datasource&quot;</span><span>,
+</span><span>          </span><span style="color:#cccccc;">&quot;type&quot;</span><span>: </span><span style="color:#cccccc;">&quot;datasource&quot;</span><span>,
+</span><span>          </span><span style="color:#cccccc;">&quot;query&quot;</span><span>: </span><span style="color:#cccccc;">&quot;prometheus&quot;</span><span>,
+</span><span>          </span><span style="color:#cccccc;">&quot;refresh&quot;</span><span>: </span><span style="color:#efba5d;">1
+</span><span>        }
+</span><span>      ]
+</span><span>    }
+</span><span>  }
+</span><span>}
+</span></code></pre>
+<h2 id="alerts-that-save-you-before-users-start-complaining">Alerts that save you before users start complaining</h2>
+<p>You don't need 30 alerts. You need 5 that are hard to ignore.</p>
+<h3 id="prometheusrule-example">PrometheusRule example</h3>
+<pre data-lang="yaml" style="background-color:#3b224c;color:#dbbfef;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#ffffff;">groups</span><span>:
+</span><span>- </span><span style="color:#ffffff;">name</span><span>: </span><span style="color:#cccccc;">vLLM.Alerts
+</span><span>  </span><span style="color:#ffffff;">rules</span><span>:
+</span><span>
+</span><span>    - </span><span style="color:#ffffff;">alert</span><span>: </span><span style="color:#cccccc;">vLLMHighTTFT
+</span><span>      </span><span style="color:#ffffff;">expr</span><span>: </span><span style="color:#cccccc;">histogram_quantile(0.95, sum by (le, instance) (rate(vllm_time_to_first_token_seconds_bucket[5m]))) &gt; 3
+</span><span>      </span><span style="color:#ffffff;">for</span><span>: </span><span style="color:#cccccc;">5m
+</span><span>      </span><span style="color:#ffffff;">labels</span><span>:
+</span><span>        </span><span style="color:#ffffff;">severity</span><span>: </span><span style="color:#cccccc;">critical
+</span><span>      </span><span style="color:#ffffff;">annotations</span><span>:
+</span><span>        </span><span style="color:#ffffff;">summary</span><span>: </span><span style="color:#cccccc;">&quot;High TTFT on instance {{ $labels.instance }}&quot;
+</span><span>        </span><span style="color:#ffffff;">description</span><span>: </span><span style="color:#cccccc;">&quot;P95 TTFT is {{ $value | printf </span><span style="color:#efba5d;">\&quot;</span><span style="color:#cccccc;">%.2f</span><span style="color:#efba5d;">\&quot;</span><span style="color:#cccccc;"> }}s. Users see long delays before the first token.&quot;
+</span><span>
+</span><span>    - </span><span style="color:#ffffff;">alert</span><span>: </span><span style="color:#cccccc;">vLLMQueueBacklog
+</span><span>      </span><span style="color:#ffffff;">expr</span><span>: </span><span style="color:#cccccc;">histogram_quantile(0.95, sum by (le, instance) (rate(vllm_request_queue_time_seconds_bucket[5m]))) &gt; 5
+</span><span>      </span><span style="color:#ffffff;">for</span><span>: </span><span style="color:#cccccc;">2m
+</span><span>      </span><span style="color:#ffffff;">labels</span><span>:
+</span><span>        </span><span style="color:#ffffff;">severity</span><span>: </span><span style="color:#cccccc;">warning
+</span><span>      </span><span style="color:#ffffff;">annotations</span><span>:
+</span><span>        </span><span style="color:#ffffff;">summary</span><span>: </span><span style="color:#cccccc;">&quot;Requests are queuing on {{ $labels.instance }}&quot;
+</span><span>        </span><span style="color:#ffffff;">description</span><span>: </span><span style="color:#cccccc;">&quot;P95 Queue Time is {{ $value | printf </span><span style="color:#efba5d;">\&quot;</span><span style="color:#cccccc;">%.2f</span><span style="color:#efba5d;">\&quot;</span><span style="color:#cccccc;"> }}s. Engine cannot keep up.&quot;
+</span><span>
+</span><span>    - </span><span style="color:#ffffff;">alert</span><span>: </span><span style="color:#cccccc;">vLLMRequestSwapping
+</span><span>      </span><span style="color:#ffffff;">expr</span><span>: </span><span style="color:#cccccc;">vllm_num_requests_swapped &gt; 0
+</span><span>      </span><span style="color:#ffffff;">for</span><span>: </span><span style="color:#cccccc;">1m
+</span><span>      </span><span style="color:#ffffff;">labels</span><span>:
+</span><span>        </span><span style="color:#ffffff;">severity</span><span>: </span><span style="color:#cccccc;">critical
+</span><span>      </span><span style="color:#ffffff;">annotations</span><span>:
+</span><span>        </span><span style="color:#ffffff;">summary</span><span>: </span><span style="color:#cccccc;">&quot;vLLM is swapping requests to CPU&quot;
+</span><span>        </span><span style="color:#ffffff;">description</span><span>: </span><span style="color:#cccccc;">&quot;Instance {{ $labels.instance }} has {{ $value }} swapped requests. This indicates severe KV cache pressure and causes latency spikes.&quot;
+</span><span>
+</span><span>    - </span><span style="color:#ffffff;">alert</span><span>: </span><span style="color:#cccccc;">vLLMGPUCacheFull
+</span><span>      </span><span style="color:#ffffff;">expr</span><span>: </span><span style="color:#cccccc;">vllm_gpu_cache_usage_perc &gt; 0.95
+</span><span>      </span><span style="color:#ffffff;">for</span><span>: </span><span style="color:#cccccc;">5m
+</span><span>      </span><span style="color:#ffffff;">labels</span><span>:
+</span><span>        </span><span style="color:#ffffff;">severity</span><span>: </span><span style="color:#cccccc;">warning
+</span><span>      </span><span style="color:#ffffff;">annotations</span><span>:
+</span><span>        </span><span style="color:#ffffff;">summary</span><span>: </span><span style="color:#cccccc;">&quot;GPU KV Cache is nearly full&quot;
+</span><span>        </span><span style="color:#ffffff;">description</span><span>: </span><span style="color:#cccccc;">&quot;Cache usage on {{ $labels.instance }} is {{ $value | printf </span><span style="color:#efba5d;">\&quot;</span><span style="color:#cccccc;">%.2f</span><span style="color:#efba5d;">\&quot;</span><span style="color:#cccccc;"> }} (fraction). Expect queueing or swapping soon.&quot;
+</span><span>
+</span><span>    - </span><span style="color:#ffffff;">alert</span><span>: </span><span style="color:#cccccc;">vLLMHighAbortRate
+</span><span>      </span><span style="color:#ffffff;">expr</span><span>: </span><span style="color:#eccdbb;">|
+</span><span style="color:#cccccc;">        sum by (instance) (rate(vllm_finished_request_total{finish_reason=&quot;abort&quot;}[5m]))
+</span><span style="color:#cccccc;">        /
+</span><span style="color:#cccccc;">        sum by (instance) (rate(vllm_finished_request_total[5m])) &gt; 0.1
+</span><span>      </span><span style="color:#ffffff;">for</span><span>: </span><span style="color:#cccccc;">2m
+</span><span>      </span><span style="color:#ffffff;">labels</span><span>:
+</span><span>        </span><span style="color:#ffffff;">severity</span><span>: </span><span style="color:#cccccc;">critical
+</span><span>      </span><span style="color:#ffffff;">annotations</span><span>:
+</span><span>        </span><span style="color:#ffffff;">summary</span><span>: </span><span style="color:#cccccc;">&quot;High abort rate on {{ $labels.instance }}&quot;
+</span><span>        </span><span style="color:#ffffff;">description</span><span>: </span><span style="color:#cccccc;">&quot;Abort ratio &gt; 10% (current: {{ $value | printf </span><span style="color:#efba5d;">\&quot;</span><span style="color:#cccccc;">%.2f</span><span style="color:#efba5d;">\&quot;</span><span style="color:#cccccc;"> }}). Investigate client timeouts and engine errors.&quot;
+</span></code></pre>
+<h2 id="runbook-metrics-diagnosis-action">Runbook: metrics → diagnosis → action</h2>
+<p>When an alert fires or users complain, here's a quick guide to interpret the signals and take action.</p>
+<h3 id="scenario-1-ttft-is-high">Scenario 1: TTFT is high</h3>
+<h4 id="what-you-see">What you see</h4>
+<ul>
+<li>P95 TTFT rises</li>
+<li>Queue Time rises</li>
+<li><code>num_requests_waiting</code> &gt; 0</li>
+</ul>
+<h4 id="what-it-usually-means">What it usually means</h4>
+<ul>
+<li>You're under-provisioned for current RPS, <em>or</em> prompts got longer (prefill became expensive).</li>
+</ul>
+<h4 id="what-to-do">What to do</h4>
+<ul>
+<li>Scale out (more vLLM replicas / GPU nodes)</li>
+<li>If scaling is slow: reduce concurrency temporarily to avoid swapping spirals</li>
+<li>Consider routing “cheap/system” prompts to a smaller model pool</li>
+</ul>
+<h3 id="scenario-2-tpot-is-high-generation-slowed">Scenario 2: TPOT is high (generation slowed)</h3>
+<h4 id="what-you-see-1">What you see</h4>
+<ul>
+<li>P99 TPOT rises</li>
+<li>Output tokens/s drops</li>
+</ul>
+<h4 id="what-it-usually-means-1">What it usually means</h4>
+<ul>
+<li>Longer contexts / more decode work, GPU contention, throttling, or too aggressive concurrency.</li>
+</ul>
+<h4 id="what-to-do-1">What to do</h4>
+<ul>
+<li>Check GPU-level signals (clocks, thermals, power limits, utilization)</li>
+<li>Reduce concurrency limits (e.g., <code>max_num_seqs</code>) if decode becomes unstable</li>
+<li>Revisit prompt/output length distributions; enforce sane <code>max_tokens</code> defaults</li>
+</ul>
+<h3 id="scenario-3-swapping-detected">Scenario 3: Swapping detected</h3>
+<h4 id="what-you-see-2">What you see</h4>
+<ul>
+<li><code>num_requests_swapped</code> &gt; 0</li>
+<li>Latency spikes; throughput collapses</li>
+</ul>
+<h4 id="what-it-means">What it means</h4>
+<ul>
+<li>KV cache doesn’t fit the current working set (too many concurrent contexts).</li>
+</ul>
+<h4 id="what-to-do-in-order">What to do (in order)</h4>
+<ol>
+<li>Reduce load or concurrency fast (stabilize the system)</li>
+<li>Reduce memory pressure (often: reduce <code>max_num_batched_tokens</code>)</li>
+<li>Scale out (more replicas / more GPU capacity)</li>
+<li>Separate model pools and route workloads more carefully</li>
+</ol>
+<h3 id="scenario-4-abort-rate-spikes">Scenario 4: Abort rate spikes</h3>
+<h4 id="what-you-see-3">What you see</h4>
+<ul>
+<li><code>finish_reason="abort"</code> rises</li>
+</ul>
+<h4 id="what-it-usually-means-2">What it usually means</h4>
+<ul>
+<li>Client disconnects / gateway timeouts, or engine-level failures.</li>
+</ul>
+<h4 id="what-to-do-2">What to do</h4>
+<ul>
+<li>Check gateway timeout configs (upstream read timeouts, streaming timeouts)</li>
+<li>Inspect vLLM logs for CUDA/runtime errors</li>
+<li>Correlate abort spikes with queue time spikes (clients often give up)</li>
+</ul>
+<h2 id="final-checklist">Final checklist</h2>
+<ul>
+<li><strong>One golden signals dashboard</strong>: TTFT, TPOT, queue, swapped, KV cache, tokens/s</li>
+<li><strong>Gateway metrics</strong>: HTTP codes, upstream latency, timeouts (otherwise you'll misdiagnose aborts)</li>
+<li><strong>Five alerts</strong>: high TTFT, backlog, swapping, KV cache near full, abort ratio spike</li>
+<li><strong>A runbook</strong>: "queue vs TPOT vs swapping" → clear actions</li>
+</ul>
+<p>If you want one mental model: <strong>queueing means you’re out of capacity; swapping means you’ve crossed the line.</strong></p>
+
+    <nav>
+      <div>
+      </div>
+      <div>
+        <a href="https://akrisanov.com/vllm/"> Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference &#8250;</a>
+      </div>
+    </nav>
+</article>
+  </main>
+  <footer>
+    <hr />
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Andrey Krisanov</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Sitemap "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Sitemap "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/links"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Contacts "
+          ><i class="fa fa-address-card" aria-hidden="true" title=" Contacts "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer><span class="topout">
+  <span class="topleft"> </span
+  ><a href="#" class="top" title="Back to Top"
+    ><i class="svgs svgh angu"></i></a
+  >
+</span>
+</body>
+</html>
