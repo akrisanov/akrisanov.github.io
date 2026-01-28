@@ -8,7 +8,7 @@ draft = false
 tags = ["vllm", "llm", "inference"]
 
 [extra]
-keywords = "vllm, LLM, inference, serving, AI, backend, infrastructure"
+keywords = "vLLM, LLM, inference, serving, AI, backend, infrastructure"
 +++
 
 If you’ve ever tried to serve large language models at scale, you’ve probably hit the same wall:
@@ -17,7 +17,7 @@ VRAM runs out much earlier than expected, batching stops scaling, and latency be
 [vLLM](https://vllm.ai/) exists almost entirely to fix this.
 
 At its core, vLLM is a high-performance LLM inference engine that dramatically improves GPU utilization.
-The key idea behind it is [PagedAttention](https://arxiv.org/abs/2309.06180) — a different way to manage
+The key idea behind it is [PagedAttention](https://arxiv.org/abs/2309.06180) – a different way to manage
 the KV-cache that removes most of the memory waste common in traditional LLM serving stacks.
 
 Let’s break down why this is such a big deal.
@@ -29,8 +29,8 @@ must live in a single contiguous block of GPU memory.
 
 There’s a catch: you don’t know in advance how long the model’s answer will be.
 
-So the system plays it safe and reserves memory for the maximum context length — say,
-2048 or 4096 tokens — for every request.
+So the system plays it safe and reserves memory for the maximum context length – say,
+2048 or 4096 tokens – for every request.
 
 The result?
 
@@ -47,9 +47,9 @@ PagedAttention takes inspiration from virtual memory and paging in operating sys
 Instead of allocating one big contiguous block per request, it does this:
 
 1. **Split KV-cache into fixed-size blocks.** Each request’s KV-cache is divided into blocks (for example, 16 or 32 tokens per block).
-2. **No need for physical continuity.** These blocks can live anywhere in VRAM — they don’t have to be next to each other.
+2. **No need for physical continuity.** These blocks can live anywhere in VRAM – they don’t have to be next to each other.
 3. **Virtual addressing with a Block Table.** vLLM keeps a mapping from logical token order to physical memory blocks on the GPU.
-4. **Allocate memory only when needed.** New blocks are allocated only when new tokens are generated — no upfront over-reservation.
+4. **Allocate memory only when needed.** New blocks are allocated only when new tokens are generated – no upfront over-reservation.
 
 This single change unlocks most of vLLM’s performance gains.
 
@@ -76,7 +76,7 @@ In practice, this enables:
 
 ### True continuous batching
 
-New requests can be added as soon as finished ones free blocks — no need to wait for a full batch boundary.
+New requests can be added as soon as finished ones free blocks – no need to wait for a full batch boundary.
 
 ### Memory sharing (prefix / prompt caching)
 
@@ -89,7 +89,7 @@ This can save up to ~55% of KV-cache memory.
 
 ### Better TTFT under load (indirectly)
 
-PagedAttention doesn’t speed up the first token itself, but higher throughput clears queues faster —
+PagedAttention doesn’t speed up the first token itself, but higher throughput clears queues faster –
 reducing queue time, which users perceive as better TTFT.
 
 ### Graceful preemption and swapping
@@ -113,7 +113,7 @@ Smaller blocks = better memory efficiency, higher overhead.
 
 Larger blocks = lower overhead, more wasted tail space.
 
-There’s no universal best value — it depends on workload shape.
+There’s no universal best value – it depends on workload shape.
 
 ## A Note About Prefill vs Decode
 
@@ -150,4 +150,4 @@ If you care about:
 - stable latency under load
 - efficient use of expensive GPUs
 
-then understanding vLLM is no longer optional — it’s baseline knowledge for modern LLM infrastructure.
+then understanding vLLM is no longer optional – it’s baseline knowledge for modern LLM infrastructure.
