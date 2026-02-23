@@ -84,7 +84,7 @@ series_items = 9  # Max number of items to display in series list, use 0 to disa
 # Use numeric pagination on index/sections
 numpagination = true
 
-meta_index = { position = "bottom", size = "s90", author = false, readtime = false, readstring = "min", date = true, updated = false, categories_tags = true, divider = "·" }
+meta_index = { position = "bottom", size = "s90", author = false, readtime = false, readstring = "min", date = true, updated = false, categories_tags = false, divider = "·" }
 meta_post = { position = "top", size = "s95", author = false, readtime = false, readstring = "min read", date = true, updated = true, categories_tags = true, divider = "·" }
 
 hide_section_dates = false        # hides the date for sections that use posts.html as their template.
@@ -106,8 +106,7 @@ foothr = false   # show or hide horizontal rule above footer
 
 ### $CURRENT_YEAR and $SITE_TITLE can be used anywhere within the copyright, you can change their position or you can also delete them and type whatever you want instead.
 #copyright = false # set to false to disable the copyright.
-copyright_override = '© $CURRENT_YEAR $SITE_TITLE'
-# copyright_override = '© $CURRENT_YEAR $SITE_TITLE • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.'
+copyright_override = '© $CURRENT_YEAR $SITE_TITLE • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.'
 
 
 ####################################################################################################

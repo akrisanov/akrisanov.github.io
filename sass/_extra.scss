@@ -101,7 +101,7 @@ body {
 header,
 main,
 footer {
-    max-width: 680px;
+    max-width: 620px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -468,6 +468,32 @@ header nav #searchbox #suggestions span:nth-child(2) {
 }
 
 @media (max-width: 760px) {
+    header > nav > div:nth-child(2) {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    header > nav > div:nth-child(2) > div:first-child {
+        width: 100%;
+    }
+
+    header > nav > div:nth-child(2) > div:first-child > ul {
+        justify-content: center;
+    }
+
+    header > nav > div:nth-child(2) > div:last-child {
+        width: 100%;
+        margin-top: 0.32rem;
+    }
+
+    header nav #searchbox {
+        width: 100%;
+    }
+
+    header nav #searchbox .searchd {
+        width: 100%;
+    }
+
     header nav ul li a,
     header nav ul li .header-chip {
         padding: 0.22rem 0.44rem;
@@ -547,6 +573,53 @@ footer > .c > nav:last-of-type a i {
     margin: 0;
 }
 
+/* TOC UX polish ----------------------------------------------------------------------------- */
+
+.toc-block {
+    padding: 0.45rem 0.52rem 0.65rem;
+}
+
+.toc-block .toc-title {
+    margin: 0.15rem 0.12rem 0.45rem;
+    color: var(--f1);
+}
+
+.toc-block .toc-item {
+    margin: 0;
+}
+
+.toc-block .toc-link {
+    display: block;
+    padding: 0.22rem 0.42rem;
+    border-radius: 0.44rem;
+    line-height: 1.35;
+    text-decoration: none;
+    color: color-mix(in srgb, var(--f1) 88%, var(--c1));
+}
+
+.toc-block .toc-item-child {
+    margin-left: 0.42rem;
+    border-left: 2px solid color-mix(in srgb, var(--c3) 68%, var(--c2));
+    padding-left: 0.28rem;
+}
+
+.toc-block .toc-item-child .toc-link {
+    padding-top: 0.18rem;
+    padding-bottom: 0.18rem;
+}
+
+.toc-block .toc-link:hover,
+.toc-block .toc-link:focus-visible {
+    background: color-mix(in srgb, var(--c2) 66%, var(--c1));
+    color: var(--f1);
+}
+
+.toc-block .toc-link.is-active {
+    background: color-mix(in srgb, var(--c2) 58%, var(--c1));
+    color: var(--a1);
+    font-weight: 600;
+}
+
 /* Paginator UX ------------------------------------------------------------------------------- */
 
 main nav.vpad {
@@ -618,16 +691,26 @@ article > span.s95 {
     color: color-mix(in srgb, var(--f1) 78%, var(--c1));
 }
 
+article > span.s95 .post-date,
+article > span.s95 .post-updated {
+    display: inline-block;
+    margin: 0 0.5rem 0 0;
+    padding: 0;
+    line-height: 1.35;
+}
+
+article > span.s95 .post-updated {
+    opacity: 0.85;
+}
+
 article > span.s95 .hpad {
     opacity: 0.5;
 }
 
 article > span.s95 a {
     display: inline-block;
-    margin: 0.16rem 0.24rem 0.16rem 0;
-    padding: 0.08rem 0.46rem;
-    border: 1px solid var(--c3);
-    border-radius: 999px;
+    margin: 0.08rem 0.3rem 0.08rem 0;
+    padding: 0;
     text-decoration: none;
     font-size: 0.88em;
     font-weight: 500;
@@ -635,8 +718,84 @@ article > span.s95 a {
 
 article > span.s95 a:hover,
 article > span.s95 a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+article > span.s95 .post-tags {
+    display: block;
+    margin-top: 0.36rem;
+}
+
+article > span.s95 .post-tags a {
+    margin-top: 0.2rem;
+    margin-bottom: 0.05rem;
+}
+
+article nav.post-nav {
+    margin-top: 1.1rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.9rem 1.2rem;
+    align-items: start;
+}
+
+article nav.post-nav .post-nav-prev,
+article nav.post-nav .post-nav-next {
+    min-width: 0;
+}
+
+article nav.post-nav .post-nav-next {
+    justify-self: end;
+    text-align: right;
+}
+
+article nav.post-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.14rem;
+    width: 100%;
+    min-width: 0;
     text-decoration: none;
-    border-color: var(--a1);
+}
+
+article nav.post-nav .post-nav-next a {
+    align-items: flex-end;
+}
+
+article nav.post-nav .np-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    opacity: 0.78;
+}
+
+article nav.post-nav .np-title {
+    font-size: 0.93rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+    article nav.post-nav {
+        grid-template-columns: 1fr;
+    }
+
+    article nav.post-nav .post-nav-next {
+        justify-self: stretch;
+        text-align: left;
+    }
+
+    article nav.post-nav .post-nav-next a {
+        align-items: flex-start;
+    }
+}
+
+article nav.post-nav a:hover .np-title,
+article nav.post-nav a:focus-visible .np-title {
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
 
 main article h3+h3 {
@@ -780,7 +939,7 @@ pre:has(>code[data-lang="TEXT"]) {
 .home-title a { text-decoration: none; }
 .home-title a:hover, .home-title a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
 .home-meta { opacity: .9; margin-bottom: 0.4rem; }
-.home-summary { margin: 0.4rem 0 0.3rem; line-height: 1.7; max-width: 70ch; text-wrap: pretty; }
+.home-summary { margin: 0.4rem 0 0.3rem; font-size: 1rem; line-height: 1.7; max-width: 70ch; text-wrap: pretty; }
 
 /* Slightly larger article text for comfortable reading */
 main article:not(.index-card) { font-size: 1.0625rem; }

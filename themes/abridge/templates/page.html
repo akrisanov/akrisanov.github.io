@@ -162,21 +162,72 @@ page.extra.toc %} {%- set toc = page.toc %} {%- endif %} {%- if toc %}
   </div>
   {%- endif %}
 
-  <div class="blockdiv sticky">
-    <a class="b s150" href="#"
-      >{{ macros::translate(key="Index", default="Index", i18n=i18n) }}</a
-    >
+  <div class="blockdiv sticky toc-block">
+    <div class="b s150 toc-title">
+      {{ macros::translate(key="Index", default="Index", i18n=i18n) }}
+    </div>
     {%- for h in toc %}
-    <div>
-      <a href="#{{h.id | safe}}">{{ h.title }}</a>
+    <div class="toc-item">
+      <a href="#{{h.id | safe}}" class="toc-link">{{ h.title }}</a>
     </div>
     {%- if h.children %} {%- for h2 in h.children %}
-    <div class="hpad">
-      <a href="#{{h2.id | safe}}"><small>- {{ h2.title }}</small></a>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#{{h2.id | safe}}" class="toc-link"
+        ><small>{{ h2.title }}</small></a
+      >
     </div>
     {%- endfor %} {%- endif %} {%- endfor %}
   </div>
 </div>
+<script>
+  (function () {
+    var tocRoot = document.querySelector(".toc-block");
+    if (!tocRoot) return;
+
+    var links = Array.prototype.slice.call(
+      tocRoot.querySelectorAll("a.toc-link"),
+    );
+    if (!links.length) return;
+
+    var targets = links
+      .map(function (link) {
+        var id = link.getAttribute("href").slice(1);
+        return document.getElementById(id);
+      })
+      .filter(Boolean);
+
+    if (!targets.length) return;
+
+    var activeId = "";
+
+    function updateActive(id) {
+      if (!id || activeId === id) return;
+      activeId = id;
+      links.forEach(function (link) {
+        var isActive = link.getAttribute("href") === "#" + id;
+        link.classList.toggle("is-active", isActive);
+      });
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            updateActive(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: "-25% 0px -65% 0px",
+        threshold: [0, 1],
+      },
+    );
+
+    targets.forEach(function (target) {
+      observer.observe(target);
+    });
+  })();
+</script>
 {%- endif %} {%- endif %} {%- endblock toc %} {%- endblock content %} {%- block
 gotop %} {%- if page.reading_time %} {%- if page.reading_time > 2 %} {%- set
 icon_top=config.extra.icon_top | default(value="svgs svgh angu") -%}

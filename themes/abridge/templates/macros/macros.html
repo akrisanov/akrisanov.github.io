@@ -87,34 +87,31 @@
   endif %}
   {%- set lang_locale = macros::translate(key='date_locale', default='en_US', i18n=i18n) -%}
   {%- set page_date = page.date | date(format="%B %d, %Y", locale=lang_locale) -%}
-  {%- if page_date %} {{ page_date }} {%- else %} {{ page.date | date(format="%B %d, %Y") }} {%- endif %}
-  {#- divider #}
-  {%- if config.extra.meta_post.updated or config.extra.meta_post.categories_tags %}
-  {%- if config.extra.meta_post.divider %}<span class="hpad">{{ config.extra.meta_post.divider | safe }}</span>{%- else
-  %} <span class="rpad"></span> {%- endif %}{%- endif %}{% endif %}
+  {%- if page_date %}<span class="post-date">{{ page_date }}</span>{%- else %}<span class="post-date">{{ page.date |
+    date(format="%B %d, %Y") }}</span>{%- endif %}{% endif %}
 
   {#- Updated #}
   {%- if config.extra.meta_post.updated and page.updated %} {%- if config.extra.icon_date %}<i
     class="{{ config.extra.icon_date }}"></i> {% endif -%}
-  {{ macros::translate(key="Updated", default="Updated", i18n=i18n) }}:
-  {%- set lang_locale = macros::translate(key='date_locale', default='en_US', i18n=i18n) -%}
-  {%- set page_updated = page.updated | date(format="%B %d, %Y", locale=lang_locale) -%}
-  {%- if page_updated %} {{ page_updated }} {%- else %} {{ page.updated | date(format="%B %d, %Y") }} {%- endif %}
-  {#- divider #}
-  {%- if config.extra.meta_post.categories_tags %}
-  {%- if config.extra.meta_post.divider %}<span class="hpad">{{ config.extra.meta_post.divider | safe }}</span>{%- else
-  %} <span class="rpad"></span> {%- endif %}{%- endif %}{% endif %}
+  <span class="post-updated">{{ macros::translate(key="Updated", default="Updated", i18n=i18n) }}:
+    {%- set lang_locale = macros::translate(key='date_locale', default='en_US', i18n=i18n) -%}
+    {%- set page_updated = page.updated | date(format="%B %d, %Y", locale=lang_locale) -%}
+    {%- if page_updated %} {{ page_updated }} {%- else %} {{ page.updated | date(format="%B %d, %Y") }} {%- endif
+    %}</span>{%
+  endif %}
 
   {#- Categories #}
-  {%- if page.taxonomies.categories %} {%- if config.extra.icon_info %}<i class="{{ config.extra.icon_info }}"></i> {%
+  {%- if config.extra.meta_post.categories_tags and page.taxonomies.categories %} {%- if config.extra.icon_info %}<i
+    class="{{ config.extra.icon_info }}"></i> {%
   endif %} [{% for cat in page.taxonomies.categories %}<a
     href="{{ get_taxonomy_url(kind='categories', name=cat, lang=lang) | safe }}{%- if uglyurls %}index.html{%- endif %}">{{
     cat }}</a>{%- if not loop.last %}, {% endif %}{% endfor %}]{% endif %}
 
   {#- Tags #}
-  {%- if page.taxonomies.tags %} {%- for tag in page.taxonomies.tags %} #<a
-    href="{{ get_taxonomy_url(kind='tags', name=tag, lang=lang) | safe }}{%- if uglyurls %}index.html{%- endif %}">{{
-    tag }}</a> {% endfor -%}{%- endif %}</span>
+  {%- if config.extra.meta_post.categories_tags and page.taxonomies.tags %}
+  <span class="post-tags">{%- for tag in page.taxonomies.tags %}<a
+      href="{{ get_taxonomy_url(kind='tags', name=tag, lang=lang) | safe }}{%- if uglyurls %}index.html{%- endif %}">{{
+      tag }}</a>{%- endfor -%}</span>{%- endif %}</span>
   {%- endmacro meta_post %}
 
 
@@ -202,13 +199,15 @@
     else %} <span class="rpad"></span> {%- endif %}{%- endif %}{% endif %}
 
     {#- Categories #}
-    {%- if page.taxonomies.categories %} {%- if config.extra.icon_info %}<i class="{{ config.extra.icon_info }}"></i> {%
+    {%- if config.extra.meta_index.categories_tags and page.taxonomies.categories %} {%- if config.extra.icon_info %}<i
+      class="{{ config.extra.icon_info }}"></i> {%
     endif %} [{% for cat in page.taxonomies.categories %}<a
       href="{{ get_taxonomy_url(kind='categories', name=cat, lang=lang) | safe }}{%- if uglyurls %}index.html{%- endif %}">{{
       cat }}</a>{%- if not loop.last %}, {% endif %}{% endfor %}]{% endif %}
 
     {#- Tags #}
-    {%- if page.taxonomies.tags %} {%- for tag in page.taxonomies.tags %} #<a
+    {%- if config.extra.meta_index.categories_tags and page.taxonomies.tags %} {%- for tag in page.taxonomies.tags %}
+    #<a
       href="{{ get_taxonomy_url(kind='tags', name=tag, lang=lang) | safe }}{%- if uglyurls %}index.html{%- endif %}">{{
       tag }}</a> {% endfor -%}{%- endif %}</span>
     {%- endmacro meta_index %}
@@ -217,22 +216,30 @@
 
     {%- macro footer(page, config) %}
     {%- set uglyurls = config.extra.uglyurls | default(value=false) -%}
+    {%- set i18n = load_data(path="i18n/" ~ lang ~ '.toml', required=false) -%}
+    {%- if not i18n -%}{%- set i18n = load_data(path="themes/abridge/i18n/" ~ lang ~ ".toml", required=false) -%}{%-
+    endif %}
+    {%- set previous_label = macros::translate(key="Previous", default="Previous", i18n=i18n) -%}
+    {%- set next_label = macros::translate(key="Next", default="Next", i18n=i18n) -%}
     {%- if config.extra.search_library %}{%- if config.extra.search_library == "offline" %}{% set uglyurls = true %}{%
     endif %}{% endif %}
     {#- prev/next content page nextprev title pagination #}
     {%- if not config.extra.hide_page_nextprev_titles | default(value=false) %}
     {%- if page.lower or page.higher %}
-    <nav>
-      <div>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
         {%- if page.lower %}
-        <a href="{{ page.lower.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}">&#8249; {{ page.lower.title
-          | truncate(length=100) | markdown(inline=true) | safe }}</a>
+        <a href="{{ page.lower.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}"><span
+            class="np-label">&#8249; {{ previous_label }}</span><span class="np-title">{{ page.lower.title
+            | truncate(length=100) | markdown(inline=true) | safe }}</span></a>
         {%- endif %}
       </div>
-      <div>
+      <div class="post-nav-next">
         {%- if page.higher %}
-        <a href="{{ page.higher.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}"> {{ page.higher.title |
-          truncate(length=100) | markdown(inline=true) | safe }} &#8250;</a>
+        <a href="{{ page.higher.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}"><span class="np-label">{{
+            next_label }}
+            &#8250;</span><span class="np-title">{{ page.higher.title |
+            truncate(length=100) | markdown(inline=true) | safe }}</span></a>
         {%- endif %}
       </div>
     </nav>

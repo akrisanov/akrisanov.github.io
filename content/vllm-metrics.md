@@ -9,6 +9,7 @@ tags = ["vllm", "llm", "inference", "metrics", "performance", "monitoring"]
 
 [extra]
 keywords = "vLLM metrics, vLLM monitoring, Prometheus, Grafana, TTFT, time to first token, TPOT, time per output token, KV cache, swapping, LLM latency, LLM throughput, inference performance, capacity planning"
+toc = true
 +++
 
 ## Why this cheat sheet exists
