@@ -280,10 +280,13 @@ header nav ul li .header-chip {
     justify-content: center;
     gap: 0.36rem;
     padding: 0.24rem 0.5rem;
+    min-height: 2rem;
     border: 1px solid var(--c3);
     border-radius: 999px;
     background: color-mix(in srgb, var(--c2) 82%, var(--c1));
     color: var(--f1);
+    font-size: 0.84rem;
+    font-weight: 520;
     line-height: 1.15;
     text-decoration: none;
 }
@@ -291,6 +294,22 @@ header nav ul li .header-chip {
 header nav ul li .header-chip {
     font: inherit;
     cursor: pointer;
+}
+
+header nav ul > li > a,
+header nav ul > li > .header-chip,
+header nav ul > li > .dropdown > .header-chip {
+    height: 2rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+header nav ul > li > .header-chip,
+header nav ul > li > .dropdown > .header-chip {
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 header nav ul li a:hover,
@@ -312,16 +331,32 @@ header nav ul li a[aria-current="page"] {
 header nav ul li a .fa,
 header nav ul li .header-chip .svgs {
     margin: 0;
+    width: 0.95rem;
+    height: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 0.95rem;
 }
 
 header nav ul li a .nav-label,
 header nav ul li .header-chip > span {
-    font-size: 0.84rem;
-    font-weight: 520;
+    font-size: inherit;
+    font-weight: inherit;
 }
 
 header nav .dropdown .dropdown-content {
+    position: absolute;
+    top: calc(100% - 1px);
+    right: 0;
     margin-top: 0;
+    min-width: 100%;
+    padding: 0.24rem 0;
+    border: 1px solid var(--c3);
+    border-radius: 0.72rem;
+    background: color-mix(in srgb, var(--c2) 92%, var(--c1));
+    overflow: hidden;
+    z-index: 20;
 }
 
 header nav .dropdown:hover .dropdown-content,
@@ -329,15 +364,29 @@ header nav .dropdown:focus-within .dropdown-content {
     display: block;
 }
 
+header nav .dropdown:hover > .header-chip,
+header nav .dropdown:focus-within > .header-chip {
+    border-color: var(--a1);
+    background: color-mix(in srgb, var(--c2) 66%, var(--c1));
+}
+
 header nav .dropdown .dropdown-content a,
 header nav .dropdown .dropdown-content span {
     border: 0;
     border-radius: 0;
     background: transparent;
-    padding: 0.26rem 0.58rem;
-    min-width: 7.4rem;
+    padding: 0.35rem 0.64rem;
+    min-width: 7.8rem;
     text-align: left;
     justify-content: flex-start;
+}
+
+header nav .dropdown .dropdown-content > span {
+    font-size: 0.74rem;
+    font-weight: 600;
+    opacity: 0.78;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
 }
 
 header nav .dropdown .dropdown-content a:hover,
@@ -346,15 +395,101 @@ header nav .dropdown .dropdown-content a:focus-visible {
     border: 0;
 }
 
+header nav #searchbox .searchd {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 2rem;
+    border: 1px solid var(--c3);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c2) 90%, var(--c1));
+    padding: 0 0.12rem;
+}
+
+header nav #searchbox .searchd:focus-within {
+    border-color: var(--a1);
+    background: color-mix(in srgb, var(--c2) 96%, var(--c1));
+    box-shadow: 0 0 0 2px #ff990099;
+}
+
+header nav #searchbox .searchd > input {
+    width: clamp(10.2rem, 22vw, 13.2rem);
+    height: 100%;
+    padding: 0 0.54rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+}
+
+header nav #searchbox .searchd > input:focus {
+    outline: none;
+}
+
+header nav #searchbox .searchd > input:focus-visible,
+header nav #searchbox .searchd:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+header nav #searchbox .results {
+    position: relative;
+}
+
+header nav #searchbox #suggestions {
+    position: absolute;
+    right: 0;
+    left: auto;
+    width: min(32rem, calc(100vw - 2.5rem));
+    margin-top: 0.32rem;
+    border: 1px solid var(--c3);
+    border-radius: 0.72rem;
+    background: color-mix(in srgb, var(--c2) 94%, var(--c1));
+    max-height: 24rem;
+    overflow: auto;
+}
+
+header nav #searchbox #suggestions > div + div {
+    border-top: 1px solid color-mix(in srgb, var(--c3) 65%, var(--c2));
+}
+
+header nav #searchbox #suggestions a {
+    margin: 0;
+    padding: 0.48rem 0.64rem;
+}
+
+header nav #searchbox #suggestions span:first-child {
+    font-size: 0.84rem;
+}
+
+header nav #searchbox #suggestions span:nth-child(2) {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--f1) 82%, var(--c1));
+}
+
 @media (max-width: 760px) {
     header nav ul li a,
     header nav ul li .header-chip {
         padding: 0.22rem 0.44rem;
+        font-size: 0.8rem;
     }
 
-    header nav ul li a .nav-label,
-    header nav ul li .header-chip > span {
-        font-size: 0.8rem;
+    header nav ul > li > a,
+    header nav ul > li > .header-chip,
+    header nav ul > li > .dropdown > .header-chip {
+        height: 1.9rem;
+    }
+
+    header nav #searchbox .searchd {
+        height: 1.9rem;
+    }
+
+    header nav #searchbox .searchd > input {
+        width: min(26rem, calc(100vw - 2.6rem));
+    }
+
+    header nav #searchbox #suggestions {
+        width: min(30rem, calc(100vw - 2rem));
     }
 }
 
@@ -379,7 +514,7 @@ footer > .c > nav:last-of-type {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.45rem 0.55rem;
+    gap: 0.22rem 0.28rem;
     margin: 0.35rem 0 0.2rem;
 }
 

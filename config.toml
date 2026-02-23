@@ -63,7 +63,7 @@ description = "Заметки об AI-инфраструктуре, систем
 ####################################################################################################
 
 menu = [
-    { url = "about", name = "About", slash = true, blank = false, size = "s95" },
+    { url = "about", name = "About", slash = true, blank = false, size = "s95", icon = "user" },
     { url = "archive", name = "Posts", slash = true, blank = false, size = "s95", icon = "bookmark" },
     # { url = "tags", name = "Tags", slash = true, blank = false, size = "s95" },
 ]
