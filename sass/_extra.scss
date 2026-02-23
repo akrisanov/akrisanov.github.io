@@ -50,6 +50,483 @@
     }
 }
 
+/* OOCR-primer style adaptation --------------------------------------------------------------- */
+
+:root {
+    --fs: 1rem;
+    --lh: 1.7;
+    --lhh: 1.25;
+    --fh: 600;
+}
+
+:root.switch {
+    --f1: #2c2c2c;
+    --f2: #2d6a4f;
+    --c1: #fafaf8;
+    --c2: #ffffff;
+    --c3: #e0e0e0;
+    --c4: #666666;
+    --a1: #2d6a4f;
+    --a2: #235640;
+    --a3: #2d6a4f;
+    --a4: #2d6a4f;
+}
+
+:root:not(.switch) {
+    --f1: #d7e0d9;
+    --f2: #8ac8a7;
+    --c1: #0f1411;
+    --c2: #151d19;
+    --c3: #2b3530;
+    --c4: #96a39b;
+    --a1: #8ac8a7;
+    --a2: #a6dbbf;
+    --a3: #95d2b2;
+    --a4: #8ac8a7;
+}
+
+html {
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    font-family: "DM Sans", var(--ff);
+    font-size: 16px;
+    line-height: 1.7;
+    padding: 2rem 1.25rem;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+}
+
+header,
+main,
+footer {
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.title,
+.home-title {
+    font-family: "Source Serif 4", Georgia, serif;
+    color: var(--f2);
+    letter-spacing: 0;
+}
+
+h1 {
+    font-size: clamp(1.7rem, 1.52rem + 0.95vw, 1.95rem);
+    line-height: 1.25;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: clamp(1.28rem, 1.16rem + 0.65vw, 1.42rem);
+    line-height: 1.3;
+    font-weight: 600;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+
+h3 {
+    font-size: clamp(1.06rem, 1rem + 0.35vw, 1.12rem);
+    line-height: 1.35;
+    font-weight: 600;
+    margin-top: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+main article p,
+main article li {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.75;
+    text-wrap: pretty;
+}
+
+main article :where(p, ul, ol, blockquote) {
+    max-width: 66ch;
+}
+
+main article :where(pre, table, figure) {
+    max-width: 100%;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+ul,
+ol {
+    margin: 0.5rem 0 1rem 1.25rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+a {
+    font-weight: 450;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+a:hover,
+a:focus-visible {
+    text-decoration-thickness: 2px;
+}
+
+blockquote,
+table,
+code,
+pre {
+    border-color: var(--c3);
+}
+
+code,
+pre code {
+    font-family: var(--fm);
+    font-size: 0.92em;
+}
+
+code {
+    border-radius: 6px;
+    padding: 0.12em 0.34em;
+}
+
+pre > code,
+pre.giallo > code {
+    background: transparent !important;
+    border-radius: 0;
+    padding: 0;
+}
+
+pre {
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+:root.switch pre {
+    background: #ffffff;
+}
+
+:root:not(.switch) pre {
+    background: #101512;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+:root.switch code {
+    background: #f1f3ec;
+}
+
+:root.switch pre.giallo {
+    color-scheme: light !important;
+    border: 1px solid var(--c3);
+}
+
+:root.switch pre.giallo code[data-lang="plain"],
+:root.switch pre.giallo code[data-lang="text"],
+:root.switch pre.giallo code[data-lang="PLAIN"],
+:root.switch pre.giallo code[data-lang="TEXT"],
+:root.switch pre.giallo code[data-lang="plain"] .giallo-l > span,
+:root.switch pre.giallo code[data-lang="text"] .giallo-l > span,
+:root.switch pre.giallo code[data-lang="PLAIN"] .giallo-l > span,
+:root.switch pre.giallo code[data-lang="TEXT"] .giallo-l > span {
+    color: #1f2328 !important;
+    opacity: 1 !important;
+}
+
+:root:not(.switch) code {
+    background: #1b2520;
+    color: #dce6df;
+}
+
+.home-summary,
+.subtitle,
+.paper-note,
+.home-meta {
+    color: color-mix(in srgb, var(--f1) 82%, var(--c1));
+}
+
+/* Header refinement -------------------------------------------------------------------------- */
+
+header nav > div {
+    align-items: center;
+    gap: 0.7rem;
+}
+
+header nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.22rem 0.28rem;
+}
+
+header nav ul li {
+    margin: 0;
+}
+
+header nav ul li a,
+header nav ul li .header-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.36rem;
+    padding: 0.24rem 0.5rem;
+    border: 1px solid var(--c3);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c2) 82%, var(--c1));
+    color: var(--f1);
+    line-height: 1.15;
+    text-decoration: none;
+}
+
+header nav ul li .header-chip {
+    font: inherit;
+    cursor: pointer;
+}
+
+header nav ul li a:hover,
+header nav ul li a:focus-visible,
+header nav ul li .header-chip:hover,
+header nav ul li .header-chip:focus-visible {
+    border-color: var(--a1);
+    background: color-mix(in srgb, var(--c2) 66%, var(--c1));
+    text-decoration: none;
+}
+
+header nav ul li a[aria-current="page"] {
+    background: var(--a1);
+    border-color: var(--a1);
+    color: var(--c1);
+    font-weight: 700;
+}
+
+header nav ul li a .fa,
+header nav ul li .header-chip .svgs {
+    margin: 0;
+}
+
+header nav ul li a .nav-label,
+header nav ul li .header-chip > span {
+    font-size: 0.84rem;
+    font-weight: 520;
+}
+
+header nav .dropdown .dropdown-content {
+    margin-top: 0;
+}
+
+header nav .dropdown:hover .dropdown-content,
+header nav .dropdown:focus-within .dropdown-content {
+    display: block;
+}
+
+header nav .dropdown .dropdown-content a,
+header nav .dropdown .dropdown-content span {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0.26rem 0.58rem;
+    min-width: 7.4rem;
+    text-align: left;
+    justify-content: flex-start;
+}
+
+header nav .dropdown .dropdown-content a:hover,
+header nav .dropdown .dropdown-content a:focus-visible {
+    background: color-mix(in srgb, var(--c2) 62%, var(--c1));
+    border: 0;
+}
+
+@media (max-width: 760px) {
+    header nav ul li a,
+    header nav ul li .header-chip {
+        padding: 0.22rem 0.44rem;
+    }
+
+    header nav ul li a .nav-label,
+    header nav ul li .header-chip > span {
+        font-size: 0.8rem;
+    }
+}
+
+/* Footer refinement -------------------------------------------------------------------------- */
+
+footer {
+    margin-top: 1.6rem;
+    padding-bottom: 0.6rem;
+}
+
+footer hr {
+    margin: 0 0 1rem;
+    opacity: 0.45;
+}
+
+footer > .c > p {
+    margin: 0.2rem 0 0.7rem;
+    color: color-mix(in srgb, var(--f1) 75%, var(--c1));
+}
+
+footer > .c > nav:last-of-type {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem 0.55rem;
+    margin: 0.35rem 0 0.2rem;
+}
+
+footer > .c > nav:last-of-type a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    padding: 0.23rem 0.56rem;
+    border: 1px solid var(--c3);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c2) 78%, var(--c1));
+    line-height: 1;
+    text-decoration: none;
+}
+
+footer > .c > nav:last-of-type a::after {
+    content: attr(aria-label);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--f1);
+}
+
+footer > .c > nav:last-of-type a:hover,
+footer > .c > nav:last-of-type a:focus-visible {
+    border-color: var(--a1);
+    background: color-mix(in srgb, var(--c2) 60%, var(--c1));
+}
+
+footer > .c > nav:last-of-type a i {
+    margin: 0;
+}
+
+/* Paginator UX ------------------------------------------------------------------------------- */
+
+main nav.vpad {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.42rem;
+    margin-top: 1.2rem;
+}
+
+main nav.vpad a,
+main nav.vpad span {
+    min-width: 2.1rem;
+    min-height: 2.1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem 0.62rem;
+    border-radius: 999px;
+    border: 1px solid var(--c3);
+    line-height: 1;
+    text-decoration: none;
+    user-select: none;
+}
+
+main nav.vpad a.on {
+    background: color-mix(in srgb, var(--c2) 78%, var(--c1));
+    color: var(--f1);
+}
+
+main nav.vpad a.on:hover,
+main nav.vpad a.on:focus-visible {
+    border-color: var(--a1);
+    background: color-mix(in srgb, var(--c2) 60%, var(--c1));
+}
+
+main nav.vpad a.cnav {
+    background: var(--a1);
+    border-color: var(--a1);
+    color: var(--c1);
+    font-weight: 700;
+}
+
+main nav.vpad a.cnav:hover,
+main nav.vpad a.cnav:focus-visible {
+    background: var(--a1);
+    border-color: var(--a1);
+    color: var(--c1);
+}
+
+main nav.vpad span.off,
+main nav.vpad span.dis {
+    opacity: 0.55;
+    color: color-mix(in srgb, var(--f1) 70%, var(--c1));
+    background: color-mix(in srgb, var(--c2) 65%, var(--c1));
+}
+
+/* Post page tuning --------------------------------------------------------------------------- */
+
+article > h1 {
+    margin-bottom: 0.35rem;
+}
+
+article > span.s95 {
+    display: block;
+    margin: 0 0 1.35rem;
+    line-height: 1.7;
+    color: color-mix(in srgb, var(--f1) 78%, var(--c1));
+}
+
+article > span.s95 .hpad {
+    opacity: 0.5;
+}
+
+article > span.s95 a {
+    display: inline-block;
+    margin: 0.16rem 0.24rem 0.16rem 0;
+    padding: 0.08rem 0.46rem;
+    border: 1px solid var(--c3);
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.88em;
+    font-weight: 500;
+}
+
+article > span.s95 a:hover,
+article > span.s95 a:focus-visible {
+    text-decoration: none;
+    border-color: var(--a1);
+}
+
+main article h3+h3 {
+    margin-top: 1rem;
+    font-family: "DM Sans", var(--ff);
+    font-size: 1rem;
+    line-height: 1.4;
+    color: color-mix(in srgb, var(--f1) 90%, var(--c1));
+}
+
+/* Abridge shows code language labels by default; suppress noisy plain/text labels */
+pre code[data-lang="plain"]::before,
+pre code[data-lang="PLAIN"]::before,
+pre code[data-lang="text"]::before,
+pre code[data-lang="TEXT"]::before {
+    content: none;
+}
+
+pre:has(>code[data-lang="plain"]),
+pre:has(>code[data-lang="PLAIN"]),
+pre:has(>code[data-lang="text"]),
+pre:has(>code[data-lang="TEXT"]) {
+    padding-top: 0.85rem;
+}
+
 /* Homepage cards ----------------------------------------------------------------------------- */
 
 .index-card {

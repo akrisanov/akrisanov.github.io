@@ -1,4 +1,5 @@
 language_name = "English" # Shown in language picker for multi-language sites.
+Theme = "Theme"
 date_locale = "en_US"
 full_stop = "."           # Used at the end of a sentence.
 

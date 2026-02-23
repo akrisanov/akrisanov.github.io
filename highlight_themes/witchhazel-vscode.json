@@ -2,12 +2,12 @@
   "name": "Witch Hazel",
   "type": "dark",
   "colors": {
-    "editor.background": "#3B224C",
-    "editor.foreground": "#DBBFEF",
-    "editor.selectionBackground": "#540199",
-    "editor.lineHighlightBackground": "#281733",
-    "editorCursor.foreground": "#A0F28F",
-    "editorWhitespace.foreground": "#808080"
+    "editor.background": "#131917",
+    "editor.foreground": "#DCE6DF",
+    "editor.selectionBackground": "#274238",
+    "editor.lineHighlightBackground": "#1A2320",
+    "editorCursor.foreground": "#9FD5BA",
+    "editorWhitespace.foreground": "#6E7871"
   },
   "tokenColors": [
     {

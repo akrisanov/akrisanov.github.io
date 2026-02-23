@@ -83,23 +83,30 @@
                   {%- set current_url_norm = current_url | replace(from='/index.html', to='/') -%}
                   {%- set link_url_norm = link_url | replace(from='/index.html', to='/') -%}
                 {%- endif -%}
+                {%- if lang != config.default_language -%}
+                  {%- set menu_label = macros::translate(key=i.name|safe, default=i.name|safe, i18n=i18n) -%}
+                {%- else -%}
+                  {%- set menu_label = i.name | safe -%}
+                {%- endif -%}
                 <li><a{%- if i.size %} class="{{ i.size }}"{% endif %} href="{{ link_url | safe }}"
                   {% if i.blank %} target="_blank" rel="noopener noreferrer"{% endif %}
                   {%- if current_url and current_url_norm == link_url_norm -%} aria-current="page"{%- endif -%}>
                 {%- if i.icon %}
-                <i class="fa fa-{{ i.icon }}" aria-hidden="true" title="{% if lang != config.default_language %}{{ macros::translate(key=i.name|safe, default=i.name|safe, i18n=i18n) }}{% else %}{{ i.name | safe }}{% endif %}"></i>
+                <i class="fa fa-{{ i.icon }}" aria-hidden="true"></i>
+                <span class="nav-label">{{ menu_label | safe }}</span>
                 {% else %}
-                {%- if lang != config.default_language %} {{ macros::translate(key=i.name|safe, default=i.name|safe, i18n=i18n) }} {% else %} {{ i.name | safe }} {% endif -%}
+                {{ menu_label | safe }}
                 {% endif %}
                 </a></li>
               {%- endfor -%}
             {%- endif -%}
 
             {%- if config.languages | length > 0 %}
-            <li><div class="dropdown"><i class="svgs world" type="reset" role="button" tabindex="0" aria-label="{{ macros::translate(key="language_name", default="lang_name", i18n=i18n) }}"></i>
+            {%- set language_label = macros::translate(key="language_name", default="lang_name", i18n=i18n) -%}
+            <li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="{{ language_label }}" title="{{ language_label }}"><i class="svgs world" aria-hidden="true"></i><span>{{ language_label }}</span></button>
               {%- if current_url %}
                 <div class="dropdown-content">
-                <span>{{ macros::translate(key="language_name", default="lang_name", i18n=i18n) }}</span>
+                <span>{{ language_label }}</span>
                 {%- for lcode,language in config.languages -%}
                   {%- set i18n_menu = load_data(path="i18n/" ~ lcode ~ '.toml', required=false) -%}
                   {%- if not i18n_menu -%}{%- set i18n_menu = load_data(path="themes/abridge/i18n/" ~ lcode ~ ".toml", required=false) -%}{%- endif %}
@@ -120,15 +127,19 @@
 
             {%- if js_switcher -%}
               {%- set icon_adjust=config.extra.icon_adjust | default(value="svgs adjust") -%}
+              {%- set switch_mode_label = "Theme" -%}
+              {%- if lang != config.default_language -%}
+                {%- set switch_mode_label = macros::translate(key="Theme"|safe, default="Theme"|safe, i18n=i18n) -%}
+              {%- endif -%}
               {%- if icon_adjust -%}
           <li>
-          <i type="reset" id="mode" class="js {{ icon_adjust }}" role="button" tabindex="0"
-            title="{% if lang != config.default_language %}{{ macros::translate(key="Switch Mode"|safe, default="Switch Mode"|safe, i18n=i18n) }}{% else %}{{ "Switch Mode" | safe }}{% endif %}"
-            aria-label="{% if lang != config.default_language %}{{ macros::translate(key="Switch Mode"|safe, default="Switch Mode"|safe, i18n=i18n) }}{% else %}{{ "Switch Mode" | safe }}{% endif %}"></i>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="{{ switch_mode_label | safe }}"
+            aria-label="{{ switch_mode_label | safe }}"><i class="{{ icon_adjust }}" aria-hidden="true"></i><span>{{ switch_mode_label | safe }}</span></button>
               {%- else -%}
-          <i type="reset" id="mode" class="js mode" role="button" tabindex="0"
-            title="{% if lang != config.default_language %}{{ macros::translate(key="Switch Mode"|safe, default="Switch Mode"|safe, i18n=i18n) }}{% else %}{{ "Switch Mode" | safe }}{% endif %}"
-            aria-label="{% if lang != config.default_language %}{{ macros::translate(key="Switch Mode"|safe, default="Switch Mode"|safe, i18n=i18n) }}{% else %}{{ "Switch Mode" | safe }}{% endif %}">&#9728;</i></li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon mode"
+            title="{{ switch_mode_label | safe }}"
+            aria-label="{{ switch_mode_label | safe }}"><span aria-hidden="true">&#9728;</span><span>{{ switch_mode_label | safe }}</span></button></li>
               {%- endif -%}
             {%- endif -%}
 

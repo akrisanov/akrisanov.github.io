@@ -124,7 +124,7 @@ uv run script.py
 
 Install CLI tools globally, isolated from system Python:
 
-```python
+```bash
 uv tool install ruff # replaces pipx
 uv tool install httpie
 

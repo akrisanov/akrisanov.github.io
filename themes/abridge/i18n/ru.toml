@@ -1,4 +1,5 @@
 language_name = "Русский" # Shown in language picker for multi-language sites.
+Theme = "Тема"
 date_locale = "ru_RU"
 full_stop = "."           # Used at the end of a sentence.
 
