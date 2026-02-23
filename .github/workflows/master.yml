@@ -15,7 +15,7 @@ jobs:
       - name: Install Zola
         uses: taiki-e/install-action@v2
         with:
-          tool: zola@0.21.0
+          tool: zola@0.22.1
       - name: Build site
         run: zola build
       - name: Link check with lychee
@@ -45,7 +45,7 @@ jobs:
       - name: Install Zola
         uses: taiki-e/install-action@v2
         with:
-          tool: zola@0.21.0
+          tool: zola@0.22.1
       - name: Setup Node.js (with cache)
         if: ${{ hashFiles('**/package-lock.json') != '' || hashFiles('**/npm-shrinkwrap.json') != '' || hashFiles('**/yarn.lock') != '' }}
         uses: actions/setup-node@v4
@@ -70,7 +70,7 @@ jobs:
       - name: Minify service worker
         run: npm run minify:sw
       - name: build_and_deploy
-        uses: shalzz/zola-deploy-action@v0.21.0
+        uses: shalzz/zola-deploy-action@v0.22.1
         env:
           # Target branch
           PAGES_BRANCH: gh-pages
