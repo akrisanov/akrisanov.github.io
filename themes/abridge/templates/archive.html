@@ -25,40 +25,46 @@ section_item.extra and 'hide_section_dates' in section_item.extra -%} {%- set
 hide_section_dates = section_item.extra.hide_section_dates -%} {%- elif
 config.extra.hide_section_dates -%} {%- set hide_section_dates = true -%} {%-
 endif -%} {%- endif %}
-<div>
+<div class="archive-list">
   {%- if section_item.title %}
-  <h2>{{ section_item.title }}</h2>
+  <h2 class="archive-title">{{ section_item.title }}</h2>
   {%- endif %} {{- section_item.content | safe }} {%- if
   config.extra.archive_reverse %} {%- for year, posts in section_item.pages |
   sort(attribute="year") | reverse | group_by(attribute="year") %} {%- if not
   hide_section_dates %} {%- if section_item.title %}
-  <h3 class="tpad">{{ year }}</h3>
+  <h3 class="archive-year tpad">{{ year }}</h3>
   {%- else %}
-  <h2 class="tpad">{{ year }}</h2>
+  <h2 class="archive-year tpad">{{ year }}</h2>
   {%- endif %} {%- endif %} {%- for post in posts %}
-  <p>
+  {%- if loop.first %}<ul class="archive-items">{%- endif %}
+  <li class="archive-item">
     <a
+      class="archive-link"
       href="{{ post.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}"
       >{{ post.title }}</a
-    >{%- if not hide_section_dates %} -
-    <time datetime="{{ post.date }}">{{ post.date | date(format="%F") }}</time
+    >{%- if not hide_section_dates %}
+    <time class="archive-date" datetime="{{ post.date }}">{{ post.date | date(format="%F") }}</time
     >{%- endif %}
-  </p>
+  </li>
+  {%- if loop.last %}</ul>{%- endif %}
   {%- endfor %} {%- endfor %} {%- else %} {%- for year, posts in
   section_item.pages | group_by(attribute="year") %} {%- if not
   hide_section_dates %} {%- if section_item.title %}
-  <h3 class="tpad">{{ year }}</h3>
+  <h3 class="archive-year tpad">{{ year }}</h3>
   {%- else %}
-  <h2 class="tpad">{{ year }}</h2>
+  <h2 class="archive-year tpad">{{ year }}</h2>
   {%- endif %} {%- endif %} {%- for post in posts %}
-  <p>
+  {%- if loop.first %}<ul class="archive-items">{%- endif %}
+  <li class="archive-item">
     <a
+      class="archive-link"
       href="{{ post.permalink | safe }}{%- if uglyurls %}index.html{%- endif %}"
       >{{ post.title }}</a
-    >{%- if not hide_section_dates %} -
-    <time datetime="{{ post.date }}">{{ post.date | date(format="%F") }}</time
+    >{%- if not hide_section_dates %}
+    <time class="archive-date" datetime="{{ post.date }}">{{ post.date | date(format="%F") }}</time
     >{%- endif %}
-  </p>
+  </li>
+  {%- if loop.last %}</ul>{%- endif %}
   {%- endfor %} {%- endfor %} {%- endif %}
 </div>
 {%- endblock content %}

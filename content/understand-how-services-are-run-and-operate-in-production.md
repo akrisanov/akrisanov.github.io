@@ -19,34 +19,27 @@ Kubernetes, and whatnot.
 
 A conversation with a talent usually looks the following:
 
-<blockquote>
-– How do you ship your service to production?
+<blockquote class="dialogue">
+<p class="q"><strong>Interviewer:</strong> How do you ship your service to production?</p>
+<p class="a"><strong>Candidate:</strong> We build Docker images and run containers.</p>
 
-– We build Docker images and run containers.
+<p class="q"><strong>Interviewer:</strong> Sounds cool! Can you tell me about the resource requirements for a container?</p>
+<p class="a"><strong>Candidate:</strong> Hmm, to be honest, I don't know the details. DevOps folks take care of that.</p>
 
-– Sounds cool! Can you tell me about the resource requirements for a container?
+<p class="q"><strong>Interviewer:</strong> (discussing Python app) OK. And what application server do you use?</p>
+<p class="a"><strong>Candidate:</strong> Application Server? (Some people even reply: "You mean WSGI?")</p>
 
-– Hmm, to be honest, I don't know the details. DevOps folks take care of that.
+<p class="q"><strong>Interviewer:</strong> Yes, the thing that handles web requests and runs your Python code.</p>
+<p class="a"><strong>Candidate:</strong> Hmm, let me open a project repo and check..</p>
 
-– (discussing Python app) OK. And what application server do you use?
+<p class="a"><strong>Candidate:</strong> It's...Gunicorn!</p>
+<p class="q"><strong>Interviewer:</strong> Great. Can you estimate how many requests the web application can handle?</p>
 
-– Application Server? (Some people even reply: "You mean WSGI?")
+<p class="a"><strong>Candidate:</strong> I don't think so because we don't do load testing.</p>
+<p class="q"><strong>Interviewer:</strong> So, it's not possible to do even a rough estimation?</p>
 
-– Yes, the thing that handles web requests and runs your Python code.
-
-– Hmm, let me open a project repo and check..
-
-– It's...Gunicorn!
-
-– Great. Can you estimate how many requests the web application can handle?
-
-– I don't think so because we don't do load testing.
-
-– So, it's not possible to do even a rough estimation?
-
-– Nope.
-
-– OK. Do you understand what happens on a processes and threads level when the application server processes a request?
+<p class="a"><strong>Candidate:</strong> Nope.</p>
+<p class="q"><strong>Interviewer:</strong> OK. Do you understand what happens on a processes and threads level when the application server processes a request?</p>
 </blockquote>
 
 This is where the conversation hits a dead end. Many talents don't. And this is a red sign to me.

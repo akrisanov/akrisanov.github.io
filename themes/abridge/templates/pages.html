@@ -36,12 +36,12 @@ Some people prefer a landing page for the index, and then use a separate paginat
 {%- endblock seo %}
 
 {%- block content %}
-    <div>
+  <article>
 
 {%- if page.content %}
 {{ page.content | safe }}
 {%- elif section.content %}
 {{ section.content | safe }}
 {%- endif %}
-    </div>
+  </article>
 {%- endblock content %}

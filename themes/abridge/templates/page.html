@@ -61,6 +61,27 @@ if config.extra.comments.hyvor %}
   config.extra.meta_post.position %} {%- if config.extra.meta_post.position ==
   "bottom" or config.extra.meta_post.position == "both" %} {{-
   macros::meta_post(page=page, config=config) }} {%- endif %}{%- endif %} {%-
+  if page.extra.image_zoom | default(value=true) %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+  {%- endif %} {%-
   block page_footer %} {{- macros::footer(page=page, config=config) }} {%-
   endblock page_footer %} {%- block comments_body %} {%- if
   config.extra.comments.hyvor %}
