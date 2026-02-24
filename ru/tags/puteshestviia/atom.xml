@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ru">
+    <title>Андрей Крисанов - путешествия</title>
+    <subtitle>Заметки об AI-инфраструктуре, системах инференса и промышленной архитектуре бэкенда — от распределённого сервинга и наблюдаемости до оптимизации производительности и надежности. Автор — Андрей Крисанов.</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://akrisanov.com/ru/tags/puteshestviia/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2022-05-27T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/ru/tags/puteshestviia/atom.xml</id>
+    <entry xml:lang="ru">
+        <title>eSIM как альтернатива роумингу в путешествиях</title>
+        <published>2022-05-27T00:00:00+00:00</published>
+        <updated>2022-05-27T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/ru/esim/"/>
+        <id>https://akrisanov.com/ru/esim/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/ru/esim/">&lt;p&gt;Для людей, путешествующих в другие страны, существует два варианта оставаться на связи:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Воспользоваться роумингом своего оператора и платить много денег согласно тарифу или пакету роуминга&lt;&#x2F;li&gt;
+&lt;li&gt;Купить SIM-карту местного оператора в аэропорту или уже в городе по прибытию&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Первый вариант — без дополнительных действий, но это стоит дорого. Второй — разумный, но требует времени,
+и SIM-карта после поездки врядли уже пригодится. Сам часто выбираю первый вариант потому, что
+в отпуске не хочется думать о постороннем и специально искать ларек или салон сотовой связи.
+Однако ловил себя на мысли, что было бы классно иметь более дешевую альтернативу тому, что предлагает
+наша тройка операторов в роуминге.&lt;&#x2F;p&gt;
+&lt;p&gt;В начале года в Linkedin получил предложение основателя &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.airalo.com&#x2F;&quot;&gt;Airalo&lt;&#x2F;a&gt; пообщаться о вакансии.
+Компания продает eSIM карты, которые в 2022 году поддерживаются многими современными устройствами —
+начиная от iPhone SE и Android среднего и высшего ценового сегмента. О самих картах eSIM писать
+не буду — информация в интернете есть, гуглите. Если коротко, то eSIM — это еще один, третий,
+вариант оставаться на связи в путешествиях. Покупаете электронную карту онлайн в приложении или
+на сайте еще до прибытия в пункт назначения за границей. Вынимать обычную SIM-карту из слота
+телефона нет необходимости → &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;support.apple.com&#x2F;ru-ru&#x2F;HT209044&quot;&gt;официальный гайд Apple по использованию двух SIM-карт, одна из которых eSIM&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;В итоге, вакансию вежливо отклонил, но решил попробовать Airalo установив их приложение.&lt;&#x2F;p&gt;
+&lt;p&gt;В магазине доступен выбор местных eSIM — конкретной страны, региональных — Азия, Африка, Европа,
+Карибские острова, и международных, т. е. работающих по всему миру.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;esim0.png&quot; alt=&quot;Выбор eSIM&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Цены ниже, чем у российских операторов. Например, Тинькофф Мобайл предлагает для Турции и Европы:
+1 ГБ на неделю за 499 ₽; 3 ГБ на месяц за 999 ₽; Безлимитные мессенджеры и карты от 49 ₽ в день.
+Для сравнения:&lt;&#x2F;p&gt;
+&lt;div class=&quot;img-swap-div&quot;&gt; 
+  &lt;img src=&quot;https:&#x2F;&#x2F;akrisanov.com&#x2F;images&#x2F;esim1.png&quot; class=&quot;img-main&quot; alt=&quot;esim1&quot; width=&quot;410&quot; height=&quot;886&quot; loading=&quot;lazy&quot; &#x2F;&gt; 
+  &lt;img src=&quot;https:&#x2F;&#x2F;akrisanov.com&#x2F;images&#x2F;esim2.png&quot; class=&quot;img-swap&quot; alt=&quot;esim1&quot; width=&quot;410&quot; height=&quot;886&quot; loading=&quot;lazy&quot; &#x2F;&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;По текущему курсу $ за 1 Гб платим ~290 ₽, за 3 Гб ~510 ₽. Из недостатков — цена привязана к курсу доллара.
+Оплатить eSIM можно напрямую через Apple Pay или с карты.&lt;&#x2F;p&gt;
+&lt;p&gt;Вопрос покрытия и качества услуг пока остается открытым — буду в поездке, проверю.&lt;&#x2F;p&gt;
+&lt;p&gt;Мой промокод — &lt;code&gt;ANDREY7079&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

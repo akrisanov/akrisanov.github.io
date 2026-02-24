@@ -1,0 +1,726 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=bf750cd1b26e8052b393" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="en" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&display=swap" crossorigin="anonymous" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Andrey Krisanov Atom Feed"
+  href="https://akrisanov.com/atom.xml" />
+<link rel="alternate" type="application/rss+xml" title="Andrey Krisanov RSS Feed"
+  href="https://akrisanov.com/rss.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>vLLM Metrics in Production | Andrey Krisanov</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Andrey Krisanov" />
+<meta name="description" content="A hands-on guide to vLLM monitoring: the key Prometheus metrics (TTFT, TPOT, queueing, KV cache, swapping), Grafana panels, and alert rules that help you debug latency and plan capacity." />
+<link rel="canonical" href="https://akrisanov.com/vllm-metrics/" />
+<link rel="alternate" hreflang="en" href="https://akrisanov.com/vllm-metrics/" />
+<link rel="alternate" hreflang="x-default" href="https://akrisanov.com/vllm-metrics/" />
+<meta name="keywords" content="vLLM metrics, vLLM monitoring, Prometheus, Grafana, TTFT, time to first token, TPOT, time per output token, KV cache, swapping, LLM latency, LLM throughput, inference performance, capacity planning, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/vllm-metrics/" />
+<meta name="twitter:url" content="https://akrisanov.com/vllm-metrics/" />
+<meta property="og:description" content="A hands-on guide to vLLM monitoring: the key Prometheus metrics (TTFT, TPOT, queueing, KV cache, swapping), Grafana panels, and alert rules that help you debug latency and plan capacity." />
+<meta name="twitter:description" content="A hands-on guide to vLLM monitoring: the key Prometheus metrics (TTFT, TPOT, queueing, KV cache, swapping), Grafana panels, and alert rules that help you debug latency and plan capacity." />
+<meta property="og:title" content="vLLM Metrics in Production | Andrey Krisanov" />
+<meta name="twitter:title" content="vLLM Metrics in Production | Andrey Krisanov" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:site_name" content="Andrey Krisanov" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2026-01-28" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "vLLM Metrics in Production",
+	"url": "https://akrisanov.com/vllm-metrics/",
+	"inLanguage": "en",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/photo.png",
+	"datePublished": "2026-01-28T00:00:00+00:00",
+	"dateModified": "2026-01-28T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com" title="Andrey Krisanov"><big>Andrey Krisanov</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/about/"
+                  >
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span class="nav-label">About</span>
+                
+                </a></li><li><a class="s95" href="https://akrisanov.com/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="nav-label">Posts</span>
+                
+                </a></li><li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="English" title="English"><i class="svgs world" aria-hidden="true"></i><span>English</span></button>
+                <div class="dropdown-content">
+                <span>English</span><a href="https://akrisanov.com/ru/vllm-metrics/">Русский</a></div>
+            </div></li><li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="Theme"
+            aria-label="Theme"><i class="svgs adjust" aria-hidden="true"></i><span>Theme</span></button></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Search">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Search"
+        aria-label="Search" title="Search" />
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/vllm-metrics/">vLLM Metrics in Production</a></h1>
+
+<span class="s95" ><span class="post-date">January 28, 2026</span>
+  <span class="post-tags"><a
+      href="https://akrisanov.com/tags/vllm/">vllm</a><a
+      href="https://akrisanov.com/tags/llm/">llm</a><a
+      href="https://akrisanov.com/tags/inference/">inference</a><a
+      href="https://akrisanov.com/tags/metrics/">metrics</a><a
+      href="https://akrisanov.com/tags/performance/">performance</a><a
+      href="https://akrisanov.com/tags/monitoring/">monitoring</a></span></span>  <h2 id="why-this-cheat-sheet-exists">Why this cheat sheet exists</h2>
+<p>If you operate vLLM in production, you already know the feeling: the model is "up", GPUs look busy,
+but users complain that the chat is sluggish. Someone suggests "add more GPUs", someone else says
+"the prompts got longer", and the discussion goes in circles.</p>
+<p>The fastest way to stop guessing is to watch a small set of vLLM metrics and interpret them consistently.</p>
+<p>This post is a practical playbook for software and AI engineers:</p>
+<ul>
+<li>what each metric <em>really</em> tells you</li>
+<li>how to query it in Prometheus</li>
+<li>what actions typically fix the problem</li>
+</ul>
+<p>It's intentionally opinionated and optimized for on-call reality.</p>
+<h2 id="how-vllm-metrics-are-named">How vLLM metrics are named</h2>
+<p>vLLM exports Prometheus metrics with the <code>vllm:</code> prefix. When Prometheus scrapes them, the colon becomes an underscore.</p>
+<ul>
+<li><code>vllm:num_requests_running</code> becomes <code>vllm_num_requests_running</code></li>
+</ul>
+<p>Also pay attention to <strong>metric types</strong>, because they decide how you query:</p>
+<ul>
+<li><strong>Latency</strong> metrics are <strong>histograms</strong> (<code>*_seconds_bucket</code>). You compute percentiles with <code>histogram_quantile()</code>.</li>
+<li><strong>Throughput</strong> metrics are <strong>counters</strong> (<code>*_total</code>). You compute rates with <code>rate()</code>.</li>
+<li><strong>State / saturation</strong> metrics are <strong>gauges</strong>. You graph them directly and alert on thresholds.</li>
+</ul>
+<p>One more thing: vLLM shows you what happens <strong>inside the inference engine</strong>. For end-to-end production visibility,
+you still need gateway metrics (HTTP status codes, upstream latency, timeouts) and infrastructure metrics
+(GPU clocks/thermals/memory).</p>
+<h2 id="the-two-latency-numbers-that-define-user-experience">The two latency numbers that define user experience</h2>
+<p>In practice, you can reduce "LLM feels slow" to two metrics:</p>
+<p><strong>TTFT (Time To First Token)</strong> — how quickly the user sees <em>anything</em></p>
+<ul>
+<li>Metric: <code>vllm:time_to_first_token_seconds</code></li>
+<li>Includes queueing + prefill</li>
+<li>This is the metric that makes chat feel "snappy" or "dead"</li>
+</ul>
+<p><strong>TPOT (Time Per Output Token)</strong> — how fast text streams once it starts</p>
+<ul>
+<li>Metric: <code>vllm:time_per_output_token_seconds</code></li>
+<li>Mostly decode phase</li>
+<li>This is what users perceive as "typing speed"</li>
+</ul>
+<p>There are also two supporting latency metrics that help you pinpoint the cause:</p>
+<ul>
+<li><strong>Queue Time</strong>: <code>vllm:request_queue_time_seconds</code></li>
+<li><strong>E2E latency</strong>: <code>vllm:e2e_request_latency_seconds</code></li>
+</ul>
+<h3 id="promql-the-percentile-queries-you-ll-actually-use">PromQL: the percentile queries you'll actually use</h3>
+<h3 id="p95-ttft">P95 TTFT</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="plain"><span class="giallo-l"><span>histogram_quantile(</span></span>
+<span class="giallo-l"><span>  0.95,</span></span>
+<span class="giallo-l"><span>  sum by (le) (rate(vllm_time_to_first_token_seconds_bucket[5m]))</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre><h3 id="p99-tpot">P99 TPOT</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="plain"><span class="giallo-l"><span>histogram_quantile(</span></span>
+<span class="giallo-l"><span>  0.99,</span></span>
+<span class="giallo-l"><span>  sum by (le) (rate(vllm_time_per_output_token_seconds_bucket[5m]))</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre><h3 id="p95-queue-time">P95 Queue Time</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="plain"><span class="giallo-l"><span>histogram_quantile(</span></span>
+<span class="giallo-l"><span>  0.95,</span></span>
+<span class="giallo-l"><span>  sum by (le) (rate(vllm_request_queue_time_seconds_bucket[5m]))</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre>
+<blockquote>
+<p>vLLM reports latencies in <strong>seconds</strong>. If your brain works in milliseconds, just set the Grafana panel unit to <code>Time → milliseconds (ms)</code>.</p>
+</blockquote>
+<h3 id="the-interpretation-shortcut">The interpretation shortcut</h3>
+<p>This is the fastest diagnostic rule I know:</p>
+<ul>
+<li><strong>Queue Time grows, TPOT stays stable</strong> → you're short on <em>capacity</em> (not enough vLLM replicas / GPU capacity)</li>
+<li><strong>TPOT grows</strong> → generation slowed down (often long contexts, GPU contention, throttling, or overly aggressive concurrency)</li>
+</ul>
+<p>Keep that in your head. It prevents most "random tuning".</p>
+<h2 id="throughput-are-we-doing-useful-work">Throughput: are we doing useful work?</h2>
+<p>Latency tells you what users feel. Throughput tells you whether your system is doing real work.</p>
+<p>vLLM exposes token counters:</p>
+<ul>
+<li>Prompt (input) tokens: <code>vllm:prompt_tokens_total</code></li>
+<li>Generated (output) tokens: <code>vllm:generation_tokens_total</code></li>
+</ul>
+<h3 id="promql">PromQL</h3>
+<h3 id="input-tokens-per-second">Input tokens per second</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="plain"><span class="giallo-l"><span>sum(rate(vllm_prompt_tokens_total[5m]))</span></span></code></pre><h3 id="output-tokens-per-second">Output tokens per second</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="plain"><span class="giallo-l"><span>sum(rate(vllm_generation_tokens_total[5m]))</span></span></code></pre>
+<p>If output tokens/s drops while traffic stays similar, you're usually looking at <strong>cache pressure</strong>,
+<strong>swapping</strong>, or <strong>too much concurrency</strong>.</p>
+<h2 id="saturation-concurrency-how-close-are-we-to-the-cliff">Saturation &amp; concurrency: how close are we to the cliff?</h2>
+<p>When a system degrades, it rarely does it politely. For vLLM, the "cliff" is typically KV cache pressure and swapping.</p>
+<h3 id="request-state-scheduler-pressure">Request state (scheduler pressure)</h3>
+<ul>
+<li><strong>Running</strong>: <code>vllm:num_requests_running</code> — requests actively executing on GPU</li>
+<li><strong>Waiting</strong>: <code>vllm:num_requests_waiting</code> — queue size; if it's consistently &gt; 0, you're operating at/above capacity</li>
+<li><strong>Swapped</strong>: <code>vllm:num_requests_swapped</code> — requests evicted to CPU RAM (this is bad)</li>
+</ul>
+<p>If you only alert on one gauge, make it this:</p>
+<blockquote>
+<p><strong>Any swapped requests (<code>num_requests_swapped &gt; 0</code>) should be treated as a production incident.</strong></p>
+</blockquote>
+<h3 id="kv-cache-pressure-the-silent-killer">KV cache pressure (the silent killer)</h3>
+<ul>
+<li><strong>GPU cache usage</strong>: <code>vllm:gpu_cache_usage_perc</code> (0.0–1.0)
+<ul>
+<li>Under sustained load, a stable zone is often <strong>0.7–0.9</strong></li>
+<li>If it sits at <strong>1.0</strong>, swapping becomes likely</li>
+</ul>
+</li>
+<li><strong>CPU cache usage</strong>: <code>vllm:cpu_cache_usage_perc</code></li>
+</ul>
+<p>The reason this matters: once swapping starts, you'll see brutal latency spikes because you're moving blocks between GPU and CPU.</p>
+<h2 id="errors-why-requests-finish-and-what-abort-usually-means">Errors: why requests finish (and what "abort" usually means)</h2>
+<p>vLLM tracks why requests stop via:</p>
+<ul>
+<li><code>vllm:finished_request_total{finish_reason="..."}</code></li>
+</ul>
+<p>Common reasons:</p>
+<ul>
+<li><code>stop</code> — normal completion (EOS)</li>
+<li><code>length</code> — hit <code>max_tokens</code></li>
+<li><code>abort</code> — cancelled by user or failed due to an error</li>
+</ul>
+<h3 id="promql-breakdown-by-finish-reason">PromQL: breakdown by finish reason</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="plain"><span class="giallo-l"><span>sum by (finish_reason) (rate(vllm_finished_request_total[5m]))</span></span></code></pre>
+<p>What I've seen in production:</p>
+<ul>
+<li>Spikes in <code>length</code> often mean your <code>max_tokens</code> default is too low for a real workload</li>
+<li>Spikes in <code>abort</code> often correlate with gateway timeouts, client disconnects, or engine-level failures</li>
+</ul>
+<h2 id="the-golden-signals-dashboard-for-vllm">The "golden signals" dashboard for vLLM</h2>
+<p>If you want one dashboard that's worth opening during an incident, build it around these signals:</p>
+<ol>
+<li><strong>P95 TTFT</strong> — responsiveness</li>
+<li><strong>P99 TPOT</strong> — generation speed stability</li>
+<li><strong>Queue size</strong> (<code>num_requests_waiting</code>) — capacity pressure</li>
+<li><strong>Swapped requests</strong> — must be zero</li>
+<li><strong>GPU KV cache usage</strong> — predictive saturation</li>
+<li><strong>Token throughput</strong> — real work (input/output tokens per second)</li>
+</ol>
+<h3 id="a-practical-grafana-dashboard-json">A practical Grafana dashboard JSON</h3>
+<p>You can import this as a starting point:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="json"><span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">  &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">dashboard</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">    &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">id</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> null</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">    &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">title</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">vLLM Production Golden Signals</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">    &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">tags</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> [</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">vllm</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">llm</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">inference</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>]</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">    &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">timezone</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">browser</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">    &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">schemaVersion</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 38</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">    &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">panels</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> [</span></span>
+<span class="giallo-l"><span>      {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">title</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">System Saturation (GPU Cache &amp; Swapping)</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">type</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">gauge</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">gridPos</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">h</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 8</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">w</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 12</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">x</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 0</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">y</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 0</span><span> }</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">targets</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> [</span></span>
+<span class="giallo-l"><span>          {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">expr</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">vllm_gpu_cache_usage_perc * 100</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">legendFormat</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">GPU Cache Fill %</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span> }</span></span>
+<span class="giallo-l"><span>        ]</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">fieldConfig</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">          &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">defaults</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">            &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">min</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 0</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">max</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 100</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">unit</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">percent</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">            &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">thresholds</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">              &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">mode</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">absolute</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">              &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">steps</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> [</span></span>
+<span class="giallo-l"><span>                {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">color</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">green</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">value</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> null</span><span> }</span><span>,</span></span>
+<span class="giallo-l"><span>                {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">color</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">orange</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">value</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 80</span><span> }</span><span>,</span></span>
+<span class="giallo-l"><span>                {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">color</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">red</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">value</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 95</span><span> }</span></span>
+<span class="giallo-l"><span>              ]</span></span>
+<span class="giallo-l"><span>            }</span></span>
+<span class="giallo-l"><span>          }</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span>      }</span><span>,</span></span>
+<span class="giallo-l"><span>      {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">title</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Active &amp; Waiting Requests</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">type</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">timeseries</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">gridPos</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">h</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 8</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">w</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 12</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">x</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 12</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">y</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 0</span><span> }</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">targets</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> [</span></span>
+<span class="giallo-l"><span>          {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">expr</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">vllm_num_requests_running</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">legendFormat</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Running (Concurrency)</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span> }</span><span>,</span></span>
+<span class="giallo-l"><span>          {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">expr</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">vllm_num_requests_waiting</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">legendFormat</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Waiting in Queue</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span> }</span><span>,</span></span>
+<span class="giallo-l"><span>          {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">expr</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">vllm_num_requests_swapped</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">legendFormat</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Swapped (Preemption!)</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span> }</span></span>
+<span class="giallo-l"><span>        ]</span></span>
+<span class="giallo-l"><span>      }</span><span>,</span></span>
+<span class="giallo-l"><span>      {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">title</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Latency P95 (TTFT vs TPOT)</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">type</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">timeseries</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">gridPos</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">h</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 8</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">w</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 12</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">x</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 0</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">y</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 8</span><span> }</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">targets</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> [</span></span>
+<span class="giallo-l"><span>          {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">            &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">expr</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">histogram_quantile(0.95, sum by (le) (rate(vllm_time_to_first_token_seconds_bucket[5m])))</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">            &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">legendFormat</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">P95 TTFT</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span>          }</span><span>,</span></span>
+<span class="giallo-l"><span>          {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">            &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">expr</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">histogram_quantile(0.95, sum by (le) (rate(vllm_time_per_output_token_seconds_bucket[5m])))</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">            &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">legendFormat</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">P95 TPOT</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span>          }</span></span>
+<span class="giallo-l"><span>        ]</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">fieldConfig</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">defaults</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">unit</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">s</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span> }</span><span> }</span></span>
+<span class="giallo-l"><span>      }</span><span>,</span></span>
+<span class="giallo-l"><span>      {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">title</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Token Throughput</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">type</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">timeseries</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">gridPos</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">h</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 8</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">w</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 12</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">x</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 12</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">y</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 8</span><span> }</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">        &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">targets</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> [</span></span>
+<span class="giallo-l"><span>          {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">expr</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">sum(rate(vllm_generation_tokens_total[5m]))</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">legendFormat</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Output Tokens/s</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span> }</span><span>,</span></span>
+<span class="giallo-l"><span>          {</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">expr</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">sum(rate(vllm_prompt_tokens_total[5m]))</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;"> &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">legendFormat</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Input Tokens/s</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span> }</span></span>
+<span class="giallo-l"><span>        ]</span></span>
+<span class="giallo-l"><span>      }</span></span>
+<span class="giallo-l"><span>    ]</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">    &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">templating</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">      &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">list</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span> [</span></span>
+<span class="giallo-l"><span>        {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">          &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">name</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">datasource</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">          &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">type</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">datasource</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">          &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">query</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">prometheus</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">          &quot;</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">refresh</span><span style="color: light-dark(#0D5F89, #ECCDBB);font-style: italic;">&quot;</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 1</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span>      ]</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>  }</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre><h2 id="alerts-that-save-you-before-users-start-complaining">Alerts that save you before users start complaining</h2>
+<p>You don't need 30 alerts. You need 5 that are hard to ignore.</p>
+<h3 id="prometheusrule-example">PrometheusRule example</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">g</span><span style="color: light-dark(#0D5F89, #FFFFFF);">roups</span><span>:</span></span>
+<span class="giallo-l"><span>-</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> n</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ame</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> v</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">LLM.Alerts</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">  r</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ules</span><span>:</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">lert</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> v</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">LLMHighTTFT</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      e</span><span style="color: light-dark(#0D5F89, #FFFFFF);">xpr</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> h</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">istogram_quantile(0.95, sum by (le, instance) (rate(vllm_time_to_first_token_seconds_bucket[5m]))) &gt; 3</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      f</span><span style="color: light-dark(#0D5F89, #FFFFFF);">or</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> 5</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">m</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      l</span><span style="color: light-dark(#0D5F89, #FFFFFF);">abels</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">everity</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> c</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ritical</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">nnotations</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ummary</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">High TTFT on instance {{ $labels.instance }}</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        d</span><span style="color: light-dark(#0D5F89, #FFFFFF);">escription</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">P95 TTFT is {{ $value | printf </span><span style="color: light-dark(#8A3F21, #EFBA5D);">\&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">%.2f</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> }}s. Users see long delays before the first token.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">lert</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> v</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">LLMQueueBacklog</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      e</span><span style="color: light-dark(#0D5F89, #FFFFFF);">xpr</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> h</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">istogram_quantile(0.95, sum by (le, instance) (rate(vllm_request_queue_time_seconds_bucket[5m]))) &gt; 5</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      f</span><span style="color: light-dark(#0D5F89, #FFFFFF);">or</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> 2</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">m</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      l</span><span style="color: light-dark(#0D5F89, #FFFFFF);">abels</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">everity</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> w</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">arning</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">nnotations</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ummary</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Requests are queuing on {{ $labels.instance }}</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        d</span><span style="color: light-dark(#0D5F89, #FFFFFF);">escription</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">P95 Queue Time is {{ $value | printf </span><span style="color: light-dark(#8A3F21, #EFBA5D);">\&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">%.2f</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> }}s. Engine cannot keep up.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">lert</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> v</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">LLMRequestSwapping</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      e</span><span style="color: light-dark(#0D5F89, #FFFFFF);">xpr</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> v</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">llm_num_requests_swapped &gt; 0</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      f</span><span style="color: light-dark(#0D5F89, #FFFFFF);">or</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> 1</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">m</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      l</span><span style="color: light-dark(#0D5F89, #FFFFFF);">abels</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">everity</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> c</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ritical</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">nnotations</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ummary</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">vLLM is swapping requests to CPU</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        d</span><span style="color: light-dark(#0D5F89, #FFFFFF);">escription</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Instance {{ $labels.instance }} has {{ $value }} swapped requests. This indicates severe KV cache pressure and causes latency spikes.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">lert</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> v</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">LLMGPUCacheFull</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      e</span><span style="color: light-dark(#0D5F89, #FFFFFF);">xpr</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> v</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">llm_gpu_cache_usage_perc &gt; 0.95</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      f</span><span style="color: light-dark(#0D5F89, #FFFFFF);">or</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> 5</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">m</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      l</span><span style="color: light-dark(#0D5F89, #FFFFFF);">abels</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">everity</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> w</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">arning</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">nnotations</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ummary</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">GPU KV Cache is nearly full</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        d</span><span style="color: light-dark(#0D5F89, #FFFFFF);">escription</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Cache usage on {{ $labels.instance }} is {{ $value | printf </span><span style="color: light-dark(#8A3F21, #EFBA5D);">\&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">%.2f</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> }} (fraction). Expect queueing or swapping soon.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">lert</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> v</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">LLMHighAbortRate</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      e</span><span style="color: light-dark(#0D5F89, #FFFFFF);">xpr</span><span>:</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> |</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">        sum by (instance) (rate(vllm_finished_request_total{finish_reason=&quot;abort&quot;}[5m]))</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">        /</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">        sum by (instance) (rate(vllm_finished_request_total[5m])) &gt; 0.1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      f</span><span style="color: light-dark(#0D5F89, #FFFFFF);">or</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> 2</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">m</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      l</span><span style="color: light-dark(#0D5F89, #FFFFFF);">abels</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">everity</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> c</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ritical</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">      a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">nnotations</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ummary</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">High abort rate on {{ $labels.instance }}</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        d</span><span style="color: light-dark(#0D5F89, #FFFFFF);">escription</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">Abort ratio &gt; 10% (current: {{ $value | printf </span><span style="color: light-dark(#8A3F21, #EFBA5D);">\&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">%.2f</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> }}). Investigate client timeouts and engine errors.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span></code></pre><h2 id="runbook-metrics-diagnosis-action">Runbook: metrics → diagnosis → action</h2>
+<p>When an alert fires or users complain, here's a quick guide to interpret the signals and take action.</p>
+<h3 id="scenario-1-ttft-is-high">Scenario 1: TTFT is high</h3>
+<h4 id="what-you-see">What you see</h4>
+<ul>
+<li>P95 TTFT rises</li>
+<li>Queue Time rises</li>
+<li><code>num_requests_waiting</code> &gt; 0</li>
+</ul>
+<h4 id="what-it-usually-means">What it usually means</h4>
+<ul>
+<li>You're under-provisioned for current RPS, <em>or</em> prompts got longer (prefill became expensive).</li>
+</ul>
+<h4 id="what-to-do">What to do</h4>
+<ul>
+<li>Scale out (more vLLM replicas / GPU nodes)</li>
+<li>If scaling is slow: reduce concurrency temporarily to avoid swapping spirals</li>
+<li>Consider routing “cheap/system” prompts to a smaller model pool</li>
+</ul>
+<h3 id="scenario-2-tpot-is-high-generation-slowed">Scenario 2: TPOT is high (generation slowed)</h3>
+<h4 id="what-you-see-1">What you see</h4>
+<ul>
+<li>P99 TPOT rises</li>
+<li>Output tokens/s drops</li>
+</ul>
+<h4 id="what-it-usually-means-1">What it usually means</h4>
+<ul>
+<li>Longer contexts / more decode work, GPU contention, throttling, or too aggressive concurrency.</li>
+</ul>
+<h4 id="what-to-do-1">What to do</h4>
+<ul>
+<li>Check GPU-level signals (clocks, thermals, power limits, utilization)</li>
+<li>Reduce concurrency limits (e.g., <code>max_num_seqs</code>) if decode becomes unstable</li>
+<li>Revisit prompt/output length distributions; enforce sane <code>max_tokens</code> defaults</li>
+</ul>
+<h3 id="scenario-3-swapping-detected">Scenario 3: Swapping detected</h3>
+<h4 id="what-you-see-2">What you see</h4>
+<ul>
+<li><code>num_requests_swapped</code> &gt; 0</li>
+<li>Latency spikes; throughput collapses</li>
+</ul>
+<h4 id="what-it-means">What it means</h4>
+<ul>
+<li>KV cache doesn’t fit the current working set (too many concurrent contexts).</li>
+</ul>
+<h4 id="what-to-do-in-order">What to do (in order)</h4>
+<ol>
+<li>Reduce load or concurrency fast (stabilize the system)</li>
+<li>Reduce memory pressure (often: reduce <code>max_num_batched_tokens</code>)</li>
+<li>Scale out (more replicas / more GPU capacity)</li>
+<li>Separate model pools and route workloads more carefully</li>
+</ol>
+<h3 id="scenario-4-abort-rate-spikes">Scenario 4: Abort rate spikes</h3>
+<h4 id="what-you-see-3">What you see</h4>
+<ul>
+<li><code>finish_reason="abort"</code> rises</li>
+</ul>
+<h4 id="what-it-usually-means-2">What it usually means</h4>
+<ul>
+<li>Client disconnects / gateway timeouts, or engine-level failures.</li>
+</ul>
+<h4 id="what-to-do-2">What to do</h4>
+<ul>
+<li>Check gateway timeout configs (upstream read timeouts, streaming timeouts)</li>
+<li>Inspect vLLM logs for CUDA/runtime errors</li>
+<li>Correlate abort spikes with queue time spikes (clients often give up)</li>
+</ul>
+<h2 id="final-checklist">Final checklist</h2>
+<ul>
+<li><strong>One golden signals dashboard</strong>: TTFT, TPOT, queue, swapped, KV cache, tokens/s</li>
+<li><strong>Gateway metrics</strong>: HTTP codes, upstream latency, timeouts (otherwise you'll misdiagnose aborts)</li>
+<li><strong>Five alerts</strong>: high TTFT, backlog, swapping, KV cache near full, abort ratio spike</li>
+<li><strong>A runbook</strong>: "queue vs TPOT vs swapping" → clear actions</li>
+</ul>
+<p>If you want one mental model: <strong>queueing means you’re out of capacity; swapping means you’ve crossed the line.</strong></p>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
+      </div>
+      <div class="post-nav-next">
+        <a href="https://akrisanov.com/vllm/"><span class="np-label">Next
+            &#8250;</span><span class="np-title">Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference</span></a>
+      </div>
+    </nav>
+</article>
+
+<div class="sblock">
+
+  <div class="blockdiv sticky toc-block">
+    <div class="b s150 toc-title">
+      Index
+    </div>
+    <div class="toc-item">
+      <a href="#why-this-cheat-sheet-exists" class="toc-link">Why this cheat sheet exists</a>
+    </div>
+    <div class="toc-item">
+      <a href="#how-vllm-metrics-are-named" class="toc-link">How vLLM metrics are named</a>
+    </div>
+    <div class="toc-item">
+      <a href="#the-two-latency-numbers-that-define-user-experience" class="toc-link">The two latency numbers that define user experience</a>
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#promql-the-percentile-queries-you-ll-actually-use" class="toc-link"
+        ><small>PromQL: the percentile queries you&#x27;ll actually use</small></a
+      >
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#p95-ttft" class="toc-link"
+        ><small>P95 TTFT</small></a
+      >
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#p99-tpot" class="toc-link"
+        ><small>P99 TPOT</small></a
+      >
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#p95-queue-time" class="toc-link"
+        ><small>P95 Queue Time</small></a
+      >
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#the-interpretation-shortcut" class="toc-link"
+        ><small>The interpretation shortcut</small></a
+      >
+    </div>
+    <div class="toc-item">
+      <a href="#throughput-are-we-doing-useful-work" class="toc-link">Throughput: are we doing useful work?</a>
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#promql" class="toc-link"
+        ><small>PromQL</small></a
+      >
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#input-tokens-per-second" class="toc-link"
+        ><small>Input tokens per second</small></a
+      >
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#output-tokens-per-second" class="toc-link"
+        ><small>Output tokens per second</small></a
+      >
+    </div>
+    <div class="toc-item">
+      <a href="#saturation-concurrency-how-close-are-we-to-the-cliff" class="toc-link">Saturation &amp; concurrency: how close are we to the cliff?</a>
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#request-state-scheduler-pressure" class="toc-link"
+        ><small>Request state (scheduler pressure)</small></a
+      >
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#kv-cache-pressure-the-silent-killer" class="toc-link"
+        ><small>KV cache pressure (the silent killer)</small></a
+      >
+    </div>
+    <div class="toc-item">
+      <a href="#errors-why-requests-finish-and-what-abort-usually-means" class="toc-link">Errors: why requests finish (and what &quot;abort&quot; usually means)</a>
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#promql-breakdown-by-finish-reason" class="toc-link"
+        ><small>PromQL: breakdown by finish reason</small></a
+      >
+    </div>
+    <div class="toc-item">
+      <a href="#the-golden-signals-dashboard-for-vllm" class="toc-link">The &quot;golden signals&quot; dashboard for vLLM</a>
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#a-practical-grafana-dashboard-json" class="toc-link"
+        ><small>A practical Grafana dashboard JSON</small></a
+      >
+    </div>
+    <div class="toc-item">
+      <a href="#alerts-that-save-you-before-users-start-complaining" class="toc-link">Alerts that save you before users start complaining</a>
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#prometheusrule-example" class="toc-link"
+        ><small>PrometheusRule example</small></a
+      >
+    </div>
+    <div class="toc-item">
+      <a href="#runbook-metrics-diagnosis-action" class="toc-link">Runbook: metrics → diagnosis → action</a>
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#scenario-1-ttft-is-high" class="toc-link"
+        ><small>Scenario 1: TTFT is high</small></a
+      >
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#scenario-2-tpot-is-high-generation-slowed" class="toc-link"
+        ><small>Scenario 2: TPOT is high (generation slowed)</small></a
+      >
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#scenario-3-swapping-detected" class="toc-link"
+        ><small>Scenario 3: Swapping detected</small></a
+      >
+    </div>
+    <div class="hpad toc-item toc-item-child">
+      <a href="#scenario-4-abort-rate-spikes" class="toc-link"
+        ><small>Scenario 4: Abort rate spikes</small></a
+      >
+    </div>
+    <div class="toc-item">
+      <a href="#final-checklist" class="toc-link">Final checklist</a>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    var tocRoot = document.querySelector(".toc-block");
+    if (!tocRoot) return;
+
+    var links = Array.prototype.slice.call(
+      tocRoot.querySelectorAll("a.toc-link"),
+    );
+    if (!links.length) return;
+
+    var targets = links
+      .map(function (link) {
+        var id = link.getAttribute("href").slice(1);
+        return document.getElementById(id);
+      })
+      .filter(Boolean);
+
+    if (!targets.length) return;
+
+    var activeId = "";
+
+    function updateActive(id) {
+      if (!id || activeId === id) return;
+      activeId = id;
+      links.forEach(function (link) {
+        var isActive = link.getAttribute("href") === "#" + id;
+        link.classList.toggle("is-active", isActive);
+      });
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            updateActive(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: "-25% 0px -65% 0px",
+        threshold: [0, 1],
+      },
+    );
+
+    targets.forEach(function (target) {
+      observer.observe(target);
+    });
+  })();
+</script>
+  </main>
+  <footer>
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Andrey Krisanov • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Sitemap "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Sitemap "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer><span class="topout">
+  <span class="topleft"> </span
+  ><a href="#" class="top" title="Back to Top"
+    ><i class="svgs svgh angu"></i></a
+  >
+</span>
+</body>
+</html>

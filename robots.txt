@@ -1,0 +1,5 @@
+
+Sitemap: https://akrisanov.com/sitemap.xml
+User-Agent: *
+Allow: /
+Host: https://akrisanov.com

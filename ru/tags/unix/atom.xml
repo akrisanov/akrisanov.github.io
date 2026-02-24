@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ru">
+    <title>Андрей Крисанов - unix</title>
+    <subtitle>Заметки об AI-инфраструктуре, системах инференса и промышленной архитектуре бэкенда — от распределённого сервинга и наблюдаемости до оптимизации производительности и надежности. Автор — Андрей Крисанов.</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://akrisanov.com/ru/tags/unix/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2020-08-03T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/ru/tags/unix/atom.xml</id>
+    <entry xml:lang="ru">
+        <title>Запуск программы в виде демона</title>
+        <published>2020-08-03T00:00:00+00:00</published>
+        <updated>2020-08-03T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/ru/unix-daemon/"/>
+        <id>https://akrisanov.com/ru/unix-daemon/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/ru/unix-daemon/">&lt;p&gt;В macOS и операционных системах семейства Unix для запуска программы в фоновом режиме достаточно
+добавить к команде знак амперсанда &lt;code&gt;&amp;amp;&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;sync&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt; -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;-folder&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; &#x2F;home&#x2F;akrisanov&#x2F;downloads&lt;&#x2F;span&gt;&lt;span&gt; &amp;amp;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;После ввода команды оболочка отвечает идентификатором процесса &lt;code&gt;PID&lt;&#x2F;code&gt;, который может быть использован
+в дальнейшем для прекращения работы процесса.&lt;&#x2F;p&gt;
+&lt;p&gt;Данный трюк часто бывает полезен при запуске серверов или других демонов.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

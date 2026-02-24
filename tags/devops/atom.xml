@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Andrey Krisanov - devops</title>
+    <subtitle>Engineering notes and essays on AI infrastructure, large-scale inference systems, and production-grade backend design — from distributed serving and observability to performance tuning and reliability. Written by Andrey Krisanov.</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://akrisanov.com/tags/devops/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2023-08-10T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/tags/devops/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Building Multi-Arch Images for Arm and x86</title>
+        <published>2023-08-10T00:00:00+00:00</published>
+        <updated>2023-08-10T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/multi-arch-docker-images/"/>
+        <id>https://akrisanov.com/multi-arch-docker-images/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/multi-arch-docker-images/">&lt;p&gt;At work, I am involved in the development of a machine learning SDK and cloud services for
+privacy and data protection. Like almost every company in this space, we rely heavily on
+Python&#x27;s scientific ecosystem. Because it&#x27;s quite mature and depends on native library
+development that started years ago, getting these packages to work on new architectures
+can be tedious.&lt;&#x2F;p&gt;
+&lt;p&gt;I am one of the few developers on our team who has stuck with MacOS and have a Macbook Pro
+with M1 chip. There is no easy way for me to bootstrap our development environment in a matter
+of minutes. I have to use Conda, install specific versions of Python packages, patch some native
+libraries, and even create a symlink from an OS-specific package to its generic name
+(I&#x27;m talking to you, Tensorflow). People on the &lt;code&gt;x86_64&lt;&#x2F;code&gt; architecture generally won&#x27;t have
+this problem – almost every package we use comes with a pre-built wheel for a chosen OS.
+Moreover, to install the SDK as a dependency of, say, an HTTP API service, I had to assemble
+it from sources: &lt;code&gt;pip install -e &#x27;.&#x27;&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;A few months ago we didn&#x27;t even support the Arm64 architecture at a build level. This changed when
+I introduced a Github Action pipeline to build Python wheels for Linux &lt;code&gt;x86_64&lt;&#x2F;code&gt;, &lt;code&gt;aarch64&lt;&#x2F;code&gt;, and &lt;code&gt;universal&lt;&#x2F;code&gt;.
+Instead of manually compiling some native libraries on my machine, I moved the work to GitHub and
+its Linux instances. From that moment on, I could just get the package from a private PyPI registry.
+The sad truth is that I still use Conda and sometimes patch one or two transitive dependencies for
+my M1 chip. But other than that, no hard times to date.&lt;&#x2F;p&gt;
+&lt;p&gt;Today I needed to distribute a newly created API service with the SDK inside as a Docker image.
+And I haven&#x27;t found an easy way to define a Dockerfile that can be built and run on
+Apple Silicon without Conda:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;docker&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span&gt; python:3.9-slim-buster &lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;AS&lt;&#x2F;span&gt;&lt;span&gt; base&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ENV&lt;&#x2F;span&gt;&lt;span&gt; PYTHONDONTWRITEBYTECODE=1&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ENV&lt;&#x2F;span&gt;&lt;span&gt; PYTHONUNBUFFERED=1&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Install Conda&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; apt-get update &amp;amp;&amp;amp; apt-get -y upgrade&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; apt-get install -y --no-install-recommends build-essential g++ gcc libssl-dev cmake git wget&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ENV&lt;&#x2F;span&gt;&lt;span&gt; PATH=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&#x2F;root&#x2F;miniconda3&#x2F;bin:${PATH}&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ARG&lt;&#x2F;span&gt;&lt;span&gt; PATH=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&#x2F;root&#x2F;miniconda3&#x2F;bin:${PATH}&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; wget \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    https:&#x2F;&#x2F;repo.anaconda.com&#x2F;miniconda&#x2F;Miniconda3-latest-Linux-aarch64.sh \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    &amp;amp;&amp;amp; mkdir &#x2F;root&#x2F;.conda \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    &amp;amp;&amp;amp; bash Miniconda3-latest-Linux-aarch64.sh -b \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    &amp;amp;&amp;amp; rm -f Miniconda3-latest-Linux-aarch64.sh&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Create a Conda environment and install native dependencies&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; --mount=type=cache,target=&#x2F;root&#x2F;.cache \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    conda init bash &amp;amp;&amp;amp; . &#x2F;root&#x2F;.bashrc &amp;amp;&amp;amp; \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    conda update conda &amp;amp;&amp;amp; \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    conda create -n de_agent python=3.9 &amp;amp;&amp;amp; \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    conda env config vars set -n de_agent LD_PRELOAD=&#x2F;usr&#x2F;lib&#x2F;aarch64-linux-gnu&#x2F;libgomp.so.1 &amp;amp;&amp;amp; \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    conda activate de_agent &amp;amp;&amp;amp; \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    conda install gdal llvmdev dm-tree -y &amp;amp;&amp;amp; \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    pip install --upgrade pip setuptools wheel &amp;amp;&amp;amp; \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    pip install h3&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Copy application files&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;WORKDIR&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;app&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; app&#x2F; .&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; logging.yaml .&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; main.py .&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; requirements.txt .&#x2F;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Install Python packages&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ARG&lt;&#x2F;span&gt;&lt;span&gt; DE_AGENT_PYPI_TOKEN&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; --mount=type=cache,target=&#x2F;root&#x2F;.cache \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    . &#x2F;root&#x2F;.bashrc &amp;amp;&amp;amp; conda activate de_agent &amp;amp;&amp;amp; \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    pip install -r requirements.txt --extra-index-url=https:&#x2F;&#x2F;${DE_AGENT_PYPI_TOKEN}:@pypi.****.ai&#x2F;pypi&#x2F; &amp;amp;&amp;amp; \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    pip install numpy==1.23.5&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Cleanup&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; apt -qy purge --auto-remove build-essential g++ gcc libssl-dev cmake git wget&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; apt autoremove &amp;amp;&amp;amp; apt clean&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Create a user&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; groupadd -r de_agent &amp;amp;&amp;amp; useradd -r -m -g de_agent de_agent&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; chown -R de_agent:de_agent &#x2F;app&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;USER&lt;&#x2F;span&gt;&lt;span&gt; de_agent&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Run the web application&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;EXPOSE&lt;&#x2F;span&gt;&lt;span&gt; 8000&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ENTRYPOINT&lt;&#x2F;span&gt;&lt;span&gt; [&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;PYTHONPATH=.&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;python&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;main.py&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;As you can see, the manifest is quite verbose. It also adds the Conda binaries and related
+files to a release image. It is a price that must be paid.&lt;&#x2F;p&gt;
+&lt;p&gt;Fortunately, for Linux, we don&#x27;t need all of this machinery:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;docker&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span&gt; python:3.9-slim-buster &lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;AS&lt;&#x2F;span&gt;&lt;span&gt; base&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ENV&lt;&#x2F;span&gt;&lt;span&gt; PYTHONDONTWRITEBYTECODE=1&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ENV&lt;&#x2F;span&gt;&lt;span&gt; PYTHONUNBUFFERED=1&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Install system packages&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; apt-get update &amp;amp;&amp;amp; apt-get -y upgrade&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; apt-get install -y --no-install-recommends build-essential g++ gcc libssl-dev cmake git wget&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Copy application files&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;WORKDIR&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;app&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; app&#x2F; .&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; logging.yaml .&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; main.py .&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; requirements.txt .&#x2F;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Install Python dependencies&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ARG&lt;&#x2F;span&gt;&lt;span&gt; DE_AGENT_PYPI_TOKEN&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; --mount=type=cache,target=&#x2F;root&#x2F;.cache \&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    pip install -r requirements.txt --extra-index-url=https:&#x2F;&#x2F;${DE_AGENT_PYPI_TOKEN}:@pypi.****.ai&#x2F;pypi&#x2F;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Cleanup&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; apt -qy purge --auto-remove build-essential g++ gcc libssl-dev cmake git wget&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; apt autoremove &amp;amp;&amp;amp; apt clean&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Create a user&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; groupadd -r de_agent &amp;amp;&amp;amp; useradd -r -m -g de_agent de_agent&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; chown -R de_agent:de_agent &#x2F;app&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;USER&lt;&#x2F;span&gt;&lt;span&gt; de_agent&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;#&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Run the web application&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;EXPOSE&lt;&#x2F;span&gt;&lt;span&gt; 8000&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ENTRYPOINT&lt;&#x2F;span&gt;&lt;span&gt; [&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;PYTHONPATH=.&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;python&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;main.py&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The question now is how to build Docker images for both architectures on a Mac.
+This is where Docker comes in. Docker Desktop officially supports &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.docker.com&#x2F;blog&#x2F;multi-arch-images&#x2F;&quot;&gt;building multi-arch images
+for Arm and x86&lt;&#x2F;a&gt;. Learning this, I was able to
+add a few targets to my Makefile to quickly build images:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;make&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;build&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; #&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Build a Docker image for x86_64&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; docker&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; buildx&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; build&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; --platform&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; linux&#x2F;amd64&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; de-agent&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span&gt;amd64-latest --build-arg DE_AGENT_PYPI_TOKEN=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;DE_AGENT_PYPI_TOKEN&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;}&lt;&#x2F;span&gt;&lt;span&gt; -f Dockerfile.amd64 --no-cache .&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;build-arm&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; #&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; Build a Docker image for arm64&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; docker&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;  buildx&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; build&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; --platform&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; linux&#x2F;arm64&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt; de-agent&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span&gt;arm64-latest --build-arg DE_AGENT_PYPI_TOKEN=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;DE_AGENT_PYPI_TOKEN&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;}&lt;&#x2F;span&gt;&lt;span&gt; -f Dockerfile.arm64 --no-cache .&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;make&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; build&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;docker-arm-build.png&quot; alt=&quot;Docker Image For Arm&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Docker image built for the amd64 architecture&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;One can say, it&#x27;s so much hassle for doing all of this locally and a proper CI can solve such
+a case easily. I agree – as I&#x27;ve mentioned, I like shifting work out of my shoulders and giving it
+to some machine in the cloud. But in situations where CI is not available, creating multi-arch
+images can save the day. It certainly did for me.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

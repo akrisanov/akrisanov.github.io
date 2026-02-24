@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=bf750cd1b26e8052b393" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="en" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&display=swap" crossorigin="anonymous" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Andrey Krisanov Atom Feed"
+  href="https://akrisanov.com/atom.xml" />
+<link rel="alternate" type="application/rss+xml" title="Andrey Krisanov RSS Feed"
+  href="https://akrisanov.com/rss.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>Identifying Vulnerable Dependencies In .NET Projects | Andrey Krisanov</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Andrey Krisanov" />
+<meta name="description" content="How to scan NuGet packages for security vulnerabilities using GitLab CI." />
+<link rel="canonical" href="https://akrisanov.com/dotnet-list-vulnerable-packages/" />
+<link rel="alternate" hreflang="en" href="https://akrisanov.com/dotnet-list-vulnerable-packages/" />
+<link rel="alternate" hreflang="x-default" href="https://akrisanov.com/dotnet-list-vulnerable-packages/" />
+<meta name="keywords" content=".NET, NuGet, DevOpsSec, supply chain attacks, GitLab CI, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/dotnet-list-vulnerable-packages/" />
+<meta name="twitter:url" content="https://akrisanov.com/dotnet-list-vulnerable-packages/" />
+<meta property="og:description" content="How to scan NuGet packages for security vulnerabilities using GitLab CI." />
+<meta name="twitter:description" content="How to scan NuGet packages for security vulnerabilities using GitLab CI." />
+<meta property="og:title" content="Identifying Vulnerable Dependencies In .NET Projects | Andrey Krisanov" />
+<meta name="twitter:title" content="Identifying Vulnerable Dependencies In .NET Projects | Andrey Krisanov" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:site_name" content="Andrey Krisanov" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2024-05-07" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "Identifying Vulnerable Dependencies In .NET Projects",
+	"url": "https://akrisanov.com/dotnet-list-vulnerable-packages/",
+	"inLanguage": "en",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/photo.png",
+	"datePublished": "2024-05-07T00:00:00+00:00",
+	"dateModified": "2024-05-07T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com" title="Andrey Krisanov"><big>Andrey Krisanov</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/about/"
+                  >
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span class="nav-label">About</span>
+                
+                </a></li><li><a class="s95" href="https://akrisanov.com/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="nav-label">Posts</span>
+                
+                </a></li><li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="English" title="English"><i class="svgs world" aria-hidden="true"></i><span>English</span></button>
+                <div class="dropdown-content">
+                <span>English</span><a href="https://akrisanov.com/ru/dotnet-list-vulnerable-packages/">Русский</a></div>
+            </div></li><li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="Theme"
+            aria-label="Theme"><i class="svgs adjust" aria-hidden="true"></i><span>Theme</span></button></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Search">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Search"
+        aria-label="Search" title="Search" />
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/dotnet-list-vulnerable-packages/">Identifying Vulnerable Dependencies In .NET Projects</a></h1>
+
+<span class="s95" ><span class="post-date">May 07, 2024</span>
+  <span class="post-tags"><a
+      href="https://akrisanov.com/tags/net/">.NET</a><a
+      href="https://akrisanov.com/tags/nuget/">NuGet</a><a
+      href="https://akrisanov.com/tags/devopssec/">DevOpsSec</a><a
+      href="https://akrisanov.com/tags/gitlab-ci/">GitLab CI</a></span></span>  <p>Some time ago, I was working in a company that was building a SaaS that was written in .NET.
+The code base was a decade old, and like many companies using Microsoft technologies,
+it had been through a few framework upgrades. The intent was to move to modern technologies and
+refactor outdated components, but the execution was rather poor. By the time I put on my engineering
+manager's hat, many of the NuGet packages in the solution were out of date and even deprecated.</p>
+<p>In Python and Go projects, I rely heavily on linting, static analysis, and formatting tools.
+Not having these essentials would make me and my teams less productive. So the first thing I did
+was understand what modern .NET brings to the table in this area. And I started by scanning the
+NuGet packages we use in all of our projects in a single solution for potential vulnerabilities.</p>
+<p>It turned out that developers could simply run <code>dotnet list package --vulnerable</code> locally
+to keep an eye on security. But without automation, it's too easy to forget about that.</p>
+<p>My first local scan produced the following result:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">.</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">.</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">.</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Project</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> `</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">X.Infrastructure.Calendar</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">`</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> has</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> following</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vulnerable</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> packages</span></span>
+<span class="giallo-l"><span>   [</span><span>net6.0</span><span>]</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">   Top-level</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> Package</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">            Requested</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Resolved</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Severity</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Advisory</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> URL</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">   &gt;</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> System.Data.SqlClient</span><span style="color: light-dark(#9A4D00, #EFBA5D);">      4.8.3</span><span style="color: light-dark(#9A4D00, #EFBA5D);">       4.8.3</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">      Moderate</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   https://github.com/advisories/GHSA-8g2p-5pqh-5jmc</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">                                                       High</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">       https://github.com/advisories/GHSA-98g6-xh36-x2p7</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">The</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> given</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> project</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> `</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">X.Infrastructure.Common</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">`</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> has</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> no</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vulnerable</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> packages</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> given</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> current</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> sources.</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Project</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> `</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">X.Infrastructure.Currency</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">`</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> has</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> following</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vulnerable</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> packages</span></span>
+<span class="giallo-l"><span>   [</span><span>net6.0</span><span>]</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">   Top-level</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> Package</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">            Requested</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Resolved</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Severity</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Advisory</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> URL</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">   &gt;</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> System.Data.SqlClient</span><span style="color: light-dark(#9A4D00, #EFBA5D);">      4.8.3</span><span style="color: light-dark(#9A4D00, #EFBA5D);">       4.8.3</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">      Moderate</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   https://github.com/advisories/GHSA-8g2p-5pqh-5jmc</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">                                                       High</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">       https://github.com/advisories/GHSA-98g6-xh36-x2p7</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Project</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> `</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">X.Infrastructure.Locker</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">`</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> has</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> following</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vulnerable</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> packages</span></span>
+<span class="giallo-l"><span>   [</span><span>net6.0</span><span>]</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">   Top-level</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> Package</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">            Requested</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Resolved</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Severity</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Advisory</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> URL</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">   &gt;</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> System.Data.SqlClient</span><span style="color: light-dark(#9A4D00, #EFBA5D);">      4.8.3</span><span style="color: light-dark(#9A4D00, #EFBA5D);">       4.8.3</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">      Moderate</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   https://github.com/advisories/GHSA-8g2p-5pqh-5jmc</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">                                                       High</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">       https://github.com/advisories/GHSA-98g6-xh36-x2p7</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">The</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> given</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> project</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> `</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">X.Infrastructure.Locker.Tests.Unit</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">`</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> has</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> no</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vulnerable</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> packages</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> given</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> current</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> sources.</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">The</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> given</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> project</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> `</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">X.Infrastructure.Pool</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">`</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> has</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> no</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vulnerable</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> packages</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> given</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> current</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> sources.</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Project</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> `</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">X.Infrastructure.Repositories</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">`</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> has</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> following</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vulnerable</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> packages</span></span>
+<span class="giallo-l"><span>   [</span><span>net6.0</span><span>]</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">   Top-level</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> Package</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">            Requested</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Resolved</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Severity</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   Advisory</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> URL</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">   &gt;</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> System.Data.SqlClient</span><span style="color: light-dark(#9A4D00, #EFBA5D);">      4.8.3</span><span style="color: light-dark(#9A4D00, #EFBA5D);">       4.8.3</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">      Moderate</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">   https://github.com/advisories/GHSA-8g2p-5pqh-5jmc</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">                                                       High</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">       https://github.com/advisories/GHSA-98g6-xh36-x2p7</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">The</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> given</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> project</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> `</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">X.Infrastructure.Rules</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">`</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> has</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> no</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vulnerable</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> packages</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> given</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> current</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> sources.</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">.</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">.</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">.</span></span></code></pre>
+<p>As you can see, there are several projects vulnerable to <a rel="noopener external" target="_blank" href="https://devhub.checkmarx.com/cve-details/CVE-2022-41064/">CVE-2022-41064</a>.</p>
+<blockquote>
+<p>.NET Framework System.Data.SqlClient versions prior to 4.8.5 and Microsoft.Data.SqlClient
+versions prior to 1.1.4 and 2.0.0 prior to 2.1.2 is vulnerable to Information Disclosure Vulnerability.</p>
+</blockquote>
+<p>To get rid of the issue, it's enough to upgrade the package:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">dotnet</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> add</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> package</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> System.Data.SqlClient</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">v</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 4.8.6</span></span></code></pre>
+<p>Now, how can developers prevent such situations? You already know the answer: automation!</p>
+<p>After sharing my observations with the team, I created a merge request with a new GitLab pipeline
+that runs for every open merge request and master branch.</p>
+<p>These are the changes in the <code>.gitlab-ci.yml</code> manifest:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">tages</span><span>:</span></span>
+<span class="giallo-l"><span>  -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> s</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ecurity</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">v</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ulnarable-dependencies</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">  s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">tage</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> s</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ecurity</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">  i</span><span style="color: light-dark(#0D5F89, #FFFFFF);">mage</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> m</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">cr.microsoft.com/dotnet/sdk:6.0-bullseye-slim</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">  b</span><span style="color: light-dark(#0D5F89, #FFFFFF);">efore_script</span><span>:</span></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> d</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">otnet restore</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">  s</span><span style="color: light-dark(#0D5F89, #FFFFFF);">cript</span><span>:</span></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> d</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">otnet list package --vulnerable 2&gt;&amp;1 | tee vulnerable-packages.log</span></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> &gt;</span><span style="color: light-dark(#7A2E59, #ECCDBB);">-</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">      ! grep -qiw &quot;critical\|high\|moderate\|low&quot; vulnerable-packages.log;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">      if [ $? -ne 0 ]; then</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">        echo &quot;🚨 Found vulnarable packages&quot;;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">        exit 1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">      else</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">        exit 0</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">      fi</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">  a</span><span style="color: light-dark(#0D5F89, #FFFFFF);">rtifacts</span><span>:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">    w</span><span style="color: light-dark(#0D5F89, #FFFFFF);">hen</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> a</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">lways</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">    e</span><span style="color: light-dark(#0D5F89, #FFFFFF);">xpire_in</span><span>:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> 1</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">2h</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">    p</span><span style="color: light-dark(#0D5F89, #FFFFFF);">aths</span><span>:</span></span>
+<span class="giallo-l"><span>      -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> v</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ulnerable-packages.log</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">  o</span><span style="color: light-dark(#0D5F89, #FFFFFF);">nly</span><span>:</span></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> m</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">aster</span></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> m</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">erge_requests</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0D5F89, #FFFFFF);">  t</span><span style="color: light-dark(#0D5F89, #FFFFFF);">ags</span><span>:</span></span>
+<span class="giallo-l"><span>    -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> d</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ocker</span></span></code></pre>
+<p>The pipeline will fail if any of the projects in the solution have vulnerable packages.
+The downloadable log file contains the list of vulnerabilities and their severity.</p>
+<p>This way, the team is always aware of the state of the dependencies and can take action to fix them.</p>
+<p>References:</p>
+<ul>
+<li><a rel="noopener external" target="_blank" href="https://devblogs.microsoft.com/nuget/how-to-scan-nuget-packages-for-security-vulnerabilities/">How to Scan NuGet Packages for Security Vulnerabilities</a></li>
+</ul>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
+        <a href="https://akrisanov.com/uv/"><span
+            class="np-label">&#8249; Previous</span><span class="np-title">uv: Cargo-like Python Tool That Replaces pipx, pyenv, and more</span></a>
+      </div>
+      <div class="post-nav-next">
+        <a href="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/"><span class="np-label">Next
+            &#8250;</span><span class="np-title">Convert Flac to Apple Lossless With FFmpeg</span></a>
+      </div>
+    </nav>
+</article>
+  </main>
+  <footer>
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Andrey Krisanov • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Sitemap "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Sitemap "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
