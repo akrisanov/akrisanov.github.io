@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Andrey Krisanov - keycloak</title>
+    <subtitle>Engineering notes and essays on AI infrastructure, large-scale inference systems, and production-grade backend design — from distributed serving and observability to performance tuning and reliability. Written by Andrey Krisanov.</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://akrisanov.com/tags/keycloak/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2023-09-23T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/tags/keycloak/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Synchronizing Users From LDAP With Keycloak Using AD Filters</title>
+        <published>2023-09-23T00:00:00+00:00</published>
+        <updated>2023-09-23T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/custom-user-ldap-filter-in-keycloak/"/>
+        <id>https://akrisanov.com/custom-user-ldap-filter-in-keycloak/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/custom-user-ldap-filter-in-keycloak/">&lt;p&gt;One of the ways to synchronize users via a third-party provider with Keycloak is a mechanism
+called User Federation. It allows, using Kerberos or LDAP protocol, to pull user entries from your
+corporate authentication storage. However, if your organization is big enough to have a complex
+structure and there are a lot of users in the user directory, it could be challenging to get only
+a subset of the accounts that belong to different organization units.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, Active Directory models a tree-based structure using the following entities:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;CN&lt;&#x2F;code&gt; = Common Name&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;OU&lt;&#x2F;code&gt; = Organizational Unit&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;DC&lt;&#x2F;code&gt; = Domain Component&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;All the distinguished names can be found in &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.microsoft.com&#x2F;en-us&#x2F;previous-versions&#x2F;windows&#x2F;desktop&#x2F;ldap&#x2F;distinguished-names&quot;&gt;the official documentation&lt;&#x2F;a&gt;
+provided by Microsoft.&lt;&#x2F;p&gt;
+&lt;p&gt;To configure a new User Federation in Keycloak, it&#x27;s required to specify a User DN.
+This distinguished name is the base object in the directory information tree where the search
+begins forming candidates for pulling authentication entries. Therefore, we need to know how to
+construct the User DN.&lt;&#x2F;p&gt;
+&lt;p&gt;The base option that an Active Directory administrator could use to create user accounts is to
+organize them under organizational units:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;plain&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;OU=Main,DC=Orgname,DC=ru&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Even if your organizational unit has a complex structure, it&#x27;s still relatively easy for Keycloak
+to find user entries inside it – just activate the &lt;code&gt;Search Scope: Subtree&lt;&#x2F;code&gt; setting when configuring
+the user federation. In large organizations, the Active Directory structure can get quite messy.
+Instead of using clear distinguished names, administrators do something surprising even to them.
+How about putting entries under CN in different organizational units?&lt;&#x2F;p&gt;
+&lt;p&gt;This is what I encountered while working on corporate user authentication for a media platform&#x27;s CMS.
+User entries of the editors were grouped via the Common Name. So, there is no way to define User DN
+in the way I&#x27;ve mentioned in the example above. Fortunately, the LDAP connection allows providing
+a filter for Active Directory. In my case, writing the filter to select all of the members of the
+&lt;code&gt;CMS_EDITOR&lt;&#x2F;code&gt; group was enough to solve a problem:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;plain&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;(&amp;amp;(objectCategory=Person)(sAMAccountName=*)(|(memberOf=CN=CMS_EDITOR,OU=Security,OU=Groups,OU=Central,OU=Main,DC=Orgname,DC=ru)))&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Moreover, the &lt;code&gt;Custom User LDAP Filter&lt;&#x2F;code&gt; setting in Keycloak supports logical operators like &lt;em&gt;or&lt;&#x2F;em&gt;
+with &lt;code&gt;|&lt;&#x2F;code&gt;, and I could use it for finding not only the members of the editor staff but also
+CMS admins, guests, etc.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

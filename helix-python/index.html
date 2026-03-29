@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=bf750cd1b26e8052b393" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="en" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&display=swap" crossorigin="anonymous" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Andrey Krisanov Atom Feed"
+  href="https://akrisanov.com/atom.xml" />
+<link rel="alternate" type="application/rss+xml" title="Andrey Krisanov RSS Feed"
+  href="https://akrisanov.com/rss.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>Helix for Python Development | Andrey Krisanov</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Andrey Krisanov" />
+<meta name="description" content="Configure modern Python tooling in Helix: LSP, type checker (ty), code formatter (ruff) and more." />
+<link rel="canonical" href="https://akrisanov.com/helix-python/" />
+<link rel="alternate" hreflang="en" href="https://akrisanov.com/helix-python/" />
+<link rel="alternate" hreflang="x-default" href="https://akrisanov.com/helix-python/" />
+<meta name="keywords" content="helix, python, lsp, ty, ruff, formatter, type checker, code analysis, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/helix-python/" />
+<meta name="twitter:url" content="https://akrisanov.com/helix-python/" />
+<meta property="og:description" content="Configure modern Python tooling in Helix: LSP, type checker (ty), code formatter (ruff) and more." />
+<meta name="twitter:description" content="Configure modern Python tooling in Helix: LSP, type checker (ty), code formatter (ruff) and more." />
+<meta property="og:title" content="Helix for Python Development | Andrey Krisanov" />
+<meta name="twitter:title" content="Helix for Python Development | Andrey Krisanov" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:site_name" content="Andrey Krisanov" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2026-03-29" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "Helix for Python Development",
+	"url": "https://akrisanov.com/helix-python/",
+	"inLanguage": "en",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/photo.png",
+	"datePublished": "2026-03-29T00:00:00+00:00",
+	"dateModified": "2026-03-29T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com" title="Andrey Krisanov"><big>Andrey Krisanov</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/about/"
+                  >
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span class="nav-label">About</span>
+                
+                </a></li><li><a class="s95" href="https://akrisanov.com/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="nav-label">Posts</span>
+                
+                </a></li><li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="English" title="English"><i class="svgs world" aria-hidden="true"></i><span>English</span></button>
+                <div class="dropdown-content">
+                <span>English</span><a href="https://akrisanov.com/ru/helix-python/">Русский</a></div>
+            </div></li><li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="Theme"
+            aria-label="Theme"><i class="svgs adjust" aria-hidden="true"></i><span>Theme</span></button></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Search">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Search"
+        aria-label="Search" title="Search" />
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/helix-python/">Helix for Python Development</a></h1>
+
+<span class="s95" ><span class="post-date">March 29, 2026</span>
+  <span class="post-tags"><a
+      href="https://akrisanov.com/tags/helix/">helix</a><a
+      href="https://akrisanov.com/tags/python/">python</a><a
+      href="https://akrisanov.com/tags/tooling/">tooling</a></span></span>  <p>In a day to day life, I'm big Visual Studio Code user. I use it for all my working and personal projects, and most
+of the time, I love it. I've been using this editor for years while switching between different languages and ecosystems,
+and it has been a great companion for my development journey. I truly appreciate the effort that Microsoft has put
+into making VS Code a versatile and powerful tool for all sorts of developers.</p>
+<p>However, with the rise of coding agents and chat-based interfaces, I've found myself looking for a less distracting
+and more focused coding environment. I want something that allows me to immerse myself in the code without the
+constant notifications and status updates that come in panels and sidebars. Especially when I read books and try
+to reimplement the concepts and examples in code. For that reason, I've been exploring Helix, a terminal-based code
+editor that promises to be fast, efficient, and yet powerful enough for modern development.</p>
+<p>I've already configured Helix for working with code in Go, and it has been a great experience. Unfortunately, I haven't
+written a note for myself about setting up Helix back then. Such a pitty. To avoid the same mistake, here's a note
+about how I set up Helix for Python development, including LSP, type checker (ty), code formatter (ruff) and more.
+I hope this cheat sheet will be useful for anyone else and save you some time.</p>
+<p>A quick disclaimer: I'm a macOS user, so some of the instructions may be specific to that platform.
+However, most of the tools and configurations should work on other operating systems as well.</p>
+<p>Before we start, how do you even check whether Helix is configured for Python development?
+The easiest way is to run this command in the terminal:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">hx</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-health</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> python</span></span></code></pre>
+<p>In my case, the output looks like this:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Configured</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> language</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> servers:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  ✘</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ty:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ty</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> not</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> found</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> in</span><span style="color: light-dark(#0550AE, #A4A0E8);"> $</span><span style="color: light-dark(#0550AE, #A4A0E8);">PATH</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  ✘</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ruff:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ruff</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> not</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> found</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> in</span><span style="color: light-dark(#0550AE, #A4A0E8);"> $</span><span style="color: light-dark(#0550AE, #A4A0E8);">PATH</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  ✘</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> jedi:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">jedi-language-server</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> not</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> found</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> in</span><span style="color: light-dark(#0550AE, #A4A0E8);"> $</span><span style="color: light-dark(#0550AE, #A4A0E8);">PATH</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  ✘</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> pylsp:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">pylsp</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> not</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> found</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> in</span><span style="color: light-dark(#0550AE, #A4A0E8);"> $</span><span style="color: light-dark(#0550AE, #A4A0E8);">PATH</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Configured</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> debug</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> adapter:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> None</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Configured</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> formatter:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> None</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Tree-sitter</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> parser:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Highlight</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> queries:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Textobject</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> queries:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Indent</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> queries:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ✓</span></span></code></pre>
+<p>As you can see, I haven't configured any language servers or formatters yet, but I have the Tree-sitter parser and queries set up.
+Let's fix that. As many of us, I'm a big fan of Astral's tools, so I'll be using <a href="/uv">uv</a> to manage dependencies.</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">uv</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> tool</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> install</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ruff</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">uv</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> tool</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> install</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ty</span></span></code></pre>
+<p>This will install ruff (code formatter) and ty (type checker) as command-line tools that we can use in Helix.
+On macOS, uv tool install puts executables in a user bin directory that must be on your PATH.
+The exact path depends on your setup, but a very common fix is:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">echo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">export PATH=&quot;$HOME/.local/bin:$PATH&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> &gt;&gt;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ~/.zshrc</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">source</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ~/.zshrc</span></span></code></pre>
+<p>Execute the command above if you haven't already, and then check that the tools are available:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">which</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ruff</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">which</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ty</span></span></code></pre>
+<p>If which shows nothing, Helix will not see them either. Now, let's check the health again:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">hx</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-health</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> python</span></span></code></pre>
+<p>The output should now look like this:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Configured</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> language</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> servers:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  ✓</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ruff:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> /Users/akrisanov/.local/bin/ruff</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  ✓</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ty:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> /Users/akrisanov/.local/bin/ty</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Configured</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> debug</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> adapter:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  ✓</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> /Users/akrisanov/.local/share/mise/installs/python/3.14.3/bin/python3</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Configured</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> formatter:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  ✓</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> /Users/akrisanov/.local/bin/ruff</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Tree-sitter</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> parser:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Highlight</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> queries:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Textobject</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> queries:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Indent</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> queries:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ✓</span></span></code></pre>
+<p>To make the tools work in Helix, we need to add some configuration. Open the Helix configuration file
+(usually located at <code>~/.config/helix/config.toml</code>) and add the following lines:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="toml"><span class="giallo-l"><span>[[</span><span>language</span><span>]]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">name</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">python</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">language-servers</span><span> =</span><span> [</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ruff</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ty</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">auto-format</span><span> =</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> true</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">formatter</span><span> =</span><span> {</span><span style="color: light-dark(#0550AE, #A4A0E8);"> command</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ruff</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0550AE, #A4A0E8);"> args</span><span> =</span><span> [</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">format</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">-</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>]</span><span> }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>[</span><span>language-server</span><span>.</span><span>ruff</span><span>]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">command</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ruff</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">args</span><span> =</span><span> [</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">server</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>[</span><span>language-server</span><span>.</span><span>ty</span><span>]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">command</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ty</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">args</span><span> =</span><span> [</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">server</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>]</span></span></code></pre>
+<p>The final part is to make <code>debugpy</code> available for debugging. You can install it with pip:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">pip</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> install</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> debugpy</span></span></code></pre>
+<p>and then append the following lines to the Helix configuration file:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="toml"><span class="giallo-l"><span>[</span><span>language</span><span>.</span><span>debugger</span><span>]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">name</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">debugpy</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">transport</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">stdio</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">command</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">python3</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">args</span><span> =</span><span> [</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">-m</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">debugpy.adapter</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>[[</span><span>language</span><span>.</span><span>debugger</span><span>.</span><span>templates</span><span>]]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">name</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">source</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">request</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">launch</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">completion</span><span> =</span><span> [</span></span>
+<span class="giallo-l"><span>  {</span><span style="color: light-dark(#0550AE, #A4A0E8);"> name</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">entrypoint</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0550AE, #A4A0E8);"> completion</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">filename</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0550AE, #A4A0E8);"> default</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span> }</span></span>
+<span class="giallo-l"><span>]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0550AE, #A4A0E8);">args</span><span> =</span><span> {</span><span style="color: light-dark(#0550AE, #A4A0E8);"> mode</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">debug</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>,</span><span style="color: light-dark(#0550AE, #A4A0E8);"> program</span><span> =</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">{0}</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span> }</span></span></code></pre>
+<p>Now you should have a fully configured Helix for Python development, with <code>ruff</code> as the code formatter and <code>ty</code> as the type checker.</p>
+<p>Enjoy!</p>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
+      </div>
+      <div class="post-nav-next">
+        <a href="https://akrisanov.com/vllm-metrics/"><span class="np-label">Next
+            &#8250;</span><span class="np-title">vLLM Metrics in Production</span></a>
+      </div>
+    </nav>
+</article>
+  </main>
+  <footer>
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Andrey Krisanov • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Sitemap "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Sitemap "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer><span class="topout">
+  <span class="topleft"> </span
+  ><a href="#" class="top" title="Back to Top"
+    ><i class="svgs svgh angu"></i></a
+  >
+</span>
+</body>
+</html>

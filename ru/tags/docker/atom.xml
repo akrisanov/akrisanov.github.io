@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ru">
+    <title>Андрей Крисанов - docker</title>
+    <subtitle>Заметки об AI-инфраструктуре, системах инференса и промышленной архитектуре бэкенда — от распределённого сервинга и наблюдаемости до оптимизации производительности и надежности. Автор — Андрей Крисанов.</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://akrisanov.com/ru/tags/docker/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2022-07-12T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/ru/tags/docker/atom.xml</id>
+    <entry xml:lang="ru">
+        <title>Сборка образов на Gitlab CI для GCP Artifact Registry</title>
+        <published>2022-07-12T00:00:00+00:00</published>
+        <updated>2022-07-12T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/ru/gitlab-kaniko-artifact-registry/"/>
+        <id>https://akrisanov.com/ru/gitlab-kaniko-artifact-registry/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/ru/gitlab-kaniko-artifact-registry/">&lt;p&gt;Пару дней назад потребовалось автоматизировать сборку образов для контейнеров веб-платформы, которая
+разворачивается в Google Kubernetes Engine (GKE). До этого момента сборка выполнялась локально на
+машинах разработчиков при помощи Docker и собранные образы отправлялись в Google Artifact Registry.
+Кроме того, стали появляться дополнительные тестовые и демо-окружения, требующие небольших изменений,
+например, в конфигурации фронтенда. Перечисленное также усложняло жизнь solution и sales-инженерам,
+разворачивающих систему у клиентов.&lt;&#x2F;p&gt;
+&lt;p&gt;Чтобы сэкономить время и другие ресурсы, решено было добавить дополнительный этап в существующий
+пайплайн с банальным именем &lt;code&gt;build&lt;&#x2F;code&gt; и выполнять рутиные операции после успешного прохождения
+линтеров и тестов.&lt;&#x2F;p&gt;
+&lt;p&gt;Первое с чем я столкнулся, это непонимание как запущен и сконфигурирован Gitlab Runner.
+Так как наш DevOps-инженер в это удачное время оказался в отпуске, пришлось самому проверять настройки CI.
+От того, какой тип раннера используется для выполнения пайплайнов, зависят в том числе и возможности сборки.
+В моем случае используется Kubernetes Runner и задачи прогоняются в контейнерах.
+Следовательно, чтобы собрать образы в таком окружении, потребуется &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.gitlab.com&#x2F;ee&#x2F;ci&#x2F;docker&#x2F;using_docker_build.html#use-docker-in-docker&quot;&gt;Docker внутри контейнера&lt;&#x2F;a&gt;.
+И с этим сразу начинаются проблемы, которые связаны с привелегированным доступом к сокету Docker,
+стабильностью пайплайна в целом, безопасностью и &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;kubernetes&#x2F;kubernetes&#x2F;blob&#x2F;master&#x2F;CHANGELOG&#x2F;CHANGELOG-1.20.md#deprecation&quot;&gt;желанием Kubernets уйти от Docker-образов&lt;&#x2F;a&gt;
+в будущем. Проведя несколько экспериментов, решил отказаться от изначального плана.&lt;&#x2F;p&gt;
+&lt;p&gt;Обойтись без dind (Docker-in-Docker) помогает Kaniko. &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.gitlab.com&#x2F;ee&#x2F;ci&#x2F;docker&#x2F;using_kaniko.html&quot;&gt;Официальная страница документации Gitlab&lt;&#x2F;a&gt;
+неплохо описывает весь процесс сборки. Единственная сложность, которая у меня возникла, была связана
+с аутентификацией GCP Artifact Registry.&lt;&#x2F;p&gt;
+&lt;p&gt;Для аутентификации раннера нужно создать &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;console.cloud.google.com&#x2F;iam-admin&#x2F;serviceaccounts&quot;&gt;сервисный аккаунт&lt;&#x2F;a&gt;
+в разделе IAM &amp;amp; Admin.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;gcp-service-account.png&quot; alt=&quot;Создание сервисного аккаунта&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Создание сервисного аккаунта&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Далее сгенерировать приватный ключ в формате JSON и скачать его.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;gcp-private-key.png&quot; alt=&quot;Генерация нового приватного ключа&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Генерация нового приватного ключа&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Выдать права доступа к Artifact Registry для сервисного аккаунта.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;gcp-roles.png&quot; alt=&quot;Назначение ролей Artifact Registry Reader и Artifact Registry Writer&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Назначение ролей Artifact Registry Reader и Artifact Registry Writer&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Роль &lt;code&gt;Artifact Registry Reader&lt;&#x2F;code&gt; необходима для скачивания образов и кеширования,
+роль &lt;code&gt;Artifact Registry Writer&lt;&#x2F;code&gt; – для публикации образов. В интернете можно найти руководства,
+которые предлагают указывать роль &lt;code&gt;Storage Admin&lt;&#x2F;code&gt;, но, на мой взгляд, это плохая практика.&lt;&#x2F;p&gt;
+&lt;p&gt;С настройкой на стороне облака закончено, остается раннер и Kaniko, который для аутентификации GCP
+читает специальную переменную &lt;code&gt;GOOGLE_APPLICATION_CREDENTIALS&lt;&#x2F;code&gt;. Чтобы записать в нее содержимое
+приватного ключа в формате JSON, потребуется перевести его в base64.&lt;&#x2F;p&gt;
+&lt;p&gt;В настройках CI&#x2F;CD репозитория следует добавить переменную окружения и скопировать в качестве
+значения base64 строку.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;gitlab-env.png&quot; alt=&quot;Создание переменной GOOGLE_APPLICATION_CREDENTIALS&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Создание переменной &lt;code&gt;GOOGLE_APPLICATION_CREDENTIALS&lt;&#x2F;code&gt;&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;yaml&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;b&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ackend:build&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;  s&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;tage&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; b&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;uild&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;  i&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;mage&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;    n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ame&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; g&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;cr.io&#x2F;kaniko-project&#x2F;executor:debug&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;    e&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ntrypoint&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span&gt; [&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;  v&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ariables&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;    G&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;OOGLE_APPLICATION_CREDENTIALS&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; &#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;kaniko&#x2F;kaniko-secret.json&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;    I&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;MAGE_NAME&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; b&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;ackend&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;  b&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;efore_script&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; e&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;cho $GOOGLE_APPLICATION_CREDENTIALS_BASE64 | base64 -d &amp;gt; &#x2F;kaniko&#x2F;kaniko-secret.json&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;  s&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;cript&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt; &amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;-&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;      &#x2F;kaniko&#x2F;executor&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;      --context &amp;quot;$CI_PROJECT_DIR&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;      --dockerfile &amp;quot;$CI_PROJECT_DIR&#x2F;backend.Dockerfile&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;      --destination &amp;quot;$IMAGE_REPO&#x2F;$IMAGE_NAME:$CI_COMMIT_TAG&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;      --build-arg STATICE_PYTOKEN=&amp;quot;$STATICE_PYTOKEN&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;  o&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;nly&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; t&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;ags&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;После добавления нового этапа в &lt;code&gt;.gitlab-ci.yml&lt;&#x2F;code&gt;, сборка будет запускаться при тегировании
+определенного коммита.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;kaniko-build-pipeline.png&quot; alt=&quot;Пайплайн проекта&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Пайплайн проекта&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Как результат, в GCP Artifact Registry после успешного выполнения пайплайна появится образ
+с именем вида &lt;code&gt;backend:{tag_name}&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Сертификат для LDAPS в Keycloak</title>
+        <published>2021-05-15T00:00:00+00:00</published>
+        <updated>2021-05-15T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/ru/keycloak-ldaps-cert/"/>
+        <id>https://akrisanov.com/ru/keycloak-ldaps-cert/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/ru/keycloak-ldaps-cert/">&lt;p&gt;В нескольких рабочих проектах я использую в качестве сервиса аутентификации &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.keycloak.org&#x2F;&quot;&gt;Keycloak&lt;&#x2F;a&gt;.
+Проект спонсируется компанией RedHat, активно развивается и адаптирован для cloud-native окружения.
+Хотя документация у Keycloak достаточная для основных пользовательских сценариев, иногда ее
+не хватает для решения специфичных вопросов. Последнее с чем я столкнулся — подключение
+Active Directory как User Federation через протокол LDAPS (LDAP over SSL).&lt;&#x2F;p&gt;
+&lt;p&gt;Как и полагается внутренним корпоративным сервисам, наш сервер LDAPS предоставляет самоподписанный сертификат.
+Keycloak в этом случае для успешного соединения с &lt;code&gt;ldaps:&#x2F;&#x2F;ldap.orgname.com:636&lt;&#x2F;code&gt; требует, чтобы
+сертификат находился в truststore. Вариантов конфигурирования несколько:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;глобальный cacerts ОС, в которой запускается сервис&lt;&#x2F;li&gt;
+&lt;li&gt;cacerts из каталога установленного JDK&lt;&#x2F;li&gt;
+&lt;li&gt;системное свойство &lt;code&gt;javax.net.ssl.trustStore&lt;&#x2F;code&gt; для JVM&lt;&#x2F;li&gt;
+&lt;li&gt;truststore в каталоге Keycloak&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Если вам необходимо просто добавить самоподписанный сертификат или root.crt, то самым простым
+способом будет добавление его в источники на уровне ОС и обновление списка доверенных сертификатов.
+Тогда вам не придется каждый раз искать где находиться JDK в системе, переписывать startup-скрипты
+сервиса или заботиться о безопасной работе с паролями для своего truststore.&lt;&#x2F;p&gt;
+&lt;p&gt;Для разворачивания в Kubernetes или OpenShift можно собрать образ следующим способом:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;docker&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span&gt; jboss&#x2F;keycloak:13.0.0&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;USER&lt;&#x2F;span&gt;&lt;span&gt; root&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ARG&lt;&#x2F;span&gt;&lt;span&gt; CERT=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;root.crt&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; $CERT &#x2F;etc&#x2F;pki&#x2F;ca-trust&#x2F;source&#x2F;anchors&#x2F;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; update-ca-trust&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;USER&lt;&#x2F;span&gt;&lt;span&gt; 1000&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Убедиться, что сертификат был добавлен в список доверенных:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; &#x2F;etc&#x2F;pki&#x2F;ca-trust&#x2F;extracted&#x2F;java&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;keytool&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt; -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;list&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt; -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;keystore&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; cacerts&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;&amp;gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; Your keystore contains 137 entries&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;В оригинальном образе их 136.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

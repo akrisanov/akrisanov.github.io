@@ -1,0 +1,295 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=bf750cd1b26e8052b393" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="ru" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/ru/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&display=swap" crossorigin="anonymous" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Андрей Крисанов Atom Feed"
+  href="https://akrisanov.com/ru/atom.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>Ежедневный стендап | Андрей Крисанов</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Андрей Крисанов" />
+<meta name="description" content="Как проводить ежедневные стендапы в команде." />
+<link rel="canonical" href="https://akrisanov.com/ru/stand-up/" />
+<link rel="alternate" hreflang="ru" href="https://akrisanov.com/ru/stand-up/" />
+
+<meta name="keywords" content="менеджмент, командная работа, стендап, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/ru/stand-up/" />
+<meta name="twitter:url" content="https://akrisanov.com/ru/stand-up/" />
+<meta property="og:description" content="Как проводить ежедневные стендапы в команде." />
+<meta name="twitter:description" content="Как проводить ежедневные стендапы в команде." />
+<meta property="og:title" content="Ежедневный стендап | Андрей Крисанов" />
+<meta name="twitter:title" content="Ежедневный стендап | Андрей Крисанов" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:site_name" content="Андрей Крисанов" />
+<meta property="og:locale" content="ru_RU" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2020-07-27" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "Ежедневный стендап",
+	"url": "https://akrisanov.com/ru/stand-up/",
+	"inLanguage": "ru",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/photo.png",
+	"datePublished": "2020-07-27T00:00:00+00:00",
+	"dateModified": "2020-07-27T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<script defer src="https://akrisanov.com/js/lunr.stemmer.support.min.js"
+  integrity="sha384-f0MKdC/9ZSGTpDiuWusC0SbLXNCBp6NgzDZpjR/4UdHXAQBqvTEKyinnsa1wQ7oA"></script>
+<script defer src="https://akrisanov.com/js/lunr.ru.min.js"
+  integrity="sha384-R9oqgx8XLmQUPG/odEJyFPd90/TbRU0/6q+If/f8d5yDqLhZgtOT5/X9r3O1Etjr"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com/ru/" title="Андрей Крисанов"><big>Андрей Крисанов</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/ru/about/"
+                  >
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span class="nav-label">Обо мне</span>
+                
+                </a></li><li><a class="s95" href="https://akrisanov.com/ru/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="nav-label">Посты</span>
+                
+                </a></li><li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="Русский" title="Русский"><i class="svgs world" aria-hidden="true"></i><span>Русский</span></button>
+                <div class="dropdown-content">
+                <span>Русский</span><a href="https://akrisanov.com/stand-up/">English</a></div>
+            </div></li><li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="Тема"
+            aria-label="Тема"><i class="svgs adjust" aria-hidden="true"></i><span>Тема</span></button></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Поиск">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Поиск"
+        aria-label="Поиск" title="Поиск" />
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/ru/stand-up/">Ежедневный стендап</a></h1>
+
+<span class="s95" ><span class="post-date">июля 27, 2020</span>
+  <span class="post-tags"><a
+      href="https://akrisanov.com/ru/tags/menedzhment/">менеджмент</a></span></span>  <p>В командах, с которыми я работаю, мы стараемся придерживаться следующего подхода при проведении ежедневных стендапов:</p>
+<h2 id="format">Формат</h2>
+<ul>
+<li>Стендап всегда начинается в одно и то же время</li>
+<li>Начинаем с членами команды, которые присутствуют и не ждем остальных</li>
+<li>Продолжительность: 10-15 минут</li>
+<li>Важно не прерывать коллег и забыть на время стендапа про мобильные устройства и другие отвлекающие факторы</li>
+</ul>
+<h2 id="struktura">Структура</h2>
+<ul>
+<li>Прогресс по задачам с момента предыдущего стендапа</li>
+<li>Сложности, блокеры или необходимость помощи и поддержки</li>
+<li>Планы на сегодня для поддержания контекста команды</li>
+</ul>
+<h2 id="chem-ne-iavliaetsia-stendap">Чем не является стендап</h2>
+<ul>
+<li>Отчетом перед менеджментом, скрам-мастером, владельцем продукта</li>
+<li>Обсуждением новых идей, фич и т. д.</li>
+<li>Планированием</li>
+</ul>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
+        <a href="https://akrisanov.com/ru/unix-daemon/"><span
+            class="np-label">&#8249; Предыдущая</span><span class="np-title">Запуск программы в виде демона</span></a>
+      </div>
+      <div class="post-nav-next">
+        <a href="https://akrisanov.com/ru/performance-review-2/"><span class="np-label">Следующая
+            &#8250;</span><span class="np-title">Перформанс-ревью #2</span></a>
+      </div>
+    </nav>
+</article>
+
+<div class="sblock">
+
+  <div class="blockdiv sticky toc-block">
+    <div class="b s150 toc-title">
+      Содержание
+    </div>
+    <div class="toc-item">
+      <a href="#format" class="toc-link">Формат</a>
+    </div>
+    <div class="toc-item">
+      <a href="#struktura" class="toc-link">Структура</a>
+    </div>
+    <div class="toc-item">
+      <a href="#chem-ne-iavliaetsia-stendap" class="toc-link">Чем не является стендап</a>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    var tocRoot = document.querySelector(".toc-block");
+    if (!tocRoot) return;
+
+    var links = Array.prototype.slice.call(
+      tocRoot.querySelectorAll("a.toc-link"),
+    );
+    if (!links.length) return;
+
+    var targets = links
+      .map(function (link) {
+        var id = link.getAttribute("href").slice(1);
+        return document.getElementById(id);
+      })
+      .filter(Boolean);
+
+    if (!targets.length) return;
+
+    var activeId = "";
+
+    function updateActive(id) {
+      if (!id || activeId === id) return;
+      activeId = id;
+      links.forEach(function (link) {
+        var isActive = link.getAttribute("href") === "#" + id;
+        link.classList.toggle("is-active", isActive);
+      });
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            updateActive(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: "-25% 0px -65% 0px",
+        threshold: [0, 1],
+      },
+    );
+
+    targets.forEach(function (target) {
+      observer.observe(target);
+    });
+  })();
+</script>
+  </main>
+  <footer>
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Андрей Крисанов • Контент размещен на условиях <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/ru/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Карта сайта "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Карта сайта "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

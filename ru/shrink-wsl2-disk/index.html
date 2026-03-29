@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=bf750cd1b26e8052b393" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="ru" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/ru/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&display=swap" crossorigin="anonymous" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Андрей Крисанов Atom Feed"
+  href="https://akrisanov.com/ru/atom.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>Как освободить место на диске WSL2 | Андрей Крисанов</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Андрей Крисанов" />
+<meta name="description" content="Необходимое упражнение в ожидании новых релизов от Microsoft." />
+<link rel="canonical" href="https://akrisanov.com/ru/shrink-wsl2-disk/" />
+<link rel="alternate" hreflang="ru" href="https://akrisanov.com/ru/shrink-wsl2-disk/" />
+
+<meta name="keywords" content="wsl, windows, devtools, linux, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/ru/shrink-wsl2-disk/" />
+<meta name="twitter:url" content="https://akrisanov.com/ru/shrink-wsl2-disk/" />
+<meta property="og:description" content="Необходимое упражнение в ожидании новых релизов от Microsoft." />
+<meta name="twitter:description" content="Необходимое упражнение в ожидании новых релизов от Microsoft." />
+<meta property="og:title" content="Как освободить место на диске WSL2 | Андрей Крисанов" />
+<meta name="twitter:title" content="Как освободить место на диске WSL2 | Андрей Крисанов" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:site_name" content="Андрей Крисанов" />
+<meta property="og:locale" content="ru_RU" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2022-05-13" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "Как освободить место на диске WSL2",
+	"url": "https://akrisanov.com/ru/shrink-wsl2-disk/",
+	"inLanguage": "ru",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/photo.png",
+	"datePublished": "2022-05-13T00:00:00+00:00",
+	"dateModified": "2022-05-13T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<script defer src="https://akrisanov.com/js/lunr.stemmer.support.min.js"
+  integrity="sha384-f0MKdC/9ZSGTpDiuWusC0SbLXNCBp6NgzDZpjR/4UdHXAQBqvTEKyinnsa1wQ7oA"></script>
+<script defer src="https://akrisanov.com/js/lunr.ru.min.js"
+  integrity="sha384-R9oqgx8XLmQUPG/odEJyFPd90/TbRU0/6q+If/f8d5yDqLhZgtOT5/X9r3O1Etjr"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com/ru/" title="Андрей Крисанов"><big>Андрей Крисанов</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/ru/about/"
+                  >
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span class="nav-label">Обо мне</span>
+                
+                </a></li><li><a class="s95" href="https://akrisanov.com/ru/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="nav-label">Посты</span>
+                
+                </a></li><li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="Русский" title="Русский"><i class="svgs world" aria-hidden="true"></i><span>Русский</span></button>
+                <div class="dropdown-content">
+                <span>Русский</span><a href="https://akrisanov.com/shrink-wsl2-disk/">English</a></div>
+            </div></li><li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="Тема"
+            aria-label="Тема"><i class="svgs adjust" aria-hidden="true"></i><span>Тема</span></button></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Поиск">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Поиск"
+        aria-label="Поиск" title="Поиск" />
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/ru/shrink-wsl2-disk/">Как освободить место на диске WSL2</a></h1>
+
+<span class="s95" ><span class="post-date">мая 13, 2022</span>
+  <span class="post-tags"><a
+      href="https://akrisanov.com/ru/tags/wsl/">wsl</a><a
+      href="https://akrisanov.com/ru/tags/windows/">windows</a><a
+      href="https://akrisanov.com/ru/tags/devtools/">devtools</a><a
+      href="https://akrisanov.com/ru/tags/linux/">linux</a></span></span>  <p>WSL2 создает виртуальный диск в формате .vhdx, который хранит файлы гостевой операционной системы.
+Это включает в себя в том числе Docker-образы, скачиваемые для запуска контейнеров.
+С течением времени размер диска сильно растет и начинает отъедать полезное место на диске <code>C:\</code>.</p>
+<p>WSL2 не поддерживает высвобождение места на виртуальном диске, поэтому делать это нужно вручную.</p>
+<p>Для начала удаляем неиспользуемые Docker-образы:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">$</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> docker</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> system</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> prune</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-all</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">WARNING!</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> This</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> will</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> remove:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> all</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> stopped</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> containers</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> all</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> networks</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> not</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> used</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> by</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> at</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> least</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> one</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> container</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> all</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> images</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> without</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> at</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> least</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> one</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> container</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> associated</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> to</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> them</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  -</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> all</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> build</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> cache</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Are</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> you</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> sure</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> you</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> want</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> to</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> continue?</span><span> [y/N</span><span>] y</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Deleted</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> Images:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">untagged:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> postgres:13.4-alpine3.14</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">.</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">.</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">.</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">Total</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> reclaimed</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> space:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> 76.84GB</span></span></code></pre>
+<p>А также выполняем удаление неиспользуемых системных пакетов:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> apt-get</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> clean</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> apt-get</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> autoclean</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> apt-get</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> autoremove</span></span></code></pre>
+<p>76.84GB высвободилось на виртуальном диске. На диске <code>C:\</code> 76.84GB все еще недоступны для пользования.</p>
+<p>Ситуация исправляется следующим образом. Открываем PowerShell с правами администратора и выполняем:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">&gt;</span><span> wsl.exe --list --verbose</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">  #</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> получаем список виртуальных машин</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">&gt;</span><span> wsl.exe --terminate Ubuntu-20.04</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">  #</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> останавливаем нужную</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">&gt;</span><span> diskpart</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">  #</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> запускаем дисковую утилиту</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">DISKPART</span><span>&gt;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> select</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vdisk</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> file=C:</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\U</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">sers</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\d</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">evel</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\A</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ppData</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\L</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ocal</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\P</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ackages</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\C</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">anonicalGroupLimited.Ubuntu20.04onWindows_79rhkp1fndgsc</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\L</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ocalState</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\e</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">xt4.vhdx</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">  #</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> указываем путь к файлу диска</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">DiskPart</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> successfully</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> selected</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> virtual</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> disk</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> file.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">DISKPART</span><span>&gt;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> compact</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vdisk</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">100</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> percent</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> completed</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">DiskPart</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> successfully</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> compacted</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> virtual</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> disk</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> file.</span></span></code></pre>
+<p>То же самое проделываем для диска Docker:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">DISKPART</span><span>&gt;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> select</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vdisk</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> file=C:</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\U</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">sers</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\d</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">evel</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\A</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ppData</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\L</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ocal</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\D</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ocker</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\w</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">sl</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\d</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">ata</span><span style="color: light-dark(#8A3F21, #EFBA5D);">\e</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">xt4.vhdx</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">DiskPart</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> successfully</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> selected</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> virtual</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> disk</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> file.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">DISKPART</span><span>&gt;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> compact</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> vdisk</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">100</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> percent</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> completed</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">DiskPart</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> successfully</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> compacted</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> the</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> virtual</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> disk</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> file.</span></span></code></pre>
+<p>Ура, на диске <code>C:\</code> появились 76.84GB и даже больше.</p>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
+        <a href="https://akrisanov.com/ru/esim/"><span
+            class="np-label">&#8249; Предыдущая</span><span class="np-title">eSIM как альтернатива роумингу в путешествиях</span></a>
+      </div>
+      <div class="post-nav-next">
+        <a href="https://akrisanov.com/ru/starting-project-with-kafka/"><span class="np-label">Следующая
+            &#8250;</span><span class="np-title">Чеклист по старту проекта с Apache Kafka®</span></a>
+      </div>
+    </nav>
+</article>
+  </main>
+  <footer>
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Андрей Крисанов • Контент размещен на условиях <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/ru/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Карта сайта "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Карта сайта "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=bf750cd1b26e8052b393" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="en" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&display=swap" crossorigin="anonymous" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Andrey Krisanov Atom Feed"
+  href="https://akrisanov.com/atom.xml" />
+<link rel="alternate" type="application/rss+xml" title="Andrey Krisanov RSS Feed"
+  href="https://akrisanov.com/rss.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>Building Multi-Arch Images for Arm and x86 | Andrey Krisanov</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Andrey Krisanov" />
+<meta name="description" content="In situations where CI is not available, building multi-arch images locally can save the day." />
+<link rel="canonical" href="https://akrisanov.com/multi-arch-docker-images/" />
+<link rel="alternate" hreflang="en" href="https://akrisanov.com/multi-arch-docker-images/" />
+<link rel="alternate" hreflang="x-default" href="https://akrisanov.com/multi-arch-docker-images/" />
+<meta name="keywords" content="docker, devops, arm, x86, multi-arch, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/multi-arch-docker-images/" />
+<meta name="twitter:url" content="https://akrisanov.com/multi-arch-docker-images/" />
+<meta property="og:description" content="In situations where CI is not available, building multi-arch images locally can save the day." />
+<meta name="twitter:description" content="In situations where CI is not available, building multi-arch images locally can save the day." />
+<meta property="og:title" content="Building Multi-Arch Images for Arm and x86 | Andrey Krisanov" />
+<meta name="twitter:title" content="Building Multi-Arch Images for Arm and x86 | Andrey Krisanov" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/docker-arm-build.png" />
+<meta property="og:image" content="https://akrisanov.com/images/docker-arm-build.png" />
+<meta property="og:site_name" content="Andrey Krisanov" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2023-08-10" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "Building Multi-Arch Images for Arm and x86",
+	"url": "https://akrisanov.com/multi-arch-docker-images/",
+	"inLanguage": "en",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/docker-arm-build.png",
+	"datePublished": "2023-08-10T00:00:00+00:00",
+	"dateModified": "2023-08-10T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com" title="Andrey Krisanov"><big>Andrey Krisanov</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/about/"
+                  >
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span class="nav-label">About</span>
+                
+                </a></li><li><a class="s95" href="https://akrisanov.com/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="nav-label">Posts</span>
+                
+                </a></li><li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="English" title="English"><i class="svgs world" aria-hidden="true"></i><span>English</span></button>
+                <div class="dropdown-content">
+                <span>English</span><a href="https://akrisanov.com/ru/multi-arch-docker-images/">Русский</a></div>
+            </div></li><li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="Theme"
+            aria-label="Theme"><i class="svgs adjust" aria-hidden="true"></i><span>Theme</span></button></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Search">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Search"
+        aria-label="Search" title="Search" />
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/multi-arch-docker-images/">Building Multi-Arch Images for Arm and x86</a></h1>
+
+<span class="s95" ><span class="post-date">August 10, 2023</span>
+  <span class="post-tags"><a
+      href="https://akrisanov.com/tags/docker/">docker</a><a
+      href="https://akrisanov.com/tags/devops/">devops</a></span></span>  <p>At work, I am involved in the development of a machine learning SDK and cloud services for
+privacy and data protection. Like almost every company in this space, we rely heavily on
+Python's scientific ecosystem. Because it's quite mature and depends on native library
+development that started years ago, getting these packages to work on new architectures
+can be tedious.</p>
+<p>I am one of the few developers on our team who has stuck with MacOS and have a Macbook Pro
+with M1 chip. There is no easy way for me to bootstrap our development environment in a matter
+of minutes. I have to use Conda, install specific versions of Python packages, patch some native
+libraries, and even create a symlink from an OS-specific package to its generic name
+(I'm talking to you, Tensorflow). People on the <code>x86_64</code> architecture generally won't have
+this problem – almost every package we use comes with a pre-built wheel for a chosen OS.
+Moreover, to install the SDK as a dependency of, say, an HTTP API service, I had to assemble
+it from sources: <code>pip install -e '.'</code></p>
+<p>A few months ago we didn't even support the Arm64 architecture at a build level. This changed when
+I introduced a Github Action pipeline to build Python wheels for Linux <code>x86_64</code>, <code>aarch64</code>, and <code>universal</code>.
+Instead of manually compiling some native libraries on my machine, I moved the work to GitHub and
+its Linux instances. From that moment on, I could just get the package from a private PyPI registry.
+The sad truth is that I still use Conda and sometimes patch one or two transitive dependencies for
+my M1 chip. But other than that, no hard times to date.</p>
+<p>Today I needed to distribute a newly created API service with the SDK inside as a Docker image.
+And I haven't found an easy way to define a Dockerfile that can be built and run on
+Apple Silicon without Conda:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="docker"><span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">FROM</span><span> python:3.9-slim-buster </span><span style="color: light-dark(#7A2E59, #ECCDBB);">AS</span><span> base</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">ENV</span><span> PYTHONDONTWRITEBYTECODE=1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">ENV</span><span> PYTHONUNBUFFERED=1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Install Conda</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> apt-get update &amp;&amp; apt-get -y upgrade</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> apt-get install -y --no-install-recommends build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">ENV</span><span> PATH=</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">/root/miniconda3/bin:${PATH}</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">ARG</span><span> PATH=</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">/root/miniconda3/bin:${PATH}</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> wget \</span></span>
+<span class="giallo-l"><span>    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh \</span></span>
+<span class="giallo-l"><span>    &amp;&amp; mkdir /root/.conda \</span></span>
+<span class="giallo-l"><span>    &amp;&amp; bash Miniconda3-latest-Linux-aarch64.sh -b \</span></span>
+<span class="giallo-l"><span>    &amp;&amp; rm -f Miniconda3-latest-Linux-aarch64.sh</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Create a Conda environment and install native dependencies</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> --mount=type=cache,target=/root/.cache \</span></span>
+<span class="giallo-l"><span>    conda init bash &amp;&amp; . /root/.bashrc &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    conda update conda &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    conda create -n de_agent python=3.9 &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    conda env config vars set -n de_agent LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1 &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    conda activate de_agent &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    conda install gdal llvmdev dm-tree -y &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    pip install --upgrade pip setuptools wheel &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    pip install h3</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Copy application files</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">WORKDIR</span><span> /app</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">COPY</span><span> app/ .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">COPY</span><span> logging.yaml .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">COPY</span><span> main.py .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">COPY</span><span> requirements.txt ./</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Install Python packages</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">ARG</span><span> DE_AGENT_PYPI_TOKEN</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> --mount=type=cache,target=/root/.cache \</span></span>
+<span class="giallo-l"><span>    . /root/.bashrc &amp;&amp; conda activate de_agent &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    pip install -r requirements.txt --extra-index-url=https://${DE_AGENT_PYPI_TOKEN}:@pypi.****.ai/pypi/ &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    pip install numpy==1.23.5</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Cleanup</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> apt -qy purge --auto-remove build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> apt autoremove &amp;&amp; apt clean</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Create a user</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> groupadd -r de_agent &amp;&amp; useradd -r -m -g de_agent de_agent</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> chown -R de_agent:de_agent /app</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">USER</span><span> de_agent</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Run the web application</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">EXPOSE</span><span> 8000</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">ENTRYPOINT</span><span> [</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">PYTHONPATH=.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>, </span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">python</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>, </span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">main.py</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>]</span></span></code></pre>
+<p>As you can see, the manifest is quite verbose. It also adds the Conda binaries and related
+files to a release image. It is a price that must be paid.</p>
+<p>Fortunately, for Linux, we don't need all of this machinery:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="docker"><span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">FROM</span><span> python:3.9-slim-buster </span><span style="color: light-dark(#7A2E59, #ECCDBB);">AS</span><span> base</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">ENV</span><span> PYTHONDONTWRITEBYTECODE=1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">ENV</span><span> PYTHONUNBUFFERED=1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Install system packages</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> apt-get update &amp;&amp; apt-get -y upgrade</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> apt-get install -y --no-install-recommends build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Copy application files</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">WORKDIR</span><span> /app</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">COPY</span><span> app/ .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">COPY</span><span> logging.yaml .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">COPY</span><span> main.py .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">COPY</span><span> requirements.txt ./</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Install Python dependencies</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">ARG</span><span> DE_AGENT_PYPI_TOKEN</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> --mount=type=cache,target=/root/.cache \</span></span>
+<span class="giallo-l"><span>    pip install -r requirements.txt --extra-index-url=https://${DE_AGENT_PYPI_TOKEN}:@pypi.****.ai/pypi/</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Cleanup</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> apt -qy purge --auto-remove build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> apt autoremove &amp;&amp; apt clean</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Create a user</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> groupadd -r de_agent &amp;&amp; useradd -r -m -g de_agent de_agent</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">RUN</span><span> chown -R de_agent:de_agent /app</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">USER</span><span> de_agent</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;">#</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Run the web application</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">EXPOSE</span><span> 8000</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">ENTRYPOINT</span><span> [</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">PYTHONPATH=.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>, </span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">python</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>, </span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">main.py</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>]</span></span></code></pre>
+<p>The question now is how to build Docker images for both architectures on a Mac.
+This is where Docker comes in. Docker Desktop officially supports <a rel="noopener external" target="_blank" href="https://www.docker.com/blog/multi-arch-images/">building multi-arch images
+for Arm and x86</a>. Learning this, I was able to
+add a few targets to my Makefile to quickly build images:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="make"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">build</span><span>:</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> #</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Build a Docker image for x86_64</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);"> docker</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> buildx</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> build</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> --platform</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> linux/amd64</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> -t</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> de-agent</span><span>:</span><span>amd64-latest --build-arg DE_AGENT_PYPI_TOKEN=</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">${</span><span style="color: light-dark(#0550AE, #A4A0E8);">DE_AGENT_PYPI_TOKEN</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">}</span><span> -f Dockerfile.amd64 --no-cache .</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">build-arm</span><span>:</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> #</span><span style="color: light-dark(#6A737D, #6A7C81);font-style: italic;"> Build a Docker image for arm64</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);"> docker</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">  buildx</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> build</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> --platform</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> linux/arm64</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> -t</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> de-agent</span><span>:</span><span>arm64-latest --build-arg DE_AGENT_PYPI_TOKEN=</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">${</span><span style="color: light-dark(#0550AE, #A4A0E8);">DE_AGENT_PYPI_TOKEN</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">}</span><span> -f Dockerfile.arm64 --no-cache .</span></span></code></pre><pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">make</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> build</span></span></code></pre>
+<p><img src="/images/docker-arm-build.png" alt="Docker Image For Arm" />
+<span class="img-title">Docker image built for the amd64 architecture</span></p>
+<p>One can say, it's so much hassle for doing all of this locally and a proper CI can solve such
+a case easily. I agree – as I've mentioned, I like shifting work out of my shoulders and giving it
+to some machine in the cloud. But in situations where CI is not available, creating multi-arch
+images can save the day. It certainly did for me.</p>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
+        <a href="https://akrisanov.com/it-is-not-dns/"><span
+            class="np-label">&#8249; Previous</span><span class="np-title">My "It's not DNS" story</span></a>
+      </div>
+      <div class="post-nav-next">
+        <a href="https://akrisanov.com/crypto-wallet-vulnerability/"><span class="np-label">Next
+            &#8250;</span><span class="np-title">Accidentally found a vulnerability in a crypto wallet and made $1,000</span></a>
+      </div>
+    </nav>
+</article>
+  </main>
+  <footer>
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Andrey Krisanov • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Sitemap "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Sitemap "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer><span class="topout">
+  <span class="topleft"> </span
+  ><a href="#" class="top" title="Back to Top"
+    ><i class="svgs svgh angu"></i></a
+  >
+</span>
+</body>
+</html>

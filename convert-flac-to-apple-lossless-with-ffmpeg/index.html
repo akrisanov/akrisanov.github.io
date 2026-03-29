@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=bf750cd1b26e8052b393" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="en" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&display=swap" crossorigin="anonymous" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Andrey Krisanov Atom Feed"
+  href="https://akrisanov.com/atom.xml" />
+<link rel="alternate" type="application/rss+xml" title="Andrey Krisanov RSS Feed"
+  href="https://akrisanov.com/rss.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>Convert Flac to Apple Lossless With FFmpeg | Andrey Krisanov</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Andrey Krisanov" />
+<meta name="description" content="How to use FFmpeg to convert FLAC files to Apple Lossless without losing the original quality and uploading them to Apple Music." />
+<link rel="canonical" href="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/" />
+<link rel="alternate" hreflang="en" href="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/" />
+<link rel="alternate" hreflang="x-default" href="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/" />
+<meta name="keywords" content="apple, music, ffmpeg, lossless, audio, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/" />
+<meta name="twitter:url" content="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/" />
+<meta property="og:description" content="How to use FFmpeg to convert FLAC files to Apple Lossless without losing the original quality and uploading them to Apple Music." />
+<meta name="twitter:description" content="How to use FFmpeg to convert FLAC files to Apple Lossless without losing the original quality and uploading them to Apple Music." />
+<meta property="og:title" content="Convert Flac to Apple Lossless With FFmpeg | Andrey Krisanov" />
+<meta name="twitter:title" content="Convert Flac to Apple Lossless With FFmpeg | Andrey Krisanov" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/Screenshot-2023-10-22-at-18.26.25.png" />
+<meta property="og:image" content="https://akrisanov.com/images/Screenshot-2023-10-22-at-18.26.25.png" />
+<meta property="og:site_name" content="Andrey Krisanov" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2023-10-23" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "Convert Flac to Apple Lossless With FFmpeg",
+	"url": "https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/",
+	"inLanguage": "en",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/Screenshot-2023-10-22-at-18.26.25.png",
+	"datePublished": "2023-10-23T00:00:00+00:00",
+	"dateModified": "2023-10-23T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com" title="Andrey Krisanov"><big>Andrey Krisanov</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/about/"
+                  >
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span class="nav-label">About</span>
+                
+                </a></li><li><a class="s95" href="https://akrisanov.com/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="nav-label">Posts</span>
+                
+                </a></li><li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="English" title="English"><i class="svgs world" aria-hidden="true"></i><span>English</span></button>
+                <div class="dropdown-content">
+                <span>English</span><a href="https://akrisanov.com/ru/convert-flac-to-apple-lossless-with-ffmpeg/">Русский</a></div>
+            </div></li><li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="Theme"
+            aria-label="Theme"><i class="svgs adjust" aria-hidden="true"></i><span>Theme</span></button></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Search">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Search"
+        aria-label="Search" title="Search" />
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/">Convert Flac to Apple Lossless With FFmpeg</a></h1>
+
+<span class="s95" ><span class="post-date">October 23, 2023</span>
+  <span class="post-tags"><a
+      href="https://akrisanov.com/tags/apple/">apple</a><a
+      href="https://akrisanov.com/tags/music/">music</a><a
+      href="https://akrisanov.com/tags/ffmpeg/">ffmpeg</a></span></span>  <p>I'm a longtime Apple Music user. Most of my so-called music collection is on the streaming service.
+However, I occasionally buy rare or remastered releases ripped from CDs. These releases are usually
+in the FLAC format, which Apple Music doesn't support. But I've found an easy workaround that
+allows me to organize and play albums on the go.</p>
+<p>The centerpiece of the workaround is FFmpeg. So if you don't already have it installed,
+it's worth installing now:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">brew</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> install</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ffmpeg</span></span></code></pre>
+<p><span class="img-title">Homebrew Formula</span></p>
+<p>When the tool is ready to use, navigate to the folder containing the FLAC files and run the following script:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">for</span><span style="color: light-dark(#0550AE, #A4A0E8);"> file</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> in</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> *</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">f</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">l</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">a</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">c</span><span>;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> do</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> ffmpeg</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">i</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0550AE, #A4A0E8);">$</span><span style="color: light-dark(#0550AE, #A4A0E8);">file</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">acodec</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> alac</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">vcodec</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> copy</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">`</span><span style="color: light-dark(#1F6A4A, #FFFFFF);">basename</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0550AE, #A4A0E8);">$</span><span style="color: light-dark(#0550AE, #A4A0E8);">file</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> .flac</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">`</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">.m4a</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> done</span><span>;</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> mkdir</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> flac</span><span>;</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> mkdir</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> alac</span><span>;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> for</span><span style="color: light-dark(#0550AE, #A4A0E8);"> file</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> in</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> *</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">f</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">l</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">a</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">c</span><span>;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> do</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> mv</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0550AE, #A4A0E8);">$</span><span style="color: light-dark(#0550AE, #A4A0E8);">file</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">flac/</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> done</span><span>;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> for</span><span style="color: light-dark(#0550AE, #A4A0E8);"> file</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> in</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> *</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">m</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">4</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">a</span><span>;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> do</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> mv</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0550AE, #A4A0E8);">$</span><span style="color: light-dark(#0550AE, #A4A0E8);">file</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &quot;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">alac/</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&quot;</span><span>;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> done</span><span>;</span></span></code></pre>
+<p><span class="img-title">Silly One-liner Converting FLAC to ALAC</span></p>
+<p><img src="/images/Screenshot-2023-10-22-at-18.26.25.png" alt="" />
+<span class="img-title">Susumu Hirasawa – Siren [Limited Edition]</span></p>
+<p>The bash script converts the audio to the Apple Lossless format (<code>*.m4a</code>) and moves the files to the <code>alac</code> directory:</p>
+<p><img src="/images/Screenshot-2023-10-22-at-18.27.10.png" alt="" /></p>
+<p>Finally, the <code>alac</code> directory can be dragged to Apple Music to import the album and upload its tracks to the cloud.</p>
+<p><img src="/images/Screenshot-2023-10-22-at-18.27.41.png" alt="" />
+<span class="img-title">The Uploaded Album</span></p>
+<div class="callout callout-warning">
+You probably wonder why this album has no Lossless icon in Apple Music. Well, it turns out the
+audio quality of the FLAC files wasn't on pair with lossless. So, make sure releases you buy or
+rip, have a proper audio codec and quality.
+</div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
+        <a href="https://akrisanov.com/dotnet-list-vulnerable-packages/"><span
+            class="np-label">&#8249; Previous</span><span class="np-title">Identifying Vulnerable Dependencies In .NET Projects</span></a>
+      </div>
+      <div class="post-nav-next">
+        <a href="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/"><span class="np-label">Next
+            &#8250;</span><span class="np-title">Generating A Lockfile For Python Project Using Github Actions</span></a>
+      </div>
+    </nav>
+</article>
+  </main>
+  <footer>
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Andrey Krisanov • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Sitemap "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Sitemap "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
