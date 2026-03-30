@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ru">
+    <title>Андрей Крисанов - анализ данных</title>
+    <subtitle>Заметки об AI-инфраструктуре, системах инференса и промышленной архитектуре бэкенда — от распределённого сервинга и наблюдаемости до оптимизации производительности и надежности. Автор — Андрей Крисанов.</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://akrisanov.com/ru/tags/analiz-dannykh/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2020-03-30T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/ru/tags/analiz-dannykh/atom.xml</id>
+    <entry xml:lang="ru">
+        <title>Расширения для Jupyter Notebook</title>
+        <published>2020-03-30T00:00:00+00:00</published>
+        <updated>2020-03-30T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/ru/jupyter-notebook-extensions/"/>
+        <id>https://akrisanov.com/ru/jupyter-notebook-extensions/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/ru/jupyter-notebook-extensions/">&lt;p&gt;Jupyter Notebook — один из часто используемых мною инструментов. Несмотря на всю мощь этого
+решения, «из коробки» иногда не хватает какой-нибудь маленькой, но полезной функциональности,
+например, генерации содержания по заголовкам разметки Markdown.&lt;&#x2F;p&gt;
+&lt;p&gt;К счастью исправить подобные мелочи отчасти помогают расширения, которые можно найти на Github.
+Существуют как официальные пакеты, поддерживаемые JupyterLab, так и созданные сообществом пакеты.&lt;&#x2F;p&gt;
+&lt;p&gt;Хороший пример
+&lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ipython-contrib&#x2F;jupyter_contrib_nbextensions&quot;&gt;jupyter_contrib_nbextensions&lt;&#x2F;a&gt; —
+большая коллекция неофициальных дополнений к Jupyter. Полный список расширений доступен на
+&lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;jupyter-contrib-nbextensions.readthedocs.io&#x2F;en&#x2F;latest&#x2F;nbextensions.html&quot;&gt;странице документации&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Для их подключения к вашему Jupyter Notebook потребуется выполнить три простых шага.&lt;&#x2F;p&gt;
+&lt;p&gt;Установить pip пакет с расширениями:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;pip3&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; install&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; jupyter_contrib_nbextensions&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Скопировать JavaScript и CSS файлы:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;jupyter&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; contrib&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; nbextension&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; install&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt; -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;-user&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Активировать выбранное расширение:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;jupyter&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; nbextension&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; enable&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; toc2&#x2F;main&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;В ответ вы должны получить следующее сообщение:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;Enabling&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; notebook&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; extension&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; toc2&#x2F;main...&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;      -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; Validating:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; OK&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Запустив заново Jupyter Notebook, можно убедиться, что расширение было успешно установлено и активировано:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;jupyter.png&quot; alt=&quot;Сайдбар с оглавлением&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

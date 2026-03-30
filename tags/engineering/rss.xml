@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Andrey Krisanov - engineering</title>
+      <link>https://akrisanov.com</link>
+      <description>Engineering notes and essays on AI infrastructure, large-scale inference systems, and production-grade backend design — from distributed serving and observability to performance tuning and reliability. Written by Andrey Krisanov.</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://akrisanov.com/tags/engineering/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Wed, 06 Sep 2023 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Understand How Services Are Run And Operate In Production</title>
+          <pubDate>Wed, 06 Sep 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/</link>
+          <guid>https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/</guid>
+          <description xml:base="https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/">&lt;p&gt;Over the past few years, I&#x27;ve been interviewing dozens of software engineers who didn&#x27;t know how
+their developed services run and operate in production. The reason for that is a rising trend in
+software engineering trusting in an infrastructure team, the magic of the cloud, Docker,
+Kubernetes, and whatnot.&lt;&#x2F;p&gt;
+&lt;p&gt;A conversation with a talent usually looks the following:&lt;&#x2F;p&gt;
+&lt;blockquote class=&quot;dialogue&quot;&gt;
+&lt;p class=&quot;q&quot;&gt;&lt;strong&gt;Interviewer:&lt;&#x2F;strong&gt; How do you ship your service to production?&lt;&#x2F;p&gt;
+&lt;p class=&quot;a&quot;&gt;&lt;strong&gt;Candidate:&lt;&#x2F;strong&gt; We build Docker images and run containers.&lt;&#x2F;p&gt;
+&lt;p class=&quot;q&quot;&gt;&lt;strong&gt;Interviewer:&lt;&#x2F;strong&gt; Sounds cool! Can you tell me about the resource requirements for a container?&lt;&#x2F;p&gt;
+&lt;p class=&quot;a&quot;&gt;&lt;strong&gt;Candidate:&lt;&#x2F;strong&gt; Hmm, to be honest, I don&#x27;t know the details. DevOps folks take care of that.&lt;&#x2F;p&gt;
+&lt;p class=&quot;q&quot;&gt;&lt;strong&gt;Interviewer:&lt;&#x2F;strong&gt; (discussing Python app) OK. And what application server do you use?&lt;&#x2F;p&gt;
+&lt;p class=&quot;a&quot;&gt;&lt;strong&gt;Candidate:&lt;&#x2F;strong&gt; Application Server? (Some people even reply: &quot;You mean WSGI?&quot;)&lt;&#x2F;p&gt;
+&lt;p class=&quot;q&quot;&gt;&lt;strong&gt;Interviewer:&lt;&#x2F;strong&gt; Yes, the thing that handles web requests and runs your Python code.&lt;&#x2F;p&gt;
+&lt;p class=&quot;a&quot;&gt;&lt;strong&gt;Candidate:&lt;&#x2F;strong&gt; Hmm, let me open a project repo and check..&lt;&#x2F;p&gt;
+&lt;p class=&quot;a&quot;&gt;&lt;strong&gt;Candidate:&lt;&#x2F;strong&gt; It&#x27;s...Gunicorn!&lt;&#x2F;p&gt;
+&lt;p class=&quot;q&quot;&gt;&lt;strong&gt;Interviewer:&lt;&#x2F;strong&gt; Great. Can you estimate how many requests the web application can handle?&lt;&#x2F;p&gt;
+&lt;p class=&quot;a&quot;&gt;&lt;strong&gt;Candidate:&lt;&#x2F;strong&gt; I don&#x27;t think so because we don&#x27;t do load testing.&lt;&#x2F;p&gt;
+&lt;p class=&quot;q&quot;&gt;&lt;strong&gt;Interviewer:&lt;&#x2F;strong&gt; So, it&#x27;s not possible to do even a rough estimation?&lt;&#x2F;p&gt;
+&lt;p class=&quot;a&quot;&gt;&lt;strong&gt;Candidate:&lt;&#x2F;strong&gt; Nope.&lt;&#x2F;p&gt;
+&lt;p class=&quot;q&quot;&gt;&lt;strong&gt;Interviewer:&lt;&#x2F;strong&gt; OK. Do you understand what happens on a processes and threads level when the application server processes a request?&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;This is where the conversation hits a dead end. Many talents don&#x27;t. And this is a red sign to me.
+It gets worse when a candidate claims they have experience with (semi)async services in production
+but can&#x27;t explain &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.gunicorn.org&#x2F;en&#x2F;stable&#x2F;design.html?ref=akrisanov.com#server-model&quot;&gt;a service model&lt;&#x2F;a&gt;
+they have chosen and how the services operate because of that (including resources allocating and consumption).&lt;&#x2F;p&gt;
+&lt;p&gt;You might say: &quot;Why do I need to know all that low-level stuff in the 2020s?&quot;.
+Fair enough...if you don&#x27;t develop software for thousands of users, have an unlimited budget for
+underutilized hardware, don&#x27;t design distributed systems, or, simply, have an SRE team ready to
+solve all possible issues for you. Otherwise, please do.&lt;&#x2F;p&gt;
+</description>
+      </item>
+    </channel>
+</rss>
