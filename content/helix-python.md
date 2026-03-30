@@ -87,12 +87,12 @@ The output should now look like this:
 
 ```shell
 Configured language servers:
-  ✓ ruff: /Users/akrisanov/.local/bin/ruff
   ✓ ty: /Users/akrisanov/.local/bin/ty
-Configured debug adapter:
-  ✓ /Users/akrisanov/.local/share/mise/installs/python/3.14.3/bin/python3
-Configured formatter:
-  ✓ /Users/akrisanov/.local/bin/ruff
+  ✓ ruff: /Users/akrisanov/.local/bin/ruff
+  ✘ jedi: 'jedi-language-server' not found in $PATH
+  ✘ pylsp: 'pylsp' not found in $PATH
+Configured debug adapter: None
+Configured formatter: None
 Tree-sitter parser: ✓
 Highlight queries: ✓
 Textobject queries: ✓
@@ -100,7 +100,7 @@ Indent queries: ✓
 ```
 
 To make the tools work in Helix, we need to add some configuration. Open the Helix configuration file
-(usually located at `~/.config/helix/config.toml`) and add the following lines:
+(usually located at `~/.config/helix/languages.toml`) and add the following lines:
 
 ```toml
 [[language]]
