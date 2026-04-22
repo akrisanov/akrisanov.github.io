@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=bf750cd1b26e8052b393" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="en" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&display=swap" crossorigin="anonymous" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Andrey Krisanov Atom Feed"
+  href="https://akrisanov.com/atom.xml" />
+<link rel="alternate" type="application/rss+xml" title="Andrey Krisanov RSS Feed"
+  href="https://akrisanov.com/rss.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>Running Kubernetes with GPU inside WSL2 on my RTX Laptop | Andrey Krisanov</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Andrey Krisanov" />
+<meta name="description" content="A step-by-step guide to setting up Kubernetes with NVIDIA GPU access inside WSL2 on a Windows laptop." />
+<link rel="canonical" href="https://akrisanov.com/wsl-nvidia-gpu/" />
+<link rel="alternate" hreflang="en" href="https://akrisanov.com/wsl-nvidia-gpu/" />
+<link rel="alternate" hreflang="x-default" href="https://akrisanov.com/wsl-nvidia-gpu/" />
+<meta name="keywords" content="kubernetes, gpu, wsl2, nvidia, k3s, ml-infra, local cluster, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/wsl-nvidia-gpu/" />
+<meta name="twitter:url" content="https://akrisanov.com/wsl-nvidia-gpu/" />
+<meta property="og:description" content="A step-by-step guide to setting up Kubernetes with NVIDIA GPU access inside WSL2 on a Windows laptop." />
+<meta name="twitter:description" content="A step-by-step guide to setting up Kubernetes with NVIDIA GPU access inside WSL2 on a Windows laptop." />
+<meta property="og:title" content="Running Kubernetes with GPU inside WSL2 on my RTX Laptop | Andrey Krisanov" />
+<meta name="twitter:title" content="Running Kubernetes with GPU inside WSL2 on my RTX Laptop | Andrey Krisanov" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:site_name" content="Andrey Krisanov" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2026-04-22" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "Running Kubernetes with GPU inside WSL2 on my RTX Laptop",
+	"url": "https://akrisanov.com/wsl-nvidia-gpu/",
+	"inLanguage": "en",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/photo.png",
+	"datePublished": "2026-04-22T00:00:00+00:00",
+	"dateModified": "2026-04-22T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com" title="Andrey Krisanov"><big>Andrey Krisanov</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/about/"
+                  >
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span class="nav-label">About</span>
+                
+                </a></li><li><a class="s95" href="https://akrisanov.com/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="nav-label">Posts</span>
+                
+                </a></li><li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="English" title="English"><i class="svgs world" aria-hidden="true"></i><span>English</span></button>
+                <div class="dropdown-content">
+                <span>English</span><a href="https://akrisanov.com/ru/wsl-nvidia-gpu/">Русский</a></div>
+            </div></li><li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="Theme"
+            aria-label="Theme"><i class="svgs adjust" aria-hidden="true"></i><span>Theme</span></button></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Search">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Search"
+        aria-label="Search" title="Search" />
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/wsl-nvidia-gpu/">Running Kubernetes with GPU inside WSL2 on my RTX Laptop</a></h1>
+
+<span class="s95" ><span class="post-date">April 22, 2026</span>
+  <span class="post-tags"><a
+      href="https://akrisanov.com/tags/kubernetes/">kubernetes</a><a
+      href="https://akrisanov.com/tags/gpu/">gpu</a><a
+      href="https://akrisanov.com/tags/wsl2/">wsl2</a><a
+      href="https://akrisanov.com/tags/nvidia/">nvidia</a><a
+      href="https://akrisanov.com/tags/k3s/">k3s</a><a
+      href="https://akrisanov.com/tags/ml-infra/">ml-infra</a></span></span>  <h2 id="why-i-did-this">Why I did this</h2>
+<p>I wanted a local environment where I can:</p>
+<ul>
+<li>run Kubernetes</li>
+<li>schedule GPU workloads</li>
+<li>experiment with CUDA / inference / device plugins</li>
+<li>without renting cloud GPUs</li>
+</ul>
+<p>I have a Lenovo Legion laptop with an RTX GPU and WSL2. Turns out:</p>
+<blockquote>
+<p>Yes, you can run Kubernetes with GPU access inside WSL2.
+But there are a couple of non-obvious traps.</p>
+</blockquote>
+<p>This is a step-by-step guide based on a working setup.</p>
+<h2 id="tl-dr">TL;DR</h2>
+<p>Final stack:</p>
+<ul>
+<li>Windows 11 + NVIDIA driver (WSL-enabled)</li>
+<li>WSL2 (Ubuntu 24.04)</li>
+<li>K3s (containerd)</li>
+<li>NVIDIA Container Toolkit</li>
+<li>NVIDIA device plugin</li>
+<li>One critical fix: <strong>device plugin must use <code>runtimeClassName: nvidia</code></strong></li>
+</ul>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>You need:</p>
+<ul>
+<li>Windows 11</li>
+<li>NVIDIA GPU (RTX in my case)</li>
+<li>Latest NVIDIA driver <strong>with WSL support</strong></li>
+<li>WSL2 installed</li>
+</ul>
+<p>Inside WSL:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">nvidia-smi</span></span></code></pre>
+<p>If this works — you’re good.</p>
+<h2 id="step-1-don-t-install-linux-nvidia-drivers">Step 1: Don’t install Linux NVIDIA drivers</h2>
+<p>WSL already provides everything via:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">/usr/lib/wsl/lib/</span></span></code></pre>
+<p>If <code>nvidia-smi</code> is missing:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">echo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">export PATH=$PATH:/usr/lib/wsl/lib</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> &gt;&gt;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ~/.bashrc</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">source</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ~/.bashrc</span></span></code></pre>
+<p>Do <strong>NOT</strong> run:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">apt</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> install</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia-utils-</span><span style="color: light-dark(#0550AE, #A4A0E8);">*</span></span></code></pre>
+<p>You will break your setup.</p>
+<h2 id="step-2-install-nvidia-container-toolkit">Step 2: Install NVIDIA Container Toolkit</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">curl</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">fsSL</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> https://nvidia.github.io/libnvidia-container/gpgkey</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> |</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> gpg</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-dearmor</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">o</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">curl</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">s</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">L</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> |</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  sed</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">s#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> |</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">  sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> tee</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> /etc/apt/sources.list.d/nvidia-container-toolkit.list</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> apt</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> update</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> apt</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> install</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">y</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia-container-toolkit</span></span></code></pre><h2 id="step-3-verify-gpu-in-containers-podman">Step 3: Verify GPU in containers (Podman)</h2>
+<p>Generate CDI config:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> mkdir</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">p</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> /etc/cdi</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia-ctk</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> cdi</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> generate</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-output=/etc/cdi/nvidia.yaml</span></span></code></pre>
+<p>Test:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">podman</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> run</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-rm</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-device=nvidia.com/gpu=all</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ubuntu</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia-smi</span></span></code></pre><h2 id="step-4-install-k3s">Step 4: Install K3s</h2>
+<p>Make sure systemd is enabled:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">ps</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">p</span><span style="color: light-dark(#9A4D00, #EFBA5D);"> 1</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">o</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> comm=</span></span></code></pre>
+<p>Should print:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">systemd</span></span></code></pre>
+<p>Install K3s:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">curl</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">sfL</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> https://get.k3s.io</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> |</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> sh</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> -</span></span></code></pre>
+<p>Configure kubeconfig:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">mkdir</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">p</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ~/.kube</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> cp</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> /etc/rancher/k3s/k3s.yaml</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ~/.kube/config</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> chown</span><span style="color: light-dark(#0550AE, #A4A0E8);"> $</span><span style="color: light-dark(#0550AE, #A4A0E8);">USER</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">:</span><span style="color: light-dark(#0550AE, #A4A0E8);">$</span><span style="color: light-dark(#0550AE, #A4A0E8);">USER</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ~/.kube/config</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7A2E59, #ECCDBB);">export</span><span style="color: light-dark(#0550AE, #A4A0E8);"> KUBECONFIG</span><span style="color: light-dark(#7A2E59, #ECCDBB);">=</span><span style="color: light-dark(#7A2E59, #ECCDBB);">~</span><span>/.</span><span style="color: light-dark(#0550AE, #A4A0E8);">kube</span><span>/</span><span style="color: light-dark(#0550AE, #A4A0E8);">config</span></span></code></pre>
+<p>Check:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> get</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nodes</span></span></code></pre><h2 id="step-5-enable-nvidia-runtime-in-k3s">Step 5: Enable NVIDIA runtime in K3s</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia-ctk</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> runtime</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> configure</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-runtime=containerd</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> systemctl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> restart</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> k3s</span></span></code></pre>
+<p>Verify:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">sudo</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> grep</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> /var/lib/rancher/k3s/agent/etc/containerd/config.toml</span></span></code></pre><h2 id="step-6-install-nvidia-device-plugin">Step 6: Install NVIDIA device plugin</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> apply</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">f</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> \</span></span>
+<span class="giallo-l"><span>https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.17.1/deployments/static/nvidia-device-plugin.yml</span></span></code></pre>
+<p>Check:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> get</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ds</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">n</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> kube-system</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> |</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> grep</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> get</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> pods</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">n</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> kube-system</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> |</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> grep</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia</span></span></code></pre><h2 id="step-7-the-critical-fix-wsl2-specific">Step 7: The critical fix (WSL2-specific)</h2>
+<p>At this point the plugin runs but sees zero GPUs.</p>
+<p>Logs look like:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">No</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> devices</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> found.</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> Waiting</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> indefinitely.</span></span></code></pre>
+<p>Fix:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> patch</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> daemonset</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia-device-plugin-daemonset</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8A3F21, #EFBA5D);">  -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">n</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> kube-system</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8A3F21, #EFBA5D);">  -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">-type=</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">merge</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8A3F21, #EFBA5D);">  -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">p</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> &#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">{&quot;spec&quot;:{&quot;template&quot;:{&quot;spec&quot;:{&quot;runtimeClassName&quot;:&quot;nvidia&quot;}}}}</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span></span></code></pre>
+<p>Restart pod:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> delete</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> pod</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">n</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> kube-system</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">l</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> name=nvidia-device-plugin-ds</span></span></code></pre>
+<p>Verify:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> get</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> node</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">o</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> jsonpath=</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">{.status.capacity.nvidia\.com/gpu}</span><span style="color: light-dark(#0F6F5C, #CCCCCC);">&#39;</span></span></code></pre>
+<p>Expected:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">1</span></span></code></pre><h2 id="step-8-run-a-gpu-workload">Step 8: Run a GPU workload</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">cat</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> &lt;&lt;</span><span>&#39;</span><span>EOF</span><span>&#39;</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> |</span><span style="color: light-dark(#1F6A4A, #FFFFFF);"> kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> apply</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">f</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> -</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">apiVersion: v1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">kind: Pod</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">metadata:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">  name: cuda-smoke-test</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">spec:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">  restartPolicy: Never</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">  runtimeClassName: nvidia</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">  containers:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">  - name: cuda</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">    image: nvcr.io/nvidia/k8s/cuda-sample:nbody</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">    args: [&quot;nbody&quot;, &quot;-gpu&quot;, &quot;-benchmark&quot;]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">    resources:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">      limits:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#0F6F5C, #CCCCCC);">        nvidia.com/gpu: 1</span></span>
+<span class="giallo-l"><span>EOF</span></span></code></pre>
+<p>Watch:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> get</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> pod</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> cuda-smoke-test</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">w</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> logs</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> cuda-smoke-test</span></span></code></pre><h2 id="what-actually-broke-on-my-first-attempts">What actually broke on my first attempts</h2>
+<p>Everything worked except one subtle thing:</p>
+<blockquote>
+<p>The NVIDIA device plugin itself was running under the wrong runtime.</p>
+</blockquote>
+<p>Even though, containerd knew about NVIDIA, Podman could use GPU, and CUDA worked.</p>
+<p>The plugin pod still used default runtime → no GPU → no resources.</p>
+<p>Setting:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">runtimeClassName:</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia</span></span></code></pre>
+<p>fixed it.</p>
+<h2 id="final-result">Final result</h2>
+<p>After following these steps, you should have:</p>
+<ul>
+<li>local Kubernetes cluster</li>
+<li>GPU scheduling</li>
+<li>CUDA workloads</li>
+<li>no cloud costs</li>
+</ul>
+<p>All inside WSL2.</p>
+<h2 id="when-to-use-this">When to use this</h2>
+<p>This setup is good for:</p>
+<ul>
+<li>learning Kubernetes GPU scheduling</li>
+<li>testing inference workloads</li>
+<li>experimenting with device plugins</li>
+<li>prototyping LLM infra locally</li>
+</ul>
+<p>Not great for:</p>
+<ul>
+<li>performance benchmarking</li>
+<li>multi-GPU experiments</li>
+<li>production-like environments</li>
+</ul>
+<h2 id="one-last-tip">One last tip</h2>
+<p>Save your working config:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1F6A4A, #FFFFFF);">kubectl</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> get</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> ds</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia-device-plugin-daemonset</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">n</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> kube-system</span><span style="color: light-dark(#8A3F21, #EFBA5D);"> -</span><span style="color: light-dark(#8A3F21, #EFBA5D);">o</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> yaml</span><span style="color: light-dark(#7A2E59, #ECCDBB);"> &gt;</span><span style="color: light-dark(#0F6F5C, #CCCCCC);"> nvidia-device-plugin-wsl2.yaml</span></span></code></pre>
+<p>This saves you from debugging this again later.</p>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
+      </div>
+      <div class="post-nav-next">
+        <a href="https://akrisanov.com/helix-python/"><span class="np-label">Next
+            &#8250;</span><span class="np-title">Helix for Python Development</span></a>
+      </div>
+    </nav>
+</article>
+
+<div class="sblock">
+
+  <div class="blockdiv sticky toc-block">
+    <div class="b s150 toc-title">
+      Index
+    </div>
+    <div class="toc-item">
+      <a href="#why-i-did-this" class="toc-link">Why I did this</a>
+    </div>
+    <div class="toc-item">
+      <a href="#tl-dr" class="toc-link">TL;DR</a>
+    </div>
+    <div class="toc-item">
+      <a href="#prerequisites" class="toc-link">Prerequisites</a>
+    </div>
+    <div class="toc-item">
+      <a href="#step-1-don-t-install-linux-nvidia-drivers" class="toc-link">Step 1: Don’t install Linux NVIDIA drivers</a>
+    </div>
+    <div class="toc-item">
+      <a href="#step-2-install-nvidia-container-toolkit" class="toc-link">Step 2: Install NVIDIA Container Toolkit</a>
+    </div>
+    <div class="toc-item">
+      <a href="#step-3-verify-gpu-in-containers-podman" class="toc-link">Step 3: Verify GPU in containers (Podman)</a>
+    </div>
+    <div class="toc-item">
+      <a href="#step-4-install-k3s" class="toc-link">Step 4: Install K3s</a>
+    </div>
+    <div class="toc-item">
+      <a href="#step-5-enable-nvidia-runtime-in-k3s" class="toc-link">Step 5: Enable NVIDIA runtime in K3s</a>
+    </div>
+    <div class="toc-item">
+      <a href="#step-6-install-nvidia-device-plugin" class="toc-link">Step 6: Install NVIDIA device plugin</a>
+    </div>
+    <div class="toc-item">
+      <a href="#step-7-the-critical-fix-wsl2-specific" class="toc-link">Step 7: The critical fix (WSL2-specific)</a>
+    </div>
+    <div class="toc-item">
+      <a href="#step-8-run-a-gpu-workload" class="toc-link">Step 8: Run a GPU workload</a>
+    </div>
+    <div class="toc-item">
+      <a href="#what-actually-broke-on-my-first-attempts" class="toc-link">What actually broke on my first attempts</a>
+    </div>
+    <div class="toc-item">
+      <a href="#final-result" class="toc-link">Final result</a>
+    </div>
+    <div class="toc-item">
+      <a href="#when-to-use-this" class="toc-link">When to use this</a>
+    </div>
+    <div class="toc-item">
+      <a href="#one-last-tip" class="toc-link">One last tip</a>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    var tocRoot = document.querySelector(".toc-block");
+    if (!tocRoot) return;
+
+    var links = Array.prototype.slice.call(
+      tocRoot.querySelectorAll("a.toc-link"),
+    );
+    if (!links.length) return;
+
+    var targets = links
+      .map(function (link) {
+        var id = link.getAttribute("href").slice(1);
+        return document.getElementById(id);
+      })
+      .filter(Boolean);
+
+    if (!targets.length) return;
+
+    var activeId = "";
+
+    function updateActive(id) {
+      if (!id || activeId === id) return;
+      activeId = id;
+      links.forEach(function (link) {
+        var isActive = link.getAttribute("href") === "#" + id;
+        link.classList.toggle("is-active", isActive);
+      });
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            updateActive(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: "-25% 0px -65% 0px",
+        threshold: [0, 1],
+      },
+    );
+
+    targets.forEach(function (target) {
+      observer.observe(target);
+    });
+  })();
+</script>
+  </main>
+  <footer>
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Andrey Krisanov • Website content is licensed <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Sitemap "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Sitemap "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

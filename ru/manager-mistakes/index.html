@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="https://akrisanov.com/js/theme.min.js" integrity="sha384-pb++s6uBRKaQv+iAXpgA/H3IlpLZdO14tTwuCI7uXmz4aaZdByoCcM+6BhynMq/1"></script>
+<link rel="stylesheet"
+  href="https://akrisanov.com/abridge.css?h=bf750cd1b26e8052b393" />
+<meta charset="utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="base" content="https://akrisanov.com" />
+
+<meta name="content-language" content="ru" />
+<meta name="HandheldFriendly" content="True" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#333333" />
+<meta name="msapplication-TileColor" content="#333333" />
+<link rel="manifest" href="https://akrisanov.com/ru/manifest.min.json" />
+<link rel="mask-icon" href="https://akrisanov.com/safari-pinned-tab.svg"
+  color="#ff9900" />
+<link rel="icon" type="image/svg+xml"
+  href="https://akrisanov.com/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://akrisanov.com/apple-touch-icon.png" />
+<link rel="preload" as="style" class="preStyle" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&display=swap" crossorigin="anonymous" />
+<link rel="preload" as="style" class="preStyle" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" />
+<link rel="alternate" type="application/atom+xml" title="Андрей Крисанов Atom Feed"
+  href="https://akrisanov.com/ru/atom.xml" /> <meta name="robots" content="index, follow" />
+<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<title>Основные ошибки начинающего people-менеджера | Андрей Крисанов</title>
+<meta name="author" content="Andrey Krisanov" />
+<meta name="copyright" content="Андрей Крисанов" />
+<meta name="description" content="Или как не стать плохим руководителем." />
+<link rel="canonical" href="https://akrisanov.com/ru/manager-mistakes/" />
+<link rel="alternate" hreflang="ru" href="https://akrisanov.com/ru/manager-mistakes/" />
+
+<meta name="keywords" content="менеджмент, people-менеджмент, AI infrastructure, inference engineering, LLM serving, distributed systems, scalable backend, performance optimization, reliability, observability, MLOps, DevOps, GPU inference, model serving, vLLM, Triton Inference Server, Ray Serve, .NET, C#, Python, Kubernetes, Docker, Terraform, Ansible, OpenTelemetry, Grafana, CI&#x2F;CD, cloud infrastructure, platform engineering" />
+<meta name="google-site-verification" content="Your Google Site verification code." />
+<meta name="msvalidate.01" content="Your Bing Site verification code." />
+<meta property="og:url" content="https://akrisanov.com/ru/manager-mistakes/" />
+<meta name="twitter:url" content="https://akrisanov.com/ru/manager-mistakes/" />
+<meta property="og:description" content="Или как не стать плохим руководителем." />
+<meta name="twitter:description" content="Или как не стать плохим руководителем." />
+<meta property="og:title" content="Основные ошибки начинающего people-менеджера | Андрей Крисанов" />
+<meta name="twitter:title" content="Основные ошибки начинающего people-менеджера | Андрей Крисанов" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:image" content="https://akrisanov.com/images/photo.png" />
+<meta property="og:site_name" content="Андрей Крисанов" />
+<meta property="og:locale" content="ru_RU" />
+<meta property="og:type" content="website" />
+<meta property="og:updated_time" content="2020-05-11" />
+<meta name="twitter:site" content="@_akrisanov" />
+<meta name="twitter:creator" content="@_akrisanov" /><script type="application/ld+json">
+{
+	"@context": "https://schema.org",
+	"@type": "Article",
+	"headline": "Основные ошибки начинающего people-менеджера",
+	"url": "https://akrisanov.com/ru/manager-mistakes/",
+	"inLanguage": "ru",
+	"author": {
+		"@type": "Person",
+		"name": "Andrey Krisanov"
+	},
+	"image": "https://akrisanov.com/images/photo.png",
+	"datePublished": "2020-05-11T00:00:00+00:00",
+	"dateModified": "2020-05-11T00:00:00+00:00"}
+</script>
+<script defer
+  src="https://akrisanov.com/js/abridge.min.js?h=1a12cf684ae4ed40434f" integrity="sha384-ZsreuwU2rKTp7gC4bTf5sYz+3AjMym99XDa/B5wa08fCzLVVX+NDaTsTeyLXseDG"></script>
+<script defer src="https://akrisanov.com/js/lunr.stemmer.support.min.js"
+  integrity="sha384-f0MKdC/9ZSGTpDiuWusC0SbLXNCBp6NgzDZpjR/4UdHXAQBqvTEKyinnsa1wQ7oA"></script>
+<script defer src="https://akrisanov.com/js/lunr.ru.min.js"
+  integrity="sha384-R9oqgx8XLmQUPG/odEJyFPd90/TbRU0/6q+If/f8d5yDqLhZgtOT5/X9r3O1Etjr"></script>
+<noscript>
+  <link rel="stylesheet" href="https://akrisanov.com/nojs.css" />
+</noscript>
+  
+  <script>
+    (function(){
+      try {
+        var pref = "";
+        if (pref) {
+          document.documentElement.classList.add('js');
+          document.addEventListener('DOMContentLoaded', function(){
+            document.body.classList.add(pref);
+          });
+        }
+      } catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <a class="visually-hidden" href="#main-content">Skip to content</a>
+  <header>
+    <nav>
+      <div><h1><a href="https://akrisanov.com/ru/" title="Андрей Крисанов"><big>Андрей Крисанов</big></a></h1></div>
+      <div>
+
+        <div>
+          <ul><li><a class="s95" href="https://akrisanov.com/ru/about/"
+                  >
+                <i class="fa fa-user" aria-hidden="true"></i>
+                <span class="nav-label">Обо мне</span>
+                
+                </a></li><li><a class="s95" href="https://akrisanov.com/ru/archive/"
+                  >
+                <i class="fa fa-bookmark" aria-hidden="true"></i>
+                <span class="nav-label">Посты</span>
+                
+                </a></li><li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="Русский" title="Русский"><i class="svgs world" aria-hidden="true"></i><span>Русский</span></button>
+                <div class="dropdown-content">
+                <span>Русский</span><a href="https://akrisanov.com/manager-mistakes/">English</a></div>
+            </div></li><li>
+          <button type="button" id="mode" class="js header-chip header-chip-icon"
+            title="Тема"
+            aria-label="Тема"><i class="svgs adjust" aria-hidden="true"></i><span>Тема</span></button></ul>
+        </div>
+
+        <div>
+          <div>
+            <form autocomplete=off class="js" name="goSearch" id="searchbox" role="search" aria-label="Поиск">
+              <div class="searchd">
+      <input id="searchinput" type="text" placeholder="Поиск"
+        aria-label="Поиск" title="Поиск" />
+              </div>
+              <div class="results" aria-live="polite"><div id="suggestions"></div></div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <main id="main-content">
+<article>
+<h1><a href="https://akrisanov.com/ru/manager-mistakes/">Основные ошибки начинающего people-менеджера</a></h1>
+
+<span class="s95" ><span class="post-date">мая 11, 2020</span>
+  <span class="post-tags"><a
+      href="https://akrisanov.com/ru/tags/menedzhment/">менеджмент</a></span></span>  <p>Несколько лет назад мне впервые довелось руководить людьми. Началось все с пары человек — двух iOS
+разработчиков, которые вместе со мной создавали небольшие мобильные приложения для одной маленькой студии.
+С течением времени команда росла, становилась кросс-функциональной. Компания открыла местный офис,
+и мы стали заниматься разработкой под другие платформы, а также своими сложными продуктами.
+Когда я уходил, нас было порядка 30 человек.</p>
+<p>За тот период я, как people-менеджер, успел сделать кучу ошибок, поэтому делюсь опытом.
+Заметка не оградит вас от столкновения с перечисленными ниже сложностями, но, надеюсь, поможет
+вовремя сделать выводы и скорректировать свое поведение.</p>
+<h3 id="otsutstvie-lichnogo-obshcheniia-s-chlenami-komandy">Отсутствие личного общения с членами команды</h3>
+<p>Становясь руководителем, появляется возможность доносить общее виденье, цели и задачи компании
+выступая перед всей командой или офисом. Коммуникаций становится больше, многие из них перерастают
+в высокоуровневые — без погружения, например, в детали реализации функциональности продукта,
+и стратегические. Вы помогаете команде и компании достигать требуемых результатов параллельно
+улучшая или меняя существующие процессы, подходы и практики.</p>
+<p>Стоит помнить, что добиться озвученного без личного общения с каждым членом команды крайне сложно.
+Ваши 1:1 (one-on-one) и индивидуальные коммуникации с сотрудниками задают общий тон тому, как вся
+команда будет взаимодействовать друг с другом. Поэтому создание позитивных отношений с каждым из
+членов команды имеет решающее значение.</p>
+<blockquote>
+<p>В течение первого месяца запланируйте 1:1 встречи с каждым человеком, находящимся в вашей команде,
+чтобы познакомиться, лучше узнать друг друга и ответить на возникшие вопросы. Сделайте one-on-one
+периодическими и всегда будьте к ним подготовлены.</p>
+</blockquote>
+<h3 id="zhelanie-nravit-sia-vmesto-formirovaniia-doveriia">Желание нравиться вместо формирования доверия</h3>
+<p>В этом нет ничего плохого — в конце концов кто не хочет быть человеком, который нравится всем?
+Проблема возникает тогда, когда менеджер, стремясь понравиться команде и поддержать некий образ
+отличного руководителя, перестает быть открытым и умалчивает какие-то вещи, чтобы не испортить
+отношений с окружающими. Как можно догадаться, в долгосрочной перспективе ни к чему хорошему
+такая стратегия не приводит.</p>
+<blockquote>
+<p>Фокусируйтесь на доверии людей к вам и вере в вас и ваше стратегическое виденье. Будьте открытым
+и всегда готовым прийти на помощь.</p>
+</blockquote>
+<p>Нужно стремиться стать не лучшим менеджером для всей команды, а лучшим менеджером для каждого ее
+члена. Ведь люди уходят не из плохой компании — люди уходят от плохих менеджеров.</p>
+<h3 id="neumenie-vyslushivat-chuzhuiu-tochku-zreniia">Неумение выслушивать чужую точку зрения</h3>
+<p>У любого менеджера есть соблазн быть человеком, у которого всегда есть план и который лучше других
+понимает оптимальный путь решения задачи. Это мешает. Умение выслушивать других людей — важный и
+сложный (по крайней мере для меня) навык.</p>
+<blockquote>
+<p>Вместо того, чтобы сразу предлагать варианты или приступать к действиям, постарайтесь понять
+человека и его мотивацию в контексте ситуации. Задавайте вопросы. Возможно вы чему-то даже научитесь.</p>
+</blockquote>
+<h3 id="neumenie-govorit-ia-ne-znaiu">Неумение говорить «Я не знаю»</h3>
+<p>Синдром самозванца есть у многих. Для начинающего руководителя кошмаром являются сомнения со
+стороны коллег и членов команды по поводу его профессионализма. Меньше всего хочется знать, что
+кто-то думает, что он (а) — не тот человек для этой работы. Поэтому многие боятся сказать правду.
+Неумение честно ответить «Я не знаю» может обернуться против самого менеджера и привести к поспешным
+и ошибочным действиям.</p>
+<blockquote>
+<p>Все знать невозможно. Часто вещи приходят только с опытом. Не бойтесь признавать свое незнание
+перед другими людьми — командой, коллегой или вышестоящим менеджментом. Самое рациональное, что
+можно сделать в подобной ситуации — взять время на исследование задачи и поиск вариантов ее решения.
+«Я вернусь к вам с этим позже» — лучший ответ.</p>
+</blockquote>
+<h3 id="prenebrezhenie-opytom-kolleg">Пренебрежение опытом коллег</h3>
+<p>Если в компании вы выросли до менеджера, то, вероятно, вы не первый, кто занимает такую позицию,
+и есть более опытные коллеги, готовые поделиться своим опытом за чашкой кофе.
+Не пренебрегайте такой возможностью.</p>
+<blockquote>
+<p>Попросите уделить вам 15-30 минут их драгоценного времени. Помните про умение слушать и говорить
+«я не знаю». Будьте благодарны за советы и цените опыт людей, которые пошли вам навстречу.</p>
+</blockquote>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var images = document.querySelectorAll("main article img");
+
+      images.forEach(function (img) {
+        if (!img.src || img.closest("a")) return;
+
+        var link = document.createElement("a");
+        link.href = img.currentSrc || img.src;
+        link.className = "image-zoom-link";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.ariaLabel = img.alt ? "Open image: " + img.alt : "Open image";
+
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      });
+    });
+  </script>
+    <nav class="post-nav">
+      <div class="post-nav-prev">
+        <a href="https://akrisanov.com/ru/performance-review/"><span
+            class="np-label">&#8249; Предыдущая</span><span class="np-title">Перформанс-ревью</span></a>
+      </div>
+      <div class="post-nav-next">
+        <a href="https://akrisanov.com/ru/when-python-practices-go-wrong/"><span class="np-label">Следующая
+            &#8250;</span><span class="np-title">Популярные практики — не всегда хорошие</span></a>
+      </div>
+    </nav>
+</article>
+
+<div class="sblock">
+
+  <div class="blockdiv sticky toc-block">
+    <div class="b s150 toc-title">
+      Содержание
+    </div>
+    <div class="toc-item">
+      <a href="#otsutstvie-lichnogo-obshcheniia-s-chlenami-komandy" class="toc-link">Отсутствие личного общения с членами команды</a>
+    </div>
+    <div class="toc-item">
+      <a href="#zhelanie-nravit-sia-vmesto-formirovaniia-doveriia" class="toc-link">Желание нравиться вместо формирования доверия</a>
+    </div>
+    <div class="toc-item">
+      <a href="#neumenie-vyslushivat-chuzhuiu-tochku-zreniia" class="toc-link">Неумение выслушивать чужую точку зрения</a>
+    </div>
+    <div class="toc-item">
+      <a href="#neumenie-govorit-ia-ne-znaiu" class="toc-link">Неумение говорить «Я не знаю»</a>
+    </div>
+    <div class="toc-item">
+      <a href="#prenebrezhenie-opytom-kolleg" class="toc-link">Пренебрежение опытом коллег</a>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    var tocRoot = document.querySelector(".toc-block");
+    if (!tocRoot) return;
+
+    var links = Array.prototype.slice.call(
+      tocRoot.querySelectorAll("a.toc-link"),
+    );
+    if (!links.length) return;
+
+    var targets = links
+      .map(function (link) {
+        var id = link.getAttribute("href").slice(1);
+        return document.getElementById(id);
+      })
+      .filter(Boolean);
+
+    if (!targets.length) return;
+
+    var activeId = "";
+
+    function updateActive(id) {
+      if (!id || activeId === id) return;
+      activeId = id;
+      links.forEach(function (link) {
+        var isActive = link.getAttribute("href") === "#" + id;
+        link.classList.toggle("is-active", isActive);
+      });
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            updateActive(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: "-25% 0px -65% 0px",
+        threshold: [0, 1],
+      },
+    );
+
+    targets.forEach(function (target) {
+      observer.observe(target);
+    });
+  })();
+</script>
+  </main>
+  <footer>
+    <div class="c">
+<nav class="tpad">
+    <div></div>
+</nav>
+          
+      <p class="s90"> © <span id="year">2026</span> Андрей Крисанов • Контент размещен на условиях <a rel="noopener" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
+      <nav>
+          <a class="s90"
+            href="https://akrisanov.com/ru/atom.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" RSS "
+          ><i class="fa fa-rss" aria-hidden="true" title=" RSS "></i></a>
+          <a class="s90"
+            href="https://akrisanov.com/sitemap.xml"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Карта сайта "
+          ><i class="fa fa-sitemap" aria-hidden="true" title=" Карта сайта "></i></a>
+          <a class="s90"
+            href="https://www.linkedin.com/in/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" LinkedIn "
+          ><i class="fa fa-linkedin" aria-hidden="true" title=" LinkedIn "></i></a>
+          <a class="s90"
+            href="https://github.com/akrisanov/"
+             target="_blank" rel="noopener noreferrer"
+            aria-label=" Github "
+          ><i class="fa fa-github" aria-hidden="true" title=" Github "></i></a>
+      </nav>
+    </div>
+  </footer><span class="topout">
+  <span class="topleft"> </span
+  ><a href="#" class="top" title="Back to Top"
+    ><i class="svgs svgh angu"></i></a
+  >
+</span>
+</body>
+</html>

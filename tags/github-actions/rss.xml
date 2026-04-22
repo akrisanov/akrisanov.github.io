@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Andrey Krisanov - github-actions</title>
+      <link>https://akrisanov.com</link>
+      <description>Engineering notes and essays on AI infrastructure, large-scale inference systems, and production-grade backend design — from distributed serving and observability to performance tuning and reliability. Written by Andrey Krisanov.</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://akrisanov.com/tags/github-actions/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Thu, 12 Oct 2023 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Generating A Lockfile For Python Project Using Github Actions</title>
+          <pubDate>Thu, 12 Oct 2023 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/</link>
+          <guid>https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/</guid>
+          <description xml:base="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/">&lt;p&gt;If you&#x27;re working on a project that needs to be packaged for a specific environment other than your
+machine, the CI&#x2F;CD server is your best friend. Products like Github Actions can save you time and
+the hassle of building dependencies you won&#x27;t use in development.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, many developers love Mac computers, especially the ones that come with Apple silicon.
+The sad truth is that we rarely deploy our code on servers with these processors and MacOS.
+Most of the time, projects run on Linux. Unfortunately, Python can&#x27;t guarantee a deterministic
+or reproducible environment.&lt;&#x2F;p&gt;
+&lt;p&gt;Running the command to create a list of all the dependencies that your package will need gives
+a different result on MacOS, Linux, Windows, and so on:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;pip-compile&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt; -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;-allow-unsafe&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt; -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;-generate-hashes&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt; -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;-no-emit-index-url&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt; -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;-output-file=requirements-lock.txt&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt; &amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; requirements-lock.txt&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;span class=&quot;img-title&quot;&gt;Using pip-tools to compile a requirements.txt file from your dependencies&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Not all dependencies have universal wheels. Moreover, users can install different Python versions.&lt;&#x2F;p&gt;
+&lt;p&gt;Now that you see the problem, let&#x27;s take a quick look at possible solutions.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;yaml&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ame&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; B&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;uild requirements-lock.txt&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;on&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;  w&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;orkflow_dispatch&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;j&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;obs&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;  b&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;uild-requirements-lock&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;    r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;uns-on&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; u&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;buntu-22.04&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;    s&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;teps&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt; u&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ses&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; a&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;ctions&#x2F;checkout@v3&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt; n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ame&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; S&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;et up Python 3.9&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;        u&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ses&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; a&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;ctions&#x2F;setup-python@v3&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;        w&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ith&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;          p&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ython-version&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;3.9&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt; n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ame&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; I&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;nstall pip and pip-tools&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;        r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;un&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt; |&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;          pip install --upgrade pip&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;          pip install --upgrade pip-tools&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt; n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ame&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; R&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;un pip-compile&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;        r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;un&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt; |&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;          pip-compile --allow-unsafe --generate-hashes --no-emit-index-url --output-file=requirements-lock.txt &amp;gt; requirements-lock.txt&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt; n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ame&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; U&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;pload requirements-lock artifact&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;        u&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ses&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; a&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;ctions&#x2F;upload-artifact@v3.1.1&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;        w&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ith&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;          n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ame&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;equirements-lock&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;          p&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;ath&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;equirements-lock.txt&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;          r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0D5F89, #FFFFFF);&quot;&gt;etention-days&lt;&#x2F;span&gt;&lt;span&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#9A4D00, #EFBA5D);&quot;&gt; 3&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;span class=&quot;img-title&quot;&gt;build-requirements-lock-workflow&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The Github Actions manifest above defines a workflow that can be triggered manually
+on any branch you like.&lt;&#x2F;p&gt;
+&lt;p&gt;Suppose you&#x27;re upgrading some dependencies in requirement.txt. &lt;code&gt;pip install -r requirements.txt&lt;&#x2F;code&gt;
+works fine. Now you want to generate a new lock file for the users. You commit the changes to your
+branch, wait for the tests to pass, and trigger the workflow:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;images&#x2F;gh-actions-lockfile.png&quot; alt=&quot;&quot; &#x2F;&gt;
+&lt;span class=&quot;img-title&quot;&gt;Github Actions Workflow&lt;&#x2F;span&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;A freshly generated requirements-lock.txt appears in downloadable artifacts.
+You download the file and add it to the repo.&lt;&#x2F;p&gt;
+&lt;p&gt;Another option might be to run a similar workflow in a Docker container. I posted a note about
+multi-architecture builds a few months ago. &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;dev.to&#x2F;akrisanov&#x2F;building-multi-arch-images-for-arm-and-x86-2802&quot;&gt;Take a look!&lt;&#x2F;a&gt;
+Just make sure you choose the same architecture and Python version that you want to distribute your project to.&lt;&#x2F;p&gt;
+&lt;div class=&quot;callout callout-bdc&quot;&gt;
+Other tools like Poetry might do the job better and provide more convenient ways of managing lock files.
+But if you have reasons to not use them, it&#x27;s totally fine to stick with good old pip.
+&lt;&#x2F;div&gt;
+</description>
+      </item>
+    </channel>
+</rss>

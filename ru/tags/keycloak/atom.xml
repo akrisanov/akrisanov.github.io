@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ru">
+    <title>Андрей Крисанов - keycloak</title>
+    <subtitle>Заметки об AI-инфраструктуре, системах инференса и промышленной архитектуре бэкенда — от распределённого сервинга и наблюдаемости до оптимизации производительности и надежности. Автор — Андрей Крисанов.</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://akrisanov.com/ru/tags/keycloak/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://akrisanov.com"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2021-05-15T00:00:00+00:00</updated>
+    <id>https://akrisanov.com/ru/tags/keycloak/atom.xml</id>
+    <entry xml:lang="ru">
+        <title>Сертификат для LDAPS в Keycloak</title>
+        <published>2021-05-15T00:00:00+00:00</published>
+        <updated>2021-05-15T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/ru/keycloak-ldaps-cert/"/>
+        <id>https://akrisanov.com/ru/keycloak-ldaps-cert/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/ru/keycloak-ldaps-cert/">&lt;p&gt;В нескольких рабочих проектах я использую в качестве сервиса аутентификации &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.keycloak.org&#x2F;&quot;&gt;Keycloak&lt;&#x2F;a&gt;.
+Проект спонсируется компанией RedHat, активно развивается и адаптирован для cloud-native окружения.
+Хотя документация у Keycloak достаточная для основных пользовательских сценариев, иногда ее
+не хватает для решения специфичных вопросов. Последнее с чем я столкнулся — подключение
+Active Directory как User Federation через протокол LDAPS (LDAP over SSL).&lt;&#x2F;p&gt;
+&lt;p&gt;Как и полагается внутренним корпоративным сервисам, наш сервер LDAPS предоставляет самоподписанный сертификат.
+Keycloak в этом случае для успешного соединения с &lt;code&gt;ldaps:&#x2F;&#x2F;ldap.orgname.com:636&lt;&#x2F;code&gt; требует, чтобы
+сертификат находился в truststore. Вариантов конфигурирования несколько:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;глобальный cacerts ОС, в которой запускается сервис&lt;&#x2F;li&gt;
+&lt;li&gt;cacerts из каталога установленного JDK&lt;&#x2F;li&gt;
+&lt;li&gt;системное свойство &lt;code&gt;javax.net.ssl.trustStore&lt;&#x2F;code&gt; для JVM&lt;&#x2F;li&gt;
+&lt;li&gt;truststore в каталоге Keycloak&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Если вам необходимо просто добавить самоподписанный сертификат или root.crt, то самым простым
+способом будет добавление его в источники на уровне ОС и обновление списка доверенных сертификатов.
+Тогда вам не придется каждый раз искать где находиться JDK в системе, переписывать startup-скрипты
+сервиса или заботиться о безопасной работе с паролями для своего truststore.&lt;&#x2F;p&gt;
+&lt;p&gt;Для разворачивания в Kubernetes или OpenShift можно собрать образ следующим способом:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;docker&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span&gt; jboss&#x2F;keycloak:13.0.0&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;USER&lt;&#x2F;span&gt;&lt;span&gt; root&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;ARG&lt;&#x2F;span&gt;&lt;span&gt; CERT=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;root.crt&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;COPY&lt;&#x2F;span&gt;&lt;span&gt; $CERT &#x2F;etc&#x2F;pki&#x2F;ca-trust&#x2F;source&#x2F;anchors&#x2F;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;RUN&lt;&#x2F;span&gt;&lt;span&gt; update-ca-trust&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;USER&lt;&#x2F;span&gt;&lt;span&gt; 1000&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Убедиться, что сертификат был добавлен в список доверенных:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; &#x2F;etc&#x2F;pki&#x2F;ca-trust&#x2F;extracted&#x2F;java&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#1F6A4A, #FFFFFF);&quot;&gt;keytool&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt; -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;list&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt; -&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#8A3F21, #EFBA5D);&quot;&gt;keystore&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt; cacerts&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;&amp;gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span&gt; Your keystore contains 137 entries&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;В оригинальном образе их 136.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="ru">
+        <title>Синхронизация пользователей через LDAP в Keycloak</title>
+        <published>2021-05-14T00:00:00+00:00</published>
+        <updated>2021-05-14T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://akrisanov.com/ru/keycloak-ldap-groups/"/>
+        <id>https://akrisanov.com/ru/keycloak-ldap-groups/</id>
+        
+        <content type="html" xml:base="https://akrisanov.com/ru/keycloak-ldap-groups/">&lt;p&gt;Один из способов подключения провайдера существующих пользователей к Keycloak – механизм,
+который называется User Federation. Он позволяет используя Kerberos или LDAP синхронизировать
+учетные записи из корпоративного хранилища. Если пользователей в хранилище много, и оргструктура
+организации предполагает иерархию, то это может усложнить получение (под)группы учетных записей.&lt;&#x2F;p&gt;
+&lt;p&gt;Так, например, в Active Directory используются следующие сущности:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;CN&lt;&#x2F;code&gt; = Common Name&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;OU&lt;&#x2F;code&gt; = Organizational Unit&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;DC&lt;&#x2F;code&gt; = Domain Component&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Документация по LDAP с расшифровкой аббревиатур есть на сайте
+&lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.microsoft.com&#x2F;en-us&#x2F;previous-versions&#x2F;windows&#x2F;desktop&#x2F;ldap&#x2F;distinguished-names&quot;&gt;Microsoft&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;В настройках LDAP провайдера необходимо указать &lt;code&gt;User DN&lt;&#x2F;code&gt;. Самый простой вариант – когда все учетные
+записи разложены по организационным единицам:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;M&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;a&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;i&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;DC&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;O&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;g&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;a&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;m&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;e&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;DC&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;u&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;В этом случае Keycloak с легкостью найдет все учетные записи в юните, даже если внутри него есть
+какая-то вложенная структура. Для этого, правда, придется включить дополнительный
+параметр &lt;em&gt;Search Scope: Subtree&lt;&#x2F;em&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Но что делать если администраторы Active Directory вместо создания &lt;code&gt;OU&lt;&#x2F;code&gt; сущностей добавляют нужных
+вам пользователей в &lt;code&gt;CN&lt;&#x2F;code&gt;? Другого способа, как дополнить описанное выше решение дополнительным
+фильтром для LDAP, я не нашел. В настройке &lt;code&gt;Custom User LDAP Filter&lt;&#x2F;code&gt; можно прописать все &lt;code&gt;CN&lt;&#x2F;code&gt; группы
+через оператор «Или» &lt;code&gt;|&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo&quot; style=&quot;color-scheme: light dark; color: light-dark(#1F2328, #DCE6DF); background-color: light-dark(#FAFAF8, #131917);&quot;&gt;&lt;code data-lang=&quot;shellscript&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;objectCategory&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;P&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;e&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;s&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;o&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;n&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;sAMAccountName&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;*&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;|&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;memberOf&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;CN&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;C&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;M&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;S&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;_&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;E&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;D&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;I&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;T&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;O&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;R&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;S&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;e&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;c&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;u&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;i&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;t&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;y&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;G&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;o&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;u&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;p&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;s&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;C&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;e&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;t&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;a&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;l&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;OU&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;M&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;a&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;i&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;DC&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;O&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;g&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;n&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;a&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;m&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;e&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0550AE, #A4A0E8);&quot;&gt;DC&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#7A2E59, #ECCDBB);&quot;&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;r&lt;&#x2F;span&gt;&lt;span style=&quot;color: light-dark(#0F6F5C, #CCCCCC);&quot;&gt;u&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;В примере указана только одна группа – &lt;code&gt;CMS_EDITOR&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
