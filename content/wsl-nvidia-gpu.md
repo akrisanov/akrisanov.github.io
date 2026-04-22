@@ -1,5 +1,5 @@
 +++
-title = "Running Kubernetes with GPU inside WSL2 on my RTX Laptop)"
+title = "Running Kubernetes with GPU inside WSL2 on my RTX Laptop"
 description = "A step-by-step guide to setting up Kubernetes with NVIDIA GPU access inside WSL2 on a Windows laptop."
 date = 2026-04-22
 
