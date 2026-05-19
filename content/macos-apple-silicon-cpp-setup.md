@@ -6,7 +6,6 @@ draft = false
 
 [taxonomies]
 tags = ["cpp", "macos", "apple-silicon", "llvm", "cmake", "vscode", "helix", "mise"]
-categories = ["development"]
 
 [extra]
 toc = true
