@@ -2,7 +2,7 @@
 title = "Jira Workflow"
 description = "Пайплайн выполнения задач в Jira"
 date = 2021-03-27
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["менеджмент", "jira"]

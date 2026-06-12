@@ -2,7 +2,7 @@
 title = "eSIM как альтернатива роумингу в путешествиях"
 description = "Экономим на роуминге в зарубежных поездках."
 date = 2022-05-27
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["путешествия"]

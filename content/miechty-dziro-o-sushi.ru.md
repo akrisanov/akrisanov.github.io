@@ -2,7 +2,7 @@
 title = "Мечты Дзиро о суши"
 description = "Документальный фильм о любви к своему делу."
 date = 2020-02-25
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["мастерство"]

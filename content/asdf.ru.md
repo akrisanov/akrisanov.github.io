@@ -2,7 +2,7 @@
 title = "asdf — менеджер версий языков программирования"
 description = "Маленький, но очень полезный CLI-инструмент."
 date = 2021-05-07
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["devtools"]

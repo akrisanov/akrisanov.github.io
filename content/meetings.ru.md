@@ -2,7 +2,7 @@
 title = "Встречи и звонки"
 description = "Как организовывать встречи, звонки и эффективно использовать свое и время команды."
 date = 2024-04-09
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["playbook", "время"]

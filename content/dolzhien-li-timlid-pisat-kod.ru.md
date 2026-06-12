@@ -2,7 +2,7 @@
 title = "Должен ли тимлид писать код"
 description = "Должен ли технический менеджер или тимлид писать production-код? Объясняю почему нет."
 date = 2019-06-17
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["менеджмент"]

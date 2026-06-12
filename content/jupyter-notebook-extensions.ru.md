@@ -2,7 +2,7 @@
 title = "Расширения для Jupyter Notebook"
 description = "Как расширить возможности Jupyter Notebook через плагины."
 date = 2020-03-30
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["jupyter", "анализ данных"]

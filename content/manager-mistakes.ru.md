@@ -2,7 +2,7 @@
 title = "Основные ошибки начинающего people-менеджера"
 description = "Или как не стать плохим руководителем."
 date = 2020-05-11
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["менеджмент"]

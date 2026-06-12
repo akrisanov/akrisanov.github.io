@@ -2,7 +2,7 @@
 title = "Синхронизация пользователей через LDAP в Keycloak"
 description = "Как вытащить пользователей из Active Directory при наличии неочевидной структуры учетных записей."
 date = 2021-05-14
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["keycloak", "аутентификация"]

@@ -2,7 +2,7 @@
 title = "Добавление путей в переменную PATH на macOS X 10.8+"
 description = "Краткое руководство по добавлению директорий в переменную PATH на macOS: где лежит /etc/paths и как корректно обновить PATH."
 date = 2020-03-08
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["macOS"]

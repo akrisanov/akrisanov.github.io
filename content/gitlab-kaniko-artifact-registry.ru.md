@@ -2,7 +2,7 @@
 title = "Сборка образов на Gitlab CI для GCP Artifact Registry"
 description = "Как собрать Docker-образы в Gitlab CI и отправить их в Google Artifact Registry."
 date = 2022-07-12
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["devops", "docker", "gitlab", "Google Cloud"]

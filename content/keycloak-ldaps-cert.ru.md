@@ -2,7 +2,7 @@
 title = "Сертификат для LDAPS в Keycloak"
 description = "Как добавить сапомодписанный сертификат в Keycloak для подключения к Active Directory."
 date = 2021-05-15
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["keycloak", "docker", "аутентификация"]
