@@ -1,0 +1,11 @@
+<figure style="max-width: 100%; margin: 1rem 0;">
+  <img 
+    src="{{ main_src }}" 
+    alt="Image comparison"
+    onclick="this.src = this.src === '{{ main_src }}' ? '{{ swap_src }}' : '{{ main_src }}'"
+    style="cursor: pointer; border-radius: 8px; width: 100%;"
+  />
+  <figcaption style="text-align: center; font-size: 0.85rem; color: #666; margin-top: 0.5rem;">
+    Click to toggle images
+  </figcaption>
+</figure>

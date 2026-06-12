@@ -1,7 +1,7 @@
 +++
 title = "Оффлайн режим"
 path = "ru/offline"
-template = "pages.html"
+template = "static_page.html"
 draft = false
 +++
 
