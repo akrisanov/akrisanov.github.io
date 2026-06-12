@@ -101,30 +101,6 @@
               {%- endfor -%}
             {%- endif -%}
 
-            {%- if config.languages | length > 0 %}
-            {%- set language_label = macros::translate(key="language_name", default="lang_name", i18n=i18n) -%}
-            <li><div class="dropdown"><button type="button" class="header-chip header-chip-icon" aria-label="{{ language_label }}" title="{{ language_label }}"><i class="svgs world" aria-hidden="true"></i><span>{{ language_label }}</span></button>
-              {%- if current_url %}
-                <div class="dropdown-content">
-                <span>{{ language_label }}</span>
-                {%- for lcode,language in config.languages -%}
-                  {%- set i18n_menu = load_data(path="i18n/" ~ lcode ~ '.toml', required=false) -%}
-                  {%- if not i18n_menu -%}{%- set i18n_menu = load_data(path="themes/abridge/i18n/" ~ lcode ~ ".toml", required=false) -%}{%- endif %}
-                  {%- if lang != lcode -%}
-                    {%- if lcode == config.default_language -%}
-                    <a href="{{ current_url | replace(from='/' ~ lang ~ '/', to = '/') | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ macros::translate(key="language_name", default="language_name", i18n=i18n_menu) }}</a>
-                    {%- elif lang == config.default_language -%}
-                    <a href="{{ current_url | replace(from=config.base_url, to=config.base_url ~ "/" ~ lcode) | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ macros::translate(key="language_name", default="language_name", i18n=i18n_menu) }}</a>
-                    {%- else -%}
-                    <a href="{{ current_url | replace(from='/' ~ lang ~ '/', to = '/' ~ lcode ~ '/') | safe }}{%- if uglyurls %}index.html{%- endif %}">{{ macros::translate(key="language_name", default="language_name", i18n=i18n_menu) }}</a>
-                    {%- endif -%}
-                  {%- endif -%}
-                {%- endfor -%}
-                </div>
-              {%- endif %}
-            </div></li>
-            {%- endif %}
-
             {%- if js_switcher -%}
               {%- set icon_adjust=config.extra.icon_adjust | default(value="svgs adjust") -%}
               {%- set switch_mode_label = "Theme" -%}

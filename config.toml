@@ -17,7 +17,7 @@ taxonomies = [{ name = "tags", feed = true }]
 
 # feed_filename = "atom.xml"
 # output_dir = "public"
-# ignored_content = ["*.{graphml,xlsx}", "temp.*"]
+ignored_content = ["*.{graphml,xlsx}", "temp.*", "**/*.ru.md"]
 # hard_link_static = false # set to true to hard link instead of copying, useful for very large files.
 
 [search] # Options specific to elasticlunr search.
@@ -42,17 +42,6 @@ light_theme = "Witch Hazel Light"
 dark_theme = "Witch Hazel"
 style = "inline"
 extra_themes = ["highlight_themes/witchhazel-vscode.json", "highlight_themes/witchhazel-light-vscode.json"]
-
-[languages.ru]
-title = "Андрей Крисанов"
-generate_feeds = true
-build_search_index = true
-search.include_title = true       # include title of page/section in index
-search.include_description = true # include description of page/section in index
-search.include_content = true     # include rendered content of page/section in index
-# search.truncate_content_length = 100 # Truncate at nth character. May be useful if index is getting too large.
-taxonomies = [{ name = "tags", feed = true }]
-description = "Заметки об AI-инфраструктуре, системах инференса и промышленной архитектуре бэкенда — от распределённого сервинга и наблюдаемости до оптимизации производительности и надежности. Автор — Андрей Крисанов."
 
 [extra]
 ####################################################################################################
