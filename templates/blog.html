@@ -1,0 +1,68 @@
+{% extends "base.html" %} {% block content %} {% if paginator %} {% set pages =
+paginator.pages %} {% else %} {% set pages = section.pages %} {% endif %} {% for
+page in pages %} {% if page.slug != "about" and page.slug != "consulting" and
+page.slug != "now" %}
+<article class="e2-note">
+  <header class="note-header">
+    <h2 class="note-title">
+      <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
+    </h2>
+    <div class="note-meta">
+      <time
+        class="note-date"
+        datetime="{{ page.date | date(format='%Y-%m-%d') }}"
+      >
+        {{ page.date | date(format="%d.%m.%Y") }}
+      </time>
+      {% if page.taxonomies.tags %}
+      <span class="note-tags-inline">
+        {% for tag in page.taxonomies.tags %}
+        <a
+          href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}"
+          class="tag"
+          >#{{ tag }}</a
+        >
+        {% endfor %}
+      </span>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if page.description %}
+  <div class="note-summary e2-text">
+    <p>{{ page.description }}</p>
+  </div>
+  {% elif page.summary %}
+  <div class="note-summary e2-text">{{ page.summary | safe }}</div>
+  {% endif %}
+</article>
+{% endif %} {% endfor %} {% if paginator %}
+<nav class="pagination">
+  {% if paginator.previous %}
+  <a href="{{ paginator.previous }}" class="pagination-newer"
+    >Позднее <i class="nav-modifier"></i>↑</a
+  >
+  {% endif %} {% if paginator.next %}
+  <a href="{{ paginator.next }}" class="pagination-older"
+    >Ранее <i class="nav-modifier"></i>↓</a
+  >
+  {% endif %}
+</nav>
+<script>
+  (function () {
+    var older = document.querySelector(".pagination-older");
+    var newer = document.querySelector(".pagination-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();
+</script>
+{% endif %} {% endblock content %}

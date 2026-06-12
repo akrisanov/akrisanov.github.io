@@ -1,0 +1,125 @@
+{% extends "base.html" %} {% block title %}{{ page.title }} — {{ config.title
+}}{% endblock title %} {% block description %}{% if page.description %}{{
+page.description }}{% else %}{{ config.description }}{% endif %}{% endblock
+description %} {% block og_type %}article{% endblock og_type %} {% block
+og_title %}{{ page.title }} — {{ config.title }}{% endblock og_title %} {% block
+og_description %}{% if page.description %}{{ page.description }}{% else %}{{
+config.description }}{% endif %}{% endblock og_description %} {% block
+twitter_title %}{{ page.title }} — {{ config.title }}{% endblock twitter_title
+%} {% block twitter_description %}{% if page.description %}{{ page.description
+}}{% else %}{{ config.description }}{% endif %}{% endblock twitter_description
+%} {% block content %}
+<article
+  class="e2-note e2-note-single"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <meta itemprop="url" content="{{ page.permalink | safe }}" />
+  <meta
+    itemprop="image"
+    content="{{ config.base_url }}/images/userpic-square.jpg"
+  />
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+    <meta itemprop="name" content="{{ config.author }}" />
+  </span>
+
+  <header class="note-header">
+    <h1 class="note-title" itemprop="headline">{{ page.title }}</h1>
+    <div class="note-meta">
+      <time
+        class="note-date"
+        datetime="{{ page.date | date(format='%Y-%m-%d') }}"
+        itemprop="datePublished"
+      >
+        {{ page.date | date(format="%d.%m.%Y") }}
+      </time>
+      {% if page.updated %}
+      <meta
+        itemprop="dateModified"
+        content="{{ page.updated | date(format='%Y-%m-%d') }}"
+      />
+      {% else %}
+      <meta
+        itemprop="dateModified"
+        content="{{ page.date | date(format='%Y-%m-%d') }}"
+      />
+      {% endif %} {% if page.taxonomies.tags %}
+      <span class="note-tags-inline">
+        {% for tag in page.taxonomies.tags %}
+        <a
+          href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}"
+          class="tag"
+          >#{{ tag }}</a
+        >
+        {% endfor %}
+      </span>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="e2-text note-body" itemprop="articleBody">
+    {{ page.content | safe }}
+  </div>
+</article>
+
+<nav class="note-navigation">
+  {% if page.lower %}
+  <a href="{{ page.lower.permalink | safe }}" class="nav-older">Ранее <i class="nav-modifier"></i>↓</a>
+  {% endif %}
+  {% if page.higher %}
+  <a href="{{ page.higher.permalink | safe }}" class="nav-newer">Позднее <i class="nav-modifier"></i>↑</a>
+  {% endif %}
+</nav>
+
+<script>
+(function() {
+  var older = document.querySelector('.nav-older');
+  var newer = document.querySelector('.nav-newer');
+  document.addEventListener('keydown', function(e) {
+    if (!e.altKey) return;
+    if (e.key === 'ArrowDown' && older) { e.preventDefault(); location.href = older.href; }
+    if (e.key === 'ArrowUp'   && newer) { e.preventDefault(); location.href = newer.href; }
+  });
+})();
+</script>
+{% endblock content %}
+
+{% block scripts %}
+{% if page.extra.mermaid %}
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: dark ? {
+      primaryColor: '#3a2a4a',
+      primaryTextColor: '#efdcef',
+      primaryBorderColor: 'rgba(234,200,234,0.35)',
+      lineColor: 'rgba(234,200,234,0.5)',
+      secondaryColor: '#2a3a4a',
+      tertiaryColor: '#26212b',
+      edgeLabelBackground: '#26212b',
+      clusterBkg: '#2e2838',
+      clusterBorder: 'rgba(234,200,234,0.25)',
+      titleColor: '#ff40b9',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '15px',
+    } : {
+      primaryColor: '#f8e8ff',
+      primaryTextColor: '#40309',
+      primaryBorderColor: 'rgba(64,48,144,0.25)',
+      lineColor: 'rgba(64,48,144,0.4)',
+      secondaryColor: '#e8f4ff',
+      tertiaryColor: '#fff8fc',
+      edgeLabelBackground: '#fff8fc',
+      clusterBkg: '#fdf0ff',
+      clusterBorder: 'rgba(64,48,144,0.15)',
+      titleColor: '#ff00a0',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '15px',
+    },
+  });
+</script>
+{% endif %}
+{% endblock scripts %}

@@ -1,22 +1,13 @@
 # akrisanov.com
 
-Personal website built with [Zola](https://www.getzola.org/) and customized [Abridge] theme.
+Personal website built with [Zola](https://www.getzola.org/). Engineering notes on AI infrastructure, LLM systems, and software engineering.
 
-The site is multilingual, supporting English and Russian.
-However, not all blog posts are translated into both languages.
+## Local Development
 
-## Writing Posts
-
-First, install Zola if you haven't already:
+Install Zola if you haven't already:
 
 ```bash
 brew install zola
-```
-
-Then, create a new post:
-
-```bash
-cp content/_template content/new-post.md
 ```
 
 Serve content with live reload:
@@ -25,6 +16,8 @@ Serve content with live reload:
 zola serve
 ```
 
+The site is available at [http://127.0.0.1:1111](http://127.0.0.1:1111).
+
 ---
 
-Copyright © 2023–2024 Andrey Krisanov
+© Andrey Krisanov, 2024–2026

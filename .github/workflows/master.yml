@@ -2,39 +2,10 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+
 name: Build and deploy on Github Pages
+
 jobs:
-  link-check:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    continue-on-error: true # make this optional; set to false to gate deploy
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: Install Zola
-        uses: taiki-e/install-action@v2
-        with:
-          tool: zola@0.22.1
-      - name: Build site
-        run: zola build
-      - name: Link check with lychee
-        uses: lycheeverse/lychee-action@v1
-        continue-on-error: true
-        with:
-          args: >-
-            --no-progress
-            --max-concurrency 20
-            --accept 200,403,429
-            --fail false
-            --exclude-path node_modules
-            --exclude-path public/js
-            --exclude-path themes/abridge/static/js
-            './**/*.md'
-            './**/*.html'
-            './public/**/*.html'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build:
     runs-on: ubuntu-latest
     permissions:
@@ -42,39 +13,18 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: Install Zola
         uses: taiki-e/install-action@v2
         with:
           tool: zola@0.22.1
-      - name: Setup Node.js (with cache)
-        if: ${{ hashFiles('**/package-lock.json') != '' || hashFiles('**/npm-shrinkwrap.json') != '' || hashFiles('**/yarn.lock') != '' }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - name: Setup Node.js (no cache)
-        if: ${{ hashFiles('**/package-lock.json') == '' && hashFiles('**/npm-shrinkwrap.json') == '' && hashFiles('**/yarn.lock') == '' }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
-            npm ci
-          else
-            npm i --no-audit --fund=false
-          fi
-      - name: Zola check
-        continue-on-error: true
-        run: zola check
-      - name: Minify service worker
-        run: npm run minify:sw
+
+      - name: Build site
+        run: zola build
+
       - name: build_and_deploy
         uses: shalzz/zola-deploy-action@v0.22.1
         env:
-          # Target branch
           PAGES_BRANCH: gh-pages
-          # Provide personal access token
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Or if publishing to the same repo, use the automatic token
-          # TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

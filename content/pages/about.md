@@ -1,19 +1,17 @@
 +++
 title = "About"
+template = "static_page.html"
 path = "about"
-template = "pages.html"
-draft = false
+date = 2024-01-01
 +++
 
-## Hi, I’m Andrey
+## Hi, I'm Andrey
 
 I'm a backend and platform engineer who likes turning complex systems into something boring, reliable, and easy to reason about.
 
-For the last 15+ years I've been building and scaling SaaS products — mostly on the backend side, often close to
-infrastructure, and frequently in roles where someone has to take responsibility when things get messy.
+For the last 15+ years I've been building and scaling SaaS products — mostly on the backend side, often close to infrastructure, and frequently in roles where someone has to take responsibility when things get messy.
 
-Right now, I work on **AI platforms and LLM serving**: running models on Kubernetes, designing inference infrastructure,
-setting up observability for GPU workloads, and making sure systems behave predictably in production — not just in demos.
+Right now, I work on **AI platforms and LLM serving**: running models on Kubernetes, designing inference infrastructure, setting up observability for GPU workloads, and making sure systems behave predictably in production — not just in demos.
 
 ## What I care about
 
@@ -29,11 +27,9 @@ I enjoy work that's close to real users and real constraints — whether that's 
 
 ## A bit of background
 
-Over the years I've worked in startups and large companies across **Russia and Germany**, including fintech, data privacy,
-media, and B2B SaaS.
+Over the years I've worked in startups and large companies, including fintech, data privacy, media, and B2B SaaS.
 
-I've been a CTO, a principal engineer, and an individual contributor — and I'm most comfortable in roles where I can
-combine technical depth with systems thinking and pragmatic decision‑making.
+I've been a CTO, a principal engineer, and an individual contributor — and I'm most comfortable in roles where I can combine technical depth with systems thinking and pragmatic decision‑making.
 
 Somewhere along the way I learned that clean abstractions matter, but boring infrastructure matters more.
 

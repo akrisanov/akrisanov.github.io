@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}404 — {{ config.title }}{% endblock title %}
+{% block description %}Страница не найдена{% endblock description %}
+{% block canonical %}{% endblock canonical %}
+{% block og_url %}{% endblock og_url %}
+
+{% block content %}
+<article class="e2-note e2-note-single">
+  <header class="note-header">
+    <h1 class="note-title">404</h1>
+  </header>
+  <div class="e2-text note-body">
+    <p>Такой страницы нет. Возможно, она переехала или никогда не существовала.</p>
+    <p><a href="/">← Вернуться на главную</a></p>
+  </div>
+</article>
+{% endblock content %}

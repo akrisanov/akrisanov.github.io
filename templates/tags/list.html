@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Теги — {{ config.title }}{% endblock title %}
+
+{% block content %}
+<h1 class="page-heading">Теги</h1>
+<div class="tags-list">
+  {% for term in terms %}
+  <a href="{{ term.permalink | safe }}" class="tag">#{{ term.name }} ({{ term.pages | length }})</a>
+  {% endfor %}
+</div>
+{% endblock content %}
