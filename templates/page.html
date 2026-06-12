@@ -64,10 +64,10 @@ twitter_title %}{{ page.title }} — {{ config.title }}{% endblock twitter_title
 
 <nav class="note-navigation">
   {% if page.lower %}
-  <a href="{{ page.lower.permalink | safe }}" class="nav-older">Ранее <i class="nav-modifier"></i>↓</a>
+  <a href="{{ page.lower.permalink | safe }}" class="nav-older">Older <i class="nav-modifier"></i>↓</a>
   {% endif %}
   {% if page.higher %}
-  <a href="{{ page.higher.permalink | safe }}" class="nav-newer">Позднее <i class="nav-modifier"></i>↑</a>
+  <a href="{{ page.higher.permalink | safe }}" class="nav-newer">Newer <i class="nav-modifier"></i>↑</a>
   {% endif %}
 </nav>
 
