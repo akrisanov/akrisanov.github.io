@@ -2,7 +2,7 @@
 title = "Полезные советы невролога о подушках"
 description = "Как спать и высыпаться."
 date = 2021-07-03
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["здоровье"]

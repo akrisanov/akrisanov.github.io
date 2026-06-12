@@ -2,7 +2,7 @@
 title = "Перформанс-ревью"
 description = "Что такое полезное перформанс-ревью."
 date = 2020-06-24
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["менеджмент"]

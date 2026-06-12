@@ -2,7 +2,7 @@
 title = "Ежедневный стендап"
 description = "Как проводить ежедневные стендапы в команде."
 date = 2020-07-27
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["менеджмент"]

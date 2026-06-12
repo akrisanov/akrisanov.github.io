@@ -2,7 +2,7 @@
 title = "Запуск программы в виде демона"
 description = "Небольшой трюк в Unix для запуска программы в фоновом режиме."
 date = 2020-08-03
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["unix"]

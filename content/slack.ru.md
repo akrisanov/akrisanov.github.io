@@ -2,7 +2,7 @@
 title = "Slack в распределенной команде"
 description = "Как использовать Slack в распределенной команде, чтобы не терять фокус и не отвлекать коллег."
 date = 2019-06-08
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["slack", "remote"]

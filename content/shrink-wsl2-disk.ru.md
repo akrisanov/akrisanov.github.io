@@ -2,7 +2,7 @@
 title = "Как освободить место на диске WSL2"
 description = "Необходимое упражнение в ожидании новых релизов от Microsoft."
 date = 2022-05-13
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["wsl", "windows", "devtools", "linux"]

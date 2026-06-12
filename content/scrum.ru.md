@@ -2,7 +2,7 @@
 title = "Мысли по поводу Scrum"
 description = "Что я думаю о методологии после нескольких лет ее применения."
 date = 2019-11-13
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["менеджмент"]

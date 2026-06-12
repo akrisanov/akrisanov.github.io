@@ -2,7 +2,7 @@
 title = "Обо мне"
 path = "ru/about"
 template = "static_page.html"
-draft = false
+draft = true
 +++
 
 ## Привет 👋

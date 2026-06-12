@@ -2,7 +2,7 @@
 title = "Популярные практики — не всегда хорошие"
 description = "Доклад от Brandon Rhodes."
 date = 2020-05-05
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["python", "software-design"]

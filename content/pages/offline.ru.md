@@ -2,7 +2,7 @@
 title = "Оффлайн режим"
 path = "ru/offline"
 template = "static_page.html"
-draft = false
+draft = true
 +++
 
 ## Оффлайн режим

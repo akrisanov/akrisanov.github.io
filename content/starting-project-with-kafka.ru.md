@@ -2,7 +2,7 @@
 title = "Чеклист по старту проекта с Apache Kafka®"
 description = "О чем стоит подумать перед началом проекта с Apache Kafka®."
 date = 2021-11-01
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["kafka", "system-design"]

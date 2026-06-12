@@ -2,7 +2,7 @@
 title = "Научись учиться"
 description = "Шпаргалка по итогам прохождения курса «Learning How To Learn» на Coursera."
 date = 2019-09-01
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["образование"]

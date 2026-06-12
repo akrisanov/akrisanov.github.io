@@ -2,7 +2,7 @@
 title = "В тимлиды? Почему?"
 description = "Про мотивацию кандидатов на менеджерские позиции."
 date = 2020-01-18
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["менеджмент"]

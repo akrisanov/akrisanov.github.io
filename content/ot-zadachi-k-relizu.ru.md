@@ -2,7 +2,7 @@
 title = "От задачи к релизу"
 description = "Как организовать процесс разработки в кросс-функциональной команде в Jira"
 date = 2021-03-28
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["менеджмент", "jira"]

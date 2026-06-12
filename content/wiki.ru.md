@@ -2,7 +2,7 @@
 title = "Wiki проекта"
 description = "Документация — это важно. Особенно в распределенных командах."
 date = 2021-03-12
-draft = false
+draft = true
 
 [taxonomies]
 tags = ["менеджмент"]
