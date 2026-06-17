@@ -77,9 +77,9 @@ curl -s http://<vllm-host>:8000/metrics | grep '^vllm:' | head -50
 
 Metric type determines how to query it:
 
-- **Histograms** have `_bucket`, `_sum`, and `_count` series. Use `rate()` and `histogram_quantile()` to calculate latency percentiles.
-- **Counters** are exposed with a `_total` suffix. Use `rate()` or `increase()`.
-- **Gauges** represent current state. Query them directly or aggregate them across replicas.
+- **Histograms** have `_bucket`, `_sum`, and `_count` series. Use `rate()` and `histogram_quantile()` to calculate latency percentiles
+- **Counters** are exposed with a `_total` suffix. Use `rate()` or `increase()`
+- **Gauges** represent current state. Query them directly or aggregate them across replicas
 
 The examples below group by `model_name`. Add stable labels such as `cluster`, `namespace`, or `service` where appropriate.
 Avoid aggregating unrelated models into one percentile: a fast small model can hide a regression in a much larger one.
@@ -242,12 +242,12 @@ while new requests continue to arrive. Measure true offered load at the gateway 
 
 Token throughput is meaningful only alongside workload shape. A drop in generated tokens per second may mean:
 
-- lower request volume;
-- shorter outputs;
-- more prefill-heavy traffic;
-- slower decode;
-- scheduler contention;
-- a model or configuration change.
+- lower request volume
+- shorter outputs
+- more prefill-heavy traffic
+- slower decode
+- scheduler contention
+- a model or configuration change
 
 Before calling it a serving regression, compare request rate, prompt-token rate, output-length distributions, TTFT,
 ITL, queue time, and active concurrency.
@@ -305,10 +305,10 @@ as 80% or 95% without testing your own deployment.
 
 A stronger pressure signal is the combination of:
 
-- KV-cache usage near its normal ceiling;
-- increasing queue time;
-- increasing preemptions;
-- worsening TTFT, ITL, or vLLM end-to-end latency.
+- KV-cache usage near its normal ceiling
+- increasing queue time
+- increasing preemptions
+- worsening TTFT, ITL, or vLLM end-to-end latency
 
 ### Preemption rate
 
@@ -464,18 +464,18 @@ Raw percentile alerts are easier to explain in a compact guide, but they should 
 
 #### Likely causes
 
-- offered load exceeds serving capacity;
-- prompt lengths increased;
-- large prefills occupy scheduler capacity;
-- traffic is distributed unevenly across replicas.
+- offered load exceeds serving capacity
+- prompt lengths increased
+- large prefills occupy scheduler capacity
+- traffic is distributed unevenly across replicas
 
 #### What to do
 
-1. Compare incoming request rate and prompt-length distributions with the previous healthy period.
-2. Check whether all replicas receive comparable traffic and remain healthy.
-3. Confirm whether the bottleneck is prefill, decode, or queueing.
-4. Apply admission control or shed non-critical load if latency is unstable.
-5. Scale out only after confirming that additional replicas address the actual bottleneck.
+1. Compare incoming request rate and prompt-length distributions with the previous healthy period
+2. Check whether all replicas receive comparable traffic and remain healthy
+3. Confirm whether the bottleneck is prefill, decode, or queueing
+4. Apply admission control or shed non-critical load if latency is unstable
+5. Scale out only after confirming that additional replicas address the actual bottleneck
 
 ### Scenario 2: ITL rises while queue time remains low
 
@@ -487,18 +487,18 @@ Raw percentile alerts are easier to explain in a compact guide, but they should 
 
 #### Likely causes
 
-- excessive active concurrency;
-- GPU memory-bandwidth pressure;
-- GPU clock or power throttling;
-- distributed-execution or communication overhead;
-- a model, kernel, or runtime change.
+- excessive active concurrency
+- GPU memory-bandwidth pressure
+- GPU clock or power throttling
+- distributed-execution or communication overhead
+- a model, kernel, or runtime change
 
 #### What to do
 
-1. Check GPU clocks, power, temperature, utilization, and hardware-error metrics.
-2. Compare the model and vLLM configuration with the last healthy release.
-3. Run a representative load test before changing `max_num_seqs` or `max_num_batched_tokens`.
-4. Remember that lower concurrency may improve ITL while reducing aggregate throughput or increasing queue time.
+1. Check GPU clocks, power, temperature, utilization, and hardware-error metrics
+2. Compare the model and vLLM configuration with the last healthy release
+3. Run a representative load test before changing `max_num_seqs` or `max_num_batched_tokens`
+4. Remember that lower concurrency may improve ITL while reducing aggregate throughput or increasing queue time
 
 ### Scenario 3: Preemptions increase
 
@@ -515,37 +515,37 @@ which wastes compute and increases latency.
 
 #### What to do
 
-1. Stabilize admitted load before tuning the engine.
-2. Check whether prompt lengths, output limits, or concurrency changed.
-3. Reproduce the workload in a controlled load test.
-4. Test `max_num_seqs` and `max_num_batched_tokens` as trade-offs, not one-directional fixes.
-5. Increase `gpu_memory_utilization` only after validating startup and peak-load memory behavior.
+1. Stabilize admitted load before tuning the engine
+2. Check whether prompt lengths, output limits, or concurrency changed
+3. Reproduce the workload in a controlled load test
+4. Test `max_num_seqs` and `max_num_batched_tokens` as trade-offs, not one-directional fixes
+5. Increase `gpu_memory_utilization` only after validating startup and peak-load memory behavior
    Leave headroom for CUDA graphs, communication buffers, runtime workspaces, and model-specific allocation spikes.
-6. Add replicas or GPU capacity if the working set is legitimate and sustained.
+6. Add replicas or GPU capacity if the working set is legitimate and sustained
 
 ### Scenario 4: HTTP errors or client cancellations rise
 
 #### What you see
 
-- gateway or API-server 4xx/5xx rates increase;
-- upstream timeouts or client disconnects increase;
-- vLLM engine completion rate may fall or remain flat.
+- gateway or API-server 4xx/5xx rates increase
+- upstream timeouts or client disconnects increase
+- vLLM engine completion rate may fall or remain flat
 
 #### Likely causes
 
-- authentication or quota failures;
-- gateway timeout configuration;
-- malformed or unsupported requests;
-- overloaded routing or admission layers;
-- clients giving up while requests wait;
-- engine or CUDA failures.
+- authentication or quota failures
+- gateway timeout configuration
+- malformed or unsupported requests
+- overloaded routing or admission layers
+- clients giving up while requests wait
+- engine or CUDA failures
 
 #### What to do
 
-1. Start at the HTTP boundary: status codes, timeout reasons, and upstream latency.
-2. Correlate failures with vLLM queue time and TTFT.
-3. Inspect vLLM and GPU logs for runtime or hardware errors.
-4. Do not infer the service error rate from `request_success_total` alone.
+1. Start at the HTTP boundary: status codes, timeout reasons, and upstream latency
+2. Correlate failures with vLLM queue time and TTFT
+3. Inspect vLLM and GPU logs for runtime or hardware errors
+4. Do not infer the service error rate from `request_success_total` alone
 
 ## Final checklist
 
