@@ -1,106 +1,158 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="{{ lang }}">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+    <title>{% block title %}{{ config.title }}{% endblock title %}</title>
 
-  <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}" />
-  {% block canonical %}<link rel="canonical" href="{{ current_url | safe }}" />{% endblock canonical %}
+    <meta
+      name="description"
+      content="{% block description %}{{ config.description }}{% endblock description %}"
+    />
+    {% block canonical %}
+    <link rel="canonical" href="{{ current_url | safe }}" />
+    {% endblock canonical %}
 
-  <meta property="og:type" content="{% block og_type %}website{% endblock og_type %}" />
-  <meta property="og:title" content="{% block og_title %}{{ config.title }}{% endblock og_title %}" />
-  <meta property="og:description" content="{% block og_description %}{{ config.description }}{% endblock og_description %}" />
-  {% block og_url %}<meta property="og:url" content="{{ current_url | safe }}" />{% endblock og_url %}
-  <meta property="og:site_name" content="{{ config.title }}" />
-  <meta property="og:locale" content="en_US" />
-  <meta property="og:image" content="{% block og_image %}{{ config.base_url }}/images/userpic-square.jpg{% endblock og_image %}" />
-  <meta property="og:image:width" content="784" />
-  <meta property="og:image:height" content="784" />
+    <meta
+      property="og:type"
+      content="{% block og_type %}website{% endblock og_type %}"
+    />
+    <meta
+      property="og:title"
+      content="{% block og_title %}{{ config.title }}{% endblock og_title %}"
+    />
+    <meta
+      property="og:description"
+      content="{% block og_description %}{{ config.description }}{% endblock og_description %}"
+    />
+    {% block og_url %}
+    <meta property="og:url" content="{{ current_url | safe }}" />
+    {% endblock og_url %}
+    <meta property="og:site_name" content="{{ config.title }}" />
+    <meta property="og:locale" content="en_US" />
+    <meta
+      property="og:image"
+      content="{% block og_image %}{{ config.base_url }}/images/userpic-square.jpg{% endblock og_image %}"
+    />
+    <meta property="og:image:width" content="784" />
+    <meta property="og:image:height" content="784" />
 
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="{% block twitter_title %}{{ config.title }}{% endblock twitter_title %}" />
-  <meta name="twitter:description" content="{% block twitter_description %}{{ config.description }}{% endblock twitter_description %}" />
-  <meta name="twitter:image" content="{% block twitter_image %}{{ config.base_url }}/images/userpic-square.jpg{% endblock twitter_image %}" />
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="{% block twitter_title %}{{ config.title }}{% endblock twitter_title %}"
+    />
+    <meta
+      name="twitter:description"
+      content="{% block twitter_description %}{{ config.description }}{% endblock twitter_description %}"
+    />
+    <meta
+      name="twitter:image"
+      content="{% block twitter_image %}{{ config.base_url }}/images/userpic-square.jpg{% endblock twitter_image %}"
+    />
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-180.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png" />
-  <link rel="stylesheet" href="/css/main.css" />
-  <script>if (!/Mac/.test(navigator.platform)) document.documentElement.dataset.os = 'other';</script>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-180.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png" />
+    <link rel="stylesheet" href="/css/main.css" />
+    <script>
+      if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";
+    </script>
 
-  {% if config.generate_feeds %}
-    <link rel="alternate" type="application/rss+xml" title="{{ config.title }}" href="{{ get_url(path='rss.xml') }}" />
-  {% endif %}
+    {% if config.generate_feeds %}
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="{{ config.title }}"
+      href="{{ get_url(path='rss.xml') }}"
+    />
+    {% endif %}
+  </head>
 
-  {% if config.extra.yandex_metrika_id %}
-  <!-- Yandex.Metrika counter -->
-  <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-      m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-      m[i].l=1*new Date();
-      for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
-      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window,document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
-    ym({{ config.extra.yandex_metrika_id }}, 'init', {
-      clickmap: true,
-      trackLinks: true,
-      accurateTrackBounce: true,
-      webvisor: true
-    });
-  </script>
-  <noscript><div><img src="https://mc.yandex.ru/watch/{{ config.extra.yandex_metrika_id }}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-  <!-- /Yandex.Metrika counter -->
-  {% endif %}
-</head>
-
-<body>
-
-<div class="common">
-  <header class="flag">
-    <div class="header-content">
-      <div class="title">
-        <div class="title-inner">
-          <div class="logo">
-            <a href="/" aria-label="{{ config.title }}">
-              <img src="/images/userpic.jpg" class="userpic" alt="{{ config.title }}" />
-            </a>
+  <body>
+    <div class="common">
+      <header class="flag">
+        <div class="header-content">
+          <div class="title">
+            <div class="title-inner">
+              <div class="logo">
+                <a href="/" aria-label="{{ config.title }}">
+                  <img
+                    src="/images/userpic.jpg"
+                    class="userpic"
+                    alt="{{ config.title }}"
+                  />
+                </a>
+              </div>
+              <div class="title-text">
+                <h1><a href="/">{{ config.title }}</a></h1>
+                {% if config.extra.blog_subtitle %}
+                <div class="blog-description">
+                  <p>{{ config.extra.blog_subtitle }}</p>
+                </div>
+                {% endif %}
+                <nav class="header-nav" aria-label="Navigation">
+                  <a
+                    href="/about/"
+                    class="header-nav-link{% if current_path is defined and current_path == '/about/' %} is-active{% endif %}"
+                    >About</a
+                  >
+                  <a
+                    href="/now/"
+                    class="header-nav-link{% if current_path is defined and current_path == '/now/' %} is-active{% endif %}"
+                    >Now</a
+                  >
+                  <a href="/files/cv.pdf" class="header-nav-link">Résumé</a>
+                </nav>
+              </div>
+            </div>
+            <!-- /.title-inner -->
           </div>
-          <div class="title-text">
-            <h1><a href="/">{{ config.title }}</a></h1>
-            {% if config.extra.blog_subtitle %}
-            <div class="blog-description"><p>{{ config.extra.blog_subtitle }}</p></div>
-            {% endif %}
-            <nav class="header-nav" aria-label="Navigation">
-              <a href="/about/" class="header-nav-link{% if current_path is defined and current_path == '/about/' %} is-active{% endif %}">About</a>
-            </nav>
-          </div>
-        </div><!-- /.title-inner -->
-      </div><!-- /.title -->
-    </div><!-- /.header-content -->
-  </header>
+          <!-- /.title -->
+        </div>
+        <!-- /.header-content -->
+      </header>
 
-  <main class="content">
-    {% block content %}{% endblock content %}
-  </main>
+      <main class="content">{% block content %}{% endblock content %}</main>
 
-  <footer class="footer">
-    <div class="footer-copy">
-      &copy; {{ config.author }}, {{ now() | date(format="%Y") }}
+      <footer class="footer">
+        <div class="footer-copy">
+          &copy; {{ config.author }}, {{ now() | date(format="%Y") }}
+        </div>
+        <div class="footer-engine">
+          Engine 🦀
+          <a
+            href="https://www.getzola.org/"
+            rel="noopener noreferrer"
+            target="_blank"
+            >Zola</a
+          >
+          {% if config.generate_feeds %}
+          <a
+            class="footer-rss"
+            href="{{ get_url(path='rss.xml') }}"
+            title="RSS"
+          >
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <circle cx="2" cy="8" r="1.5" />
+              <path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z" />
+              <path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z" />
+            </svg>
+            RSS
+          </a>
+          {% endif %}
+        </div>
+      </footer>
     </div>
-    <div class="footer-engine">
-      Engine 🦀 <a href="https://www.getzola.org/" rel="noopener noreferrer" target="_blank">Zola</a>
-      {% if config.generate_feeds %}
-      <a class="footer-rss" href="{{ get_url(path='rss.xml') }}" title="RSS">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><circle cx="2" cy="8" r="1.5"/><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg>
-        RSS
-      </a>
-      {% endif %}
-    </div>
-  </footer>
-</div>
 
-{% block scripts %}{% endblock scripts %}
-</body>
+    {% block scripts %}{% endblock scripts %}
+  </body>
 </html>

@@ -52,6 +52,6 @@ I prefer measurable reliability, explicit trade-offs, and production evidence ov
 
 This site is where I write about AI infrastructure, LLM systems, distributed systems, and software engineering.
 
-You can also find me on [GitHub](https://github.com/akrisanov) and [LinkedIn](https://www.linkedin.com/in/akrisanov/), download my [résumé](https://typst.app/project/rL5HuED0hAyUissGiN0YeN), or contact me by email.
+You can also find me on [GitHub](https://github.com/akrisanov) and [LinkedIn](https://www.linkedin.com/in/akrisanov/), download my [résumé](/files/cv.pdf), or contact me by email.
 
 Outside work, I spend time with my family, read books, and explore new places whenever I can.
