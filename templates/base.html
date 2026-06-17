@@ -10,6 +10,7 @@
       name="description"
       content="{% block description %}{{ config.description }}{% endblock description %}"
     />
+    {% block robots %}{% endblock robots %}
     {% block canonical %}
     <link rel="canonical" href="{{ current_url | safe }}" />
     {% endblock canonical %}

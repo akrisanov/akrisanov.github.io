@@ -1,6 +1,28 @@
 {% extends "base.html" %}
 
-{% block title %}Tags — {{ config.title }}{% endblock title %}
+{% block title -%}
+  Tags — {{ config.title }}
+{%- endblock title %}
+
+{% block description -%}
+  Browse articles by topic: AI infrastructure, LLM inference, distributed systems, Kubernetes, Python, and software engineering.
+{%- endblock description %}
+
+{% block og_title -%}
+  Tags — {{ config.title }}
+{%- endblock og_title %}
+
+{% block og_description -%}
+  Browse articles by topic: AI infrastructure, LLM inference, distributed systems, Kubernetes, Python, and software engineering.
+{%- endblock og_description %}
+
+{% block twitter_title -%}
+  Tags — {{ config.title }}
+{%- endblock twitter_title %}
+
+{% block twitter_description -%}
+  Browse articles by topic: AI infrastructure, LLM inference, distributed systems, Kubernetes, Python, and software engineering.
+{%- endblock twitter_description %}
 
 {% block content %}
 <h1 class="page-heading">Tags</h1>
