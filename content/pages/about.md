@@ -1,5 +1,6 @@
 +++
 title = "About"
+description = "Andrey Krisanov is a Staff Software Engineer focused on production LLM inference, AI infrastructure, and distributed systems."
 template = "static_page.html"
 path = "about"
 date = 2024-01-01
@@ -7,35 +8,47 @@ date = 2024-01-01
 
 ## Hi, I'm Andrey
 
-I'm a backend and platform engineer who likes turning complex systems into something boring, reliable, and easy to reason about.
+I'm a Staff Software Engineer focused on production LLM inference, AI infrastructure, and distributed systems.
+I like turning complex systems into something boring, reliable, and easy to reason about.
 
-For the last 15+ years I've been building and scaling SaaS products — mostly on the backend side, often close to infrastructure, and frequently in roles where someone has to take responsibility when things get messy.
+At Severstal, I lead the architecture and evolution of DaVinci, a shared GenAI platform supporting enterprise AI products,
+coding agents, and agentic workflows. Its inference foundation currently runs on 24 NVIDIA H200 GPUs and is
+expanding to 48 H200 and 8 H100 GPUs across two data centers.
 
-Right now, I work on **AI platforms and LLM serving**: running models on Kubernetes, designing inference infrastructure, setting up observability for GPU workloads, and making sure systems behave predictably in production — not just in demos.
+My work covers Kubernetes and vLLM model serving, traffic management, performance and reliability engineering,
+observability, model lifecycle, capacity planning, and multi-data-center failover and recovery.
+
+## Background
+
+I've spent 15+ years building backend, cloud, distributed, and SaaS systems in startups and
+large companies across Germany and Russia.
+
+Before working on AI infrastructure, I:
+
+- led the modernization of a $3M+ ARR SaaS platform, improving critical backend paths by 2–10x and reaching 99.998% availability;
+- designed and launched a content platform that grew to more than 20 million monthly active users;
+- built systems in fintech, data privacy, payments, media, and B2B SaaS;
+- worked across senior individual-contributor, technical-leadership, and CTO roles.
+
+The common thread has been taking responsibility for systems that are important, technically complicated, and expected
+to work reliably in production.
 
 ## What I care about
 
-I'm especially interested in the space where **backend engineering, infrastructure, and applied AI** meet:
+I'm especially interested in:
 
-- LLM serving and inference systems (latency, throughput, cost)
-- Production-grade AI platforms, not toy setups
-- Observability, evaluation, and failure modes
-- Distributed systems that are simple enough to maintain
-- Tooling that helps teams move fast *without* breaking everything
+- production LLM serving and inference performance
+- reliable AI platforms and model-delivery systems
+- observability, evaluation, capacity planning, and failure modes
+- distributed systems that remain understandable and maintainable
+- developer tooling that improves delivery without hiding operational complexity
 
-I enjoy work that's close to real users and real constraints — whether that's internal platforms or customer-facing products.
+I prefer measurable reliability, explicit trade-offs, and production evidence over impressive demos.
 
-## A bit of background
+## Writing and contact
 
-Over the years I've worked in startups and large companies, including fintech, data privacy, media, and B2B SaaS.
+This site is where I write about AI infrastructure, LLM systems, distributed systems, and software engineering.
 
-I've been a CTO, a principal engineer, and an individual contributor — and I'm most comfortable in roles where I can combine technical depth with systems thinking and pragmatic decision‑making.
+You can also find me on [GitHub](https://github.com/akrisanov) and [LinkedIn](https://www.linkedin.com/in/akrisanov/), download my [résumé](https://typst.app/project/rL5HuED0hAyUissGiN0YeN), or contact me by email.
 
-Somewhere along the way I learned that clean abstractions matter, but boring infrastructure matters more.
-
-## Outside of work
-
-I like spending time with my family, reading books and articles on the Internet, and exploring new places and cultures.
-Nothing fancy, I guess.
-
-This site is a place where I share notes, ideas, and things I've learned — mostly for myself, but hopefully useful to others too.
+Outside work, I spend time with my family, read books, and explore new places whenever I can.
