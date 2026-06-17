@@ -5,4 +5,3 @@ accept = [200, 403, 429]
 max_concurrency = 20
 # Exclude paths/patterns if they produce false positives
 exclude_path = []
-
