@@ -1,4 +1,54 @@
-{% extends "base.html" %} {% block content %} {% if paginator %} {% set pages =
+{% extends "base.html" %}
+
+{% block title -%}
+  {%- if paginator and paginator.current_index > 1 -%}
+    Articles — Page {{ paginator.current_index }} — {{ config.title }}
+  {%- else -%}
+    {{ config.extra.home_title }}
+  {%- endif -%}
+{%- endblock title %}
+
+{% block description -%}
+  {%- if paginator and paginator.current_index > 1 -%}
+    Page {{ paginator.current_index }} of articles by Andrey Krisanov about production LLM inference, AI infrastructure, distributed systems, and software engineering.
+  {%- else -%}
+    {{ config.description }}
+  {%- endif -%}
+{%- endblock description %}
+
+{% block og_title -%}
+  {%- if paginator and paginator.current_index > 1 -%}
+    Articles — Page {{ paginator.current_index }} — {{ config.title }}
+  {%- else -%}
+    {{ config.extra.home_title }}
+  {%- endif -%}
+{%- endblock og_title %}
+
+{% block og_description -%}
+  {%- if paginator and paginator.current_index > 1 -%}
+    Page {{ paginator.current_index }} of articles by Andrey Krisanov about production LLM inference, AI infrastructure, distributed systems, and software engineering.
+  {%- else -%}
+    {{ config.description }}
+  {%- endif -%}
+{%- endblock og_description %}
+
+{% block twitter_title -%}
+  {%- if paginator and paginator.current_index > 1 -%}
+    Articles — Page {{ paginator.current_index }} — {{ config.title }}
+  {%- else -%}
+    {{ config.extra.home_title }}
+  {%- endif -%}
+{%- endblock twitter_title %}
+
+{% block twitter_description -%}
+  {%- if paginator and paginator.current_index > 1 -%}
+    Page {{ paginator.current_index }} of articles by Andrey Krisanov about production LLM inference, AI infrastructure, distributed systems, and software engineering.
+  {%- else -%}
+    {{ config.description }}
+  {%- endif -%}
+{%- endblock twitter_description %}
+
+{% block content %} {% if paginator %} {% set pages =
 paginator.pages %} {% else %} {% set section = get_section(path="_index.md") %}
 {% set pages = section.pages %} {% endif %} {% for page in pages %} {% if
 page.slug != "about" and page.slug != "consulting" and page.slug != "now" %}

@@ -1,16 +1,20 @@
 base_url = "https://akrisanov.com"
 title = "Andrey Krisanov"
-description = "Engineering notes on AI infrastructure, LLM systems, and software engineering."
+
+description = "Staff Software Engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability."
+
 default_language = "en"
 author = "Andrey Krisanov"
+
 generate_feeds = true
 feed_filenames = ["rss.xml"]
-compile_sass = false
+
 minify_html = true
 
-taxonomies = [
-  { name = "tags", feed = true },
-]
+# Do not add generated pagination pages to sitemap.xml.
+exclude_paginated_pages_in_sitemap = "all"
+
+taxonomies = [{ name = "tags", feed = true }]
 
 [markdown]
 render_emoji = false
@@ -23,7 +27,8 @@ light_theme = "catppuccin-latte"
 dark_theme = "catppuccin-mocha"
 
 [extra]
-blog_subtitle = "Engineering notes on AI infrastructure, LLM systems, and software engineering"
+blog_subtitle = "Production LLM inference, AI infrastructure, and distributed systems"
+home_title = "Andrey Krisanov — AI Infrastructure & LLM Inference Engineer"
 
 [link_checker]
 skip_prefixes = ["https://", "http://"]

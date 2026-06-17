@@ -4,6 +4,9 @@ description = "Andrey Krisanov is a Staff Software Engineer focused on productio
 template = "static_page.html"
 path = "about"
 date = 2024-01-01
+
+[extra]
+seo_title = "About Andrey Krisanov — AI Infrastructure & LLM Inference"
 +++
 
 ## Hi, I'm Andrey
