@@ -1,0 +1,131 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>Building Multi-Arch Images for Arm and x86 — Andrey Krisanov</title><meta content="In situations where CI is not available, building multi-arch images locally can save the day." name=description><link href=https://akrisanov.com/multi-arch-docker-images/ rel=canonical><meta content=article property=og:type><meta content="Building Multi-Arch Images for Arm and x86 — Andrey Krisanov" property=og:title><meta content="In situations where CI is not available, building multi-arch images locally can save the day." property=og:description><meta content=https://akrisanov.com/multi-arch-docker-images/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/userpic-square.jpg property=og:image><meta content=784 property=og:image:width><meta content=784 property=og:image:height><meta content=summary name=twitter:card><meta content="Building Multi-Arch Images for Arm and x86 — Andrey Krisanov" name=twitter:title><meta content="In situations where CI is not available, building multi-arch images locally can save the day." name=twitter:description><meta content=https://akrisanov.com/images/userpic-square.jpg name=twitter:image><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href=/css/main.css rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic src=/images/userpic.jpg> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>Production LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/now/>Now</a><a class=header-nav-link href=/files/cv.pdf>Résumé</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/multi-arch-docker-images/ itemprop=url><meta content=https://akrisanov.com/images/userpic-square.jpg itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> </span><header class=note-header><h1 class=note-title itemprop=headline>Building Multi-Arch Images for Arm and x86</h1><div class=note-meta><time class=note-date datetime=2023-08-10 itemprop=datePublished> Published 10.08.2023 </time><meta content=2023-08-10 itemprop=dateModified><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/docker/>#docker</a> <a class=tag href=https://akrisanov.com/tags/devops/>#devops</a> </span></div></header><div class="e2-text note-body" itemprop=articleBody><p>At work, I am involved in the development of a machine learning SDK and cloud services for privacy and data protection. Like almost every company in this space, we rely heavily on Python's scientific ecosystem. Because it's quite mature and depends on native library development that started years ago, getting these packages to work on new architectures can be tedious.<p>I am one of the few developers on our team who has stuck with MacOS and have a Macbook Pro with M1 chip. There is no easy way for me to bootstrap our development environment in a matter of minutes. I have to use Conda, install specific versions of Python packages, patch some native libraries, and even create a symlink from an OS-specific package to its generic name (I'm talking to you, Tensorflow). People on the <code>x86_64</code> architecture generally won't have this problem – almost every package we use comes with a pre-built wheel for a chosen OS. Moreover, to install the SDK as a dependency of, say, an HTTP API service, I had to assemble it from sources: <code>pip install -e '.'</code><p>A few months ago we didn't even support the Arm64 architecture at a build level. This changed when I introduced a Github Action pipeline to build Python wheels for Linux <code>x86_64</code>, <code>aarch64</code>, and <code>universal</code>. Instead of manually compiling some native libraries on my machine, I moved the work to GitHub and its Linux instances. From that moment on, I could just get the package from a private PyPI registry. The sad truth is that I still use Conda and sometimes patch one or two transitive dependencies for my M1 chip. But other than that, no hard times to date.<p>Today I needed to distribute a newly created API service with the SDK inside as a Docker image. And I haven't found an easy way to define a Dockerfile that can be built and run on Apple Silicon without Conda:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=docker><span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>FROM</span><span> python:3.9-slim-buster </span><span style=color:light-dark(#8839ef,#cba6f7)>AS</span><span> base</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>ENV</span><span> PYTHONDONTWRITEBYTECODE=1</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>ENV</span><span> PYTHONUNBUFFERED=1</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Install Conda</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> apt-get update && apt-get -y upgrade</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> apt-get install -y --no-install-recommends build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>ENV</span><span> PATH=</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>/root/miniconda3/bin:${PATH}</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>ARG</span><span> PATH=</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>/root/miniconda3/bin:${PATH}</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> wget \</span></span>
+<span class=giallo-l><span>    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh \</span></span>
+<span class=giallo-l><span>    && mkdir /root/.conda \</span></span>
+<span class=giallo-l><span>    && bash Miniconda3-latest-Linux-aarch64.sh -b \</span></span>
+<span class=giallo-l><span>    && rm -f Miniconda3-latest-Linux-aarch64.sh</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Create a Conda environment and install native dependencies</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> --mount=type=cache,target=/root/.cache \</span></span>
+<span class=giallo-l><span>    conda init bash && . /root/.bashrc && \</span></span>
+<span class=giallo-l><span>    conda update conda && \</span></span>
+<span class=giallo-l><span>    conda create -n de_agent python=3.9 && \</span></span>
+<span class=giallo-l><span>    conda env config vars set -n de_agent LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1 && \</span></span>
+<span class=giallo-l><span>    conda activate de_agent && \</span></span>
+<span class=giallo-l><span>    conda install gdal llvmdev dm-tree -y && \</span></span>
+<span class=giallo-l><span>    pip install --upgrade pip setuptools wheel && \</span></span>
+<span class=giallo-l><span>    pip install h3</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Copy application files</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>WORKDIR</span><span> /app</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>COPY</span><span> app/ .</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>COPY</span><span> logging.yaml .</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>COPY</span><span> main.py .</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>COPY</span><span> requirements.txt ./</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Install Python packages</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>ARG</span><span> DE_AGENT_PYPI_TOKEN</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> --mount=type=cache,target=/root/.cache \</span></span>
+<span class=giallo-l><span>    . /root/.bashrc && conda activate de_agent && \</span></span>
+<span class=giallo-l><span>    pip install -r requirements.txt --extra-index-url=https://${DE_AGENT_PYPI_TOKEN}:@pypi.****.ai/pypi/ && \</span></span>
+<span class=giallo-l><span>    pip install numpy==1.23.5</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Cleanup</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> apt -qy purge --auto-remove build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> apt autoremove && apt clean</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Create a user</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> groupadd -r de_agent && useradd -r -m -g de_agent de_agent</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> chown -R de_agent:de_agent /app</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>USER</span><span> de_agent</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Run the web application</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>EXPOSE</span><span> 8000</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>ENTRYPOINT</span><span> [</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>PYTHONPATH=.</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span>, </span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>python</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span>, </span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>main.py</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span>]</span></span></code></pre><p>As you can see, the manifest is quite verbose. It also adds the Conda binaries and related files to a release image. It is a price that must be paid.<p>Fortunately, for Linux, we don't need all of this machinery:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=docker><span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>FROM</span><span> python:3.9-slim-buster </span><span style=color:light-dark(#8839ef,#cba6f7)>AS</span><span> base</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>ENV</span><span> PYTHONDONTWRITEBYTECODE=1</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>ENV</span><span> PYTHONUNBUFFERED=1</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Install system packages</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> apt-get update && apt-get -y upgrade</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> apt-get install -y --no-install-recommends build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Copy application files</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>WORKDIR</span><span> /app</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>COPY</span><span> app/ .</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>COPY</span><span> logging.yaml .</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>COPY</span><span> main.py .</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>COPY</span><span> requirements.txt ./</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Install Python dependencies</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>ARG</span><span> DE_AGENT_PYPI_TOKEN</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> --mount=type=cache,target=/root/.cache \</span></span>
+<span class=giallo-l><span>    pip install -r requirements.txt --extra-index-url=https://${DE_AGENT_PYPI_TOKEN}:@pypi.****.ai/pypi/</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Cleanup</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> apt -qy purge --auto-remove build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> apt autoremove && apt clean</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Create a user</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> groupadd -r de_agent && useradd -r -m -g de_agent de_agent</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>RUN</span><span> chown -R de_agent:de_agent /app</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>USER</span><span> de_agent</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Run the web application</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>EXPOSE</span><span> 8000</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>ENTRYPOINT</span><span> [</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>PYTHONPATH=.</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span>, </span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>python</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span>, </span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>main.py</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span>]</span></span></code></pre><p>The question now is how to build Docker images for both architectures on a Mac. This is where Docker comes in. Docker Desktop officially supports <a rel="noopener external" href=https://www.docker.com/blog/multi-arch-images/ target=_blank>building multi-arch images for Arm and x86</a>. Learning this, I was able to add a few targets to my Makefile to quickly build images:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=make><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>build</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> #</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Build a Docker image for x86_64</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> docker</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> buildx</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> build</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> --platform</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> linux/amd64</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> -t</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> de-agent</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span>amd64-latest --build-arg DE_AGENT_PYPI_TOKEN=</span><span>${</span><span>DE_AGENT_PYPI_TOKEN</span><span>}</span><span> -f Dockerfile.amd64 --no-cache .</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>build-arm</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> #</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Build a Docker image for arm64</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> docker</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  buildx</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> build</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> --platform</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> linux/arm64</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> -t</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> de-agent</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span>arm64-latest --build-arg DE_AGENT_PYPI_TOKEN=</span><span>${</span><span>DE_AGENT_PYPI_TOKEN</span><span>}</span><span> -f Dockerfile.arm64 --no-cache .</span></span></code></pre><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>make</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span></span></code></pre><p><img alt="Docker Image For Arm" src=/images/docker-arm-build.png> <span class=img-title>Docker image built for the amd64 architecture</span><p>One can say, it's so much hassle for doing all of this locally and a proper CI can solve such a case easily. I agree – as I've mentioned, I like shifting work out of my shoulders and giving it to some machine in the cloud. But in situations where CI is not available, creating multi-arch images can save the day. It certainly did for me.</div></article><nav class=note-navigation><a class=nav-older href=https://akrisanov.com/it-is-not-dns/>Older <i class=nav-modifier></i>↓</a><a class=nav-newer href=https://akrisanov.com/crypto-wallet-vulnerability/>Newer <i class=nav-modifier></i>↑</a></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><div class=footer-copy>© Andrey Krisanov, 2026</div><div class=footer-engine>Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a><a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a></div></footer></div>

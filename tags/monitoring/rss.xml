@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - monitoring</title>
+    <link>https://akrisanov.com</link>
+    <description>Staff Software Engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/monitoring/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Thu, 18 Jun 2026 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Monitoring vLLM in Production: Metrics, PromQL, Alerts, and Runbooks</title>
+      <pubDate>Thu, 18 Jun 2026 00:00:00 +0000</pubDate>
+      <author>Andrey Krisanov</author>
+      <link>https://akrisanov.com/vllm-metrics/</link>
+      <guid>https://akrisanov.com/vllm-metrics/</guid>
+      <description xml:base="https://akrisanov.com/vllm-metrics/"><![CDATA[
+        <p>Published: 2026-01-28</p>
+        <p>Updated: 2026-06-18</p>
+        
+          <blockquote>
+<p><strong>Version scope:</strong> This guide targets vLLM 0.23.x and its default V1 engine. Metric names and semantics change between releases, so verify the <code>/metrics</code> output of the exact version and serving configuration you run before copying queries or alerts into production.</p>
+</blockquote>
+<h2 id="why-this-guide-exists">Why this guide exists</h2>
+<p>A vLLM server can be healthy from Kubernetes' point of view while users still experience slow or unstable responses.
+The pods are running, the GPUs are busy, and the API answers health checks—but requests wait in the scheduler,
+long prompts make prefill expensive, or token streaming becomes uneven.</p>
+<p>The goal of this guide is not to list every metric exported by vLLM. It is to connect a small set of signals to
+the questions engineers ask during incidents and capacity reviews:</p>
+<ol>
+<li>Are users receiving the first token quickly enough?</li>
+<li>Does token streaming remain smooth after generation starts?</li>
+<li>Is the scheduler accepting work faster than the engine can process it?</li>
+<li>Is KV-cache pressure causing preemption and recomputation?</li>
+<li>Is the deployment doing useful work at the expected throughput?</li>
+<li>Did the workload change, or did the serving system regress?</li>
+</ol>
+<p>The examples use Prometheus and Grafana, but the mental model applies to other monitoring backends as well.</p>
+<h2 id="start-with-the-observability-boundary">Start with the observability boundary</h2>
+<p>vLLM metrics describe the inference server and engine. They do not describe the entire request path.</p>
+<p>A production request usually crosses several layers:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>Client</span></span>
+<span class="giallo-l"><span>  -&gt; API gateway or ingress</span></span>
+<span class="giallo-l"><span>  -&gt; authentication, quotas, and routing</span></span>
+<span class="giallo-l"><span>  -&gt; vLLM API server</span></span>
+<span class="giallo-l"><span>  -&gt; scheduler and model executor</span></span>
+<span class="giallo-l"><span>  -&gt; streaming response</span></span>
+<span class="giallo-l"><span>  -&gt; client</span></span></code></pre>
+<p>A user-visible latency regression can originate in any of these layers. A useful monitoring stack therefore combines:</p>
+<ul>
+<li><strong>Gateway metrics:</strong> incoming request rate, HTTP status codes, upstream latency, retries, timeouts, and client disconnects</li>
+<li><strong>vLLM metrics:</strong> queueing, TTFT, inter-token latency, request latency, throughput, preemption, and KV-cache usage</li>
+<li><strong>GPU and host metrics:</strong> utilization, memory, power, clocks, throttling, PCIe or NVLink errors, and node health</li>
+</ul>
+<p>Engine metrics explain what happens inside vLLM. They cannot, by themselves, prove that the complete service is healthy.</p>
+<h2 id="metric-names-and-prometheus-conventions">Metric names and Prometheus conventions</h2>
+<p>vLLM exposes Prometheus metrics on the OpenAI-compatible server's <code>/metrics</code> endpoint.</p>
+<p>Metric names use the <code>vllm:</code> prefix:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>vllm:num_requests_running</span></span>
+<span class="giallo-l"><span>vllm:time_to_first_token_seconds</span></span>
+<span class="giallo-l"><span>vllm:prompt_tokens_total</span></span></code></pre>
+<p>Standard Prometheus preserves the colon. Some OpenTelemetry pipelines, managed monitoring products, or custom ingestion
+layers may normalize metric names. Always check the names stored in your monitoring backend:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">curl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">s</span><span style="color: light-dark(#40A02B, #A6E3A1);"> http://</span><span style="color: light-dark(#179299, #94E2D5);">&lt;</span><span style="color: light-dark(#40A02B, #A6E3A1);">vllm-hos</span><span>t</span><span style="color: light-dark(#179299, #94E2D5);">&gt;</span><span style="color: light-dark(#40A02B, #A6E3A1);">:8000/metrics</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> grep</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">^vllm:</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> head</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">50</span></span></code></pre>
+<p>Metric type determines how to query it:</p>
+<ul>
+<li><strong>Histograms</strong> have <code>_bucket</code>, <code>_sum</code>, and <code>_count</code> series. Use <code>rate()</code> and <code>histogram_quantile()</code> to calculate latency percentiles</li>
+<li><strong>Counters</strong> are exposed with a <code>_total</code> suffix. Use <code>rate()</code> or <code>increase()</code></li>
+<li><strong>Gauges</strong> represent current state. Query them directly or aggregate them across replicas</li>
+</ul>
+<p>The examples below group by <code>model_name</code>. Add stable labels such as <code>cluster</code>, <code>namespace</code>, or <code>service</code> where appropriate.
+Avoid aggregating unrelated models into one percentile: a fast small model can hide a regression in a much larger one.</p>
+<h2 id="the-latency-metrics-that-users-notice">The latency metrics that users notice</h2>
+<p>Three latency metrics cover most user-visible complaints.</p>
+<h3 id="ttft-time-to-first-token">TTFT: time to first token</h3>
+<p>Metric:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>vllm:time_to_first_token_seconds</span></span></code></pre>
+<p>TTFT measures how long vLLM takes to produce the first output token. At the serving boundary, it includes request processing,
+scheduler waiting, prefill, and the first generation step. Client-visible TTFT also includes gateway, routing, network,
+and streaming overhead.</p>
+<p>A high TTFT does not automatically mean the GPU is slow. It may indicate queueing, longer prompts, lower prefix-cache reuse,
+or a slow first model-execution step.</p>
+<h3 id="itl-inter-token-latency">ITL: inter-token latency</h3>
+<p>Metric:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>vllm:inter_token_latency_seconds</span></span></code></pre>
+<p>ITL measures the delay between streamed output tokens. This is the most direct engine-level metric for visible pauses during streaming.</p>
+<h3 id="request-level-tpot">Request-level TPOT</h3>
+<p>Metric:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>vllm:request_time_per_output_token_seconds</span></span></code></pre>
+<p>This metric records the average time per output token for a completed request. It is useful for comparing decode
+efficiency across requests, but it can hide individual stalls. A request may have acceptable average TPOT while still
+containing several poor ITL samples.</p>
+<p>For interactive services, monitor both ITL and request-level TPOT. Use ITL for streaming smoothness and TPOT for
+request-level decode efficiency.</p>
+<h3 id="supporting-latency-metrics">Supporting latency metrics</h3>
+<ul>
+<li>Queue time: <code>vllm:request_queue_time_seconds</code></li>
+<li>End-to-end latency inside the vLLM serving boundary: <code>vllm:e2e_request_latency_seconds</code></li>
+<li>Prefill time: <code>vllm:request_prefill_time_seconds</code></li>
+<li>Decode time: <code>vllm:request_decode_time_seconds</code></li>
+</ul>
+<h2 id="promql-for-latency-percentiles">PromQL for latency percentiles</h2>
+<h3 id="p95-ttft">P95 TTFT</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>histogram_quantile(</span></span>
+<span class="giallo-l"><span>  0.95,</span></span>
+<span class="giallo-l"><span>  sum by (le, model_name) (</span></span>
+<span class="giallo-l"><span>    rate(vllm:time_to_first_token_seconds_bucket[5m])</span></span>
+<span class="giallo-l"><span>  )</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre><h3 id="p99-inter-token-latency">P99 inter-token latency</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>histogram_quantile(</span></span>
+<span class="giallo-l"><span>  0.99,</span></span>
+<span class="giallo-l"><span>  sum by (le, model_name) (</span></span>
+<span class="giallo-l"><span>    rate(vllm:inter_token_latency_seconds_bucket[5m])</span></span>
+<span class="giallo-l"><span>  )</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre><h3 id="p95-request-level-tpot">P95 request-level TPOT</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>histogram_quantile(</span></span>
+<span class="giallo-l"><span>  0.95,</span></span>
+<span class="giallo-l"><span>  sum by (le, model_name) (</span></span>
+<span class="giallo-l"><span>    rate(vllm:request_time_per_output_token_seconds_bucket[5m])</span></span>
+<span class="giallo-l"><span>  )</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre><h3 id="p95-queue-time">P95 queue time</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>histogram_quantile(</span></span>
+<span class="giallo-l"><span>  0.95,</span></span>
+<span class="giallo-l"><span>  sum by (le, model_name) (</span></span>
+<span class="giallo-l"><span>    rate(vllm:request_queue_time_seconds_bucket[5m])</span></span>
+<span class="giallo-l"><span>  )</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre><h3 id="p95-vllm-end-to-end-latency">P95 vLLM end-to-end latency</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>histogram_quantile(</span></span>
+<span class="giallo-l"><span>  0.95,</span></span>
+<span class="giallo-l"><span>  sum by (le, model_name) (</span></span>
+<span class="giallo-l"><span>    rate(vllm:e2e_request_latency_seconds_bucket[5m])</span></span>
+<span class="giallo-l"><span>  )</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre>
+<p>Percentiles need enough observations. P99 over five minutes is often noisy for low-volume models.
+Show request volume next to percentile panels, use a longer range when traffic is sparse, and remember that classic
+Prometheus histogram quantiles are estimated from configured buckets.</p>
+<h2 id="a-practical-interpretation-matrix">A practical interpretation matrix</h2>
+<p>No single metric identifies the cause. Use combinations of signals:</p>
+<table><thead><tr><th>TTFT</th><th>Queue time</th><th>ITL</th><th>Likely direction</th></tr></thead><tbody>
+<tr><td>High</td><td>High</td><td>Stable</td><td>Offered load exceeds capacity, or large prefills occupy the scheduler</td></tr>
+<tr><td>High</td><td>Low</td><td>Stable</td><td>Prefill or the first execution step is slow; prompts may be longer or prefix-cache reuse may have fallen</td></tr>
+<tr><td>Stable</td><td>Low</td><td>High</td><td>Decode is slow or uneven; investigate concurrency, memory bandwidth, throttling, and distributed-execution overhead</td></tr>
+<tr><td>High</td><td>High</td><td>High</td><td>Severe saturation, preemption, infrastructure degradation, or an overloaded shared deployment</td></tr>
+</tbody></table>
+<p>Treat this table as triage, not proof. Confirm the hypothesis with workload-shape metrics, preemption counters, prefix-cache metrics, GPU telemetry, and request traces.</p>
+<h2 id="throughput-and-offered-load">Throughput and offered load</h2>
+<p>Latency tells you what users experience. Throughput tells you how much work the engine completes.</p>
+<h3 id="prompt-tokens-per-second">Prompt tokens per second</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>sum by (model_name) (</span></span>
+<span class="giallo-l"><span>  rate(vllm:prompt_tokens_total[5m])</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre><h3 id="generated-tokens-per-second">Generated tokens per second</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>sum by (model_name) (</span></span>
+<span class="giallo-l"><span>  rate(vllm:generation_tokens_total[5m])</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre><h3 id="completed-engine-requests-per-second">Completed engine requests per second</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>sum by (model_name) (</span></span>
+<span class="giallo-l"><span>  rate(vllm:request_success_total[5m])</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre>
+<p>The last query measures completed engine requests, not incoming demand. During overload, completion rate may flatten
+while new requests continue to arrive. Measure true offered load at the gateway or API-server boundary.</p>
+<p>Token throughput is meaningful only alongside workload shape. A drop in generated tokens per second may mean:</p>
+<ul>
+<li>lower request volume</li>
+<li>shorter outputs</li>
+<li>more prefill-heavy traffic</li>
+<li>slower decode</li>
+<li>scheduler contention</li>
+<li>a model or configuration change</li>
+</ul>
+<p>Before calling it a serving regression, compare request rate, prompt-token rate, output-length distributions, TTFT,
+ITL, queue time, and active concurrency.</p>
+<h2 id="workload-shape-the-missing-part-of-many-dashboards">Workload shape: the missing part of many dashboards</h2>
+<p>The same model and hardware can behave very differently when prompt and output lengths change.</p>
+<p>Useful request histograms include:</p>
+<ul>
+<li><code>vllm:request_prompt_tokens</code></li>
+<li><code>vllm:request_generation_tokens</code></li>
+<li><code>vllm:request_params_max_tokens</code></li>
+<li><code>vllm:request_prefill_kv_computed_tokens</code></li>
+</ul>
+<p>These metrics answer questions such as:</p>
+<ul>
+<li>Did prompts become longer after a product release?</li>
+<li>Are users requesting much larger outputs?</li>
+<li>Did prefix caching reduce the amount of prefill work?</li>
+<li>Is a latency change explained by traffic composition rather than infrastructure?</li>
+</ul>
+<p>Keep workload-shape panels near latency and throughput panels. Otherwise, engineers will repeatedly misdiagnose
+legitimate workload changes as serving regressions.</p>
+<h2 id="scheduler-and-kv-cache-pressure">Scheduler and KV-cache pressure</h2>
+<p>The current V1 engine normally handles KV-cache pressure through preemption and recomputation. When the active working
+set no longer fits cleanly, vLLM can evict request state and later recompute it. Correctness is preserved, but useful
+compute is repeated and latency increases.</p>
+<h3 id="scheduler-state">Scheduler state</h3>
+<ul>
+<li><code>vllm:num_requests_running</code> — requests included in active model-execution batches</li>
+<li><code>vllm:num_requests_waiting</code> — requests waiting for scheduler capacity</li>
+<li><code>vllm:num_requests_waiting_by_reason</code> — waiting requests partitioned by reason</li>
+<li><code>vllm:num_preemptions_total</code> — cumulative number of preemptions</li>
+</ul>
+<p>A non-zero waiting gauge is not automatically an incident. Short queues are normal under bursty traffic and
+continuous batching. Alert on sustained queue time, a growing backlog, or queueing that violates the service objective.</p>
+<h3 id="kv-cache-usage">KV-cache usage</h3>
+<p>Metric:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>vllm:kv_cache_usage_perc</span></span></code></pre>
+<p>This gauge represents the fraction of allocated KV-cache capacity currently in use.</p>
+<p>High usage is not inherently bad. A healthy operating range depends on model architecture, context-length distribution,
+concurrency, prefix-cache reuse, speculative decoding, and cache configuration. Do not copy a universal threshold such
+as 80% or 95% without testing your own deployment.</p>
+<p>A stronger pressure signal is the combination of:</p>
+<ul>
+<li>KV-cache usage near its normal ceiling</li>
+<li>increasing queue time</li>
+<li>increasing preemptions</li>
+<li>worsening TTFT, ITL, or vLLM end-to-end latency</li>
+</ul>
+<h3 id="preemption-rate">Preemption rate</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>sum by (model_name) (</span></span>
+<span class="giallo-l"><span>  rate(vllm:num_preemptions_total[5m])</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre>
+<p>An occasional preemption during a short burst may not justify an incident. The meaningful condition is sustained
+preemption above a tested baseline, especially when latency or queueing also degrades.</p>
+<h3 id="prefix-cache-effectiveness">Prefix-cache effectiveness</h3>
+<p>When automatic prefix caching is enabled, calculate the hit ratio from its counters:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>sum by (model_name) (</span></span>
+<span class="giallo-l"><span>  rate(vllm:prefix_cache_hits_total[5m])</span></span>
+<span class="giallo-l"><span>)</span></span>
+<span class="giallo-l"><span>/</span></span>
+<span class="giallo-l"><span>clamp_min(</span></span>
+<span class="giallo-l"><span>  sum by (model_name) (</span></span>
+<span class="giallo-l"><span>    rate(vllm:prefix_cache_queries_total[5m])</span></span>
+<span class="giallo-l"><span>  ),</span></span>
+<span class="giallo-l"><span>  1</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre>
+<p>Interpret this together with workload composition. A low ratio may be expected for diverse prompts.
+A sudden drop for a stable workload may explain increased prefill cost and TTFT.</p>
+<h2 id="request-completion-and-failures">Request completion and failures</h2>
+<p>vLLM exposes a counter of completed engine requests partitioned by the <code>finished_reason</code> label:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>vllm:request_success_total{finished_reason=&quot;...&quot;}</span></span></code></pre><h3 id="completed-requests-by-reason">Completed requests by reason</h3>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>sum by (model_name, finished_reason) (</span></span>
+<span class="giallo-l"><span>  rate(vllm:request_success_total[5m])</span></span>
+<span class="giallo-l"><span>)</span></span></code></pre>
+<p>Despite its name, this metric is not a complete service-level success-rate metric. Requests can fail before they reach
+the engine because of authentication, quota enforcement, malformed input, routing failures, gateway timeouts,
+or connection errors. Client disconnects and cancellations may also be represented differently depending on
+the serving path and version.</p>
+<p>Use <code>request_success_total</code> as an engine-completion signal. Measure service availability and error rate at the HTTP boundary.</p>
+<h2 id="the-production-dashboard">The production dashboard</h2>
+<p>A useful incident dashboard should answer four questions: what users experience, whether work is queueing,
+whether the engine is under memory pressure, and whether the workload changed.</p>
+<p>Include at least:</p>
+<ol>
+<li>Incoming request rate and HTTP error rate at the gateway or API server</li>
+<li>P95 and P99 TTFT</li>
+<li>P95 and P99 ITL</li>
+<li>P95 request-level TPOT</li>
+<li>P95 vLLM end-to-end latency</li>
+<li>P95 queue time and current waiting requests</li>
+<li>Preemption rate and KV-cache usage</li>
+<li>Prompt and generation token throughput</li>
+<li>Prompt-length and output-length distributions</li>
+<li>Prefix-cache hit ratio when prefix caching is enabled</li>
+<li>GPU utilization, memory, power, clocks, throttling, and hardware errors</li>
+</ol>
+<p>vLLM ships reference Grafana and Perses dashboards. Use them as a baseline, then add your deployment labels,
+gateway metrics, SLO panels, and links to pod-level GPU telemetry.</p>
+<h2 id="alerts-that-reflect-user-impact">Alerts that reflect user impact</h2>
+<p>Alert thresholds should come from SLOs and representative load tests, not generic constants copied from another deployment.</p>
+<p>The following rules demonstrate useful alert shapes. Replace example thresholds and selectors with values derived from your service.</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">g</span><span style="color: light-dark(#1E66F5, #89B4FA);">roups</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">  -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> v</span><span style="color: light-dark(#40A02B, #A6E3A1);">llm-serving</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    r</span><span style="color: light-dark(#1E66F5, #89B4FA);">ules</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> a</span><span style="color: light-dark(#1E66F5, #89B4FA);">lert</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> V</span><span style="color: light-dark(#40A02B, #A6E3A1);">LLMHighTTFT</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        e</span><span style="color: light-dark(#1E66F5, #89B4FA);">xpr</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#8839EF, #CBA6F7);"> |</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          histogram_quantile(</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">            0.95,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">            sum by (le, cluster, model_name) (</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">              rate(vllm:time_to_first_token_seconds_bucket[5m])</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">            )</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          ) &gt; 3</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        f</span><span style="color: light-dark(#1E66F5, #89B4FA);">or</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> 1</span><span style="color: light-dark(#40A02B, #A6E3A1);">0m</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        l</span><span style="color: light-dark(#1E66F5, #89B4FA);">abels</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          s</span><span style="color: light-dark(#1E66F5, #89B4FA);">everity</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> w</span><span style="color: light-dark(#40A02B, #A6E3A1);">arning</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        a</span><span style="color: light-dark(#1E66F5, #89B4FA);">nnotations</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          s</span><span style="color: light-dark(#1E66F5, #89B4FA);">ummary</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">vLLM TTFT is above the service objective</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          d</span><span style="color: light-dark(#1E66F5, #89B4FA);">escription</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">P95 TTFT for {{ $labels.model_name }} is {{ $value | printf </span><span style="color: light-dark(#EA76CB, #F5C2E7);">\&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">%.2f</span><span style="color: light-dark(#EA76CB, #F5C2E7);">\&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> }} seconds.</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> a</span><span style="color: light-dark(#1E66F5, #89B4FA);">lert</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> V</span><span style="color: light-dark(#40A02B, #A6E3A1);">LLMQueueTimeHigh</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        e</span><span style="color: light-dark(#1E66F5, #89B4FA);">xpr</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#8839EF, #CBA6F7);"> |</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          histogram_quantile(</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">            0.95,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">            sum by (le, cluster, model_name) (</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">              rate(vllm:request_queue_time_seconds_bucket[5m])</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">            )</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          ) &gt; 2</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        f</span><span style="color: light-dark(#1E66F5, #89B4FA);">or</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> 1</span><span style="color: light-dark(#40A02B, #A6E3A1);">0m</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        l</span><span style="color: light-dark(#1E66F5, #89B4FA);">abels</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          s</span><span style="color: light-dark(#1E66F5, #89B4FA);">everity</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> w</span><span style="color: light-dark(#40A02B, #A6E3A1);">arning</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        a</span><span style="color: light-dark(#1E66F5, #89B4FA);">nnotations</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          s</span><span style="color: light-dark(#1E66F5, #89B4FA);">ummary</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">vLLM requests are spending too long in the scheduler queue</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          d</span><span style="color: light-dark(#1E66F5, #89B4FA);">escription</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">P95 queue time for {{ $labels.model_name }} is {{ $value | printf </span><span style="color: light-dark(#EA76CB, #F5C2E7);">\&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">%.2f</span><span style="color: light-dark(#EA76CB, #F5C2E7);">\&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> }} seconds.</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> a</span><span style="color: light-dark(#1E66F5, #89B4FA);">lert</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> V</span><span style="color: light-dark(#40A02B, #A6E3A1);">LLMPreemptionRelatedDegradation</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        e</span><span style="color: light-dark(#1E66F5, #89B4FA);">xpr</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#8839EF, #CBA6F7);"> |</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          sum by (cluster, model_name) (</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">            increase(vllm:num_preemptions_total[10m])</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          ) &gt; 0</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          and</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          histogram_quantile(</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">            0.95,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">            sum by (le, cluster, model_name) (</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">              rate(vllm:time_to_first_token_seconds_bucket[5m])</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">            )</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          ) &gt; 3</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        f</span><span style="color: light-dark(#1E66F5, #89B4FA);">or</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> 1</span><span style="color: light-dark(#40A02B, #A6E3A1);">0m</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        l</span><span style="color: light-dark(#1E66F5, #89B4FA);">abels</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          s</span><span style="color: light-dark(#1E66F5, #89B4FA);">everity</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> w</span><span style="color: light-dark(#40A02B, #A6E3A1);">arning</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        a</span><span style="color: light-dark(#1E66F5, #89B4FA);">nnotations</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          s</span><span style="color: light-dark(#1E66F5, #89B4FA);">ummary</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">vLLM preemptions correlate with degraded TTFT</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          d</span><span style="color: light-dark(#1E66F5, #89B4FA);">escription</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">Requests are being recomputed while TTFT is above the service objective.</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span></code></pre>
+<p>The preemption expression is intentionally correlated with latency and aggregated to the same
+<code>cluster</code> and <code>model_name</code> labels as TTFT. Page on user impact, not on an isolated internal event.</p>
+<p>In a mature SRE setup, prefer multi-window burn-rate alerts for availability and latency SLOs.
+Raw percentile alerts are easier to explain in a compact guide, but they should not replace a complete SLO strategy.</p>
+<h2 id="runbook-metrics-to-diagnosis">Runbook: metrics to diagnosis</h2>
+<h3 id="scenario-1-ttft-rises-and-queue-time-rises">Scenario 1: TTFT rises and queue time rises</h3>
+<h4 id="what-you-see">What you see</h4>
+<ul>
+<li>P95 TTFT increases</li>
+<li>P95 queue time increases</li>
+<li><code>vllm:num_requests_waiting</code> remains above its normal baseline</li>
+</ul>
+<h4 id="likely-causes">Likely causes</h4>
+<ul>
+<li>offered load exceeds serving capacity</li>
+<li>prompt lengths increased</li>
+<li>large prefills occupy scheduler capacity</li>
+<li>traffic is distributed unevenly across replicas</li>
+</ul>
+<h4 id="what-to-do">What to do</h4>
+<ol>
+<li>Compare incoming request rate and prompt-length distributions with the previous healthy period</li>
+<li>Check whether all replicas receive comparable traffic and remain healthy</li>
+<li>Confirm whether the bottleneck is prefill, decode, or queueing</li>
+<li>Apply admission control or shed non-critical load if latency is unstable</li>
+<li>Scale out only after confirming that additional replicas address the actual bottleneck</li>
+</ol>
+<h3 id="scenario-2-itl-rises-while-queue-time-remains-low">Scenario 2: ITL rises while queue time remains low</h3>
+<h4 id="what-you-see-1">What you see</h4>
+<ul>
+<li>P95 or P99 ITL increases</li>
+<li>queue time remains close to normal</li>
+<li>generated tokens per second may fall</li>
+</ul>
+<h4 id="likely-causes-1">Likely causes</h4>
+<ul>
+<li>excessive active concurrency</li>
+<li>GPU memory-bandwidth pressure</li>
+<li>GPU clock or power throttling</li>
+<li>distributed-execution or communication overhead</li>
+<li>a model, kernel, or runtime change</li>
+</ul>
+<h4 id="what-to-do-1">What to do</h4>
+<ol>
+<li>Check GPU clocks, power, temperature, utilization, and hardware-error metrics</li>
+<li>Compare the model and vLLM configuration with the last healthy release</li>
+<li>Run a representative load test before changing <code>max_num_seqs</code> or <code>max_num_batched_tokens</code></li>
+<li>Remember that lower concurrency may improve ITL while reducing aggregate throughput or increasing queue time</li>
+</ol>
+<h3 id="scenario-3-preemptions-increase">Scenario 3: Preemptions increase</h3>
+<h4 id="what-you-see-2">What you see</h4>
+<ul>
+<li><code>rate(vllm:num_preemptions_total[5m])</code> becomes elevated</li>
+<li>KV-cache usage is near its normal ceiling</li>
+<li>queue time, TTFT, ITL, or end-to-end latency worsens</li>
+</ul>
+<h4 id="what-it-means">What it means</h4>
+<p>The active KV-cache working set does not fit cleanly. vLLM evicts request state and recomputes it later,
+which wastes compute and increases latency.</p>
+<h4 id="what-to-do-2">What to do</h4>
+<ol>
+<li>Stabilize admitted load before tuning the engine</li>
+<li>Check whether prompt lengths, output limits, or concurrency changed</li>
+<li>Reproduce the workload in a controlled load test</li>
+<li>Test <code>max_num_seqs</code> and <code>max_num_batched_tokens</code> as trade-offs, not one-directional fixes</li>
+<li>Increase <code>gpu_memory_utilization</code> only after validating startup and peak-load memory behavior
+Leave headroom for CUDA graphs, communication buffers, runtime workspaces, and model-specific allocation spikes.</li>
+<li>Add replicas or GPU capacity if the working set is legitimate and sustained</li>
+</ol>
+<h3 id="scenario-4-http-errors-or-client-cancellations-rise">Scenario 4: HTTP errors or client cancellations rise</h3>
+<h4 id="what-you-see-3">What you see</h4>
+<ul>
+<li>gateway or API-server 4xx/5xx rates increase</li>
+<li>upstream timeouts or client disconnects increase</li>
+<li>vLLM engine completion rate may fall or remain flat</li>
+</ul>
+<h4 id="likely-causes-2">Likely causes</h4>
+<ul>
+<li>authentication or quota failures</li>
+<li>gateway timeout configuration</li>
+<li>malformed or unsupported requests</li>
+<li>overloaded routing or admission layers</li>
+<li>clients giving up while requests wait</li>
+<li>engine or CUDA failures</li>
+</ul>
+<h4 id="what-to-do-3">What to do</h4>
+<ol>
+<li>Start at the HTTP boundary: status codes, timeout reasons, and upstream latency</li>
+<li>Correlate failures with vLLM queue time and TTFT</li>
+<li>Inspect vLLM and GPU logs for runtime or hardware errors</li>
+<li>Do not infer the service error rate from <code>request_success_total</code> alone</li>
+</ol>
+<h2 id="final-checklist">Final checklist</h2>
+<ul>
+<li><strong>User experience:</strong> TTFT, ITL, request-level TPOT, and end-to-end latency</li>
+<li><strong>Offered load:</strong> incoming HTTP requests, status codes, and timeouts</li>
+<li><strong>Scheduler pressure:</strong> queue time, waiting requests, and active requests</li>
+<li><strong>Memory pressure:</strong> KV-cache usage and preemptions</li>
+<li><strong>Useful work:</strong> prompt and generation tokens per second</li>
+<li><strong>Workload shape:</strong> prompt lengths, output lengths, and requested limits</li>
+<li><strong>Infrastructure:</strong> GPU, host, network, and distributed-execution telemetry</li>
+<li><strong>Operations:</strong> tested thresholds, SLO-based alerts, and an incident runbook</li>
+</ul>
+<p>The core mental model is simple: <strong>request-level latency tells you what users experience; scheduler, cache,
+workload-shape, and infrastructure metrics explain why.</strong></p>
+<h2 id="references">References</h2>
+<ul>
+<li><a rel="noopener external" target="_blank" href="https://docs.vllm.ai/en/v0.23.0/usage/metrics/">vLLM production metrics</a></li>
+<li><a rel="noopener external" target="_blank" href="https://docs.vllm.ai/en/v0.23.0/design/metrics/">vLLM metrics design</a></li>
+<li><a rel="noopener external" target="_blank" href="https://github.com/vllm-project/vllm/tree/v0.23.0/examples/observability/dashboards">vLLM monitoring dashboards</a></li>
+<li><a rel="noopener external" target="_blank" href="https://prometheus.io/docs/concepts/data_model/">Prometheus metric and label naming</a></li>
+</ul>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>
