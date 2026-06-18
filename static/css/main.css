@@ -464,6 +464,14 @@ a:hover {
   white-space: nowrap;
 }
 
+.note-date-updated {
+  opacity: 0.75;
+}
+
+.note-date-separator {
+  opacity: 0.35;
+}
+
 .note-summary {
   margin-top: 8px;
 }

@@ -64,6 +64,15 @@ page.slug != "about" and page.slug != "consulting" and page.slug != "now" %}
       >
         {{ page.date | date(format="%d.%m.%Y") }}
       </time>
+      {% if page.updated %}
+      <span class="note-date note-date-separator">•</span>
+      <time
+        class="note-date note-date-updated"
+        datetime="{{ page.updated | date(format='%Y-%m-%d') }}"
+      >
+        Updated {{ page.updated | date(format="%d.%m.%Y") }}
+      </time>
+      {% endif %}
       {% if page.taxonomies.tags %}
       <span class="note-tags-inline">
         {% for tag in page.taxonomies.tags %}

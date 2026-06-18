@@ -2,6 +2,7 @@
 title = "Monitoring vLLM in Production: Metrics, PromQL, Alerts, and Runbooks"
 description = "A production-oriented guide to monitoring vLLM 0.23.x with Prometheus and Grafana: latency, queueing, preemption, KV-cache pressure, throughput, alerting, and incident diagnosis."
 date = 2026-01-28
+updated = 2026-06-18
 draft = false
 
 [taxonomies]

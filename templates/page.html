@@ -34,9 +34,16 @@ twitter_title %}{{ page.title }} — {{ config.title }}{% endblock twitter_title
             datetime="{{ page.date | date(format='%Y-%m-%d') }}"
             itemprop="datePublished"
           >
-            {{ page.date | date(format="%d.%m.%Y") }}
+            Published {{ page.date | date(format="%d.%m.%Y") }}
           </time>
           {% if page.updated %}
+          <span class="note-date note-date-separator">•</span>
+          <time
+            class="note-date note-date-updated"
+            datetime="{{ page.updated | date(format='%Y-%m-%d') }}"
+          >
+            Updated {{ page.updated | date(format="%d.%m.%Y") }}
+          </time>
           <meta
             itemprop="dateModified"
             content="{{ page.updated | date(format='%Y-%m-%d') }}"
@@ -137,9 +144,16 @@ twitter_title %}{{ page.title }} — {{ config.title }}{% endblock twitter_title
         datetime="{{ page.date | date(format='%Y-%m-%d') }}"
         itemprop="datePublished"
       >
-        {{ page.date | date(format="%d.%m.%Y") }}
+        Published {{ page.date | date(format="%d.%m.%Y") }}
       </time>
       {% if page.updated %}
+      <span class="note-date note-date-separator">•</span>
+      <time
+        class="note-date note-date-updated"
+        datetime="{{ page.updated | date(format='%Y-%m-%d') }}"
+      >
+        Updated {{ page.updated | date(format="%d.%m.%Y") }}
+      </time>
       <meta
         itemprop="dateModified"
         content="{{ page.updated | date(format='%Y-%m-%d') }}"
