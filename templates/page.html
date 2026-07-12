@@ -4,11 +4,23 @@ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock
 description %} {% block og_type %}article{% endblock og_type %} {% block
 og_title %}{{ page.title }} — {{ config.title }}{% endblock og_title %} {% block
 og_description %}{% if page.description %}{{ page.description }}{% else %}{{
-config.description }}{% endif %}{% endblock og_description %} {% block
+config.description }}{% endif %}{% endblock og_description %} {% block og_image
+%} {% if page.extra.static_thumbnail %} {{ config.base_url }}{{
+page.extra.static_thumbnail }} {% elif page.static_thumbnail %} {{
+config.base_url }}{{ page.static_thumbnail }} {% else %} {{ config.base_url
+}}/images/userpic-square.jpg {% endif %} {% endblock og_image %} {% block
+og_image_width %} {% if page.extra.static_thumbnail or page.static_thumbnail %}
+1200 {% else %} 784 {% endif %} {% endblock og_image_width %} {% block
+og_image_height %} {% if page.extra.static_thumbnail or page.static_thumbnail %}
+630 {% else %} 784 {% endif %} {% endblock og_image_height %} {% block
 twitter_title %}{{ page.title }} — {{ config.title }}{% endblock twitter_title
 %} {% block twitter_description %}{% if page.description %}{{ page.description
 }}{% else %}{{ config.description }}{% endif %}{% endblock twitter_description
-%} {% block content %}
+%} {% block twitter_image %} {% if page.extra.static_thumbnail %} {{
+config.base_url }}{{ page.extra.static_thumbnail }} {% elif
+page.static_thumbnail %} {{ config.base_url }}{{ page.static_thumbnail }} {%
+else %} {{ config.base_url }}/images/userpic-square.jpg {% endif %} {% endblock
+twitter_image %} {% block content %}
 <article
   class="e2-note e2-note-single"
   itemscope

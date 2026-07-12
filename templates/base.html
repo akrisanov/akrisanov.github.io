@@ -35,10 +35,16 @@
       property="og:image"
       content="{% block og_image %}{{ config.base_url }}/images/userpic-square.jpg{% endblock og_image %}"
     />
-    <meta property="og:image:width" content="784" />
-    <meta property="og:image:height" content="784" />
+    <meta
+      property="og:image:width"
+      content="{% block og_image_width %}784{% endblock og_image_width %}"
+    />
+    <meta
+      property="og:image:height"
+      content="{% block og_image_height %}784{% endblock og_image_height %}"
+    />
 
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
       content="{% block twitter_title %}{{ config.title }}{% endblock twitter_title %}"

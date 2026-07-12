@@ -9,6 +9,8 @@ tags = ["helix", "python", "tooling"]
 
 [extra]
 keywords = "helix, python, lsp, ty, ruff, formatter, type checker, code analysis"
+static_thumbnail = "/images/social-helix-python.png"
+
 +++
 
 In a day to day life, I'm big Visual Studio Code user. I use it for all my working and personal projects, and most

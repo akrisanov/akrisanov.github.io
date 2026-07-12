@@ -10,6 +10,8 @@ tags = ["kafka", "system-design"]
 [extra]
 keywords = "kafka, system-design"
 toc = false
+static_thumbnail = "/images/social-choosing-kafka.png"
+
 +++
 
 In any modern project where there is a need to process events – a set of messages or a stream of

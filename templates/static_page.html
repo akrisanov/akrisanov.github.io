@@ -32,6 +32,32 @@
   {%- endif -%}
 {%- endblock og_description %}
 
+{% block og_image -%}
+  {%- if page.extra.static_thumbnail -%}
+    {{ config.base_url }}{{ page.extra.static_thumbnail }}
+  {%- elif page.static_thumbnail -%}
+    {{ config.base_url }}{{ page.static_thumbnail }}
+  {%- else -%}
+    {{ config.base_url }}/images/userpic-square.jpg
+  {%- endif -%}
+{%- endblock og_image %}
+
+{% block og_image_width -%}
+  {%- if page.extra.static_thumbnail or page.static_thumbnail -%}
+    1200
+  {%- else -%}
+    784
+  {%- endif -%}
+{%- endblock og_image_width %}
+
+{% block og_image_height -%}
+  {%- if page.extra.static_thumbnail or page.static_thumbnail -%}
+    630
+  {%- else -%}
+    784
+  {%- endif -%}
+{%- endblock og_image_height %}
+
 {% block twitter_title -%}
   {%- if page.extra.seo_title -%}
     {{ page.extra.seo_title }}

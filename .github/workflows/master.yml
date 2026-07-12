@@ -19,6 +19,12 @@ jobs:
         with:
           tool: zola@0.22.1
 
+      - name: Install ImageMagick
+        run: sudo apt-get update && sudo apt-get install -y imagemagick fonts-dejavu-core
+
+      - name: Generate social preview cards
+        run: bash scripts/generate-social-previews.sh
+
       - name: Build site
         run: zola build
 
@@ -27,4 +33,3 @@ jobs:
         env:
           PAGES_BRANCH: gh-pages
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

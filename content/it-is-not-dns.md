@@ -10,7 +10,8 @@ tags = ["dns", "linux"]
 [extra]
 keywords = "dns, linux, troubleshooting"
 toc = false
-static_thumbnail = "/images/karusel-arch.jpg"
+static_thumbnail = "/images/social-it-is-not-dns.png"
+
 +++
 
 Summer of 2019. I'm joining a large retail organization that is undergoing a digital transformation.

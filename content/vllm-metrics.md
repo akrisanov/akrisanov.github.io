@@ -11,6 +11,8 @@ tags = ["vllm", "llm", "inference", "metrics", "performance", "monitoring"]
 [extra]
 keywords = "vLLM metrics, vLLM monitoring, Prometheus, Grafana, TTFT, time to first token, ITL, inter-token latency, TPOT, KV cache, preemption, LLM latency, LLM throughput, inference performance, capacity planning"
 toc = true
+static_thumbnail = "/images/social-vllm-metrics.png"
+
 +++
 
 > **Version scope:** This guide targets vLLM 0.23.x and its default V1 engine. Metric names and semantics change between releases, so verify the `/metrics` output of the exact version and serving configuration you run before copying queries or alerts into production.

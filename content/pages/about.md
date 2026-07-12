@@ -7,6 +7,8 @@ date = 2024-01-01
 
 [extra]
 seo_title = "About Andrey Krisanov — LLM Inference & AI Infrastructure"
+static_thumbnail = "/images/social-pages-about.png"
+
 +++
 
 ## Hi, I'm Andrey

@@ -10,6 +10,8 @@ tags = ["engineering"]
 [extra]
 keywords = "backend, server model, job interview"
 toc = false
+static_thumbnail = "/images/social-understand-how-services-are-run-and-operate-in-production.png"
+
 +++
 
 Over the past few years, I've been interviewing dozens of software engineers who didn't know how

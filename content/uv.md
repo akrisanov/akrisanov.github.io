@@ -10,6 +10,8 @@ tags = ["python", "tooling", "cheat-sheet"]
 [extra]
 keywords = "python, virtualenv, pip, pipx, poetry, uv, packaging, cheat-sheet"
 toc = true
+static_thumbnail = "/images/social-uv.png"
+
 +++
 
 ## Overview

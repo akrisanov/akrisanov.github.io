@@ -9,6 +9,8 @@ tags = ["cpp", "macos", "apple-silicon", "llvm", "cmake", "vscode", "helix", "mi
 
 [extra]
 toc = true
+static_thumbnail = "/images/social-macos-apple-silicon-cpp-setup.png"
+
 +++
 
 I’m starting to learn modern C++ seriously (yes, seriously), so I wanted a clean and repeatable development setup on

@@ -10,6 +10,8 @@ tags = [".NET", "NuGet", "DevOpsSec", "GitLab CI"]
 [extra]
 keywords = ".NET, NuGet, DevOpsSec, supply chain attacks, GitLab CI"
 toc = false
+static_thumbnail = "/images/social-dotnet-list-vulnerable-packages.png"
+
 +++
 
 Some time ago, I was working in a company that was building a SaaS that was written in .NET.

@@ -10,6 +10,8 @@ tags = ["keycloak"]
 [extra]
 keywords = "keycloak, ldap, active-directory"
 toc = false
+static_thumbnail = "/images/social-custom-user-ldap-filter-in-keycloak.png"
+
 +++
 
 One of the ways to synchronize users via a third-party provider with Keycloak is a mechanism

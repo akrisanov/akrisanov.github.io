@@ -9,6 +9,8 @@ tags = ["kubernetes", "gpu", "wsl2", "nvidia", "k3s", "ml-infra"]
 [extra]
 keywords = "kubernetes, gpu, wsl2, nvidia, k3s, ml-infra, local cluster"
 toc = true
+static_thumbnail = "/images/social-wsl-nvidia-gpu.png"
+
 +++
 
 ## Why I did this
