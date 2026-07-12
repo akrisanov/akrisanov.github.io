@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-MAGICK=$(command -v magick)
+MAGICK=""
+if command -v magick >/dev/null 2>&1; then
+    MAGICK=$(command -v magick)
+elif command -v convert >/dev/null 2>&1; then
+    MAGICK=$(command -v convert)
+else
+    echo "ImageMagick executable not found (expected 'magick' or 'convert')."
+    exit 1
+fi
 FONT=
 for candidate in \
   /System/Library/Fonts/Helvetica.ttc \
