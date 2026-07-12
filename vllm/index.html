@@ -1,0 +1,122 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference — Andrey Krisanov</title><meta content="How vLLM improves LLM serving efficiency with PagedAttention, better KV-cache utilization, higher throughput, and steadier latency." name=description><link href=https://akrisanov.com/vllm/ rel=canonical><meta content=article property=og:type><meta content="Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference — Andrey Krisanov" property=og:title><meta content="How vLLM improves LLM serving efficiency with PagedAttention, better KV-cache utilization, higher throughput, and steadier latency." property=og:description><meta content=https://akrisanov.com/vllm/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content="  https://akrisanov.com/images/social-vllm.png  " property=og:image><meta content=" 
+1200  " property=og:image:width><meta content=" 
+630  " property=og:image:height><meta content=summary_large_image name=twitter:card><meta content="Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference — Andrey Krisanov" name=twitter:title><meta content="How vLLM improves LLM serving efficiency with PagedAttention, better KV-cache utilization, higher throughput, and steadier latency." name=twitter:description><meta content="  https://akrisanov.com/images/social-vllm.png  " name=twitter:image><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href=/css/main.css rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic src=/images/userpic.jpg> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>Production LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/files/andrey-krisanov-cv.pdf>Résumé</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/vllm/ itemprop=url><meta content=https://akrisanov.com/images/userpic-square.jpg itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> </span><div class=note-layout><div class=note-main><header class=note-header><h1 class=note-title itemprop=headline>Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference</h1><div class=note-meta><time class=note-date datetime=2026-01-27 itemprop=datePublished> Published 27.01.2026 </time><meta content=2026-01-27 itemprop=dateModified><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/vllm/>#vllm</a> <a class=tag href=https://akrisanov.com/tags/llm-inference/>#llm-inference</a> <a class=tag href=https://akrisanov.com/tags/gpu/>#gpu</a> <a class=tag href=https://akrisanov.com/tags/performance/>#performance</a> </span></div></header><div class="e2-text note-body" itemprop=articleBody><p>If you’ve ever tried to serve large language models at scale, you’ve probably hit the same wall: VRAM runs out much earlier than expected, batching stops scaling, and latency becomes unpredictable.<p><a rel="noopener external" href=https://vllm.ai/ target=_blank>vLLM</a> exists almost entirely to fix this.<p>At its core, vLLM is a high-performance LLM inference engine that dramatically improves GPU utilization. The key idea behind it is <a rel="noopener external" href=https://arxiv.org/abs/2309.06180 target=_blank>PagedAttention</a> – a different way to manage the KV-cache that removes most of the memory waste common in traditional LLM serving stacks.<p>Let’s break down why this is such a big deal.<h2 id=the-core-problem-kv-cache-fragmentation>The Core Problem: KV-Cache Fragmentation</h2><p>In traditional LLM serving systems, the KV-cache (the keys and values representing token context) must live in a single contiguous block of GPU memory.<p>There’s a catch: you don’t know in advance how long the model’s answer will be.<p>So the system plays it safe and reserves memory for the maximum context length – say, 2048 or 4096 tokens – for every request.<p>The result?<ul><li>Large chunks of VRAM are reserved but never used<li>Memory becomes fragmented<li>Up to 60–80% of KV-cache memory is effectively wasted</ul><p>That wasted VRAM could have been used to serve more requests in parallel.<h2 id=pagedattention-borrowing-an-idea-from-operating-systems>PagedAttention: Borrowing an Idea from Operating Systems</h2><p>PagedAttention takes inspiration from virtual memory and paging in operating systems.<p>Instead of allocating one big contiguous block per request, it does this:<ol><li><strong>Split KV-cache into fixed-size blocks.</strong> Each request’s KV-cache is divided into blocks (for example, 16 or 32 tokens per block).<li><strong>No need for physical continuity.</strong> These blocks can live anywhere in VRAM – they don’t have to be next to each other.<li><strong>Virtual addressing with a Block Table.</strong> vLLM keeps a mapping from logical token order to physical memory blocks on the GPU.<li><strong>Allocate memory only when needed.</strong> New blocks are allocated only when new tokens are generated – no upfront over-reservation.</ol><p>This single change unlocks most of vLLM’s performance gains.<h2 id=key-effects-of-paged-kv-cache>Key Effects of Paged KV-cache</h2><h3 id=almost-no-external-fragmentation>Almost no external fragmentation</h3><p>Because blocks don’t need to be contiguous, free memory can be reused efficiently instead of becoming unusable holes.<h3 id=minimal-internal-fragmentation>Minimal internal fragmentation</h3><p>Only the last block of a sequence may be partially empty. With reasonable block sizes, memory loss is typically below 4%.<h3 id=much-larger-batch-sizes>Much larger batch sizes</h3><p>Better memory efficiency means more concurrent requests per GPU, which is the main driver of performance on modern GPUs.<h3 id=massive-throughput-gains>Massive throughput gains</h3><p>In practice, this enables:<ul><li>2–4× throughput vs. TGI<li>Up to ~24× vs. naïve Hugging Face serving setups</ul><h3 id=true-continuous-batching>True continuous batching</h3><p>New requests can be added as soon as finished ones free blocks – no need to wait for a full batch boundary.<h3 id=memory-sharing-prefix-prompt-caching>Memory sharing (prefix / prompt caching)</h3><p>Multiple requests can point to the same physical blocks for shared prefixes (system prompts, long examples).<h3 id=copy-on-write-when-sequences-diverge>Copy-on-write when sequences diverge</h3><p>If you generate multiple completions from the same prompt, new blocks are allocated only when outputs differ. This can save up to ~55% of KV-cache memory.<h3 id=better-ttft-under-load-indirectly>Better TTFT under load (indirectly)</h3><p>PagedAttention doesn’t speed up the first token itself, but higher throughput clears queues faster – reducing queue time, which users perceive as better TTFT.<h3 id=graceful-preemption-and-swapping>Graceful preemption and swapping</h3><p>If VRAM runs low, individual blocks can be swapped to CPU memory instead of crashing the server with OOM.<h3 id=no-recomputation>No recomputation</h3><p>Unlike approaches that drop KV-cache under pressure, PagedAttention preserves progress and resumes generation without re-processing the prompt.<h2 id=block-size-a-subtle-but-important-knob>Block Size: A Subtle but Important Knob</h2><p>Block size affects:<ul><li>Internal fragmentation<li>Metadata and indexing overhead<li>Eviction and preemption behavior (if used)</ul><p>Smaller blocks = better memory efficiency, higher overhead.<p>Larger blocks = lower overhead, more wasted tail space.<p>There’s no universal best value – it depends on workload shape.<h2 id=a-note-about-prefill-vs-decode>A Note About Prefill vs Decode</h2><p>It’s important to separate these phases:<h3 id=prefill>Prefill</h3><ul><li>Often compute- or memory-bound<li>Cost grows with input sequence length</ul><h3 id=decode>Decode</h3><ul><li>Usually memory-bandwidth-bound<li>Heavily dependent on KV-cache efficiency and batching<li>TTFT (Time to First Token) = queue time + prefill latency</ul><p>PagedAttention mainly improves decode throughput.<p>So if you see this pattern:<ul><li>tokens/sec ↑<li>p99 TTFT unchanged (or worse)</ul><p>You optimized decode, but you’re still bottlenecked on queueing or prefill.<h2 id=why-vllm-became-the-default-choice>Why vLLM Became the Default Choice</h2><p>vLLM didn’t win because of a single micro-optimization. It won because PagedAttention fundamentally changes how GPU memory is used for LLM serving.<p>If you care about:<ul><li>high throughput<li>stable latency under load<li>efficient use of expensive GPUs</ul><p>then understanding vLLM is no longer optional – it’s baseline knowledge for modern LLM infrastructure.</div></div><aside aria-label="Table of contents" class=note-toc><div class=note-toc-card><div class=note-toc-title>On this page</div><nav class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#the-core-problem-kv-cache-fragmentation> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>The Core Problem: KV-Cache Fragmentation</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#pagedattention-borrowing-an-idea-from-operating-systems> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>PagedAttention: Borrowing an Idea from Operating Systems</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#key-effects-of-paged-kv-cache> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Key Effects of Paged KV-cache</span> </a> <ul class="note-toc-list note-toc-list-child"><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#almost-no-external-fragmentation> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Almost no external fragmentation</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#minimal-internal-fragmentation> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Minimal internal fragmentation</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#much-larger-batch-sizes> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Much larger batch sizes</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#massive-throughput-gains> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Massive throughput gains</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#true-continuous-batching> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>True continuous batching</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#memory-sharing-prefix-prompt-caching> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Memory sharing (prefix / prompt caching)</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#copy-on-write-when-sequences-diverge> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Copy-on-write when sequences diverge</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#better-ttft-under-load-indirectly> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Better TTFT under load (indirectly)</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#graceful-preemption-and-swapping> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Graceful preemption and swapping</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#no-recomputation> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>No recomputation</span> </a></ul><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#block-size-a-subtle-but-important-knob> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Block Size: A Subtle but Important Knob</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#a-note-about-prefill-vs-decode> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>A Note About Prefill vs Decode</span> </a> <ul class="note-toc-list note-toc-list-child"><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#prefill> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Prefill</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#decode> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Decode</span> </a></ul><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#why-vllm-became-the-default-choice> <span aria-hidden=true class=note-toc-track><span class=note-toc-fill></span></span> <span class=note-toc-text>Why vLLM Became the Default Choice</span> </a></ul></nav></div></aside></div></article><nav class=note-navigation><a class=nav-older href=https://akrisanov.com/vllm-metrics/>Older <i class=nav-modifier></i>↓</a><a class=nav-newer href=https://akrisanov.com/uv/>Newer <i class=nav-modifier></i>↑</a></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><div class=footer-copy>© Andrey Krisanov, 2026</div><div class=footer-engine>Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a><a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a></div></footer></div><script>(function () {
+    var toc = document.querySelector("[data-note-toc]");
+    if (!toc) return;
+
+    var links = Array.prototype.slice.call(
+      toc.querySelectorAll("[data-toc-link]"),
+    );
+    var items = Array.prototype.slice.call(
+      toc.querySelectorAll("[data-toc-item]"),
+    );
+    var entries = links
+      .map(function (link, index) {
+        var id = link.getAttribute("href").replace(/^#/, "");
+        var heading = document.getElementById(decodeURIComponent(id));
+        return {
+          link: link,
+          item: items[index],
+          fill: link.querySelector(".note-toc-fill"),
+          heading: heading,
+          top: 0,
+          bottom: 0,
+        };
+      })
+      .filter(function (entry) {
+        return entry.heading;
+      });
+
+    if (!entries.length) return;
+
+    var activeIndex = -1;
+    var frame = null;
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function measure() {
+      entries.forEach(function (entry, index) {
+        var headingRect = entry.heading.getBoundingClientRect();
+        entry.top = headingRect.top + window.pageYOffset;
+        var next = entries[index + 1];
+        entry.bottom = next
+          ? next.heading.getBoundingClientRect().top + window.pageYOffset
+          : document.documentElement.scrollHeight;
+      });
+    }
+
+    function update() {
+      frame = null;
+      var marker =
+        window.pageYOffset +
+        Math.max(120, Math.round(window.innerHeight * 0.22));
+      var nextActive = 0;
+
+      for (var i = 0; i < entries.length; i += 1) {
+        if (marker >= entries[i].top) {
+          nextActive = i;
+        }
+      }
+
+      if (nextActive !== activeIndex) {
+        activeIndex = nextActive;
+        entries.forEach(function (entry, index) {
+          var isActive = index === activeIndex;
+          var isPast = index < activeIndex;
+          entry.item.classList.toggle("is-active", isActive);
+          entry.item.classList.toggle("is-past", isPast);
+          entry.link.setAttribute("aria-current", isActive ? "true" : "false");
+        });
+      }
+
+      entries.forEach(function (entry, index) {
+        var progress = 0;
+        if (index < activeIndex) {
+          progress = 1;
+        } else if (index === activeIndex) {
+          progress = clamp(
+            (marker - entry.top) / Math.max(1, entry.bottom - entry.top),
+            0,
+            1,
+          );
+        }
+        if (entry.fill) {
+          entry.fill.style.width = (progress * 100).toFixed(2) + "%";
+        }
+      });
+    }
+
+    function schedule() {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(update);
+    }
+
+    measure();
+    update();
+    window.addEventListener("resize", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("load", function () {
+      measure();
+      schedule();
+    });
+  })();</script>

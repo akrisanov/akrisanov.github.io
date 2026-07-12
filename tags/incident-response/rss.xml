@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - incident-response</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/incident-response/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Sat, 12 Aug 2023 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>My &quot;It&#x27;s not DNS&quot; story</title>
+      <pubDate>Sat, 12 Aug 2023 00:00:00 +0000</pubDate>
+      <author>Andrey Krisanov</author>
+      <link>https://akrisanov.com/it-is-not-dns/</link>
+      <guid>https://akrisanov.com/it-is-not-dns/</guid>
+      <description xml:base="https://akrisanov.com/it-is-not-dns/"><![CDATA[
+        <p>Published: 2023-08-12</p>
+        
+        
+          <p>Summer of 2019. I'm joining a large retail organization that is undergoing a digital transformation.
+The role I've been hired for is a technical leadership role. The project I'm taking over doesn't
+even have a complete team yet, which means I'll be wearing all sorts of hats until I hire someone
+and delegate work. You could say, I'm the only "developer" on the team. Also, the code base is
+already serving users, and the services are part of a lead generation funnel for one of the grocery
+networks. So if something goes down, the company loses potential customers and revenue. The fact
+that the project was developed by an outsourced team that has already left without handing over
+proper documentation makes things more complicated and fragile.</p>
+<p>In a few days, I try to understand how the services are run in production, write missing README
+and system design papers, and create initial tasks for maintenance. All goes well, and I manage
+to deploy some changes to the backend. It's Friday afternoon, so I still have time to do
+a rollback if I've made a mistake. But nothing suspicious has been observed during the day,
+and I leave the office for the weekend.</p>
+<p>The fun begins on Sunday. Because I'm in charge of the project, I'm the one who is on-call.
+I get a call from our support team telling me that the web application isn't responding from time
+to time and that they're getting complaints from customers.</p>
+<p>The first thing I do is open my browser to check what users are seeing. Surprisingly, a web page
+loads just fine. I hit refresh – same result. Then I turn off Wi-Fi on my iPhone and open
+Safari – 504 error. It's a Nginx page. Now it is something.</p>
+<p><img src="/images/karusel-arch.jpg" alt="Simplified diagram of the project architecture" />
+<span class="img-title">Simplified diagram of the project architecture</span></p>
+<p>I open the monitoring and observe no high load. CPU usage is low, more than 50% of memory is free,
+plenty of free disk space on each of the virtual machines, no spikes in the network bandwidth.
+Looking at the Nginx logs only proves that there's a gateway timeout error related to the backend.
+I should check the application backend logs. Nothing there, no errors at all.</p>
+<p>At this point, I start to blame the network and call the network infrastructure team.
+These guys work on an organisational level and potentially can see what I can't. After spending
+an hour investigating together, we see nothing. It's already Sunday evening, and
+I'm almost hopeless.</p>
+<p>I decide to take a break and go for a walk. When I'm back, I try to ssh to a VM again. Suddenly,
+I notice a few seconds of delay before I can type my commands into a terminal. "It can't be DNS",
+I say to myself. To prove it, I ping a public domain from our network. Again, a few seconds of
+delay and the network packets are flying without a hitch.
+"If DNS was down, the infrastructure team would notice.", I continue to reason.
+Before escalating the situation further to upper management, I choose to check the DNS
+configuration on the backend virtual machines.</p>
+<p>The /etc/resolv.conf is a DNS resolver configuration file. It contains records in the following format:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">nameserver</span><span> [ip</span><span>]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">nameserver</span><span> [ip</span><span>]</span></span></code></pre>
+<p>In my developer's mind, a Linux machine receives these records at boot time and caches them.
+This file is then queried to resolve domains. What could possibly go wrong? Well, I ask the
+infrastructure team about the IP addresses I see in <code>/etc/resolv.conf</code> and get a surprising
+answer: "The IP addresses are DNS load balancers and the first one in the list is currently down".
+Hearing this, I begin to understand why the ssh and initial ping delays are happening.
+The first DNS load balancer is queried, but because it's down, it doesn't respond, and
+the resolution continues with the second IP address.</p>
+<p>I remove the first nameserver from <code>/etc/resolv.conf</code> and drop the DNS cache on each of the VMs.
+After a few seconds, the 504 error and the gateway timeout disappear. In the morning, we'll
+discuss the incident with the infrastructure team and senior management. Fun week ahead.</p>
+<div class="callout callout-bdc">
+<p>
+    It's not DNS<br/>
+    There's no way it's DNS<br/>
+    It was DNS
+</p>
+<p class="author">Old Japanese Haiku</p>
+</div>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

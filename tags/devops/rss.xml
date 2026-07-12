@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - devops</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/devops/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Wed, 06 Sep 2023 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Understand How Services Are Run And Operate In Production</title>
+      <pubDate>Wed, 06 Sep 2023 00:00:00 +0000</pubDate>
+      <author>Andrey Krisanov</author>
+      <link>https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/</link>
+      <guid>https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/</guid>
+      <description xml:base="https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/"><![CDATA[
+        <p>Published: 2023-09-06</p>
+        
+        
+          <p>Over the past few years, I've been interviewing dozens of software engineers who didn't know how
+their developed services run and operate in production. The reason for that is a rising trend in
+software engineering trusting in an infrastructure team, the magic of the cloud, Docker,
+Kubernetes, and whatnot.</p>
+<p>A conversation with a talent usually looks the following:</p>
+<blockquote class="dialogue">
+<p class="q"><strong>Interviewer:</strong> How do you ship your service to production?</p>
+<p class="a"><strong>Candidate:</strong> We build Docker images and run containers.</p>
+<p class="q"><strong>Interviewer:</strong> Sounds cool! Can you tell me about the resource requirements for a container?</p>
+<p class="a"><strong>Candidate:</strong> Hmm, to be honest, I don't know the details. DevOps folks take care of that.</p>
+<p class="q"><strong>Interviewer:</strong> (discussing Python app) OK. And what application server do you use?</p>
+<p class="a"><strong>Candidate:</strong> Application Server? (Some people even reply: "You mean WSGI?")</p>
+<p class="q"><strong>Interviewer:</strong> Yes, the thing that handles web requests and runs your Python code.</p>
+<p class="a"><strong>Candidate:</strong> Hmm, let me open a project repo and check..</p>
+<p class="a"><strong>Candidate:</strong> It's...Gunicorn!</p>
+<p class="q"><strong>Interviewer:</strong> Great. Can you estimate how many requests the web application can handle?</p>
+<p class="a"><strong>Candidate:</strong> I don't think so because we don't do load testing.</p>
+<p class="q"><strong>Interviewer:</strong> So, it's not possible to do even a rough estimation?</p>
+<p class="a"><strong>Candidate:</strong> Nope.</p>
+<p class="q"><strong>Interviewer:</strong> OK. Do you understand what happens on a processes and threads level when the application server processes a request?</p>
+</blockquote>
+<p>This is where the conversation hits a dead end. Many talents don't. And this is a red sign to me.
+It gets worse when a candidate claims they have experience with (semi)async services in production
+but can't explain <a rel="noopener external" target="_blank" href="https://docs.gunicorn.org/en/stable/design.html?ref=akrisanov.com#server-model">a service model</a>
+they have chosen and how the services operate because of that (including resources allocating and consumption).</p>
+<p>You might say: "Why do I need to know all that low-level stuff in the 2020s?".
+Fair enough...if you don't develop software for thousands of users, have an unlimited budget for
+underutilized hardware, don't design distributed systems, or, simply, have an SRE team ready to
+solve all possible issues for you. Otherwise, please do.</p>
+
+        
+      ]]></description>
+    </item>
+    
+    <item>
+      <title>Building Multi-Arch Images for Arm and x86</title>
+      <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
+      <author>Andrey Krisanov</author>
+      <link>https://akrisanov.com/multi-arch-docker-images/</link>
+      <guid>https://akrisanov.com/multi-arch-docker-images/</guid>
+      <description xml:base="https://akrisanov.com/multi-arch-docker-images/"><![CDATA[
+        <p>Published: 2023-08-10</p>
+        
+        
+          <p>At work, I am involved in the development of a machine learning SDK and cloud services for
+privacy and data protection. Like almost every company in this space, we rely heavily on
+Python's scientific ecosystem. Because it's quite mature and depends on native library
+development that started years ago, getting these packages to work on new architectures
+can be tedious.</p>
+<p>I am one of the few developers on our team who has stuck with MacOS and have a Macbook Pro
+with M1 chip. There is no easy way for me to bootstrap our development environment in a matter
+of minutes. I have to use Conda, install specific versions of Python packages, patch some native
+libraries, and even create a symlink from an OS-specific package to its generic name
+(I'm talking to you, Tensorflow). People on the <code>x86_64</code> architecture generally won't have
+this problem – almost every package we use comes with a pre-built wheel for a chosen OS.
+Moreover, to install the SDK as a dependency of, say, an HTTP API service, I had to assemble
+it from sources: <code>pip install -e '.'</code></p>
+<p>A few months ago we didn't even support the Arm64 architecture at a build level. This changed when
+I introduced a Github Action pipeline to build Python wheels for Linux <code>x86_64</code>, <code>aarch64</code>, and <code>universal</code>.
+Instead of manually compiling some native libraries on my machine, I moved the work to GitHub and
+its Linux instances. From that moment on, I could just get the package from a private PyPI registry.
+The sad truth is that I still use Conda and sometimes patch one or two transitive dependencies for
+my M1 chip. But other than that, no hard times to date.</p>
+<p>Today I needed to distribute a newly created API service with the SDK inside as a Docker image.
+And I haven't found an easy way to define a Dockerfile that can be built and run on
+Apple Silicon without Conda:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="docker"><span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">FROM</span><span> python:3.9-slim-buster </span><span style="color: light-dark(#8839EF, #CBA6F7);">AS</span><span> base</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">ENV</span><span> PYTHONDONTWRITEBYTECODE=1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">ENV</span><span> PYTHONUNBUFFERED=1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Install Conda</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> apt-get update &amp;&amp; apt-get -y upgrade</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> apt-get install -y --no-install-recommends build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">ENV</span><span> PATH=</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">/root/miniconda3/bin:${PATH}</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">ARG</span><span> PATH=</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">/root/miniconda3/bin:${PATH}</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> wget \</span></span>
+<span class="giallo-l"><span>    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh \</span></span>
+<span class="giallo-l"><span>    &amp;&amp; mkdir /root/.conda \</span></span>
+<span class="giallo-l"><span>    &amp;&amp; bash Miniconda3-latest-Linux-aarch64.sh -b \</span></span>
+<span class="giallo-l"><span>    &amp;&amp; rm -f Miniconda3-latest-Linux-aarch64.sh</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Create a Conda environment and install native dependencies</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> --mount=type=cache,target=/root/.cache \</span></span>
+<span class="giallo-l"><span>    conda init bash &amp;&amp; . /root/.bashrc &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    conda update conda &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    conda create -n de_agent python=3.9 &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    conda env config vars set -n de_agent LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1 &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    conda activate de_agent &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    conda install gdal llvmdev dm-tree -y &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    pip install --upgrade pip setuptools wheel &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    pip install h3</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Copy application files</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">WORKDIR</span><span> /app</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">COPY</span><span> app/ .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">COPY</span><span> logging.yaml .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">COPY</span><span> main.py .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">COPY</span><span> requirements.txt ./</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Install Python packages</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">ARG</span><span> DE_AGENT_PYPI_TOKEN</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> --mount=type=cache,target=/root/.cache \</span></span>
+<span class="giallo-l"><span>    . /root/.bashrc &amp;&amp; conda activate de_agent &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    pip install -r requirements.txt --extra-index-url=https://${DE_AGENT_PYPI_TOKEN}:@pypi.****.ai/pypi/ &amp;&amp; \</span></span>
+<span class="giallo-l"><span>    pip install numpy==1.23.5</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Cleanup</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> apt -qy purge --auto-remove build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> apt autoremove &amp;&amp; apt clean</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Create a user</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> groupadd -r de_agent &amp;&amp; useradd -r -m -g de_agent de_agent</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> chown -R de_agent:de_agent /app</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">USER</span><span> de_agent</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Run the web application</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">EXPOSE</span><span> 8000</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">ENTRYPOINT</span><span> [</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">PYTHONPATH=.</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span>, </span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">python</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span>, </span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">main.py</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span>]</span></span></code></pre>
+<p>As you can see, the manifest is quite verbose. It also adds the Conda binaries and related
+files to a release image. It is a price that must be paid.</p>
+<p>Fortunately, for Linux, we don't need all of this machinery:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="docker"><span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">FROM</span><span> python:3.9-slim-buster </span><span style="color: light-dark(#8839EF, #CBA6F7);">AS</span><span> base</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">ENV</span><span> PYTHONDONTWRITEBYTECODE=1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">ENV</span><span> PYTHONUNBUFFERED=1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Install system packages</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> apt-get update &amp;&amp; apt-get -y upgrade</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> apt-get install -y --no-install-recommends build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Copy application files</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">WORKDIR</span><span> /app</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">COPY</span><span> app/ .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">COPY</span><span> logging.yaml .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">COPY</span><span> main.py .</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">COPY</span><span> requirements.txt ./</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Install Python dependencies</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">ARG</span><span> DE_AGENT_PYPI_TOKEN</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> --mount=type=cache,target=/root/.cache \</span></span>
+<span class="giallo-l"><span>    pip install -r requirements.txt --extra-index-url=https://${DE_AGENT_PYPI_TOKEN}:@pypi.****.ai/pypi/</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Cleanup</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> apt -qy purge --auto-remove build-essential g++ gcc libssl-dev cmake git wget</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> apt autoremove &amp;&amp; apt clean</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> rm -rf /var/lib/apt/lists/*</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Create a user</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> groupadd -r de_agent &amp;&amp; useradd -r -m -g de_agent de_agent</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">RUN</span><span> chown -R de_agent:de_agent /app</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">USER</span><span> de_agent</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Run the web application</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">EXPOSE</span><span> 8000</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">ENTRYPOINT</span><span> [</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">PYTHONPATH=.</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span>, </span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">python</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span>, </span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">main.py</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span>]</span></span></code></pre>
+<p>The question now is how to build Docker images for both architectures on a Mac.
+This is where Docker comes in. Docker Desktop officially supports <a rel="noopener external" target="_blank" href="https://www.docker.com/blog/multi-arch-images/">building multi-arch images
+for Arm and x86</a>. Learning this, I was able to
+add a few targets to my Makefile to quickly build images:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="make"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">build</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Build a Docker image for x86_64</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> docker</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> buildx</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> build</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> --platform</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> linux/amd64</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> -t</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> de-agent</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span>amd64-latest --build-arg DE_AGENT_PYPI_TOKEN=</span><span>${</span><span>DE_AGENT_PYPI_TOKEN</span><span>}</span><span> -f Dockerfile.amd64 --no-cache .</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">build-arm</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Build a Docker image for arm64</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> docker</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  buildx</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> build</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> --platform</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> linux/arm64</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> -t</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> de-agent</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span>arm64-latest --build-arg DE_AGENT_PYPI_TOKEN=</span><span>${</span><span>DE_AGENT_PYPI_TOKEN</span><span>}</span><span> -f Dockerfile.arm64 --no-cache .</span></span></code></pre><pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">make</span><span style="color: light-dark(#40A02B, #A6E3A1);"> build</span></span></code></pre>
+<p><img src="/images/docker-arm-build.png" alt="Docker Image For Arm" />
+<span class="img-title">Docker image built for the amd64 architecture</span></p>
+<p>One can say, it's so much hassle for doing all of this locally and a proper CI can solve such
+a case easily. I agree – as I've mentioned, I like shifting work out of my shoulders and giving it
+to some machine in the cloud. But in situations where CI is not available, creating multi-arch
+images can save the day. It certainly did for me.</p>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

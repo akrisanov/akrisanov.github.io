@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - dependency-management</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/dependency-management/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Thu, 12 Oct 2023 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Generating A Lockfile For Python Project Using Github Actions</title>
+      <pubDate>Thu, 12 Oct 2023 00:00:00 +0000</pubDate>
+      <author>Andrey Krisanov</author>
+      <link>https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/</link>
+      <guid>https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/</guid>
+      <description xml:base="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/"><![CDATA[
+        <p>Published: 2023-10-12</p>
+        
+        
+          <p>If you're working on a project that needs to be packaged for a specific environment other than your
+machine, the CI/CD server is your best friend. Products like Github Actions can save you time and
+the hassle of building dependencies you won't use in development.</p>
+<p>For example, many developers love Mac computers, especially the ones that come with Apple silicon.
+The sad truth is that we rarely deploy our code on servers with these processors and MacOS.
+Most of the time, projects run on Linux. Unfortunately, Python can't guarantee a deterministic
+or reproducible environment.</p>
+<p>Running the command to create a list of all the dependencies that your package will need gives
+a different result on MacOS, Linux, Windows, and so on:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">pip-compile</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-allow-unsafe</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-generate-hashes</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-no-emit-index-url</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-output-file=requirements-lock.txt</span><span style="color: light-dark(#179299, #94E2D5);"> &gt;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> requirements-lock.txt</span></span></code></pre>
+<p><span class="img-title">Using pip-tools to compile a requirements.txt file from your dependencies</span></p>
+<p>Not all dependencies have universal wheels. Moreover, users can install different Python versions.</p>
+<p>Now that you see the problem, let's take a quick look at possible solutions.</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> B</span><span style="color: light-dark(#40A02B, #A6E3A1);">uild requirements-lock.txt</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#FE640B, #FAB387);">on</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  w</span><span style="color: light-dark(#1E66F5, #89B4FA);">orkflow_dispatch</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">j</span><span style="color: light-dark(#1E66F5, #89B4FA);">obs</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  b</span><span style="color: light-dark(#1E66F5, #89B4FA);">uild-requirements-lock</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    r</span><span style="color: light-dark(#1E66F5, #89B4FA);">uns-on</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> u</span><span style="color: light-dark(#40A02B, #A6E3A1);">buntu-22.04</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    s</span><span style="color: light-dark(#1E66F5, #89B4FA);">teps</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> u</span><span style="color: light-dark(#1E66F5, #89B4FA);">ses</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> a</span><span style="color: light-dark(#40A02B, #A6E3A1);">ctions/checkout@v3</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> S</span><span style="color: light-dark(#40A02B, #A6E3A1);">et up Python 3.9</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        u</span><span style="color: light-dark(#1E66F5, #89B4FA);">ses</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> a</span><span style="color: light-dark(#40A02B, #A6E3A1);">ctions/setup-python@v3</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        w</span><span style="color: light-dark(#1E66F5, #89B4FA);">ith</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          p</span><span style="color: light-dark(#1E66F5, #89B4FA);">ython-version</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">3.9</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> I</span><span style="color: light-dark(#40A02B, #A6E3A1);">nstall pip and pip-tools</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        r</span><span style="color: light-dark(#1E66F5, #89B4FA);">un</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#8839EF, #CBA6F7);"> |</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          pip install --upgrade pip</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          pip install --upgrade pip-tools</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> R</span><span style="color: light-dark(#40A02B, #A6E3A1);">un pip-compile</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        r</span><span style="color: light-dark(#1E66F5, #89B4FA);">un</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#8839EF, #CBA6F7);"> |</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">          pip-compile --allow-unsafe --generate-hashes --no-emit-index-url --output-file=requirements-lock.txt &gt; requirements-lock.txt</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> U</span><span style="color: light-dark(#40A02B, #A6E3A1);">pload requirements-lock artifact</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        u</span><span style="color: light-dark(#1E66F5, #89B4FA);">ses</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> a</span><span style="color: light-dark(#40A02B, #A6E3A1);">ctions/upload-artifact@v3.1.1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        w</span><span style="color: light-dark(#1E66F5, #89B4FA);">ith</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> r</span><span style="color: light-dark(#40A02B, #A6E3A1);">equirements-lock</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          p</span><span style="color: light-dark(#1E66F5, #89B4FA);">ath</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> r</span><span style="color: light-dark(#40A02B, #A6E3A1);">equirements-lock.txt</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          r</span><span style="color: light-dark(#1E66F5, #89B4FA);">etention-days</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 3</span></span></code></pre>
+<p><span class="img-title">build-requirements-lock-workflow</span></p>
+<p>The Github Actions manifest above defines a workflow that can be triggered manually
+on any branch you like.</p>
+<p>Suppose you're upgrading some dependencies in requirement.txt. <code>pip install -r requirements.txt</code>
+works fine. Now you want to generate a new lock file for the users. You commit the changes to your
+branch, wait for the tests to pass, and trigger the workflow:</p>
+<p><img src="/images/gh-actions-lockfile.png" alt="" />
+<span class="img-title">Github Actions Workflow</span></p>
+<p>A freshly generated requirements-lock.txt appears in downloadable artifacts.
+You download the file and add it to the repo.</p>
+<p>Another option might be to run a similar workflow in a Docker container. I posted a note about
+multi-architecture builds a few months ago. <a rel="noopener external" target="_blank" href="https://dev.to/akrisanov/building-multi-arch-images-for-arm-and-x86-2802">Take a look!</a>
+Just make sure you choose the same architecture and Python version that you want to distribute your project to.</p>
+<div class="callout callout-bdc">
+Other tools like Poetry might do the job better and provide more convenient ways of managing lock files.
+But if you have reasons to not use them, it's totally fine to stick with good old pip.
+</div>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

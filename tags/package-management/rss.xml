@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - package-management</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/package-management/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Wed, 10 Sep 2025 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>uv: Cargo-like Python Tool That Replaces pipx, pyenv, and more</title>
+      <pubDate>Wed, 10 Sep 2025 00:00:00 +0000</pubDate>
+      <author>Andrey Krisanov</author>
+      <link>https://akrisanov.com/uv/</link>
+      <guid>https://akrisanov.com/uv/</guid>
+      <description xml:base="https://akrisanov.com/uv/"><![CDATA[
+        <p>Published: 2025-09-10</p>
+        
+        
+          <h2 id="overview">Overview</h2>
+<blockquote>
+<p><code>uv</code> is an end-to-end solution for managing <a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/guides/projects/">Python projects</a>,
+<a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/guides/tools/">command-line tools</a>,
+<a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/guides/scripts/">single-file scripts</a>, and even
+<a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/guides/install-python/">Python itself</a>.</p>
+</blockquote>
+<p>Think of it as Python’s Cargo: a unified, cross‑platform tool that’s fast, reliable, and easy to use.</p>
+<p>This post is not a deep introduction to uv — many excellent articles already exist; instead,
+it’s a concise cheat sheet for everyday use.</p>
+<h2 id="installation-updates">Installation &amp; Updates</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Install</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">curl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">LsSf</span><span style="color: light-dark(#40A02B, #A6E3A1);"> https://astral.sh/uv/install.sh</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> sh</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Update</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> self</span><span style="color: light-dark(#40A02B, #A6E3A1);"> update</span></span></code></pre><h2 id="managing-python-versions">Managing Python Versions</h2>
+<p>Instead of juggling tools like pyenv, mise, asdf, or OS‑specific hacks, you can simply use uv:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> List available versions</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> python</span><span style="color: light-dark(#40A02B, #A6E3A1);"> list</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Install Python 3.13</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> python</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#FE640B, #FAB387);"> 3.13</span></span></code></pre>
+<ul>
+<li>Works the same across all OSes</li>
+<li>No admin rights required</li>
+<li>Independent of system Python</li>
+</ul>
+<p>You can also use <a rel="noopener external" target="_blank" href="https://github.com/jdx/mise">mise</a> alongside uv if you prefer a global version manager.</p>
+<h2 id="projects-dependencies">Projects &amp; Dependencies</h2>
+<p>Initialize a new project (creates a pyproject.toml automatically):</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> init</span><span style="color: light-dark(#40A02B, #A6E3A1);"> myproject</span><span style="color: light-dark(#40A02B, #A6E3A1);"> or</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> uv init -p 3.13 --name myproject</span></span>
+<span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">cd</span><span style="color: light-dark(#40A02B, #A6E3A1);"> myproject</span></span></code></pre>
+<p>Sync dependencies (similar to <code>pip install -r requirements.txt</code>, but faster and more reliable):</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> sync</span></span></code></pre>
+<p>Add dependencies:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> add</span><span style="color: light-dark(#40A02B, #A6E3A1);"> litestar</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> add</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pytest</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-dev</span></span></code></pre>
+<p>Lock dependencies (generates a cross‑platform lockfile, like Pipfile.lock or poetry.lock):</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> lock</span></span></code></pre>
+<blockquote>
+<p>💡 The lock file is cross platform, so you can develop on Windows and deploy on Linux.</p>
+</blockquote>
+<h2 id="fast-virtual-environments">Fast Virtual Environments</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Create &amp; activate venv automatically</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> venv</span></span>
+<span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">source</span><span style="color: light-dark(#40A02B, #A6E3A1);"> .venv/bin/activate</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Or skip activation and run directly with uv:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> python</span><span style="color: light-dark(#40A02B, #A6E3A1);"> app.py</span></span></code></pre><h2 id="scripts">Scripts</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Create a new script</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> init</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-script</span></span></code></pre><pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="python"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> /// script</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> requires-python = &quot;&gt;=3.13&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> dependencies = [</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">     &quot;requests&quot;,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> ]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> ///</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">import</span><span> requests</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#FE640B, #FAB387);font-style: italic;">print</span><span style="color: light-dark(#7C7F93, #9399B2);">(</span><span>requests</span><span style="color: light-dark(#7C7F93, #9399B2);">.</span><span style="color: light-dark(#1E66F5, #89B4FA);">get</span><span style="color: light-dark(#7C7F93, #9399B2);">(</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">https://akrisanov.com</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">)</span><span style="color: light-dark(#7C7F93, #9399B2);">)</span></span></code></pre>
+<p>Run single‑file scripts with automatic dependency installation:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> script.py</span></span></code></pre>
+<blockquote>
+<p>💡  On *nix, add <code>#!/usr/bin/env -S uv run</code> (then <code>chmod +x</code>) to automatically call <code>uv run</code> for a script.</p>
+</blockquote>
+<h2 id="tools">Tools</h2>
+<p>Install CLI tools globally, isolated from system Python:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> tool</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ruff</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> replaces pipx</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> tool</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> httpie</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uvx</span><span style="color: light-dark(#40A02B, #A6E3A1);"> httpie</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> a shortcut</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> --with [temp dependency] runs jupyter in the current project</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> without adding it and its dependencies to the project</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-with</span><span style="color: light-dark(#40A02B, #A6E3A1);"> jupyter</span><span style="color: light-dark(#40A02B, #A6E3A1);"> jupyter</span><span style="color: light-dark(#40A02B, #A6E3A1);"> notebook</span></span></code></pre>
+<blockquote>
+<p>💡 <code>uv</code> run is fast enough that it implicitly re‑locks and re‑syncs the project each time, keeping your environment
+up to date automatically.</p>
+</blockquote>
+<p>If you're developing a CLI tool, uv can help minimize the friction:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> init</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-package</span><span style="color: light-dark(#40A02B, #A6E3A1);"> your_tool</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> tool</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> .</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">e</span></span></code></pre>
+<p>See the <a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/concepts/tools/">tools documentation</a></p>
+<h2 id="replacing-pip-tools">Replacing pip-tools</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pip</span><span style="color: light-dark(#40A02B, #A6E3A1);"> compile</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> replaces pip-tools compile</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pip</span><span style="color: light-dark(#40A02B, #A6E3A1);"> sync</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">    #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> replaces pip-tools sync</span></span></code></pre><h2 id="building-and-publishing-packages">Building and publishing packages</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Build a `.whl` package for PyPI</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> build</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Upload your Python package to PyPI</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> publish</span></span></code></pre><h2 id="pre-commit-hooks">Pre-commit hooks</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-with</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pre-commit-uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pre-commit</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-all-files</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">pre-commit-uv</span></span></code></pre><h2 id="github-actions">GitHub Actions</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">a</span><span style="color: light-dark(#40A02B, #A6E3A1);">stral-sh/setup-uv</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> brings UV to GitHub Actions</span></span></code></pre><h2 id="docker">Docker</h2>
+<p>Official Docker images provide uv and Python preinstalled:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="docker"><span class="giallo-l"><span>ghcr.io/astral-sh/uv:latest</span></span></code></pre>
+<p>Also, check <a rel="noopener external" target="_blank" href="https://hynek.me/articles/docker-uv/">Production-ready Python Docker Containers with uv</a> by Hynek Schlawack.</p>
+<h2 id="workspaces">Workspaces</h2>
+<p><code>uv</code> supports organizing one or more packages into a <a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/concepts/projects/workspaces/">workspace</a>
+to manage them together.</p>
+<p><em>Example</em>: you might have a FastAPI web application alongside several libraries, all versioned and maintained as separate
+Python packages in the same Git repository.</p>
+<p>In a workspace, each package has its own <code>pyproject.toml</code>, but the workspace shares a single lockfile, ensuring that
+the workspace operates with a consistent set of dependencies.</p>
+<h2 id="things-to-keep-in-mind">Things to Keep in Mind</h2>
+<ul>
+<li><code>uv sync</code> respects <code>.python-version</code>, but the <code>UV_PYTHON</code> environment variable takes precedence</li>
+<li>Uses python‑build‑standalone, which can be slightly slower than system builds (~1–3%) and lacks CPU‑specific optimizations</li>
+<li>Cache size can grow large (a trade‑off for speed and reliability)</li>
+<li>Legacy projects may fail if they depended on pip’s older, looser dependency resolution rules</li>
+</ul>
+<h2 id="why-uv-matters">Why uv Matters</h2>
+<p>Python has always had a fragmented ecosystem of tools: pip, pip-tools, virtualenv, venv, pipx, pyenv, poetry, tox…</p>
+<p>With uv, we finally get something closer to Rust’s Cargo or JavaScript’s npm/pnpm:
+a single, consistent, cross‑platform tool for environments, dependencies, scripts, and tools — and it’s fast.</p>
+<h2 id="references-further-reading">References &amp; Further Reading</h2>
+<ul>
+<li><a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-sources">Dependency Sources</a>
+— explains how uv resolves dependencies</li>
+<li><a rel="noopener external" target="_blank" href="https://blog.pecar.me/uv-with-django">UV with Django</a></li>
+<li><a rel="noopener external" target="_blank" href="https://peps.python.org/pep-0723/">PEP 723 – Inline script metadata</a></li>
+<li><a rel="noopener external" target="_blank" href="https://github.com/astral-sh/uv/issues/5903">WIP: Using uv run as a task runner</a></li>
+</ul>
+<h2 id="additional-notes">Additional Notes</h2>
+<ul>
+<li>While some people don’t care about uv being fast, it’s shaved minutes off CI builds and container rebuilds —
+saving money and energy.</li>
+<li>Astral capitalized on a very promising project called
+<a rel="noopener external" target="_blank" href="https://github.com/astral-sh/python-build-standalone">python-build-standalone</a> and now maintains it.
+These are Python builds that work without installers.</li>
+</ul>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

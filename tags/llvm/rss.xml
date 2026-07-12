@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - llvm</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/llvm/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Tue, 19 May 2026 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>My Modern C++ Setup on macOS and Apple Silicon</title>
+      <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
+      <author>Andrey Krisanov</author>
+      <link>https://akrisanov.com/macos-apple-silicon-cpp-setup/</link>
+      <guid>https://akrisanov.com/macos-apple-silicon-cpp-setup/</guid>
+      <description xml:base="https://akrisanov.com/macos-apple-silicon-cpp-setup/"><![CDATA[
+        <p>Published: 2026-05-19</p>
+        
+        
+          <p>I’m starting to learn modern C++ seriously (yes, seriously), so I wanted a clean and repeatable development setup on
+macOS with Apple Silicon.</p>
+<p>My goals are simple:</p>
+<ul>
+<li>use a modern LLVM/Clang toolchain</li>
+<li>build projects with CMake and Ninja</li>
+<li>get proper language-server support in VS Code and Helix</li>
+<li>use sanitizers and static analysis from the beginning</li>
+<li>keep the setup practical, not over-engineered</li>
+<li>make sure everything is reproducible on any M-series Mac</li>
+</ul>
+<p>This post is a cheatsheet and assumes that Homebrew is already installed.</p>
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>
