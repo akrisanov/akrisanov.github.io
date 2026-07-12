@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-MAGICK=""
+IM_MODE=""
+IM_CONVERT=""
+IM_IDENTIFY=""
+
 if command -v magick >/dev/null 2>&1; then
-    MAGICK=$(command -v magick)
-elif command -v convert >/dev/null 2>&1; then
-    MAGICK=$(command -v convert)
+    IM_MODE="magick"
+    IM_CONVERT=$(command -v magick)
+    IM_IDENTIFY="$(command -v magick) identify"
+elif command -v convert >/dev/null 2>&1 && command -v identify >/dev/null 2>&1; then
+    IM_MODE="legacy"
+    IM_CONVERT=$(command -v convert)
+    IM_IDENTIFY=$(command -v identify)
 else
-    echo "ImageMagick executable not found (expected 'magick' or 'convert')."
+    echo "ImageMagick executables not found (need either 'magick', or both 'convert' and 'identify')."
     exit 1
 fi
 FONT=
@@ -46,16 +53,16 @@ render_card() {
   title_img=$(mktemp /tmp/preview-title-XXXXXX.png)
   subtitle_img=$(mktemp /tmp/preview-subtitle-XXXXXX.png)
 
-  "$MAGICK" -background none -fill '#ff40b9' -font "$FONT" -pointsize 72 \
+    "$IM_CONVERT" -background none -fill '#ff40b9' -font "$FONT" -pointsize 72 \
     -gravity northwest -size 1008x caption:"$title" "$title_img"
-  "$MAGICK" -background none -fill '#11c068' -font "$FONT" -pointsize 36 \
+    "$IM_CONVERT" -background none -fill '#11c068' -font "$FONT" -pointsize 36 \
     -gravity northwest -size 1008x caption:"$subtitle" "$subtitle_img"
 
-  title_h=$($MAGICK identify -format '%h' "$title_img")
-  subtitle_h=$($MAGICK identify -format '%h' "$subtitle_img")
+    title_h=$($IM_IDENTIFY -format '%h' "$title_img")
+    subtitle_h=$($IM_IDENTIFY -format '%h' "$subtitle_img")
   subtitle_y=$((112 + title_h + 24))
 
-  "$MAGICK" -size 1200x630 xc:'#26212b' \
+    "$IM_CONVERT" -size 1200x630 xc:'#26212b' \
     -fill '#ff40b9' -draw 'rectangle 96,102 304,108' \
     "$title_img" -geometry +96+112 -composite \
     "$subtitle_img" -geometry +96+${subtitle_y} -composite \
