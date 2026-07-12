@@ -1,6 +1,6 @@
 +++
 title = "Choosing Apache Kafka For A New Project – A Questionnaire"
-description = "You're starting a new project with Apache Kafka. Before setting up broker parameters and writing producers and consumers, what questions should you ask yourself? To ensure a smooth start, I have prepared the following checklist/questionnaire."
+description = "A practical questionnaire for deciding whether Apache Kafka fits your project, covering throughput, retention, guarantees, partitioning, and consumer groups."
 date = 2023-08-29
 draft = false
 

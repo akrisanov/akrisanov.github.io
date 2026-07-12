@@ -1,6 +1,6 @@
 +++
 title = "Convert Flac to Apple Lossless With FFmpeg"
-description = "How to use FFmpeg to convert FLAC files to Apple Lossless without losing the original quality and uploading them to Apple Music."
+description = "Convert FLAC to Apple Lossless (ALAC) with FFmpeg while preserving audio quality and metadata, then import the files into Apple Music."
 date = 2023-10-23
 draft = false
 

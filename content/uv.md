@@ -1,6 +1,6 @@
 +++
 title = "uv: Cargo-like Python Tool That Replaces pipx, pyenv, and more"
-description = "A concise cheat sheet for uv: managing Python versions, dependencies, virtual environments, scripts, and tools in one fast, cross-platform tool."
+description = "A concise uv cheat sheet for managing Python versions, environments, dependencies, tools, and scripts in one workflow."
 date = 2025-09-10
 draft = false
 

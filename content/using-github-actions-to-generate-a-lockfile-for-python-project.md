@@ -1,6 +1,6 @@
 +++
 title = "Generating A Lockfile For Python Project Using Github Actions"
-description = "Using Github Actions and pip-tools to compile a requirements.txt file from your dependencies."
+description = "Generate a reproducible Python requirements lockfile with GitHub Actions and pip-tools for consistent CI and CD builds."
 date = 2023-10-12
 draft = false
 

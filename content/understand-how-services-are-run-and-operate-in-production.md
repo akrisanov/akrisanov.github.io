@@ -1,6 +1,6 @@
 +++
 title = "Understand How Services Are Run And Operate In Production"
-description = "Over the past few years, I've been interviewing dozens of software engineers who didn't know how their developed services run in production."
+description = "Why software engineers should understand how services run in production, and which operational basics matter most."
 date = 2023-09-06
 draft = false
 

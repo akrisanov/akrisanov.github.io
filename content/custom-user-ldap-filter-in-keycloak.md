@@ -1,6 +1,6 @@
 +++
 title = "Synchronizing Users From LDAP With Keycloak Using AD Filters"
-description = "Keycloak allows configuring a custom LDAP user filter for User Federation to select a subset of user entries in Active Directory."
+description = "Use Keycloak User Federation with a custom LDAP filter to sync only the Active Directory users your realm actually needs."
 date = 2023-09-23
 draft = false
 

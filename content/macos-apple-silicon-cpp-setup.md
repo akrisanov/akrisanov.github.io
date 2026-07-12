@@ -1,7 +1,7 @@
 +++
 title = "My Modern C++ Setup on macOS and Apple Silicon"
 date = 2026-05-19
-description = "A practical setup for learning modern C++ on macOS with Apple Silicon, LLVM, CMake, Ninja, VS Code, Helix, and mise"
+description = "A practical modern C++ setup on Apple Silicon macOS with LLVM, CMake, Ninja, VS Code, Helix, and mise."
 draft = false
 
 [taxonomies]

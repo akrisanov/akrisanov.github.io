@@ -1,6 +1,6 @@
 +++
 title = "About"
-description = "Andrey Krisanov is a software engineer specializing in production LLM inference, GPU-backed AI infrastructure, and distributed systems."
+description = "About Andrey Krisanov, a software engineer focused on production LLM inference, GPU-backed AI infrastructure, and distributed systems."
 template = "static_page.html"
 path = "about"
 date = 2024-01-01

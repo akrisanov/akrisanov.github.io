@@ -1,6 +1,6 @@
 +++
 title = "Building Multi-Arch Images for Arm and x86"
-description = "In situations where CI is not available, building multi-arch images locally can save the day."
+description = "Build and publish multi-architecture Docker images for Arm64 and x86_64 locally when CI pipelines are unavailable."
 date = 2023-08-10
 draft = false
 

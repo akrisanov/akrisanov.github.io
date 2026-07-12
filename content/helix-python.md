@@ -1,6 +1,6 @@
 +++
 title = "Helix for Python Development"
-description = "Configure modern Python tooling in Helix: LSP, type checker (ty), code formatter (ruff) and more."
+description = "Set up Helix for productive Python development with LSP, ty type checking, ruff formatting and linting, and practical editor tweaks."
 date = 2026-03-29
 draft = false
 

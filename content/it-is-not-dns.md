@@ -1,6 +1,6 @@
 +++
 title = "My \"It's not DNS\" story"
-description = "The story about the DNS resolver, Linux VMs, experienced infrastructure team, and me troubleshooting an incident happened on Sunday morning."
+description = "An incident story about DNS resolution failures on Linux VMs and the troubleshooting process that led to the real root cause."
 date = 2023-08-12
 draft = false
 

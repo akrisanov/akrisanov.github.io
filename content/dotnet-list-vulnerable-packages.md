@@ -1,6 +1,6 @@
 +++
 title = "Identifying Vulnerable Dependencies In .NET Projects"
-description = "How to scan NuGet packages for security vulnerabilities using GitLab CI."
+description = "Scan .NET dependencies for known NuGet vulnerabilities and automate checks in GitLab CI to improve supply chain security."
 date = 2024-05-07
 draft = false
 
