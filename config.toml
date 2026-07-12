@@ -1,7 +1,7 @@
 base_url = "https://akrisanov.com"
 title = "Andrey Krisanov"
 
-description = "Staff Software Engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability."
+description = "Software engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability."
 
 default_language = "en"
 author = "Andrey Krisanov"
@@ -28,7 +28,7 @@ dark_theme = "catppuccin-mocha"
 
 [extra]
 blog_subtitle = "Production LLM inference, AI infrastructure, and distributed systems"
-home_title = "Andrey Krisanov — AI Infrastructure & LLM Inference Engineer"
+home_title = "Andrey Krisanov — LLM Inference & AI Infrastructure"
 
 [link_checker]
 skip_prefixes = ["https://", "http://"]

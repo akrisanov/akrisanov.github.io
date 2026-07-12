@@ -10,8 +10,7 @@
       name="description"
       content="{% block description %}{{ config.description }}{% endblock description %}"
     />
-    {% block robots %}{% endblock robots %}
-    {% block canonical %}
+    {% block robots %}{% endblock robots %} {% block canonical %}
     <link rel="canonical" href="{{ current_url | safe }}" />
     {% endblock canonical %}
 
@@ -101,11 +100,10 @@
                     >About</a
                   >
                   <a
-                    href="/now/"
-                    class="header-nav-link{% if current_path is defined and current_path == '/now/' %} is-active{% endif %}"
-                    >Now</a
+                    href="/files/andrey-krisanov-cv.pdf"
+                    class="header-nav-link"
+                    >Résumé</a
                   >
-                  <a href="/files/cv.pdf" class="header-nav-link">Résumé</a>
                 </nav>
               </div>
             </div>

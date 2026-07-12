@@ -1,57 +1,46 @@
 +++
 title = "About"
-description = "Andrey Krisanov is a Staff Software Engineer focused on production LLM inference, AI infrastructure, and distributed systems."
+description = "Andrey Krisanov is a software engineer specializing in production LLM inference, GPU-backed AI infrastructure, and distributed systems."
 template = "static_page.html"
 path = "about"
 date = 2024-01-01
 
 [extra]
-seo_title = "About Andrey Krisanov — AI Infrastructure & LLM Inference"
+seo_title = "About Andrey Krisanov — LLM Inference & AI Infrastructure"
 +++
 
 ## Hi, I'm Andrey
 
-I'm a Staff Software Engineer focused on production LLM inference, AI infrastructure, and distributed systems.
-I like turning complex systems into something boring, reliable, and easy to reason about.
+I'm a software engineer specializing in production LLM inference, AI infrastructure and distributed systems.
+I enjoy transforming complex systems into something straightforward, dependable, and easy to understand.
 
-At Severstal, I lead the architecture and evolution of DaVinci, a shared GenAI platform supporting enterprise AI products,
-coding agents, and agentic workflows. Its inference foundation currently runs on 24 NVIDIA H200 GPUs and is
-expanding to 48 H200 and 8 H100 GPUs across two data centers.
+At Severstal, I am responsible for the architecture and technical development of DaVinci, a shared GenAI platform
+that supports enterprise AI products and coding agents. Its inference foundation currently runs self-hosted,
+open-weight models on Kubernetes, vLLM and 24 NVIDIA H200 GPUs.
 
-My work covers Kubernetes and vLLM model serving, traffic management, performance and reliability engineering,
-observability, model lifecycle, capacity planning, and multi-data-center failover and recovery.
+My work covers model serving, traffic routing and admission control, performance and reliability, observability,
+capacity planning, safe model rollout and multi-data-centre resilience. I also designed the target topology and
+resilience strategy for a planned expansion to 48 H200 and eight H100 GPUs across two data centres.
 
 ## Background
 
-I've spent 15+ years building backend, cloud, distributed, and SaaS systems in startups and
-large companies across Germany and Russia.
+Prior to specialising in AI infrastructure, I developed and scaled production systems in the SaaS, fintech,
+data privacy, payments and high-traffic consumer products sectors.
 
-Before working on AI infrastructure, I:
+My experience includes:
 
-- led the modernization of a $3M+ ARR SaaS platform, improving critical backend paths by 2–10x and reaching 99.998% availability;
-- designed and launched a content platform that grew to more than 20 million monthly active users;
-- built systems in fintech, data privacy, payments, media, and B2B SaaS;
-- worked across senior individual-contributor, technical-leadership, and CTO roles.
+- modernising a $3M+ ARR SaaS platform and improving critical backend paths by 2–10x, while achieving 99.998% availability;
+- designing and launching a content platform that reached over 20 million monthly active users;
+- building backend, cloud and distributed systems for start-ups and established companies in Germany and Russia.
+- working in senior individual contributor, technical leadership and CTO roles.
 
-The common thread has been taking responsibility for systems that are important, technically complicated, and expected
-to work reliably in production.
-
-## What I care about
-
-I'm especially interested in:
-
-- production LLM serving and inference performance
-- reliable AI platforms and model-delivery systems
-- observability, evaluation, capacity planning, and failure modes
-- distributed systems that remain understandable and maintainable
-- developer tooling that improves delivery without hiding operational complexity
-
-I prefer measurable reliability, explicit trade-offs, and production evidence over impressive demos.
+I have consistently taken responsibility for important, technically complicated systems that are expected to work
+reliably in production.
 
 ## Writing and contact
 
-This site is where I write about AI infrastructure, LLM systems, distributed systems, and software engineering.
+On this site, I write about AI infrastructure, LLM inference, distributed systems and the practical lessons
+I have learned from operating production platforms.
 
-You can also find me on [GitHub](https://github.com/akrisanov) and [LinkedIn](https://www.linkedin.com/in/akrisanov/), download my [résumé](/files/cv.pdf), or contact me by email.
-
-Outside work, I spend time with my family, read books, and explore new places whenever I can.
+You can find my projects on [GitHub](https://github.com/akrisanov), connect with me on
+[LinkedIn](https://www.linkedin.com/in/akrisanov/), or download my [résumé](/files/andrey-krisanov-cv.pdf).
