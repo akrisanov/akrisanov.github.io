@@ -5,10 +5,10 @@ date = 2026-01-27
 draft = false
 
 [taxonomies]
-tags = ["vllm", "llm", "inference"]
+tags = ["vllm", "llm-inference", "gpu", "performance"]
 
 [extra]
-keywords = "vLLM, LLM, inference, serving, AI, backend, infrastructure"
+keywords = "vllm, llm-inference, gpu, performance, ai-infrastructure"
 toc = true
 static_thumbnail = "/images/social-vllm.png"
 

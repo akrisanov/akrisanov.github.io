@@ -5,10 +5,10 @@ date = 2023-10-12
 draft = false
 
 [taxonomies]
-tags = ["python", "github-actions"]
+tags = ["python", "github-actions", "dependency-management", "pip-tools"]
 
 [extra]
-keywords = "python, github-actions, lockfile"
+keywords = "python, github-actions, dependency-management, pip-tools"
 toc = false
 static_thumbnail = "/images/social-using-github-actions-to-generate-a-lockfile-for-python-project.png"
 

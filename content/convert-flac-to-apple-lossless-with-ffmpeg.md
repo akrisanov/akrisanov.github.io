@@ -5,10 +5,10 @@ date = 2023-10-23
 draft = false
 
 [taxonomies]
-tags = ["apple", "music", "ffmpeg"]
+tags = ["ffmpeg", "apple-music", "audio", "flac", "alac"]
 
 [extra]
-keywords = "apple, music, ffmpeg, lossless, audio"
+keywords = "ffmpeg, apple-music, audio, flac, alac, lossless"
 toc = false
 static_thumbnail = "/images/social-convert-flac-to-apple-lossless-with-ffmpeg.png"
 

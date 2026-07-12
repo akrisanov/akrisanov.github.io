@@ -5,10 +5,10 @@ date = 2025-09-10
 draft = false
 
 [taxonomies]
-tags = ["python", "tooling", "cheat-sheet"]
+tags = ["python", "uv", "developer-tooling", "package-management", "cheat-sheet"]
 
 [extra]
-keywords = "python, virtualenv, pip, pipx, poetry, uv, packaging, cheat-sheet"
+keywords = "python, uv, developer-tooling, package-management, virtualenv, cheat-sheet"
 toc = true
 static_thumbnail = "/images/social-uv.png"
 

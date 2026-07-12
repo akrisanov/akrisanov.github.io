@@ -5,10 +5,10 @@ date = 2026-03-29
 draft = false
 
 [taxonomies]
-tags = ["helix", "python", "tooling"]
+tags = ["helix", "python", "developer-tooling", "lsp"]
 
 [extra]
-keywords = "helix, python, lsp, ty, ruff, formatter, type checker, code analysis"
+keywords = "helix, python, developer-tooling, lsp, ty, ruff"
 static_thumbnail = "/images/social-helix-python.png"
 
 +++

@@ -5,9 +5,10 @@ description = "A practical setup for learning modern C++ on macOS with Apple Sil
 draft = false
 
 [taxonomies]
-tags = ["cpp", "macos", "apple-silicon", "llvm", "cmake", "vscode", "helix", "mise"]
+tags = ["cpp", "macos", "apple-silicon", "llvm", "cmake", "developer-tooling"]
 
 [extra]
+keywords = "cpp, macos, apple-silicon, llvm, cmake, developer-tooling"
 toc = true
 static_thumbnail = "/images/social-macos-apple-silicon-cpp-setup.png"
 

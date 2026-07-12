@@ -5,10 +5,10 @@ date = 2023-08-10
 draft = false
 
 [taxonomies]
-tags = ["docker", "devops"]
+tags = ["docker", "containers", "multi-arch", "devops"]
 
 [extra]
-keywords = "docker, devops, arm, x86, multi-arch"
+keywords = "docker, containers, multi-arch, devops, arm64, amd64"
 toc = false
 static_thumbnail = "/images/social-multi-arch-docker-images.png"
 

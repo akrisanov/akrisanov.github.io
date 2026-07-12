@@ -5,10 +5,10 @@ date = 2023-09-23
 draft = false
 
 [taxonomies]
-tags = ["keycloak"]
+tags = ["keycloak", "ldap", "active-directory", "identity-access-management"]
 
 [extra]
-keywords = "keycloak, ldap, active-directory"
+keywords = "keycloak, ldap, active-directory, identity-access-management"
 toc = false
 static_thumbnail = "/images/social-custom-user-ldap-filter-in-keycloak.png"
 

@@ -105,14 +105,20 @@ for path in sorted(root.rglob('*.md')):
     footer = 'akrisanov.com'
 
     tags = []
-    if isinstance(meta.get('taxonomies'), dict):
-        tags = meta.get('taxonomies', {}).get('tags', []) or []
-    if isinstance(tags, str):
-        tags = [tags]
+    if isinstance(meta.get('tags'), list):
+        tags = [t for t in meta.get('tags', []) if isinstance(t, str)]
+    elif isinstance(meta.get('tags'), str):
+        tags = [meta.get('tags')]
+    elif isinstance(meta.get('taxonomies'), dict):
+        tx_tags = meta.get('taxonomies', {}).get('tags', []) or []
+        if isinstance(tx_tags, str):
+            tx_tags = [tx_tags]
+        if isinstance(tx_tags, list):
+            tags = [t for t in tx_tags if isinstance(t, str)]
 
     subtitle = ''
     if tags:
-        subtitle = ' · '.join(tags)
+        subtitle = ' · '.join(tags[:5])
     elif meta.get('description'):
         desc = meta['description'].strip()
         subtitle = desc.split('. ')[0]

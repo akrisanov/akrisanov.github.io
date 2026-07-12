@@ -5,10 +5,10 @@ date = 2023-08-12
 draft = false
 
 [taxonomies]
-tags = ["dns", "linux"]
+tags = ["dns", "linux", "incident-response", "troubleshooting"]
 
 [extra]
-keywords = "dns, linux, troubleshooting"
+keywords = "dns, linux, incident-response, troubleshooting"
 toc = false
 static_thumbnail = "/images/social-it-is-not-dns.png"
 

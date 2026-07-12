@@ -5,10 +5,10 @@ date = 2024-05-07
 draft = false
 
 [taxonomies]
-tags = [".NET", "NuGet", "DevOpsSec", "GitLab CI"]
+tags = ["dotnet", "nuget", "dependency-scanning", "supply-chain-security", "gitlab-ci"]
 
 [extra]
-keywords = ".NET, NuGet, DevOpsSec, supply chain attacks, GitLab CI"
+keywords = "dotnet, nuget, dependency-scanning, supply-chain-security, gitlab-ci"
 toc = false
 static_thumbnail = "/images/social-dotnet-list-vulnerable-packages.png"
 

@@ -4,10 +4,10 @@ description = "A step-by-step guide to setting up Kubernetes with NVIDIA GPU acc
 date = 2026-04-22
 
 [taxonomies]
-tags = ["kubernetes", "gpu", "wsl2", "nvidia", "k3s", "ml-infra"]
+tags = ["kubernetes", "wsl2", "nvidia", "gpu", "k3s", "ml-infrastructure"]
 
 [extra]
-keywords = "kubernetes, gpu, wsl2, nvidia, k3s, ml-infra, local cluster"
+keywords = "kubernetes, wsl2, nvidia, gpu, k3s, ml-infrastructure"
 toc = true
 static_thumbnail = "/images/social-wsl-nvidia-gpu.png"
 

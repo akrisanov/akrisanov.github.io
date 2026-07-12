@@ -5,10 +5,10 @@ date = 2023-08-29
 draft = false
 
 [taxonomies]
-tags = ["kafka", "system-design"]
+tags = ["kafka", "event-driven-architecture", "system-design"]
 
 [extra]
-keywords = "kafka, system-design"
+keywords = "kafka, event-driven-architecture, system-design"
 toc = false
 static_thumbnail = "/images/social-choosing-kafka.png"
 

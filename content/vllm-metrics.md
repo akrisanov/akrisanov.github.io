@@ -6,10 +6,10 @@ updated = 2026-06-18
 draft = false
 
 [taxonomies]
-tags = ["vllm", "llm", "inference", "metrics", "performance", "monitoring"]
+tags = ["vllm", "llm-inference", "observability", "prometheus", "grafana", "performance"]
 
 [extra]
-keywords = "vLLM metrics, vLLM monitoring, Prometheus, Grafana, TTFT, time to first token, ITL, inter-token latency, TPOT, KV cache, preemption, LLM latency, LLM throughput, inference performance, capacity planning"
+keywords = "vllm, llm-inference, observability, prometheus, grafana, performance"
 toc = true
 static_thumbnail = "/images/social-vllm-metrics.png"
 

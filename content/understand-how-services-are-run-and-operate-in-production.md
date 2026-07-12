@@ -5,10 +5,10 @@ date = 2023-09-06
 draft = false
 
 [taxonomies]
-tags = ["engineering"]
+tags = ["software-engineering", "production", "devops", "platform-engineering"]
 
 [extra]
-keywords = "backend, server model, job interview"
+keywords = "software-engineering, production, devops, platform-engineering"
 toc = false
 static_thumbnail = "/images/social-understand-how-services-are-run-and-operate-in-production.png"
 
