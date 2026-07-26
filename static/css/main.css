@@ -28,6 +28,11 @@
 
   --imageBorderColor: #e8e8e8;
   --inputBackgroundColor: rgb(213, 255, 253);
+  --scopeNoteBackgroundColor: rgba(48, 138, 240, 0.06);
+  --keyPointColor: rgb(142, 51, 245);
+  --tableHeaderBackgroundColor: rgba(255, 0, 160, 0.06);
+  --tableStripeBackgroundColor: rgba(64, 48, 144, 0.025);
+  --tableStripeStickyBackgroundColor: rgb(250, 243, 249);
 
   --maxWidth: 1280px;
   --marginTop: 48px;
@@ -76,6 +81,11 @@
     --engineTextColor: var(--foregroundColor);
     --inputBackgroundColor: #253542;
     --imageBorderColor: #404040;
+    --scopeNoteBackgroundColor: rgba(144, 173, 255, 0.08);
+    --keyPointColor: rgb(180, 120, 255);
+    --tableHeaderBackgroundColor: rgba(255, 64, 185, 0.09);
+    --tableStripeBackgroundColor: rgba(239, 220, 239, 0.035);
+    --tableStripeStickyBackgroundColor: rgb(45, 40, 50);
   }
 }
 
@@ -199,7 +209,7 @@ td {
 th {
   font-weight: bold;
   color: var(--headingsColor);
-  background: rgba(255, 0, 160, 0.06);
+  background: var(--tableHeaderBackgroundColor);
 }
 
 /* --- Links --- */
@@ -530,16 +540,22 @@ a:hover {
   max-height: calc(100vh - 48px);
   overflow: auto;
   padding-top: 4px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--thinRuleColor) transparent;
 }
 
 .note-toc::-webkit-scrollbar {
-  display: none;
+  width: 6px;
+}
+
+.note-toc::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--thinRuleColor);
 }
 
 .note-toc-card {
   padding-left: 16px;
+  padding-right: 8px;
   border-left: 1px solid var(--thinRuleColor);
 }
 
@@ -579,11 +595,11 @@ a:hover {
 
 .note-toc-link {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   border-bottom: none;
   color: var(--foregroundColor);
-  opacity: 0.58;
+  opacity: 0.68;
   transition:
     color var(--time) ease-out,
     opacity var(--time) ease-out;
@@ -603,26 +619,21 @@ a:hover {
   opacity: 1;
 }
 
-.note-toc-track {
-  position: relative;
-  flex: 0 0 18px;
-  height: 4px;
-  border-radius: 999px;
+.note-toc-marker {
+  flex: 0 0 7px;
+  width: 7px;
+  height: 7px;
+  margin-top: 7px;
+  border-radius: 50%;
   background: var(--thinRuleColor);
-  overflow: hidden;
+  transition:
+    background-color 140ms ease-out,
+    box-shadow 140ms ease-out;
 }
 
-.note-toc-fill {
-  display: block;
-  width: 0;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--headingsColor), var(--hoverColor));
-  transition: width 140ms linear;
-}
-
-.note-toc-item.is-active .note-toc-track {
-  box-shadow: 0 0 0 1px rgba(255, 0, 160, 0.08);
+.note-toc-item.is-active > .note-toc-link .note-toc-marker {
+  background: var(--headingsColor);
+  box-shadow: 0 0 0 3px var(--headingsUnderlineColor);
 }
 
 .note-toc-text {
@@ -632,23 +643,65 @@ a:hover {
   word-break: break-word;
 }
 
+.note-toc-mobile {
+  display: none;
+}
+
 @media screen and (max-width: 1023px) {
   .note-layout {
     grid-template-columns: 1fr;
   }
 
-  .note-toc {
-    position: static;
-    max-height: none;
-    overflow: visible;
-    margin-bottom: 28px;
+  .note-toc-desktop {
+    display: none;
   }
 
-  .note-toc-card {
-    padding-left: 0;
-    border-left: none;
+  .note-toc-mobile {
+    display: block;
+    margin-bottom: 28px;
     border-top: 1px solid var(--thinRuleColor);
-    padding-top: 16px;
+    border-bottom: 1px solid var(--thinRuleColor);
+  }
+
+  .note-toc-mobile-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    color: var(--foregroundColor);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .note-toc-mobile-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .note-toc-mobile-summary::after {
+    content: "↓";
+    color: var(--headingsColor);
+    transition: transform 140ms ease-out;
+  }
+
+  .note-toc-mobile[open] .note-toc-mobile-summary::after {
+    transform: rotate(180deg);
+  }
+
+  .note-toc-mobile-panel {
+    max-height: min(60vh, 480px);
+    overflow: auto;
+    padding: 4px 2px 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--thinRuleColor) transparent;
+  }
+
+  .note-toc-mobile-panel .note-toc-list-child,
+  .note-toc-mobile-panel .note-toc-list-grandchild {
+    padding-left: 18px;
   }
 }
 
@@ -669,12 +722,60 @@ a:hover {
 
 .e2-text ul,
 .e2-text ol {
-  padding-left: 40px;
+  padding-left: 30px;
   max-width: 720px;
 }
 
 .e2-text li {
-  margin-bottom: 4px;
+  margin: 0;
+  padding-left: 4px;
+}
+
+.e2-text li + li {
+  margin-top: 8px;
+}
+
+.e2-text li::marker {
+  color: var(--headingsColor);
+  font-weight: bold;
+}
+
+.e2-text li > ul,
+.e2-text li > ol {
+  margin: 8px 0 0;
+  padding-left: 24px;
+}
+
+.e2-text li > p {
+  margin-bottom: 8px;
+}
+
+.e2-text li > p:last-child {
+  margin-bottom: 0;
+}
+
+.e2-text table {
+  font-size: 16px;
+  line-height: 23px;
+}
+
+.e2-text tbody tr:nth-child(even) {
+  background: var(--tableStripeBackgroundColor);
+}
+
+.e2-text
+  table:has(> thead > tr > th:nth-child(3):last-child)
+  th:first-child {
+  width: 22%;
+}
+
+.e2-text
+  table:has(> thead > tr > th:nth-child(3):last-child)
+  th:nth-child(2),
+.e2-text
+  table:has(> thead > tr > th:nth-child(3):last-child)
+  th:nth-child(3) {
+  width: 39%;
 }
 
 .e2-text h2,
@@ -744,6 +845,130 @@ a:hover {
   opacity: 0.8;
 }
 
+.article-scope-note {
+  margin: 28px 0;
+  padding: 16px 18px;
+  border: 1px solid var(--thinRuleColor);
+  border-left: 3px solid var(--linkColor);
+  border-radius: 8px;
+  background: var(--scopeNoteBackgroundColor);
+  font-size: 16px;
+  line-height: 23px;
+}
+
+.article-scope-note-title {
+  margin-bottom: 6px;
+  color: var(--linkColor);
+  font-size: var(--smallFontSize);
+  line-height: var(--smallLineHeight);
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.e2-text .article-scope-note-body p {
+  margin: 0;
+  max-width: none;
+}
+
+.article-key-point {
+  margin: 28px 0;
+  padding-left: 20px;
+  border-left: 3px solid var(--headingsColor);
+}
+
+.e2-text .article-key-point p {
+  margin: 0;
+  max-width: 680px;
+  color: var(--keyPointColor);
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: bold;
+}
+
+.further-reading {
+  margin-bottom: 20px;
+}
+
+.e2-text .further-reading ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 28px;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+  list-style: none;
+}
+
+.e2-text .further-reading li {
+  margin: 0;
+  padding: 12px 0;
+  border-top: 1px solid var(--thinRuleColor);
+  font-size: 16px;
+  line-height: 23px;
+}
+
+.further-reading a {
+  font-weight: bold;
+}
+
+.further-reading-description {
+  display: block;
+  margin-top: 3px;
+  color: var(--foregroundColor);
+  font-size: 14px;
+  line-height: 20px;
+  opacity: 0.72;
+}
+
+@media screen and (max-width: 639px) {
+  .e2-text ul,
+  .e2-text ol {
+    padding-left: 24px;
+  }
+
+  .e2-text li {
+    padding-left: 2px;
+  }
+
+  .e2-text table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .e2-text th:first-child,
+  .e2-text td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    min-width: 145px;
+    background: var(--backgroundColor);
+    box-shadow: 1px 0 0 var(--thinRuleColor);
+  }
+
+  .e2-text th:first-child {
+    z-index: 2;
+    background: var(--tableHeaderBackgroundColor);
+  }
+
+  .e2-text tbody tr:nth-child(even) td:first-child {
+    background: var(--tableStripeStickyBackgroundColor);
+  }
+
+  .e2-text th:not(:first-child),
+  .e2-text td:not(:first-child) {
+    min-width: 250px;
+  }
+
+  .e2-text .further-reading ul {
+    grid-template-columns: 1fr;
+  }
+}
+
 .e2-text img {
   border: 1px solid var(--imageBorderColor);
   border-radius: 6px;
@@ -751,18 +976,12 @@ a:hover {
 }
 
 .e2-text .lead {
-  color: rgb(142, 51, 245);
+  color: var(--keyPointColor);
   font-weight: bold;
   font-size: 22px;
   line-height: 28px;
   margin-bottom: 20px;
   max-width: 720px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .e2-text .lead {
-    color: rgb(180, 120, 255);
-  }
 }
 
 /* --- Tags --- */

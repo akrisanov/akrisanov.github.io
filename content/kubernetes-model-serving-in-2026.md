@@ -5,7 +5,7 @@ date = 2026-07-26
 draft = false
 
 [taxonomies]
-tags = ["kubernetes", "kserve", "llm-inference", "ai-infrastructure", "gpu", "gateway-api", "distributed-systems"]
+tags = ["kubernetes", "llm-inference", "ai-infrastructure", "gpu", "gateway-api"]
 
 [extra]
 keywords = "kubernetes, model serving, llm inference, kserve, llm-d, gateway api inference extension, leaderworkerset, dynamic resource allocation, gpu scheduling"
@@ -13,11 +13,7 @@ toc = true
 
 +++
 
-> This article reflects the ecosystem as of July 26, 2026. It focuses on Kubernetes 1.36, KServe 0.18,
-the generally available Gateway API Inference Extension, and the surrounding projects used for production LLM inference.
-These projects evolve quickly, so verify compatibility before adopting a specific combination.
-
-In October 2024, Yuan Tang published
+In October 2024, [Yuan Tang](https://www.linkedin.com/in/terrytangyuan/) published
 [AI/ML Innovation in the Kubernetes Ecosystem](https://terrytangyuan.github.io/2024/10/22/ai-ml-innovation-in-the-kubernetes-ecosystem/).
 The article described three important developments: Kubeflow Model Registry, KServe ModelCars, and TrustyAI.
 It also pointed toward multi-node serving, inference-aware gateways, speculative decoding, LoRA adapters, and
@@ -26,7 +22,9 @@ GenAI-specific APIs.
 The article was directionally right. But the most important change since then is larger than the progress of any
 single project:
 
-> Kubernetes model serving is becoming a stack of specialized, composable control-plane and data-plane components.
+{% key_point() %}
+Kubernetes model serving is becoming a stack of specialized, composable control-plane and data-plane components.
+{% end %}
 
 Kubernetes now has better primitives for distributing model files and allocating accelerators. Gateway API has
 gained inference-aware extensions. KServe has introduced a separate API for generative inference. `LeaderWorkerSet`
@@ -35,6 +33,12 @@ routing and distributed inference optimizations around engines such as [vLLM](ht
 
 At the same time, the ecosystem is not simpler. The new capabilities solve real problems, but they also introduce
 more controllers, APIs, compatibility constraints, and failure modes.
+
+{% scope_note(as_of="July 26, 2026", datetime="2026-07-26") %}
+This article covers Kubernetes 1.36, KServe 0.18, the generally available Gateway API Inference Extension,
+and related production model-serving projects. The ecosystem evolves quickly, so verify version compatibility
+before adopting a particular combination.
+{% end %}
 
 ## TL;DR
 
@@ -76,24 +80,30 @@ now sees inference as a problem with distributed systems that has its own set of
 flowchart TD
     Client["Client"]
 
-    Gateway["AI or API gateway<br/><br/>
-    - Authentication<br/>
-    - Quotas and token limits<br/>
-    - Payload policy and guardrails"]
+    Gateway["`**AI or API gateway**
+
+    • Authentication
+    • Quotas and token limits
+    • Payload policy and guardrails`"]
 
     Route["Gateway API route"]
 
-    InferencePool["InferencePool + endpoint picker<br/><br/>
-    - Queue-aware routing<br/>
-    - Prefix/KV-cache affinity<br/>
-    - Model or adapter availability"]
+    InferencePool["`**InferencePool + endpoint picker**
 
-    Workloads["Model-serving workloads<br/><br/>
-    - Single-node replicas<br/>
-    - Multi-node replicas<br/>
-    - Separate prefill and decode pools"]
+    • Queue-aware routing
+    • Prefix/KV-cache affinity
+    • Model or adapter availability`"]
 
-    Infrastructure["GPU, network, local model cache,<br/>and remote storage"]
+    Workloads["`**Model-serving workloads**
+
+    • Single-node replicas
+    • Multi-node replicas
+    • Separate prefill and decode pools`"]
+
+    Infrastructure["`**Infrastructure**
+
+    GPU, network, local model cache,
+    and remote storage`"]
 
     Client --> Gateway
     Gateway --> Route
@@ -562,18 +572,33 @@ to operate those optimizations as a reliable platform.
 
 The practical lesson is simple:
 
-> Build the smallest serving stack that meets today's SLOs, and add inference-specific layers only when data shows
-> that the simpler architecture has reached its limit.
+{% key_point() %}
+Build the smallest serving stack that meets today's SLOs, and add inference-specific layers only when data shows
+that the simpler architecture has reached its limit.
+{% end %}
 
-## Further reading
+## Sources and further reading
+
+{% further_reading() %}
 
 - [AI/ML Innovation in the Kubernetes Ecosystem (2024)](https://terrytangyuan.github.io/2024/10/22/ai-ml-innovation-in-the-kubernetes-ecosystem/)
+  <span class="further-reading-description">The original ecosystem overview revisited by this article.</span>
 - [Kubernetes 1.36 release notes](https://kubernetes.io/blog/2026/04/22/kubernetes-v1-36-release/)
+  <span class="further-reading-description">Upstream changes including stable OCI image volumes.</span>
 - [Gateway API Inference Extension](https://gateway-api-inference-extension.sigs.k8s.io/)
+  <span class="further-reading-description">API definitions and concepts for inference-aware routing.</span>
 - [KServe 0.18 release](https://kserve.github.io/website/blog/kserve-0.18-release)
+  <span class="further-reading-description">Generative inference and model-serving control-plane changes.</span>
 - [KServe LLMInferenceService overview](https://kserve.github.io/website/docs/model-serving/generative-inference/llmisvc/llmisvc-overview)
+  <span class="further-reading-description">The GenAI-specific serving API and its architecture.</span>
 - [LeaderWorkerSet overview](https://lws.sigs.k8s.io/docs/overview/)
+  <span class="further-reading-description">A Kubernetes API for groups of cooperating pods.</span>
 - [llm-d documentation](https://llm-d.ai/docs/0.7)
+  <span class="further-reading-description">Distributed inference, routing, and disaggregation components.</span>
 - [Kubernetes Dynamic Resource Allocation](https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/)
+  <span class="further-reading-description">The upstream resource-allocation model used by accelerator drivers.</span>
 - [Kubeflow Hub](https://www.kubeflow.org/docs/components/hub/)
+  <span class="further-reading-description">Model registry and federated catalog capabilities.</span>
 - [Kubernetes AI Gateway Working Group](https://kubernetes.io/blog/2026/03/09/announcing-ai-gateway-wg/)
+  <span class="further-reading-description">The effort to standardize AI gateway patterns in Kubernetes.</span>
+{% end %}

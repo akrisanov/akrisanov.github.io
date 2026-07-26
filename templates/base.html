@@ -61,7 +61,10 @@
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-180.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png" />
-    <link rel="stylesheet" href="/css/main.css" />
+    <link
+      rel="stylesheet"
+      href="{{ get_url(path='css/main.css', cachebust=true) }}"
+    />
     <script>
       if (!/Mac/.test(navigator.platform))
         document.documentElement.dataset.os = "other";

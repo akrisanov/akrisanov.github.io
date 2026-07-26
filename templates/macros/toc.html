@@ -1,0 +1,50 @@
+{% macro render(headings) %}
+<nav class="note-toc-nav" data-note-toc aria-label="Table of contents">
+  <ul class="note-toc-list note-toc-list-root">
+    {% for h1 in headings %}
+    <li class="note-toc-item note-toc-item-depth-1" data-toc-item>
+      <a
+        href="{{ h1.permalink | safe }}"
+        class="note-toc-link"
+        data-toc-link
+      >
+        <span class="note-toc-marker" aria-hidden="true"></span>
+        <span class="note-toc-text">{{ h1.title }}</span>
+      </a>
+      {% if h1.children %}
+      <ul class="note-toc-list note-toc-list-child">
+        {% for h2 in h1.children %}
+        <li class="note-toc-item note-toc-item-depth-2" data-toc-item>
+          <a
+            href="{{ h2.permalink | safe }}"
+            class="note-toc-link"
+            data-toc-link
+          >
+            <span class="note-toc-marker" aria-hidden="true"></span>
+            <span class="note-toc-text">{{ h2.title }}</span>
+          </a>
+          {% if h2.children %}
+          <ul class="note-toc-list note-toc-list-grandchild">
+            {% for h3 in h2.children %}
+            <li class="note-toc-item note-toc-item-depth-3" data-toc-item>
+              <a
+                href="{{ h3.permalink | safe }}"
+                class="note-toc-link"
+                data-toc-link
+              >
+                <span class="note-toc-marker" aria-hidden="true"></span>
+                <span class="note-toc-text">{{ h3.title }}</span>
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endmacro render %}
