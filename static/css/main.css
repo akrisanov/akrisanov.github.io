@@ -58,8 +58,8 @@
   --blogTitleLineHeight: 32px;
   --noteTextFontSize: 20px;
   --noteTextLineHeight: 28px;
-  --smallFontSize: 12px;
-  --smallLineHeight: 16px;
+  --smallFontSize: 13px;
+  --smallLineHeight: 18px;
 
   --mainFontFamily:
     system-ui, -apple-system, BlinkMacSystemFont, "SF UI Text", "Segoe UI",
@@ -524,7 +524,7 @@ summary:focus-visible {
   font-size: var(--smallFontSize);
   line-height: var(--smallLineHeight);
   color: var(--foregroundColor);
-  opacity: 0.5;
+  opacity: 0.62;
   white-space: nowrap;
 }
 
@@ -602,7 +602,7 @@ summary:focus-visible {
   color: var(--foregroundColor);
   font-size: var(--smallFontSize);
   line-height: var(--smallLineHeight);
-  opacity: 0.7;
+  opacity: 0.68;
   white-space: nowrap;
 }
 
@@ -628,7 +628,7 @@ summary:focus-visible {
 .tag-more {
   color: var(--foregroundColor);
   border-bottom: none;
-  font-size: 12px;
+  font-size: var(--smallFontSize);
   line-height: 20px;
   opacity: 0.48;
 }
@@ -997,8 +997,8 @@ summary:focus-visible {
   background: transparent;
   color: var(--linkColor);
   font: inherit;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: var(--smallFontSize);
+  line-height: var(--smallLineHeight);
   cursor: pointer;
 }
 
@@ -1472,8 +1472,8 @@ summary:focus-visible {
 
 .note-navigation-direction {
   color: var(--foregroundColor);
-  font-size: 12px;
-  line-height: 16px;
+  font-size: var(--smallFontSize);
+  line-height: var(--smallLineHeight);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   opacity: 0.62;
