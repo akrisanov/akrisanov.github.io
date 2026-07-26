@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}404 — {{ config.title }}{% endblock title %}
+{% block title %}404 — {{ config.title | escape_xml | safe }}{% endblock title %}
 {% block description %}Page not found{% endblock description %}
 {% block robots %}<meta name="robots" content="noindex" />{% endblock robots %}
 {% block canonical %}{% endblock canonical %}

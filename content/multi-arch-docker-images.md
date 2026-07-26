@@ -40,7 +40,7 @@ Today I needed to distribute a newly created API service with the SDK inside as 
 And I haven't found an easy way to define a Dockerfile that can be built and run on
 Apple Silicon without Conda:
 
-```Dockerfile
+```dockerfile
 FROM python:3.9-slim-buster AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -116,7 +116,7 @@ files to a release image. It is a price that must be paid.
 
 Fortunately, for Linux, we don't need all of this machinery:
 
-```Dockerfile
+```dockerfile
 FROM python:3.9-slim-buster AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -169,7 +169,7 @@ This is where Docker comes in. Docker Desktop officially supports [building mult
 for Arm and x86](https://www.docker.com/blog/multi-arch-images/). Learning this, I was able to
 add a few targets to my Makefile to quickly build images:
 
-```Makefile
+```makefile
 build: # Build a Docker image for x86_64
  docker buildx build --platform linux/amd64 -t de-agent:amd64-latest --build-arg DE_AGENT_PYPI_TOKEN=${DE_AGENT_PYPI_TOKEN} -f Dockerfile.amd64 --no-cache .
 
@@ -181,8 +181,14 @@ build-arm: # Build a Docker image for arm64
 make build
 ```
 
-![Docker Image For Arm](/images/docker-arm-build.png)
-<span class="img-title">Docker image built for the amd64 architecture</span>
+<figure class="article-figure">
+  <img
+    src="/images/docker-arm-build.png"
+    alt="Docker Desktop showing the locally built amd64 image"
+    loading="lazy"
+  />
+  <figcaption class="media-caption">Docker image built for the amd64 architecture</figcaption>
+</figure>
 
 One can say, it's so much hassle for doing all of this locally and a proper CI can solve such
 a case easily. I agree – as I've mentioned, I like shifting work out of my shoulders and giving it

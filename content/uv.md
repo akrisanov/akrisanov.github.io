@@ -1,5 +1,5 @@
 +++
-title = "uv: Cargo-like Python Tool That Replaces pipx, pyenv, and more"
+title = "uv: A Cargo-Like Python Tool That Replaces pipx, pyenv, and More"
 description = "A concise uv cheat sheet for managing Python versions, environments, dependencies, tools, and scripts in one workflow."
 date = 2025-09-10
 draft = false
@@ -196,7 +196,7 @@ to manage them together.
 *Example*: you might have a FastAPI web application alongside several libraries, all versioned and maintained as separate
 Python packages in the same Git repository.
 
-In a workspace, each package has its own `pyproject.toml`, but the workspace shares a single lockfile, ensuring that
+In a workspace, each package has its own `pyproject.toml`, but the workspace shares a single lockfile, ensuring that
 the workspace operates with a consistent set of dependencies.
 
 ## Things to Keep in Mind

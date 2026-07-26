@@ -3,9 +3,9 @@
 
 {% block title -%}
   {%- if paginator and paginator.current_index > 1 -%}
-    Articles — Page {{ paginator.current_index }} — {{ config.title }}
+    Articles — Page {{ paginator.current_index }} — {{ config.title | escape_xml | safe }}
   {%- else -%}
-    {{ config.extra.home_title }}
+    {{ config.extra.home_title | escape_xml | safe }}
   {%- endif -%}
 {%- endblock title %}
 
@@ -13,15 +13,15 @@
   {%- if paginator and paginator.current_index > 1 -%}
     Page {{ paginator.current_index }} of articles by Andrey Krisanov about production LLM inference, AI infrastructure, distributed systems, and software engineering.
   {%- else -%}
-    {{ config.description }}
+    {{ config.description | escape_xml | safe }}
   {%- endif -%}
 {%- endblock description %}
 
 {% block og_title -%}
   {%- if paginator and paginator.current_index > 1 -%}
-    Articles — Page {{ paginator.current_index }} — {{ config.title }}
+    Articles — Page {{ paginator.current_index }} — {{ config.title | escape_xml | safe }}
   {%- else -%}
-    {{ config.extra.home_title }}
+    {{ config.extra.home_title | escape_xml | safe }}
   {%- endif -%}
 {%- endblock og_title %}
 
@@ -29,15 +29,15 @@
   {%- if paginator and paginator.current_index > 1 -%}
     Page {{ paginator.current_index }} of articles by Andrey Krisanov about production LLM inference, AI infrastructure, distributed systems, and software engineering.
   {%- else -%}
-    {{ config.description }}
+    {{ config.description | escape_xml | safe }}
   {%- endif -%}
 {%- endblock og_description %}
 
 {% block twitter_title -%}
   {%- if paginator and paginator.current_index > 1 -%}
-    Articles — Page {{ paginator.current_index }} — {{ config.title }}
+    Articles — Page {{ paginator.current_index }} — {{ config.title | escape_xml | safe }}
   {%- else -%}
-    {{ config.extra.home_title }}
+    {{ config.extra.home_title | escape_xml | safe }}
   {%- endif -%}
 {%- endblock twitter_title %}
 
@@ -45,7 +45,7 @@
   {%- if paginator and paginator.current_index > 1 -%}
     Page {{ paginator.current_index }} of articles by Andrey Krisanov about production LLM inference, AI infrastructure, distributed systems, and software engineering.
   {%- else -%}
-    {{ config.description }}
+    {{ config.description | escape_xml | safe }}
   {%- endif -%}
 {%- endblock twitter_description %}
 

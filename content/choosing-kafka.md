@@ -1,5 +1,5 @@
 +++
-title = "Choosing Apache Kafka For A New Project – A Questionnaire"
+title = "Choosing Apache Kafka for a New Project: A Questionnaire"
 description = "A practical questionnaire for deciding whether Apache Kafka fits your project, covering throughput, retention, guarantees, partitioning, and consumer groups."
 date = 2023-08-29
 draft = false

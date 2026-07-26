@@ -1,10 +1,10 @@
-{% extends "base.html" %} {% import "macros/toc.html" as toc_macros %} {% block title %}{{ page.title }} — {{ config.title
+{% extends "base.html" %} {% import "macros/toc.html" as toc_macros %} {% block title %}{{ page.title | escape_xml | safe }} — {{ config.title | escape_xml | safe
 }}{% endblock title %} {% block description %}{% if page.description %}{{
-page.description }}{% else %}{{ config.description }}{% endif %}{% endblock
+page.description | escape_xml | safe }}{% else %}{{ config.description | escape_xml | safe }}{% endif %}{% endblock
 description %} {% block og_type %}article{% endblock og_type %} {% block
-og_title %}{{ page.title }} — {{ config.title }}{% endblock og_title %} {% block
-og_description %}{% if page.description %}{{ page.description }}{% else %}{{
-config.description }}{% endif %}{% endblock og_description %} {% block og_image
+og_title %}{{ page.title | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock og_title %} {% block
+og_description %}{% if page.description %}{{ page.description | escape_xml | safe }}{% else %}{{
+config.description | escape_xml | safe }}{% endif %}{% endblock og_description %} {% block og_image
 %} {% if page.extra.static_thumbnail %} {{ config.base_url }}{{
 page.extra.static_thumbnail }} {% elif page.static_thumbnail %} {{
 config.base_url }}{{ page.static_thumbnail }} {% else %} {{ config.base_url
@@ -13,9 +13,9 @@ og_image_width %} {% if page.extra.static_thumbnail or page.static_thumbnail %}
 1200 {% else %} 784 {% endif %} {% endblock og_image_width %} {% block
 og_image_height %} {% if page.extra.static_thumbnail or page.static_thumbnail %}
 630 {% else %} 784 {% endif %} {% endblock og_image_height %} {% block
-twitter_title %}{{ page.title }} — {{ config.title }}{% endblock twitter_title
-%} {% block twitter_description %}{% if page.description %}{{ page.description
-}}{% else %}{{ config.description }}{% endif %}{% endblock twitter_description
+twitter_title %}{{ page.title | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock twitter_title
+%} {% block twitter_description %}{% if page.description %}{{ page.description | escape_xml | safe
+}}{% else %}{{ config.description | escape_xml | safe }}{% endif %}{% endblock twitter_description
 %} {% block twitter_image %} {% if page.extra.static_thumbnail %} {{
 config.base_url }}{{ page.extra.static_thumbnail }} {% elif
 page.static_thumbnail %} {{ config.base_url }}{{ page.static_thumbnail }} {%
@@ -30,20 +30,20 @@ twitter_image %} {% block content %}
   <meta itemprop="url" content="{{ page.permalink | safe }}" />
   <meta
     itemprop="image"
-    content="{{ config.base_url }}/images/userpic-square.jpg"
+    content="{% if page.extra.static_thumbnail %}{{ config.base_url }}{{ page.extra.static_thumbnail }}{% elif page.static_thumbnail %}{{ config.base_url }}{{ page.static_thumbnail }}{% else %}{{ config.base_url }}/images/userpic-square.jpg{% endif %}"
   />
   <span itemprop="author" itemscope itemtype="https://schema.org/Person">
-    <meta itemprop="name" content="{{ config.author }}" />
+    <meta itemprop="name" content="{{ config.author | escape_xml | safe }}" />
   </span>
 
   {% if page.extra.toc and page.toc %}
   <div class="note-layout">
     <div class="note-main">
       <header class="note-header">
-        <h1 class="note-title" itemprop="headline">{{ page.title }}</h1>
+        <h1 class="note-title" itemprop="headline">{{ page.title | escape_xml | safe }}</h1>
         {% if page.description %}
         <p class="note-description" itemprop="description">
-          {{ page.description }}
+          {{ page.description | escape_xml | safe }}
         </p>
         {% endif %}
         <div class="note-meta">
@@ -81,7 +81,7 @@ twitter_image %} {% block content %}
             <a
               href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}"
               class="tag"
-              >#{{ tag }}</a
+              >#{{ tag | escape_xml | safe }}</a
             >
             {% endfor %}
           </span>
@@ -109,9 +109,9 @@ twitter_image %} {% block content %}
   </div>
   {% else %}
   <header class="note-header">
-    <h1 class="note-title" itemprop="headline">{{ page.title }}</h1>
+    <h1 class="note-title" itemprop="headline">{{ page.title | escape_xml | safe }}</h1>
     {% if page.description %}
-    <p class="note-description" itemprop="description">{{ page.description }}</p>
+    <p class="note-description" itemprop="description">{{ page.description | escape_xml | safe }}</p>
     {% endif %}
     <div class="note-meta">
       <time
@@ -148,7 +148,7 @@ twitter_image %} {% block content %}
         <a
           href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}"
           class="tag"
-          >#{{ tag }}</a
+          >#{{ tag | escape_xml | safe }}</a
         >
         {% endfor %}
       </span>
@@ -172,14 +172,14 @@ twitter_image %} {% block content %}
       <span class="note-navigation-direction"
         >Older <span class="note-navigation-shortcut"><i class="nav-modifier"></i>↓</span></span
       >
-      <span class="note-navigation-title">{{ page.lower.title }}</span>
+      <span class="note-navigation-title">{{ page.lower.title | escape_xml | safe }}</span>
     </a>
     {% endif %} {% if page.higher %}
     <a href="{{ page.higher.permalink | safe }}" class="nav-newer">
       <span class="note-navigation-direction"
         >Newer <span class="note-navigation-shortcut"><i class="nav-modifier"></i>↑</span></span
       >
-      <span class="note-navigation-title">{{ page.higher.title }}</span>
+      <span class="note-navigation-title">{{ page.higher.title | escape_xml | safe }}</span>
     </a>
     {% endif %}
   </div>

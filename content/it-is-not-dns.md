@@ -1,5 +1,5 @@
 +++
-title = "My \"It's not DNS\" story"
+title = "My \"It's Not DNS\" Story"
 description = "An incident story about DNS resolution failures on Linux VMs and the troubleshooting process that led to the real root cause."
 date = 2023-08-12
 draft = false
@@ -37,8 +37,14 @@ The first thing I do is open my browser to check what users are seeing. Surprisi
 loads just fine. I hit refresh – same result. Then I turn off Wi-Fi on my iPhone and open
 Safari – 504 error. It's a Nginx page. Now it is something.
 
-![Simplified diagram of the project architecture](/images/karusel-arch.jpg)
-<span class="img-title">Simplified diagram of the project architecture</span>
+<figure class="article-figure">
+  <img
+    src="/images/karusel-arch.jpg"
+    alt="Simplified diagram of the project architecture"
+    loading="lazy"
+  />
+  <figcaption class="media-caption">Simplified diagram of the project architecture</figcaption>
+</figure>
 
 I open the monitoring and observe no high load. CPU usage is low, more than 50% of memory is free,
 plenty of free disk space on each of the virtual machines, no spikes in the network bandwidth.
@@ -58,7 +64,7 @@ delay and the network packets are flying without a hitch.
 Before escalating the situation further to upper management, I choose to check the DNS
 configuration on the backend virtual machines.
 
-The /etc/resolv.conf is a DNS resolver configuration file. It contains records in the following format:
+The `/etc/resolv.conf` file contains DNS resolver configuration in the following format:
 
 ```bash
 nameserver [ip]
@@ -77,11 +83,13 @@ I remove the first nameserver from `/etc/resolv.conf` and drop the DNS cache on 
 After a few seconds, the 504 error and the gateway timeout disappear. In the morning, we'll
 discuss the incident with the infrastructure team and senior management. Fun week ahead.
 
-<div class="callout callout-bdc">
-<p>
-    It's not DNS<br/>
-    There's no way it's DNS<br/>
-    It was DNS
-</p>
-<p class="author">Old Japanese Haiku</p>
-</div>
+<figure class="callout callout-bdc article-quote">
+  <blockquote>
+    <p>
+      It's not DNS<br />
+      There's no way it's DNS<br />
+      It was DNS
+    </p>
+  </blockquote>
+  <figcaption class="author">Old Japanese haiku</figcaption>
+</figure>

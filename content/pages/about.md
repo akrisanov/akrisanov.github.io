@@ -33,7 +33,7 @@ My experience includes:
 
 - modernising a $3M+ ARR SaaS platform and improving critical backend paths by 2–10x, while achieving 99.998% availability;
 - designing and launching a content platform that reached over 20 million monthly active users;
-- building backend, cloud and distributed systems for start-ups and established companies in Germany and Russia.
+- building backend, cloud and distributed systems for start-ups and established companies in Germany and Russia;
 - working in senior individual contributor, technical leadership and CTO roles.
 
 I have consistently taken responsibility for important, technically complicated systems that are expected to work

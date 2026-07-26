@@ -1,5 +1,5 @@
 +++
-title = "Understand How Services Are Run And Operate In Production"
+title = "Understand How Services Run and Operate in Production"
 description = "Why software engineers should understand how services run in production, and which operational basics matter most."
 date = 2023-09-06
 draft = false

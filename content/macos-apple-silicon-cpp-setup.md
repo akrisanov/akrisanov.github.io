@@ -439,7 +439,7 @@ Hello, modern C++!
 
 ## `.gitignore`
 
-```gitignore
+```text
 build/
 build-*/
 .cache/

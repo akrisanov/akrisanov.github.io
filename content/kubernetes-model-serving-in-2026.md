@@ -10,6 +10,7 @@ tags = ["kubernetes", "llm-inference", "ai-infrastructure", "gpu", "gateway-api"
 [extra]
 keywords = "kubernetes, model serving, llm inference, kserve, llm-d, gateway api inference extension, leaderworkerset, dynamic resource allocation, gpu scheduling"
 toc = true
+static_thumbnail = "/images/social-kubernetes-model-serving-in-2026.png"
 
 +++
 

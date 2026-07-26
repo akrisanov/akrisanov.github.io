@@ -1,5 +1,5 @@
 +++
-title = "Convert Flac to Apple Lossless With FFmpeg"
+title = "Convert FLAC to Apple Lossless with FFmpeg"
 description = "Convert FLAC to Apple Lossless (ALAC) with FFmpeg while preserving audio quality and metadata, then import the files into Apple Music."
 date = 2023-10-23
 draft = false
@@ -26,7 +26,7 @@ it's worth installing now:
 brew install ffmpeg
 ```
 
-<span class="img-title">Homebrew Formula</span>
+<p class="media-caption code-caption">Install FFmpeg with Homebrew</p>
 
 When the tool is ready to use, navigate to the folder containing the FLAC files and run the following script:
 
@@ -34,22 +34,42 @@ When the tool is ready to use, navigate to the folder containing the FLAC files 
 for file in *.flac; do ffmpeg -i "$file" -acodec alac -vcodec copy "`basename "$file" .flac`.m4a"; done; mkdir flac; mkdir alac; for file in *.flac; do mv "$file" "flac/"; done; for file in *.m4a; do mv "$file" "alac/"; done;
 ```
 
-<span class="img-title">Silly One-liner Converting FLAC to ALAC</span>
+<p class="media-caption code-caption">A one-liner that converts FLAC files to ALAC</p>
 
-![](/images/Screenshot-2023-10-22-at-18.26.25.png)
-<span class="img-title">Susumu Hirasawa – Siren [Limited Edition]</span>
+<figure class="article-figure">
+  <img
+    src="/images/Screenshot-2023-10-22-at-18.26.25.png"
+    alt="FLAC files for Susumu Hirasawa's album Siren in Finder"
+    loading="lazy"
+  />
+  <figcaption class="media-caption">Susumu Hirasawa – Siren [Limited Edition]</figcaption>
+</figure>
 
 The bash script converts the audio to the Apple Lossless format (`*.m4a`) and moves the files to the `alac` directory:
 
-![](/images/Screenshot-2023-10-22-at-18.27.10.png)
+<figure class="article-figure">
+  <img
+    src="/images/Screenshot-2023-10-22-at-18.27.10.png"
+    alt="Converted M4A files in the ALAC directory in Finder"
+    loading="lazy"
+  />
+</figure>
 
 Finally, the `alac` directory can be dragged to Apple Music to import the album and upload its tracks to the cloud.
 
-![](/images/Screenshot-2023-10-22-at-18.27.41.png)
-<span class="img-title">The Uploaded Album</span>
+<figure class="article-figure">
+  <img
+    src="/images/Screenshot-2023-10-22-at-18.27.41.png"
+    alt="The imported Siren album in Apple Music"
+    loading="lazy"
+  />
+  <figcaption class="media-caption">The uploaded album</figcaption>
+</figure>
 
-<div class="callout callout-warning">
-You probably wonder why this album has no Lossless icon in Apple Music. Well, it turns out the
-audio quality of the FLAC files wasn't on pair with lossless. So, make sure releases you buy or
-rip, have a proper audio codec and quality.
-</div>
+<aside class="callout callout-warning" aria-label="Audio quality note">
+  <p>
+    You probably wonder why this album has no Lossless icon in Apple Music. Well, it turns out the
+    audio quality of the FLAC files wasn't on par with lossless. So, make sure releases you buy or
+    rip have a proper audio codec and quality.
+  </p>
+</aside>

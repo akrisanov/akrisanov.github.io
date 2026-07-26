@@ -1254,6 +1254,26 @@ summary:focus-visible {
   max-width: 100%;
 }
 
+.article-figure {
+  max-width: 720px;
+  margin: 20px 0 28px;
+}
+
+.article-figure img {
+  display: block;
+  width: 100%;
+}
+
+.e2-text pre + .code-caption {
+  margin: -12px 0 24px;
+}
+
+.article-quote blockquote {
+  margin: 0;
+  padding: 0;
+  opacity: 1;
+}
+
 .e2-text .lead {
   color: var(--keyPointColor);
   font-weight: bold;

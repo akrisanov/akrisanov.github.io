@@ -1,5 +1,5 @@
 +++
-title = "Generating A Lockfile For Python Project Using Github Actions"
+title = "Generating a Lockfile for a Python Project Using GitHub Actions"
 description = "Generate a reproducible Python requirements lockfile with GitHub Actions and pip-tools for consistent CI and CD builds."
 date = 2023-10-12
 draft = false
@@ -15,7 +15,7 @@ static_thumbnail = "/images/social-using-github-actions-to-generate-a-lockfile-f
 +++
 
 If you're working on a project that needs to be packaged for a specific environment other than your
-machine, the CI/CD server is your best friend. Products like Github Actions can save you time and
+machine, the CI/CD server is your best friend. Products like GitHub Actions can save you time and
 the hassle of building dependencies you won't use in development.
 
 For example, many developers love Mac computers, especially the ones that come with Apple silicon.
@@ -30,7 +30,7 @@ a different result on MacOS, Linux, Windows, and so on:
 pip-compile --allow-unsafe --generate-hashes --no-emit-index-url --output-file=requirements-lock.txt > requirements-lock.txt
 ```
 
-<span class="img-title">Using pip-tools to compile a requirements.txt file from your dependencies</span>
+<p class="media-caption code-caption">Using pip-tools to compile a requirements lockfile</p>
 
 Not all dependencies have universal wheels. Moreover, users can install different Python versions.
 
@@ -66,17 +66,23 @@ jobs:
           retention-days: 3
 ```
 
-<span class="img-title">build-requirements-lock-workflow</span>
+<p class="media-caption code-caption">The <code>build-requirements-lock</code> workflow</p>
 
-The Github Actions manifest above defines a workflow that can be triggered manually
+The GitHub Actions manifest above defines a workflow that can be triggered manually
 on any branch you like.
 
 Suppose you're upgrading some dependencies in requirement.txt. `pip install -r requirements.txt`
 works fine. Now you want to generate a new lock file for the users. You commit the changes to your
 branch, wait for the tests to pass, and trigger the workflow:
 
-![](/images/gh-actions-lockfile.png)
-<span class="img-title">Github Actions Workflow</span>
+<figure class="article-figure">
+  <img
+    src="/images/gh-actions-lockfile.png"
+    alt="GitHub Actions page showing a successful lockfile workflow run"
+    loading="lazy"
+  />
+  <figcaption class="media-caption">GitHub Actions workflow</figcaption>
+</figure>
 
 A freshly generated requirements-lock.txt appears in downloadable artifacts.
 You download the file and add it to the repo.
@@ -85,7 +91,9 @@ Another option might be to run a similar workflow in a Docker container. I poste
 multi-architecture builds a few months ago. [Take a look!](https://dev.to/akrisanov/building-multi-arch-images-for-arm-and-x86-2802)
 Just make sure you choose the same architecture and Python version that you want to distribute your project to.
 
-<div class="callout callout-bdc">
-Other tools like Poetry might do the job better and provide more convenient ways of managing lock files.
-But if you have reasons to not use them, it's totally fine to stick with good old pip.
-</div>
+<aside class="callout callout-bdc" aria-label="Alternative dependency tools">
+  <p>
+    Other tools like Poetry might do the job better and provide more convenient ways of managing lock files.
+    But if you have reasons not to use them, it's totally fine to stick with good old pip.
+  </p>
+</aside>

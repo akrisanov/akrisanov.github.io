@@ -1,5 +1,5 @@
 +++
-title = "Identifying Vulnerable Dependencies In .NET Projects"
+title = "Identifying Vulnerable Dependencies in .NET Projects"
 description = "Scan .NET dependencies for known NuGet vulnerabilities and automate checks in GitLab CI to improve supply chain security."
 date = 2024-05-07
 draft = false

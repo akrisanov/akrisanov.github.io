@@ -2,13 +2,13 @@
 <article class="e2-note e2-note-list">
   <header class="note-header">
     <h2 class="note-title">
-      <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
+      <a href="{{ page.permalink | safe }}">{{ page.title | escape_xml | safe }}</a>
     </h2>
   </header>
 
   {% if page.description %}
   <div class="note-summary e2-text">
-    <p>{{ page.description }}</p>
+    <p>{{ page.description | escape_xml | safe }}</p>
   </div>
   {% elif page.summary %}
   <div class="note-summary e2-text">{{ page.summary | safe }}</div>
@@ -43,7 +43,7 @@
         <a
           href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}"
           class="tag"
-          >#{{ tag }}</a
+          >#{{ tag | escape_xml | safe }}</a
         >
         {% endif %}
       {% endfor %}

@@ -2,33 +2,33 @@
 
 {% block title -%}
   {%- if page.extra.seo_title -%}
-    {{ page.extra.seo_title }}
+    {{ page.extra.seo_title | escape_xml | safe }}
   {%- else -%}
-    {{ page.title }} — {{ config.title }}
+    {{ page.title | escape_xml | safe }} — {{ config.title | escape_xml | safe }}
   {%- endif -%}
 {%- endblock title %}
 
 {% block description -%}
   {%- if page.description -%}
-    {{ page.description }}
+    {{ page.description | escape_xml | safe }}
   {%- else -%}
-    {{ config.description }}
+    {{ config.description | escape_xml | safe }}
   {%- endif -%}
 {%- endblock description %}
 
 {% block og_title -%}
   {%- if page.extra.seo_title -%}
-    {{ page.extra.seo_title }}
+    {{ page.extra.seo_title | escape_xml | safe }}
   {%- else -%}
-    {{ page.title }} — {{ config.title }}
+    {{ page.title | escape_xml | safe }} — {{ config.title | escape_xml | safe }}
   {%- endif -%}
 {%- endblock og_title %}
 
 {% block og_description -%}
   {%- if page.description -%}
-    {{ page.description }}
+    {{ page.description | escape_xml | safe }}
   {%- else -%}
-    {{ config.description }}
+    {{ config.description | escape_xml | safe }}
   {%- endif -%}
 {%- endblock og_description %}
 
@@ -60,24 +60,34 @@
 
 {% block twitter_title -%}
   {%- if page.extra.seo_title -%}
-    {{ page.extra.seo_title }}
+    {{ page.extra.seo_title | escape_xml | safe }}
   {%- else -%}
-    {{ page.title }} — {{ config.title }}
+    {{ page.title | escape_xml | safe }} — {{ config.title | escape_xml | safe }}
   {%- endif -%}
 {%- endblock twitter_title %}
 
 {% block twitter_description -%}
   {%- if page.description -%}
-    {{ page.description }}
+    {{ page.description | escape_xml | safe }}
   {%- else -%}
-    {{ config.description }}
+    {{ config.description | escape_xml | safe }}
   {%- endif -%}
 {%- endblock twitter_description %}
+
+{% block twitter_image -%}
+  {%- if page.extra.static_thumbnail -%}
+    {{ config.base_url }}{{ page.extra.static_thumbnail }}
+  {%- elif page.static_thumbnail -%}
+    {{ config.base_url }}{{ page.static_thumbnail }}
+  {%- else -%}
+    {{ config.base_url }}/images/userpic-square.jpg
+  {%- endif -%}
+{%- endblock twitter_image %}
 
 {% block content %}
 <article class="e2-note e2-note-single">
   <header class="note-header">
-    <h1 class="note-title">{{ page.title }}</h1>
+    <h1 class="note-title">{{ page.title | escape_xml | safe }}</h1>
   </header>
 
   <div class="e2-text note-body">

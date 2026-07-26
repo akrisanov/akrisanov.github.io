@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+    <title>{% block title %}{{ config.title | escape_xml | safe }}{% endblock title %}</title>
 
     <meta
       name="description"
-      content="{% block description %}{{ config.description }}{% endblock description %}"
+      content="{% block description %}{{ config.description | escape_xml | safe }}{% endblock description %}"
     />
     {% block robots %}{% endblock robots %} {% block canonical %}
     <link rel="canonical" href="{{ current_url | safe }}" />
@@ -20,16 +20,16 @@
     />
     <meta
       property="og:title"
-      content="{% block og_title %}{{ config.title }}{% endblock og_title %}"
+      content="{% block og_title %}{{ config.title | escape_xml | safe }}{% endblock og_title %}"
     />
     <meta
       property="og:description"
-      content="{% block og_description %}{{ config.description }}{% endblock og_description %}"
+      content="{% block og_description %}{{ config.description | escape_xml | safe }}{% endblock og_description %}"
     />
     {% block og_url %}
     <meta property="og:url" content="{{ current_url | safe }}" />
     {% endblock og_url %}
-    <meta property="og:site_name" content="{{ config.title }}" />
+    <meta property="og:site_name" content="{{ config.title | escape_xml | safe }}" />
     <meta property="og:locale" content="en_US" />
     <meta
       property="og:image"
@@ -47,11 +47,11 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
-      content="{% block twitter_title %}{{ config.title }}{% endblock twitter_title %}"
+      content="{% block twitter_title %}{{ config.title | escape_xml | safe }}{% endblock twitter_title %}"
     />
     <meta
       name="twitter:description"
-      content="{% block twitter_description %}{{ config.description }}{% endblock twitter_description %}"
+      content="{% block twitter_description %}{{ config.description | escape_xml | safe }}{% endblock twitter_description %}"
     />
     <meta
       name="twitter:image"
@@ -74,7 +74,7 @@
     <link
       rel="alternate"
       type="application/rss+xml"
-      title="{{ config.title }}"
+      title="{{ config.title | escape_xml | safe }}"
       href="{{ get_url(path='rss.xml') }}"
     />
     {% endif %}
@@ -87,19 +87,19 @@
           <div class="title">
             <div class="title-inner">
               <div class="logo">
-                <a href="/" aria-label="{{ config.title }}">
+                <a href="/" aria-label="{{ config.title | escape_xml | safe }}">
                   <img
                     src="/images/userpic.jpg"
                     class="userpic"
-                    alt="{{ config.title }}"
+                    alt="{{ config.title | escape_xml | safe }}"
                   />
                 </a>
               </div>
               <div class="title-text">
-                <h1><a href="/">{{ config.title }}</a></h1>
+                <h1><a href="/">{{ config.title | escape_xml | safe }}</a></h1>
                 {% if config.extra.blog_subtitle %}
                 <div class="blog-description">
-                  <p>{{ config.extra.blog_subtitle }}</p>
+                  <p>{{ config.extra.blog_subtitle | escape_xml | safe }}</p>
                 </div>
                 {% endif %}
                 <nav class="header-nav" aria-label="Navigation">
@@ -124,7 +124,7 @@
 
       <footer class="footer">
         <span class="footer-copy">
-          &copy; {{ config.author }}, {{ now() | date(format="%Y") }}
+          &copy; {{ config.author | escape_xml | safe }}, {{ now() | date(format="%Y") }}
         </span>
         <span class="footer-engine">
           Engine 🦀

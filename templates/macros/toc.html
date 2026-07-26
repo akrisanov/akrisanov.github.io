@@ -9,7 +9,7 @@
         data-toc-link
       >
         <span class="note-toc-marker" aria-hidden="true"></span>
-        <span class="note-toc-text">{{ h1.title }}</span>
+        <span class="note-toc-text">{{ h1.title | escape_xml | safe }}</span>
       </a>
       {% if h1.children %}
       <ul class="note-toc-list note-toc-list-child">
@@ -21,7 +21,7 @@
             data-toc-link
           >
             <span class="note-toc-marker" aria-hidden="true"></span>
-            <span class="note-toc-text">{{ h2.title }}</span>
+            <span class="note-toc-text">{{ h2.title | escape_xml | safe }}</span>
           </a>
           {% if h2.children %}
           <ul class="note-toc-list note-toc-list-grandchild">
@@ -33,7 +33,7 @@
                 data-toc-link
               >
                 <span class="note-toc-marker" aria-hidden="true"></span>
-                <span class="note-toc-text">{{ h3.title }}</span>
+                <span class="note-toc-text">{{ h3.title | escape_xml | safe }}</span>
               </a>
             </li>
             {% endfor %}

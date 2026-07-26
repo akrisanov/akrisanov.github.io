@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% import "macros/article_card.html" as article_card %}
 
-{% block title %}#{{ term.name }} — {{ config.title }}{% endblock title %}
-{% block description %}Posts tagged with #{{ term.name }} — {{ config.title }}{% endblock description %}
-{% block og_title %}#{{ term.name }} — {{ config.title }}{% endblock og_title %}
-{% block og_description %}Posts tagged with #{{ term.name }} — {{ config.title }}{% endblock og_description %}
+{% block title %}#{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock title %}
+{% block description %}Posts tagged with #{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock description %}
+{% block og_title %}#{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock og_title %}
+{% block og_description %}Posts tagged with #{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock og_description %}
 
 {% block content %}
 <div class="tag-header">
-  <h1 class="page-heading">#{{ term.name }}</h1>
+  <h1 class="page-heading">#{{ term.name | escape_xml | safe }}</h1>
 </div>
 
 {% for page in term.pages %}

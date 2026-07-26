@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title -%}
-  Tags — {{ config.title }}
+  Tags — {{ config.title | escape_xml | safe }}
 {%- endblock title %}
 
 {% block description -%}
@@ -9,7 +9,7 @@
 {%- endblock description %}
 
 {% block og_title -%}
-  Tags — {{ config.title }}
+  Tags — {{ config.title | escape_xml | safe }}
 {%- endblock og_title %}
 
 {% block og_description -%}
@@ -17,7 +17,7 @@
 {%- endblock og_description %}
 
 {% block twitter_title -%}
-  Tags — {{ config.title }}
+  Tags — {{ config.title | escape_xml | safe }}
 {%- endblock twitter_title %}
 
 {% block twitter_description -%}
@@ -28,7 +28,7 @@
 <h1 class="page-heading">Tags</h1>
 <div class="tags-list">
   {% for term in terms %}
-  <a href="{{ term.permalink | safe }}" class="tag">#{{ term.name }} ({{ term.pages | length }})</a>
+  <a href="{{ term.permalink | safe }}" class="tag">#{{ term.name | escape_xml | safe }} ({{ term.pages | length }})</a>
   {% endfor %}
 </div>
 {% endblock content %}

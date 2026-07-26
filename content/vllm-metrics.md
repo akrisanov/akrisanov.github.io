@@ -142,7 +142,7 @@ request-level decode efficiency.
 
 ### P95 TTFT
 
-```promql
+```text
 histogram_quantile(
   0.95,
   sum by (le, model_name) (
@@ -153,7 +153,7 @@ histogram_quantile(
 
 ### P99 inter-token latency
 
-```promql
+```text
 histogram_quantile(
   0.99,
   sum by (le, model_name) (
@@ -164,7 +164,7 @@ histogram_quantile(
 
 ### P95 request-level TPOT
 
-```promql
+```text
 histogram_quantile(
   0.95,
   sum by (le, model_name) (
@@ -175,7 +175,7 @@ histogram_quantile(
 
 ### P95 queue time
 
-```promql
+```text
 histogram_quantile(
   0.95,
   sum by (le, model_name) (
@@ -186,7 +186,7 @@ histogram_quantile(
 
 ### P95 vLLM end-to-end latency
 
-```promql
+```text
 histogram_quantile(
   0.95,
   sum by (le, model_name) (
@@ -218,7 +218,7 @@ Latency tells you what users experience. Throughput tells you how much work the 
 
 ### Prompt tokens per second
 
-```promql
+```text
 sum by (model_name) (
   rate(vllm:prompt_tokens_total[5m])
 )
@@ -226,7 +226,7 @@ sum by (model_name) (
 
 ### Generated tokens per second
 
-```promql
+```text
 sum by (model_name) (
   rate(vllm:generation_tokens_total[5m])
 )
@@ -234,7 +234,7 @@ sum by (model_name) (
 
 ### Completed engine requests per second
 
-```promql
+```text
 sum by (model_name) (
   rate(vllm:request_success_total[5m])
 )
@@ -315,7 +315,7 @@ A stronger pressure signal is the combination of:
 
 ### Preemption rate
 
-```promql
+```text
 sum by (model_name) (
   rate(vllm:num_preemptions_total[5m])
 )
@@ -328,7 +328,7 @@ preemption above a tested baseline, especially when latency or queueing also deg
 
 When automatic prefix caching is enabled, calculate the hit ratio from its counters:
 
-```promql
+```text
 sum by (model_name) (
   rate(vllm:prefix_cache_hits_total[5m])
 )
@@ -354,7 +354,7 @@ vllm:request_success_total{finished_reason="..."}
 
 ### Completed requests by reason
 
-```promql
+```text
 sum by (model_name, finished_reason) (
   rate(vllm:request_success_total[5m])
 )

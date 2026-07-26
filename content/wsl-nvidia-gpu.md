@@ -1,7 +1,8 @@
 +++
-title = "Running Kubernetes with GPU inside WSL2 on my RTX Laptop"
+title = "Running Kubernetes with a GPU Inside WSL2 on My RTX Laptop"
 description = "Run Kubernetes with NVIDIA GPU support inside WSL2 on a laptop, including k3s setup, validation, and practical caveats."
 date = 2026-04-22
+draft = false
 
 [taxonomies]
 tags = ["kubernetes", "wsl2", "nvidia", "gpu", "k3s", "ml-infrastructure"]

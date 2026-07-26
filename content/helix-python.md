@@ -9,6 +9,7 @@ tags = ["helix", "python", "developer-tooling", "lsp"]
 
 [extra]
 keywords = "helix, python, developer-tooling, lsp, ty, ruff"
+toc = false
 static_thumbnail = "/images/social-helix-python.png"
 
 +++
@@ -56,7 +57,7 @@ Indent queries: ✓
 ```
 
 As you can see, I haven't configured any language servers or formatters yet, but I have the Tree-sitter parser and queries set up.
-Let's fix that. As many of us, I'm a big fan of Astral's tools, so I'll be using [uv](/uv) to manage dependencies.
+Let's fix that. As many of us, I'm a big fan of Astral's tools, so I'll be using [uv](/uv/) to manage dependencies.
 
 ```bash
 uv tool install ruff
