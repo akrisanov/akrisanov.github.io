@@ -386,7 +386,7 @@ summary:focus-visible {
 .title h1 a,
 .title h1 a:visited {
   color: var(--headingsColor);
-  border-color: var(--headingsUnderlineColor);
+  border-color: transparent;
 }
 
 .title h1 a:hover {
@@ -497,10 +497,22 @@ summary:focus-visible {
   word-wrap: break-word;
 }
 
+.e2-note-list .note-title {
+  font-size: 32px;
+  line-height: 38px;
+}
+
+@media screen and (max-width: 1023px) {
+  .e2-note-list .note-title {
+    font-size: 28px;
+    line-height: 34px;
+  }
+}
+
 .note-title a,
 .note-title a:visited {
   color: var(--headingsColor);
-  border-color: var(--headingsUnderlineColor);
+  border-color: transparent;
 }
 
 .note-title a:hover {
@@ -525,6 +537,23 @@ summary:focus-visible {
 }
 
 .note-summary {
+  margin-top: 8px;
+}
+
+.note-summary > :last-child {
+  margin-bottom: 0;
+}
+
+.note-list-footer {
+  margin-top: 16px;
+}
+
+.note-meta-list {
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.note-list-footer .note-tags-inline {
   margin-top: 8px;
 }
 
@@ -583,8 +612,50 @@ summary:focus-visible {
   gap: 6px;
 }
 
+.e2-note .note-tags-inline .tag,
+.e2-note .note-tags-inline .tag:visited {
+  color: var(--foregroundColor);
+  border-color: transparent;
+  opacity: 0.62;
+}
+
+.e2-note .note-tags-inline .tag:hover {
+  color: var(--tagColor);
+  border-color: var(--tagUnderlineColor);
+  opacity: 1;
+}
+
+.tag-more {
+  color: var(--foregroundColor);
+  border-bottom: none;
+  font-size: 12px;
+  line-height: 20px;
+  opacity: 0.48;
+}
+
+.tag-more:visited {
+  color: var(--foregroundColor);
+}
+
+.tag-more:hover {
+  color: var(--hoverColor);
+  border-bottom: none;
+  opacity: 1;
+}
+
 .e2-note-single .note-tags-inline {
   margin-top: 10px;
+}
+
+@media screen and (max-width: 639px) {
+  .e2-note-list .note-title {
+    font-size: 26px;
+    line-height: 32px;
+  }
+
+  .e2-note {
+    margin-bottom: 48px;
+  }
 }
 
 .note-body {
@@ -1196,14 +1267,14 @@ summary:focus-visible {
 .tag {
   display: inline-block;
   color: var(--tagColor);
-  border-color: var(--tagUnderlineColor);
+  border-color: transparent;
   font-size: 14px;
   line-height: 20px;
 }
 
 .tag:visited {
   color: var(--tagColor);
-  border-color: var(--tagUnderlineColor);
+  border-color: transparent;
 }
 
 .tag:hover {

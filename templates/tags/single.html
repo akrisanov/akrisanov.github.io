@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros/article_card.html" as article_card %}
 
 {% block title %}#{{ term.name }} — {{ config.title }}{% endblock title %}
 {% block description %}Posts tagged with #{{ term.name }} — {{ config.title }}{% endblock description %}
@@ -11,22 +12,6 @@
 </div>
 
 {% for page in term.pages %}
-<article class="e2-note">
-  <header class="note-header">
-    <h2 class="note-title">
-      <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
-    </h2>
-    <div class="note-meta">
-      <time class="note-date" datetime="{{ page.date | date(format='%Y-%m-%d') }}">
-        {{ page.date | date(format="%d.%m.%Y") }}
-      </time>
-    </div>
-  </header>
-  {% if page.description %}
-  <div class="note-summary e2-text">
-    <p>{{ page.description }}</p>
-  </div>
-  {% endif %}
-</article>
+{{ article_card::render(page=page) }}
 {% endfor %}
 {% endblock content %}

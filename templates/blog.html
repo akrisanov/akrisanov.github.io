@@ -1,50 +1,10 @@
-{% extends "base.html" %} {% block content %} {% if paginator %} {% set pages =
+{% extends "base.html" %}
+{% import "macros/article_card.html" as article_card %}
+{% block content %} {% if paginator %} {% set pages =
 paginator.pages %} {% else %} {% set pages = section.pages %} {% endif %} {% for
 page in pages %} {% if page.slug != "about" and page.slug != "consulting" and
 page.slug != "now" %}
-<article class="e2-note">
-  <header class="note-header">
-    <h2 class="note-title">
-      <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
-    </h2>
-    <div class="note-meta">
-      <time
-        class="note-date"
-        datetime="{{ page.date | date(format='%Y-%m-%d') }}"
-      >
-        {{ page.date | date(format="%d.%m.%Y") }}
-      </time>
-      {% if page.updated %}
-      <span class="note-date note-date-separator">•</span>
-      <time
-        class="note-date note-date-updated"
-        datetime="{{ page.updated | date(format='%Y-%m-%d') }}"
-      >
-        Updated {{ page.updated | date(format="%d.%m.%Y") }}
-      </time>
-      {% endif %}
-      {% if page.taxonomies.tags %}
-      <span class="note-tags-inline">
-        {% for tag in page.taxonomies.tags %}
-        <a
-          href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}"
-          class="tag"
-          >#{{ tag }}</a
-        >
-        {% endfor %}
-      </span>
-      {% endif %}
-    </div>
-  </header>
-
-  {% if page.description %}
-  <div class="note-summary e2-text">
-    <p>{{ page.description }}</p>
-  </div>
-  {% elif page.summary %}
-  <div class="note-summary e2-text">{{ page.summary | safe }}</div>
-  {% endif %}
-</article>
+{{ article_card::render(page=page) }}
 {% endif %} {% endfor %} {% if paginator %}
 <nav class="pagination">
   {% if paginator.previous %}
