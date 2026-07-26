@@ -1,11 +1,25 @@
-<figure style="max-width: 100%; margin: 1rem 0;">
-  <img 
-    src="{{ main_src }}" 
-    alt="Image comparison"
-    onclick="this.src = this.src === '{{ main_src }}' ? '{{ swap_src }}' : '{{ main_src }}'"
-    style="cursor: pointer; border-radius: 8px; width: 100%;"
-  />
-  <figcaption style="text-align: center; font-size: 0.85rem; color: #666; margin-top: 0.5rem;">
+<figure class="image-swap">
+  <button
+    type="button"
+    class="image-swap-control"
+    data-main-src="{{ main_src }}"
+    data-swap-src="{{ swap_src }}"
+    aria-label="Toggle comparison image"
+    aria-pressed="false"
+    onclick="
+      const image = this.querySelector('img');
+      const showingSwap = this.getAttribute('aria-pressed') === 'true';
+      image.src = showingSwap ? this.dataset.mainSrc : this.dataset.swapSrc;
+      this.setAttribute('aria-pressed', String(!showingSwap));
+    "
+  >
+    <img
+      src="{{ main_src }}"
+      class="image-swap-image"
+      alt="Image comparison"
+    />
+  </button>
+  <figcaption class="media-caption">
     Click to toggle images
   </figcaption>
 </figure>

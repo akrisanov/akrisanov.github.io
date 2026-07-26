@@ -116,20 +116,17 @@
                 </nav>
               </div>
             </div>
-            <!-- /.title-inner -->
           </div>
-          <!-- /.title -->
         </div>
-        <!-- /.header-content -->
       </header>
 
       <main class="content">{% block content %}{% endblock content %}</main>
 
       <footer class="footer">
-        <div class="footer-copy">
+        <span class="footer-copy">
           &copy; {{ config.author }}, {{ now() | date(format="%Y") }}
-        </div>
-        <div class="footer-engine">
+        </span>
+        <span class="footer-engine">
           Engine 🦀
           <a
             href="https://www.getzola.org/"
@@ -157,7 +154,7 @@
             RSS
           </a>
           {% endif %}
-        </div>
+        </span>
       </footer>
     </div>
 

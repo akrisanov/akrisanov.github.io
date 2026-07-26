@@ -244,6 +244,17 @@ twitter_image %} {% block content %}
     });
 
     const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
     mermaid.initialize({
       startOnLoad: false,
       darkMode: dark,
@@ -254,59 +265,32 @@ twitter_image %} {% block content %}
         nodeSpacing: 30,
         rankSpacing: 45,
       },
-      themeVariables: dark
-        ? {
-            darkMode: true,
-            background: "#26212b",
-            primaryColor: "#3a2a4a",
-            primaryTextColor: "#efdcef",
-            primaryBorderColor: "#a58bad",
-            secondaryColor: "#2a3a4a",
-            secondaryTextColor: "#efdcef",
-            secondaryBorderColor: "#8196aa",
-            tertiaryColor: "#26212b",
-            tertiaryTextColor: "#efdcef",
-            tertiaryBorderColor: "#8a7a91",
-            textColor: "#efdcef",
-            nodeTextColor: "#efdcef",
-            mainBkg: "#3a2a4a",
-            nodeBorder: "#a58bad",
-            lineColor: "#cbb5d0",
-            defaultLinkColor: "#cbb5d0",
-            arrowheadColor: "#cbb5d0",
-            edgeLabelBackground: "#26212b",
-            clusterBkg: "#2e2838",
-            clusterBorder: "#75677b",
-            titleColor: "#ff40b9",
-            fontFamily: "system-ui, -apple-system, sans-serif",
-            fontSize: "15px",
-          }
-        : {
-            darkMode: false,
-            background: "#fff8fc",
-            primaryColor: "#f8e8ff",
-            primaryTextColor: "#403090",
-            primaryBorderColor: "#bba8cc",
-            secondaryColor: "#e8f4ff",
-            secondaryTextColor: "#403090",
-            secondaryBorderColor: "#a8c2d9",
-            tertiaryColor: "#fff8fc",
-            tertiaryTextColor: "#403090",
-            tertiaryBorderColor: "#d8c4d4",
-            textColor: "#403090",
-            nodeTextColor: "#403090",
-            mainBkg: "#f8e8ff",
-            nodeBorder: "#bba8cc",
-            lineColor: "#746aa8",
-            defaultLinkColor: "#746aa8",
-            arrowheadColor: "#746aa8",
-            edgeLabelBackground: "#fff8fc",
-            clusterBkg: "#fdf0ff",
-            clusterBorder: "#d8c4d4",
-            titleColor: "#ff00a0",
-            fontFamily: "system-ui, -apple-system, sans-serif",
-            fontSize: "15px",
-          },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
     });
     await mermaid.run({ nodes: diagrams });
     diagrams.forEach((diagram) => {

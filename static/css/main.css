@@ -1,14 +1,14 @@
 /* =========================================================
-   agenticeng.ru — custom theme (based on Эгея / fiesta)
+   akrisanov.com — custom theme (based on Эгея / fiesta)
    ========================================================= */
 
 /* --- CSS Variables (light mode) --- */
 :root {
   color-scheme: light;
   --backgroundColor: rgb(255, 248, 252);
-  --backgroundTransparentColor: rgba(255, 255, 255, 0.8);
   --foregroundColor: rgb(64, 48, 144);
   --thinRuleColor: rgba(64, 48, 144, 0.12);
+  --nestedRuleColor: rgba(64, 48, 144, 0.06);
 
   --headingsColor: rgb(192, 0, 120);
   --headingsUnderlineColor: rgba(192, 0, 120, 0.25);
@@ -24,16 +24,27 @@
   --tagColor: rgb(8, 122, 69);
   --tagUnderlineColor: rgba(8, 122, 69, 0.2);
 
-  --engineTextColor: var(--foregroundColor);
-  --engineTextUnderlineColor: var(--thinRuleColor);
-
-  --imageBorderColor: #e8e8e8;
-  --inputBackgroundColor: rgb(213, 255, 253);
-  --scopeNoteBackgroundColor: rgba(48, 138, 240, 0.06);
-  --keyPointColor: rgb(142, 51, 245);
-  --tableHeaderBackgroundColor: rgba(255, 0, 160, 0.06);
+  --imageBorderColor: rgb(232, 224, 230);
+  --inlineCodeBackgroundColor: rgb(239, 241, 245);
+  --inlineCodeColor: rgb(76, 79, 105);
+  --scopeNoteBackgroundColor: rgba(23, 107, 194, 0.07);
+  --keyPointColor: var(--linkColorVisited);
+  --tableHeaderBackgroundColor: rgba(192, 0, 120, 0.07);
   --tableStripeBackgroundColor: rgba(64, 48, 144, 0.025);
   --tableStripeStickyBackgroundColor: rgb(250, 243, 249);
+  --warningColor: rgb(137, 82, 0);
+  --warningBackgroundColor: rgba(137, 82, 0, 0.07);
+  --dangerColor: rgb(176, 0, 64);
+  --dangerBackgroundColor: rgba(176, 0, 64, 0.07);
+  --modalBackdropColor: rgba(15, 12, 18, 0.72);
+
+  --diagramPrimaryBackgroundColor: rgb(248, 232, 255);
+  --diagramPrimaryBorderColor: rgb(187, 168, 204);
+  --diagramSecondaryBackgroundColor: rgb(232, 244, 255);
+  --diagramSecondaryBorderColor: rgb(168, 194, 217);
+  --diagramLineColor: rgb(116, 106, 168);
+  --diagramClusterBackgroundColor: rgb(253, 240, 255);
+  --diagramClusterBorderColor: rgb(216, 196, 212);
 
   --maxWidth: 1280px;
   --marginTop: 48px;
@@ -63,9 +74,9 @@
   :root {
     color-scheme: dark;
     --backgroundColor: rgb(38, 33, 43);
-    --backgroundTransparentColor: rgba(0, 0, 0, 0.8);
     --foregroundColor: rgb(239, 220, 239);
     --thinRuleColor: rgba(234, 200, 234, 0.25);
+    --nestedRuleColor: rgba(255, 255, 255, 0.08);
 
     --headingsColor: rgb(255, 64, 185);
     --headingsUnderlineColor: rgba(255, 64, 185, 0.25);
@@ -80,14 +91,26 @@
     --tagColor: rgb(17, 192, 104);
     --tagUnderlineColor: rgba(17, 192, 104, 0.12);
 
-    --engineTextColor: var(--foregroundColor);
-    --inputBackgroundColor: #253542;
-    --imageBorderColor: #404040;
+    --inlineCodeBackgroundColor: rgb(30, 30, 46);
+    --inlineCodeColor: rgb(205, 214, 244);
+    --imageBorderColor: rgb(64, 64, 64);
     --scopeNoteBackgroundColor: rgba(144, 173, 255, 0.08);
-    --keyPointColor: rgb(180, 120, 255);
     --tableHeaderBackgroundColor: rgba(255, 64, 185, 0.09);
     --tableStripeBackgroundColor: rgba(239, 220, 239, 0.035);
     --tableStripeStickyBackgroundColor: rgb(45, 40, 50);
+    --warningColor: rgb(255, 196, 102);
+    --warningBackgroundColor: rgba(255, 196, 102, 0.08);
+    --dangerColor: rgb(255, 112, 154);
+    --dangerBackgroundColor: rgba(255, 112, 154, 0.08);
+    --modalBackdropColor: rgba(10, 8, 12, 0.8);
+
+    --diagramPrimaryBackgroundColor: rgb(58, 42, 74);
+    --diagramPrimaryBorderColor: rgb(165, 139, 173);
+    --diagramSecondaryBackgroundColor: rgb(42, 58, 74);
+    --diagramSecondaryBorderColor: rgb(129, 150, 170);
+    --diagramLineColor: rgb(203, 181, 208);
+    --diagramClusterBackgroundColor: rgb(46, 40, 56);
+    --diagramClusterBorderColor: rgb(117, 103, 123);
   }
 }
 
@@ -314,9 +337,6 @@ summary:focus-visible {
 }
 
 /* --- Logo / userpic --- */
-.logo {
-}
-
 .logo a {
   display: inline-block;
   border-bottom: none;
@@ -353,9 +373,6 @@ summary:focus-visible {
 
 .title-inner .logo {
   flex-shrink: 0;
-}
-
-.title-text {
 }
 
 .title h1 {
@@ -410,28 +427,32 @@ summary:focus-visible {
 
 /* --- Footer --- */
 .footer {
-  border-top: 1px solid var(--thinRuleColor);
+  border-top: 1px solid var(--nestedRuleColor);
   padding-top: 16px;
   font-size: var(--smallFontSize);
   line-height: var(--smallLineHeight);
 }
 
 .footer-copy {
-  color: var(--engineTextColor);
+  color: var(--foregroundColor);
 }
 
 .footer-rss {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  display: inline-block;
+  vertical-align: baseline;
   margin-left: 12px;
   padding: 1px 7px;
   border-radius: 10px;
   border: 1px solid var(--thinRuleColor) !important;
   border-bottom: 1px solid var(--thinRuleColor) !important;
-  font-size: 11px;
-  line-height: 18px;
+  font-size: inherit;
+  line-height: inherit;
   opacity: 0.7;
+}
+
+.footer-rss svg {
+  margin-right: 4px;
+  vertical-align: -1px;
 }
 
 .footer-rss:hover {
@@ -440,15 +461,15 @@ summary:focus-visible {
 }
 
 .footer-engine {
-  margin-top: 4px;
-  color: var(--engineTextColor);
+  margin-left: 12px;
+  color: var(--foregroundColor);
 }
 
 .footer a,
 .footer a:link,
 .footer a:visited {
-  color: var(--engineTextColor);
-  border-color: var(--engineTextUnderlineColor);
+  color: var(--foregroundColor);
+  border-color: var(--thinRuleColor);
 }
 
 .footer a:hover {
@@ -629,14 +650,7 @@ summary:focus-visible {
 .note-toc-list-grandchild {
   margin-top: 8px;
   padding-left: 14px;
-  border-left: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-@media (prefers-color-scheme: dark) {
-  .note-toc-list-child,
-  .note-toc-list-grandchild {
-    border-left-color: rgba(255, 255, 255, 0.08);
-  }
+  border-left: 1px solid var(--nestedRuleColor);
 }
 
 .note-toc-item + .note-toc-item {
@@ -872,7 +886,8 @@ summary:focus-visible {
 }
 
 .e2-text code {
-  background: var(--inputBackgroundColor);
+  background: var(--inlineCodeBackgroundColor);
+  color: var(--inlineCodeColor);
   padding: 1px 5px;
   border-radius: 3px;
   font-size: 0.85em;
@@ -954,7 +969,7 @@ summary:focus-visible {
 }
 
 .mermaid-dialog::backdrop {
-  background: rgba(15, 12, 18, 0.72);
+  background: var(--modalBackdropColor);
   backdrop-filter: blur(3px);
 }
 
@@ -1040,7 +1055,7 @@ summary:focus-visible {
 .article-key-point {
   margin: 28px 0;
   padding-left: 20px;
-  border-left: 3px solid var(--headingsColor);
+  border-left: 3px solid var(--keyPointColor);
 }
 
 .e2-text .article-key-point p {
@@ -1227,141 +1242,119 @@ summary:focus-visible {
   font-size: 16px;
 }
 
-/* --- Responsive video (YouTube / iframe) --- */
-.e2-text-video {
+/* --- Embedded media --- */
+.youtube-embed {
+  display: block;
+  width: min(100%, 720px);
+  height: auto;
+  aspect-ratio: 16 / 9;
   margin: 20px 0 28px;
+  border: 0;
+  border-radius: 8px;
+}
+
+.image-swap {
   max-width: 720px;
+  margin: 20px 0 28px;
 }
 
-.e2-text-super-wrapper {
-  max-width: 100%;
-}
-
-.e2-text-proportional-wrapper {
-  position: relative;
-  height: 0;
-  overflow: hidden;
-}
-
-.e2-text-proportional-wrapper iframe,
-.e2-text-proportional-wrapper video {
-  position: absolute;
-  top: 0;
-  left: 0;
+.image-swap-control {
+  display: block;
   width: 100%;
-  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
-.e2-text-caption {
+.image-swap-image {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.media-caption,
+.e2-text .img-title {
+  display: block;
+  max-width: 720px;
   margin-top: 8px;
   font-size: var(--smallFontSize);
   line-height: var(--smallLineHeight);
   color: var(--foregroundColor);
-  opacity: 0.6;
+  text-align: center;
+  opacity: 0.65;
 }
 
-/* --- Archived comments --- */
-.comments-archived {
-  margin-top: 48px;
-  padding-top: 32px;
-  border-top: 1px solid var(--thinRuleColor);
+/* --- Legacy rich-text components still used by older posts --- */
+.e2-text .callout {
+  max-width: 720px;
+  margin: 28px 0;
+  padding: 16px 18px;
+  border: 1px solid var(--thinRuleColor);
+  border-left: 3px solid var(--linkColor);
+  border-radius: 8px;
+  background: var(--scopeNoteBackgroundColor);
+  font-size: 16px;
+  line-height: 23px;
 }
 
-.comments-archived-title {
-  font-size: 18px;
-  font-weight: 600;
+.e2-text .callout p {
+  max-width: none;
+  margin-bottom: 10px;
+}
+
+.e2-text .callout p:last-child {
+  margin-bottom: 0;
+}
+
+.e2-text .callout-bdc {
+  border-left-color: var(--keyPointColor);
+  background: var(--tableHeaderBackgroundColor);
+}
+
+.e2-text .callout-warning {
+  border-left-color: var(--warningColor);
+  background: var(--warningBackgroundColor);
+}
+
+.e2-text .callout-warning strong {
+  color: var(--warningColor);
+}
+
+.e2-text .callout-danger {
+  border-left-color: var(--dangerColor);
+  background: var(--dangerBackgroundColor);
+}
+
+.e2-text .callout-danger strong {
+  color: var(--dangerColor);
+}
+
+.e2-text .callout .author {
+  font-size: 14px;
+  text-align: right;
+  opacity: 0.7;
+}
+
+.e2-text blockquote.dialogue {
+  padding: 16px 18px;
+  border: 1px solid var(--thinRuleColor);
+  border-radius: 8px;
+  background: var(--tableStripeBackgroundColor);
+  opacity: 1;
+}
+
+.e2-text .dialogue p {
+  max-width: none;
+  margin-bottom: 12px;
+}
+
+.e2-text .dialogue p:last-child {
+  margin-bottom: 0;
+}
+
+.e2-text .dialogue .q strong {
   color: var(--headingsColor);
-  margin: 0 0 6px;
-}
-
-.comments-archived-notice {
-  font-size: 13px;
-  color: var(--foregroundColor);
-  opacity: 0.55;
-  margin: 0 0 24px;
-}
-
-.comment {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 0;
-}
-
-.comment-avatar {
-  flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: var(--thinRuleColor);
-}
-
-.comment-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 25%;
-  display: block;
-  border: none;
-  border-radius: 0;
-}
-
-.comment-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.comment-header {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-
-.comment-author {
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--foregroundColor);
-  text-decoration: none;
-}
-
-a.comment-author:hover {
-  color: var(--hoverColor);
-}
-
-.comment-date {
-  font-size: 12px;
-  color: var(--foregroundColor);
-  opacity: 0.55;
-}
-
-.comment-text {
-  font-size: 17px;
-  line-height: 1.55;
-  color: var(--foregroundColor);
-}
-
-.comment-text p {
-  margin: 0 0 10px;
-}
-
-.comment-text p:last-child {
-  margin-bottom: 0;
-}
-
-.comment-text blockquote {
-  border-left: 3px solid var(--thinRuleColor);
-  padding-left: 12px;
-  margin: 10px 0;
-  opacity: 0.75;
-  font-style: italic;
-}
-
-.comment-reply {
-  margin-top: 16px;
-  padding-left: 16px;
-  border-left: 2px solid var(--thinRuleColor);
 }
 
 /* --- Post navigation (prev/next) --- */
@@ -1395,7 +1388,6 @@ a.comment-author:hover {
   gap: 4px;
   min-width: 0;
   padding: 14px 0;
-  border-top: 1px solid var(--thinRuleColor);
   border-bottom: none;
 }
 
