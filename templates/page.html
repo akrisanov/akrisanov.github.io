@@ -224,45 +224,62 @@ twitter_image %} {% block content %}
     });
   })();
 </script>
-{% endblock content %} {% block scripts %} {% if page.extra.mermaid %}
+{% endblock content %} {% block scripts %}
 <script type="module">
-  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-  const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: "base",
-    themeVariables: dark
-      ? {
-          primaryColor: "#3a2a4a",
-          primaryTextColor: "#efdcef",
-          primaryBorderColor: "rgba(234,200,234,0.35)",
-          lineColor: "rgba(234,200,234,0.5)",
-          secondaryColor: "#2a3a4a",
-          tertiaryColor: "#26212b",
-          edgeLabelBackground: "#26212b",
-          clusterBkg: "#2e2838",
-          clusterBorder: "rgba(234,200,234,0.25)",
-          titleColor: "#ff40b9",
-          fontFamily: "system-ui, -apple-system, sans-serif",
-          fontSize: "15px",
-        }
-      : {
-          primaryColor: "#f8e8ff",
-          primaryTextColor: "#40309",
-          primaryBorderColor: "rgba(64,48,144,0.25)",
-          lineColor: "rgba(64,48,144,0.4)",
-          secondaryColor: "#e8f4ff",
-          tertiaryColor: "#fff8fc",
-          edgeLabelBackground: "#fff8fc",
-          clusterBkg: "#fdf0ff",
-          clusterBorder: "rgba(64,48,144,0.15)",
-          titleColor: "#ff00a0",
-          fontFamily: "system-ui, -apple-system, sans-serif",
-          fontSize: "15px",
-        },
-  });
+  const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      code.parentElement.replaceWith(diagram);
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      themeVariables: dark
+        ? {
+            primaryColor: "#3a2a4a",
+            primaryTextColor: "#efdcef",
+            primaryBorderColor: "rgba(234,200,234,0.35)",
+            lineColor: "rgba(234,200,234,0.5)",
+            secondaryColor: "#2a3a4a",
+            tertiaryColor: "#26212b",
+            edgeLabelBackground: "#26212b",
+            clusterBkg: "#2e2838",
+            clusterBorder: "rgba(234,200,234,0.25)",
+            titleColor: "#ff40b9",
+            fontFamily: "system-ui, -apple-system, sans-serif",
+            fontSize: "15px",
+          }
+        : {
+            primaryColor: "#f8e8ff",
+            primaryTextColor: "#403090",
+            primaryBorderColor: "rgba(64,48,144,0.25)",
+            lineColor: "rgba(64,48,144,0.4)",
+            secondaryColor: "#e8f4ff",
+            tertiaryColor: "#fff8fc",
+            edgeLabelBackground: "#fff8fc",
+            clusterBkg: "#fdf0ff",
+            clusterBorder: "rgba(64,48,144,0.15)",
+            titleColor: "#ff00a0",
+            fontFamily: "system-ui, -apple-system, sans-serif",
+            fontSize: "15px",
+          },
+    });
+    await mermaid.run({ nodes: diagrams });
+  }
 </script>
-{% endif %} {% if page.extra.toc and page.toc %}
+{% if page.extra.toc and page.toc %}
 <script>
   (function () {
     var toc = document.querySelector("[data-note-toc]");
