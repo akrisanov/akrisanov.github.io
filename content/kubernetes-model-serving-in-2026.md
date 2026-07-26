@@ -56,6 +56,14 @@ before adopting a particular combination.
 - **The right production stack is usually smaller than the full ecosystem.** Add components only when a measured
   bottleneck justifies them.
 
+<nav class="article-decision-guide" aria-label="Deployment guidance">
+  <span class="article-decision-guide-label">Choose a deployment:</span>
+  <a href="#case-1-one-model-one-or-a-few-replicas">Single model</a>
+  <a href="#case-2-a-shared-production-llm-service">Shared LLM service</a>
+  <a href="#case-3-models-that-require-several-nodes">Multi-node model</a>
+  <a href="#case-4-large-scale-or-heterogeneous-inference">Heterogeneous inference</a>
+</nav>
+
 ## From isolated features to an inference stack
 
 The 2024 view centered on several individual improvements. By 2026, those features fit into a more explicit
@@ -73,11 +81,14 @@ architecture:
 | Model metadata | Early Kubeflow Model Registry | Kubeflow Hub combines registry and federated catalog capabilities |
 | AI traffic policy | Product-specific gateways and middleware | A Kubernetes AI Gateway Working Group is standardizing common patterns |
 
-The important thing to know is that not every row is "solved." The most important thing to know is that the ecosystem
-now sees inference as a problem with distributed systems that has its own set of issues.
+Not every row is "solved." What has changed is that the ecosystem now treats inference as a distributed-systems
+problem with its own operational concerns.
 
 ```mermaid
 flowchart TD
+    accTitle: The layers of a Kubernetes model-serving stack
+    accDescr: Requests pass from a client through an AI gateway and Gateway API route to an inference-aware endpoint picker, model-serving workloads, and the underlying GPU, network, cache, and storage infrastructure.
+
     Client["Client"]
 
     Gateway["`**AI or API gateway**
@@ -111,6 +122,8 @@ flowchart TD
     InferencePool --> Workloads
     Workloads --> Infrastructure
 ```
+
+<p class="mermaid-caption">Figure 1. A production inference request crosses several independently operated layers.</p>
 
 KServe can manage much of this control plane. Gateway API Inference Extension defines the routing integration.
 `LeaderWorkerSet` represents groups of pods that must operate together. `llm-d` provides distributed inference and
@@ -198,6 +211,9 @@ The request path becomes:
 
 ```mermaid
 flowchart LR
+    accTitle: The inference-aware request path
+    accDescr: An HTTPRoute sends a request to an InferencePool, which consults an endpoint picker before selecting a model-server pod.
+
     HTTPRoute["HTTPRoute"]
     InferencePool["InferencePool"]
     EndpointPicker["Endpoint picker"]
@@ -208,6 +224,8 @@ flowchart LR
     EndpointPicker --> ModelServer
 ```
 
+<p class="mermaid-caption">Figure 2. Gateway API delegates model-server selection to an inference-aware endpoint picker.</p>
+
 This is an important separation of responsibilities:
 
 - **Gateway API** handles traffic attachment and routing integration.
@@ -215,8 +233,8 @@ This is an important separation of responsibilities:
 - **The endpoint picker** decides which endpoint is best for the request.
 - **The model server** exposes metrics and capabilities used by the picker.
 
-The reference project doesn't try to own every scheduling policy on purpose. The instructions for making it point users
-toward things like the [llm-d router](https://github.com/llm-d/llm-d-router). Some of the advanced features that were
+The reference project deliberately avoids owning every scheduling policy. Its documentation points users
+toward components such as the [llm-d router](https://github.com/llm-d/llm-d-router). Some of the advanced features that were
 previously developed in the Inference Extension repository have now moved to the llm-d repositories. These features
 include more advanced endpoint selection and model rewrite logic. However, the extension will still own the Pool API
 and conformance work.
@@ -331,6 +349,9 @@ A disaggregated architecture runs these phases in different pools and scales the
 
 ```mermaid
 flowchart LR
+    accTitle: Disaggregated prefill and decode
+    accDescr: A request is processed by a prefill worker, its KV state is transferred to a decode worker, and the response is streamed to the client.
+
     Request["Request"]
     Prefill["Prefill worker"]
     KVTransfer["Transfer KV state"]
@@ -342,6 +363,8 @@ flowchart LR
     KVTransfer --> Decode
     Decode --> Response
 ```
+
+<p class="mermaid-caption">Figure 3. Disaggregation introduces an explicit KV-state transfer between prefill and decode.</p>
 
 This can reduce interference between long prefills and active decodes, and it can let each phase use a different
 replica count or hardware shape.
@@ -551,7 +574,7 @@ Expect more movement before the higher-level interfaces settle.
 
 ## Final perspective
 
-In 2024, Yuan Tang identified seven important areas of focus for the tech industry: model distribution,
+In 2024, Yuan Tang identified several important areas of focus for the tech industry: model distribution,
 model management, responsible AI, inference gateways, and multi-node serving.
 
 What changed is that these ideas are no longer a loose roadmap. They are becoming distinct layers:

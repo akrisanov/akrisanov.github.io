@@ -22,6 +22,7 @@ page.static_thumbnail %} {{ config.base_url }}{{ page.static_thumbnail }} {%
 else %} {{ config.base_url }}/images/userpic-square.jpg {% endif %} {% endblock
 twitter_image %} {% block content %}
 <article
+  id="article-top"
   class="e2-note e2-note-single"
   itemscope
   itemtype="https://schema.org/BlogPosting"
@@ -40,21 +41,28 @@ twitter_image %} {% block content %}
     <div class="note-main">
       <header class="note-header">
         <h1 class="note-title" itemprop="headline">{{ page.title }}</h1>
+        {% if page.description %}
+        <p class="note-description" itemprop="description">
+          {{ page.description }}
+        </p>
+        {% endif %}
         <div class="note-meta">
           <time
             class="note-date"
             datetime="{{ page.date | date(format='%Y-%m-%d') }}"
             itemprop="datePublished"
           >
-            Published {{ page.date | date(format="%d.%m.%Y") }}
+            {{ page.date | date(format="%B %-d, %Y") }}
           </time>
+          <span class="note-date note-date-separator">•</span>
+          <span class="note-reading-time">{{ page.reading_time }} min read</span>
           {% if page.updated %}
           <span class="note-date note-date-separator">•</span>
           <time
             class="note-date note-date-updated"
             datetime="{{ page.updated | date(format='%Y-%m-%d') }}"
           >
-            Updated {{ page.updated | date(format="%d.%m.%Y") }}
+            Updated {{ page.updated | date(format="%B %-d, %Y") }}
           </time>
           <meta
             itemprop="dateModified"
@@ -65,7 +73,9 @@ twitter_image %} {% block content %}
             itemprop="dateModified"
             content="{{ page.date | date(format='%Y-%m-%d') }}"
           />
-          {% endif %} {% if page.taxonomies.tags %}
+          {% endif %}
+        </div>
+        {% if page.taxonomies.tags %}
           <span class="note-tags-inline">
             {% for tag in page.taxonomies.tags %}
             <a
@@ -75,8 +85,7 @@ twitter_image %} {% block content %}
             >
             {% endfor %}
           </span>
-          {% endif %}
-        </div>
+        {% endif %}
       </header>
 
       <details class="note-toc-mobile">
@@ -101,21 +110,26 @@ twitter_image %} {% block content %}
   {% else %}
   <header class="note-header">
     <h1 class="note-title" itemprop="headline">{{ page.title }}</h1>
+    {% if page.description %}
+    <p class="note-description" itemprop="description">{{ page.description }}</p>
+    {% endif %}
     <div class="note-meta">
       <time
         class="note-date"
         datetime="{{ page.date | date(format='%Y-%m-%d') }}"
         itemprop="datePublished"
       >
-        Published {{ page.date | date(format="%d.%m.%Y") }}
+        {{ page.date | date(format="%B %-d, %Y") }}
       </time>
+      <span class="note-date note-date-separator">•</span>
+      <span class="note-reading-time">{{ page.reading_time }} min read</span>
       {% if page.updated %}
       <span class="note-date note-date-separator">•</span>
       <time
         class="note-date note-date-updated"
         datetime="{{ page.updated | date(format='%Y-%m-%d') }}"
       >
-        Updated {{ page.updated | date(format="%d.%m.%Y") }}
+        Updated {{ page.updated | date(format="%B %-d, %Y") }}
       </time>
       <meta
         itemprop="dateModified"
@@ -126,7 +140,9 @@ twitter_image %} {% block content %}
         itemprop="dateModified"
         content="{{ page.date | date(format='%Y-%m-%d') }}"
       />
-      {% endif %} {% if page.taxonomies.tags %}
+      {% endif %}
+    </div>
+    {% if page.taxonomies.tags %}
       <span class="note-tags-inline">
         {% for tag in page.taxonomies.tags %}
         <a
@@ -136,8 +152,7 @@ twitter_image %} {% block content %}
         >
         {% endfor %}
       </span>
-      {% endif %}
-    </div>
+    {% endif %}
   </header>
 
   <div class="e2-text note-body" itemprop="articleBody">
@@ -147,15 +162,27 @@ twitter_image %} {% block content %}
 </article>
 
 <nav class="note-navigation">
-  {% if page.lower %}
-  <a href="{{ page.lower.permalink | safe }}" class="nav-older"
-    >Older <i class="nav-modifier"></i>↓</a
-  >
-  {% endif %} {% if page.higher %}
-  <a href="{{ page.higher.permalink | safe }}" class="nav-newer"
-    >Newer <i class="nav-modifier"></i>↑</a
-  >
-  {% endif %}
+  <div class="note-navigation-utilities">
+    <a href="/">All articles</a>
+    <a href="#article-top">Back to top ↑</a>
+  </div>
+  <div class="note-navigation-adjacent">
+    {% if page.lower %}
+    <a href="{{ page.lower.permalink | safe }}" class="nav-older">
+      <span class="note-navigation-direction"
+        >Older <span class="note-navigation-shortcut"><i class="nav-modifier"></i>↓</span></span
+      >
+      <span class="note-navigation-title">{{ page.lower.title }}</span>
+    </a>
+    {% endif %} {% if page.higher %}
+    <a href="{{ page.higher.permalink | safe }}" class="nav-newer">
+      <span class="note-navigation-direction"
+        >Newer <span class="note-navigation-shortcut"><i class="nav-modifier"></i>↑</span></span
+      >
+      <span class="note-navigation-title">{{ page.higher.title }}</span>
+    </a>
+    {% endif %}
+  </div>
 </nav>
 
 <script>
@@ -186,10 +213,33 @@ twitter_image %} {% block content %}
       "/vendor/mermaid/mermaid.esm.min.mjs"
     );
     const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
       const diagram = document.createElement("div");
       diagram.className = "mermaid";
       diagram.textContent = code.textContent;
-      code.parentElement.replaceWith(diagram);
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
       return diagram;
     });
 
@@ -259,6 +309,74 @@ twitter_image %} {% block content %}
           },
     });
     await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
     document.dispatchEvent(new Event("article:layoutchange"));
   }
 </script>
