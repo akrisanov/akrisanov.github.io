@@ -167,19 +167,19 @@ twitter_image %} {% block content %}
     <a href="#article-top">Back to top ↑</a>
   </div>
   <div class="note-navigation-adjacent">
-    {% if page.lower %}
-    <a href="{{ page.lower.permalink | safe }}" class="nav-older">
+    {% if page.higher %}
+    <a href="{{ page.higher.permalink | safe }}" class="nav-older">
       <span class="note-navigation-direction"
         >Older <span class="note-navigation-shortcut"><i class="nav-modifier"></i>↓</span></span
       >
-      <span class="note-navigation-title">{{ page.lower.title | escape_xml | safe }}</span>
+      <span class="note-navigation-title">{{ page.higher.title | escape_xml | safe }}</span>
     </a>
-    {% endif %} {% if page.higher %}
-    <a href="{{ page.higher.permalink | safe }}" class="nav-newer">
+    {% endif %} {% if page.lower %}
+    <a href="{{ page.lower.permalink | safe }}" class="nav-newer">
       <span class="note-navigation-direction"
         >Newer <span class="note-navigation-shortcut"><i class="nav-modifier"></i>↑</span></span
       >
-      <span class="note-navigation-title">{{ page.higher.title | escape_xml | safe }}</span>
+      <span class="note-navigation-title">{{ page.lower.title | escape_xml | safe }}</span>
     </a>
     {% endif %}
   </div>

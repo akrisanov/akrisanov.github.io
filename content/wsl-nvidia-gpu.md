@@ -1,6 +1,6 @@
 +++
 title = "Running Kubernetes with a GPU Inside WSL2 on My RTX Laptop"
-description = "Run Kubernetes with NVIDIA GPU support inside WSL2 on a laptop, including k3s setup, validation, and practical caveats."
+description = "Run Kubernetes with NVIDIA GPU support inside WSL2 on a laptop, from k3s setup and validation to the limits of local GPU workloads."
 date = 2026-04-22
 draft = false
 

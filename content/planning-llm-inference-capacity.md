@@ -1,6 +1,6 @@
 +++
 title = "How to Plan LLM Inference Capacity for a Shared Platform"
-description = "A practical methodology for turning product scenarios, workload traces, latency SLOs, and failure requirements into an evidence-based GPU capacity plan."
+description = "Turn product scenarios, workload traces, latency SLOs, and failure requirements into an evidence-based GPU capacity plan."
 date = 2026-07-29
 draft = false
 
@@ -15,7 +15,7 @@ toc = true
 
 Here's an example of a recurring capacity-planning request for an internal LLM platform inside an enterprise company I'm working on:
 
-> We've picked a model. Hey, do you know if you've got enough capacity for us and how many GPUs we need for N users?
+> We have selected a model. Do we have enough capacity, and how many GPUs would we need for N users?
 
 The question makes sense, but it's missing some key details.
 
@@ -77,10 +77,10 @@ Two requests to the same model can have very different costs:
 - a long-running generation that keeps KV-cache blocks active
 - a user task that triggers ten LLM calls, several tool calls, retries, and context compaction
 
-Modern inference engines like vLLM we use internally combine requests through continuous batching.
+Modern inference engines such as vLLM combine requests through continuous batching.
 They schedule prompt processing (**prefill**) and token generation (**decode**) while managing a queue and KV cache.
 Prefill is usually more compute-intensive, while decode is often constrained by memory bandwidth and the number of active sequences.
-Changes in the input-length distribution can mess with the time to first token without changing the output throughput.
+Changes in the input-length distribution can increase time to first token without changing the output throughput.
 Changes in concurrency or output length can make token streaming take longer and fill up the KV cache.
 
 This is why the following two products may have the same number of users but require very different capacity:
@@ -171,8 +171,8 @@ It should also record total token usage, maximum context length, models used, du
 
 A tracing system like [Langfuse](https://langfuse.com/docs/observability/overview) can show LLM calls,
 retrieval, tools, and application logic as nested observations. Its data model also lets you group traces into
-[sessions](https://langfuse.com/docs/observability/data-model). The specific solution isn't as important as keeping
-the main steps of a task the same.
+[sessions](https://langfuse.com/docs/observability/data-model). The specific solution isn't as important as
+preserving the causal structure of the task.
 
 ### Inference-platform view
 
@@ -304,9 +304,8 @@ The highest stable rate before these failures is the sustainable capacity of tha
 
 ### 5. Repeat and record variance
 
-Run each important point more than once. Make a note of the standard time it takes, the warm-up plan,
-the random seed or trace, and all the info about the configuration. Short tests might miss things like burst behavior,
-cache churn, thermal throttling, and long-tail requests.
+Run each important point more than once. Record the benchmark duration, the warm-up plan, the random seed or trace,
+and all the info about the configuration. Short tests might miss things like burst behavior, cache churn, thermal throttling, and long-tail requests.
 
 ### 6. Validate the full deployment
 
@@ -358,7 +357,7 @@ When a bunch of products use the same replicas, they compete for:
 - generated-token throughput
 
 If you can't tell which tenant is using what resources, you can't really figure out how much they're using.
-Hey, just a heads-up: every project should use a stable project identity and correlation IDs from the gateway to the inference server.
+Every project should use a stable project identity and correlation IDs from the gateway to the inference server.
 
 There are three common operating models:
 
@@ -372,7 +371,7 @@ You can't get both maximum utilization and an independent SLO for free. Shared p
 like admission control, rate and concurrency limits, tenant quotas, priorities, and an overload policy.
 Otherwise, one product can use up the queue and KV cache that every other tenant needs.
 
-The policy on data degradation should be clear. Here are some options to consider: you could reject excess requests with a retryable error,
+The degradation policy should be clear. Here are some options to consider: you could reject excess requests with a retryable error,
 restrict maximum context or output length, reduce agent parallelism, route to a smaller model, pause batch traffic, or accept a lower SLO for a defined workload class.
 
 ## A practical sizing request
@@ -494,7 +493,7 @@ A useful capacity plan isn't a model-to-GPU lookup table. It connects four thing
 
 The process is iterative. Prompts change. Agent loops gain new steps. Contexts grow.
 Model revisions and inference engines are subject to change. Traffic is moving from a pilot to production.
-Any change to the material can change the capacity boundary.
+Any material change the capacity boundary.
 
 The durable solution is a feedback loop: instrument the product, replay representative work, measure
 SLO-constrained capacity, reserve for failures, and compare the plan with production telemetry.
@@ -504,10 +503,17 @@ SLO-constrained capacity, reserve for failures, and compare the plan with produc
 {% further_reading() %}
 
 - [vLLM Bench: online serving benchmark](https://docs.vllm.ai/en/latest/cli/bench/serve/)
+  <span class="further-reading-description">Reference CLI and metrics for benchmarking an OpenAI-compatible serving endpoint.</span>
 - [vLLM production metrics](https://docs.vllm.ai/en/latest/usage/metrics/)
+  <span class="further-reading-description">Serving-system signals for latency, queues, token throughput, and KV-cache usage.</span>
 - [NVIDIA AIPerf metrics reference](https://docs.nvidia.com/aiperf/reference/ai-perf-metrics-reference)
+  <span class="further-reading-description">Definitions for the latency and throughput metrics reported by NVIDIA AIPerf.</span>
 - [DistServe: goodput-optimized LLM serving](https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin)
+  <span class="further-reading-description">The OSDI paper that frames LLM serving capacity around SLO-constrained goodput.</span>
 - [Langfuse observability overview](https://langfuse.com/docs/observability/overview)
+  <span class="further-reading-description">Tracing concepts for connecting LLM calls, retrieval, tools, and application logic.</span>
 - [Langfuse data model](https://langfuse.com/docs/observability/data-model)
+  <span class="further-reading-description">How traces, observations, scores, and sessions represent an application workload.</span>
 - [MLPerf inference scenarios and metrics](https://mlcommons.org/benchmarks/inference-datacenter/)
+  <span class="further-reading-description">Standard inference scenarios and latency constraints, including open-loop server testing.</span>
 {% end %}
