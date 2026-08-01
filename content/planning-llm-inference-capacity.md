@@ -8,6 +8,7 @@ draft = false
 tags = ["llm-inference", "ai-infrastructure", "capacity-planning", "observability", "gpu", "performance"]
 
 [extra]
+selected = true
 keywords = "llm inference capacity planning, gpu capacity, vllm benchmarking, ttft, tpot, goodput, multi-tenant inference, llm observability, enterprise"
 toc = true
 

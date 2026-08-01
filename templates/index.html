@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import "macros/article_card.html" as article_card %}
+{% import "macros/writing_navigation.html" as writing_navigation %}
 
 {% block title -%}
   {%- if paginator and paginator.current_index > 1 -%}
@@ -50,41 +51,32 @@
 {%- endblock twitter_description %}
 
 {% block content %}
-{% if not paginator or paginator.current_index == 1 %}
-<h2 class="article-list-heading">Latest articles</h2>
-{% endif %}
-{% if paginator %} {% set pages =
-paginator.pages %} {% else %} {% set section = get_section(path="_index.md") %}
-{% set pages = section.pages %} {% endif %} {% for page in pages %} {% if
-page.slug != "about" and page.slug != "consulting" and page.slug != "now" %}
-{{ article_card::render(page=page) }}
-{% endif %} {% endfor %} {% if paginator %}
-<nav class="pagination">
-  {% if paginator.previous %}
-  <a href="{{ paginator.previous }}" class="pagination-newer"
-    >Newer <i class="nav-modifier"></i>↑</a
-  >
-  {% endif %} {% if paginator.next %}
-  <a href="{{ paginator.next }}" class="pagination-older"
-    >Older <i class="nav-modifier"></i>↓</a
-  >
-  {% endif %}
-</nav>
-<script>
-  (function () {
-    var older = document.querySelector(".pagination-older");
-    var newer = document.querySelector(".pagination-newer");
-    document.addEventListener("keydown", function (e) {
-      if (!e.altKey) return;
-      if (e.key === "ArrowDown" && older) {
-        e.preventDefault();
-        location.href = older.href;
-      }
-      if (e.key === "ArrowUp" && newer) {
-        e.preventDefault();
-        location.href = newer.href;
-      }
-    });
-  })();
-</script>
-{% endif %} {% endblock content %}
+{% set section = get_section(path="_index.md") %}
+
+<section class="home-writing-section selected-writing" aria-labelledby="selected-writing-title">
+  <h2 id="selected-writing-title" class="article-list-heading">Selected writing</h2>
+  {% for page in section.pages %}
+    {% set is_selected = page.extra.selected | default(value=false) %}
+    {% if is_selected %}
+      {{ article_card::render(page=page) }}
+    {% endif %}
+  {% endfor %}
+</section>
+
+<section class="home-writing-section latest-writing" aria-labelledby="latest-writing-title">
+  <h2 id="latest-writing-title" class="article-list-heading">Latest writing</h2>
+  {% set_global latest_count = 0 %}
+  {% for page in section.pages %}
+    {% set is_selected = page.extra.selected | default(value=false) %}
+    {% if latest_count < 6 and not is_selected %}
+      {{ article_card::render(page=page) }}
+      {% set_global latest_count = latest_count + 1 %}
+    {% endif %}
+  {% endfor %}
+</section>
+
+{{ writing_navigation::render(
+  older_url="/writing/",
+  older_label="Earlier writing"
+) }}
+{% endblock content %}

@@ -1,0 +1,31 @@
+{% macro render(newer_url="", newer_label="", older_url="", older_label="") %}
+<nav class="pagination" aria-label="Writing navigation">
+  {% if newer_url %}
+  <a href="{{ newer_url }}" class="pagination-newer"
+    >{{ newer_label }} <i class="nav-modifier"></i>↑</a
+  >
+  {% endif %}
+  {% if older_url %}
+  <a href="{{ older_url }}" class="pagination-older"
+    >{{ older_label }} <i class="nav-modifier"></i>↓</a
+  >
+  {% endif %}
+</nav>
+<script>
+  (function () {
+    var older = document.querySelector(".pagination-older");
+    var newer = document.querySelector(".pagination-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();
+</script>
+{% endmacro render %}

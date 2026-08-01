@@ -9,6 +9,7 @@ draft = false
 tags = ["vllm", "llm-inference", "observability", "prometheus", "grafana", "performance"]
 
 [extra]
+selected = true
 keywords = "vllm, llm-inference, observability, prometheus, grafana, performance"
 toc = true
 static_thumbnail = "/images/social-vllm-metrics.png"

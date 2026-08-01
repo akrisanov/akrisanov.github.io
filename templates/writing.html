@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% import "macros/article_card.html" as article_card %}
+{% import "macros/writing_navigation.html" as writing_navigation %}
+
+{% block title %}Writing — {{ config.title | escape_xml | safe }}{% endblock title %}
+
+{% block description %}Articles by Andrey Krisanov about AI infrastructure, production LLM inference, distributed systems, and software engineering.{% endblock description %}
+
+{% block content %}
+{% set section = get_section(path="_index.md") %}
+<h1 class="archive-title">Writing</h1>
+{% for page in section.pages %}
+  {{ article_card::render(page=page) }}
+{% endfor %}
+{{ writing_navigation::render(
+  newer_url="/",
+  newer_label="Selected and latest writing"
+) }}
+{% endblock content %}
