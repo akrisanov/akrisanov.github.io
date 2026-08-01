@@ -1533,6 +1533,32 @@ summary:focus-visible {
   color: var(--headingsColor);
 }
 
+/* --- Article author --- */
+.e2-note-single {
+  margin-bottom: 0;
+}
+
+.article-author {
+  max-width: 720px;
+  margin-top: 48px;
+  padding: 10px 0 10px 16px;
+  border-left: 3px solid var(--headingsUnderlineColor);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.article-author strong {
+  color: var(--headingsColor);
+  font-weight: bold;
+}
+
+@media screen and (max-width: 639px) {
+  .article-author {
+    margin-top: 40px;
+    padding-left: 12px;
+  }
+}
+
 /* --- Post navigation (prev/next) --- */
 .note-navigation {
   display: flex;
