@@ -77,9 +77,12 @@ branch, wait for the tests to pass, and trigger the workflow:
 
 <figure class="article-figure">
   <img
-    src="/images/gh-actions-lockfile.png"
+    src="/images/gh-actions-lockfile.webp"
     alt="GitHub Actions page showing a successful lockfile workflow run"
+    width="2992"
+    height="1318"
     loading="lazy"
+    decoding="async"
   />
   <figcaption class="media-caption">GitHub Actions workflow</figcaption>
 </figure>

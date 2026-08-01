@@ -31,6 +31,11 @@ jobs:
       - name: Verify shared site header
         run: bash scripts/verify-site-header.sh public
 
+      - name: Verify SEO and performance budgets
+        run: |
+          bash scripts/verify-seo.sh public
+          bash scripts/verify-performance.sh public
+
       - name: build_and_deploy
         uses: shalzz/zola-deploy-action@v0.22.1
         env:

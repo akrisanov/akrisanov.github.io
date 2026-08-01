@@ -183,9 +183,12 @@ make build
 
 <figure class="article-figure">
   <img
-    src="/images/docker-arm-build.png"
+    src="/images/docker-arm-build.webp"
     alt="Docker Desktop showing the locally built amd64 image"
+    width="1894"
+    height="198"
     loading="lazy"
+    decoding="async"
   />
   <figcaption class="media-caption">Docker image built for the amd64 architecture</figcaption>
 </figure>

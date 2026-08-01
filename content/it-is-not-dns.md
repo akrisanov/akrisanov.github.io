@@ -39,9 +39,12 @@ Safari – 504 error. It's a Nginx page. Now it is something.
 
 <figure class="article-figure">
   <img
-    src="/images/karusel-arch.jpg"
+    src="/images/karusel-arch.webp"
     alt="Simplified diagram of the project architecture"
+    width="1464"
+    height="1382"
     loading="lazy"
+    decoding="async"
   />
   <figcaption class="media-caption">Simplified diagram of the project architecture</figcaption>
 </figure>

@@ -38,9 +38,12 @@ for file in *.flac; do ffmpeg -i "$file" -acodec alac -vcodec copy "`basename "$
 
 <figure class="article-figure">
   <img
-    src="/images/Screenshot-2023-10-22-at-18.26.25.png"
+    src="/images/Screenshot-2023-10-22-at-18.26.25.webp"
     alt="FLAC files for Susumu Hirasawa's album Siren in Finder"
+    width="1160"
+    height="900"
     loading="lazy"
+    decoding="async"
   />
   <figcaption class="media-caption">Susumu Hirasawa – Siren [Limited Edition]</figcaption>
 </figure>
@@ -49,9 +52,12 @@ The bash script converts the audio to the Apple Lossless format (`*.m4a`) and mo
 
 <figure class="article-figure">
   <img
-    src="/images/Screenshot-2023-10-22-at-18.27.10.png"
+    src="/images/Screenshot-2023-10-22-at-18.27.10.webp"
     alt="Converted M4A files in the ALAC directory in Finder"
+    width="1160"
+    height="1106"
     loading="lazy"
+    decoding="async"
   />
 </figure>
 
@@ -59,9 +65,12 @@ Finally, the `alac` directory can be dragged to Apple Music to import the album 
 
 <figure class="article-figure">
   <img
-    src="/images/Screenshot-2023-10-22-at-18.27.41.png"
+    src="/images/Screenshot-2023-10-22-at-18.27.41.webp"
     alt="The imported Siren album in Apple Music"
+    width="1600"
+    height="946"
     loading="lazy"
+    decoding="async"
   />
   <figcaption class="media-caption">The uploaded album</figcaption>
 </figure>

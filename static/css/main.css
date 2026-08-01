@@ -330,7 +330,7 @@ summary:focus-visible {
   display: inline-block;
   font-size: 15px;
   color: var(--foregroundColor);
-  opacity: 0.6;
+  opacity: 0.74;
   border-bottom: none;
   transition: opacity var(--time) ease-out;
 }
@@ -408,7 +408,7 @@ summary:focus-visible {
   font-size: 16px;
   line-height: 22px;
   color: var(--foregroundColor);
-  opacity: 0.7;
+  opacity: 0.74;
 }
 
 .blog-description p {
@@ -439,7 +439,6 @@ summary:focus-visible {
 .home-intro-focus-label {
   margin-right: 8px;
   color: var(--tagColor);
-  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -498,7 +497,7 @@ summary:focus-visible {
   border-bottom: 1px solid var(--thinRuleColor) !important;
   font-size: inherit;
   line-height: inherit;
-  opacity: 0.7;
+  opacity: 0.74;
 }
 
 .footer-rss svg {
@@ -536,7 +535,7 @@ summary:focus-visible {
   font-size: 16px;
   font-weight: bold;
   line-height: 24px;
-  opacity: 0.65;
+  opacity: 0.74;
 }
 
 .home-writing-section + .home-writing-section {
@@ -573,6 +572,12 @@ summary:focus-visible {
   line-height: 38px;
 }
 
+/* Skip layout and paint work for article cards below the viewport. */
+.e2-note-list {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 260px;
+}
+
 @media screen and (max-width: 1023px) {
   .e2-note-list .note-title {
     font-size: 28px;
@@ -595,7 +600,7 @@ summary:focus-visible {
   font-size: var(--smallFontSize);
   line-height: var(--smallLineHeight);
   color: var(--foregroundColor);
-  opacity: 0.62;
+  opacity: 0.74;
   white-space: nowrap;
 }
 
@@ -673,7 +678,7 @@ summary:focus-visible {
   color: var(--foregroundColor);
   font-size: var(--smallFontSize);
   line-height: var(--smallLineHeight);
-  opacity: 0.68;
+  opacity: 0.74;
   white-space: nowrap;
 }
 
@@ -687,7 +692,7 @@ summary:focus-visible {
 .e2-note .note-tags-inline .tag:visited {
   color: var(--foregroundColor);
   border-color: transparent;
-  opacity: 0.62;
+  opacity: 0.74;
 }
 
 .e2-note .note-tags-inline .tag:hover {
@@ -701,7 +706,7 @@ summary:focus-visible {
   border-bottom: none;
   font-size: var(--smallFontSize);
   line-height: 20px;
-  opacity: 0.48;
+  opacity: 0.74;
 }
 
 .tag-more:visited {
