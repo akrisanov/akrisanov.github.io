@@ -290,9 +290,17 @@ summary:focus-visible {
   padding: var(--marginTop) 0 60px;
 }
 
+.flag-home {
+  padding-bottom: 32px;
+}
+
 @media screen and (max-width: 1023px) {
   .flag {
     padding: var(--marginTopCompact) 0 48px;
+  }
+
+  .flag-home {
+    padding-bottom: 28px;
   }
 }
 
@@ -407,69 +415,28 @@ summary:focus-visible {
   margin: 0;
 }
 
-/* --- Homepage profile header --- */
-.flag-home {
-  padding-bottom: 36px;
-}
-
-.flag-home .title {
-  width: min(720px, 100%);
-}
-
-.title-inner-home {
-  display: grid;
-  grid-template-columns: 80px minmax(0, 1fr);
-  grid-template-rows: auto auto;
-  align-items: start;
-  column-gap: 18px;
+/* --- Homepage intro --- */
+.home-intro {
   max-width: 720px;
+  margin-bottom: 64px;
 }
 
-.title-inner-home .logo {
-  grid-column: 1;
-  grid-row: 1 / span 2;
-  align-self: center;
+.home-intro-about {
+  max-width: 660px;
+  margin: 0;
+  font-size: 18px;
+  line-height: 28px;
 }
 
-.title-inner-home .userpic {
-  width: 80px;
-  height: 80px;
-}
-
-.title-inner-home .title-text {
-  display: contents;
-}
-
-.title-inner-home h1 {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.home-profile-role {
-  grid-column: 2;
-  grid-row: 2;
-  margin-top: 3px;
-  color: var(--headingsColor);
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 26px;
-}
-
-.home-profile-about {
-  grid-column: 1 / -1;
-  margin-top: 16px;
-  font-size: 16px;
-  line-height: 24px;
-}
-
-.home-profile-interests {
-  grid-column: 1 / -1;
-  margin-top: 10px;
+.home-intro-focus {
+  margin: 16px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--nestedRuleColor);
   font-size: 13px;
   line-height: 20px;
 }
 
-.home-profile-interests-label {
+.home-intro-focus-label {
   margin-right: 8px;
   color: var(--tagColor);
   font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -479,50 +446,14 @@ summary:focus-visible {
   text-transform: uppercase;
 }
 
-.flag-home .header-nav {
-  grid-column: 1 / -1;
-  margin-top: 11px;
-}
-
-@media screen and (max-width: 1023px) {
-  .flag-home {
-    padding-top: 24px;
-  }
-
-  .title-inner-home {
-    grid-template-columns: 80px minmax(0, 1fr);
-    column-gap: 18px;
-  }
-}
-
 @media screen and (max-width: 639px) {
-  .flag-home {
-    padding-bottom: 42px;
+  .home-intro {
+    margin-bottom: 48px;
   }
 
-  .title-inner-home {
-    grid-template-columns: 64px minmax(0, 1fr);
-    column-gap: 14px;
-  }
-
-  .title-inner-home .userpic {
-    width: 64px;
-    height: 64px;
-  }
-
-  .home-profile-role {
-    font-size: 19px;
-    line-height: 25px;
-  }
-
-  .home-profile-about {
-    margin-top: 12px;
+  .home-intro-about {
     font-size: 16px;
     line-height: 24px;
-  }
-
-  .home-profile-interests {
-    margin-top: 10px;
   }
 }
 

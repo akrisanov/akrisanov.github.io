@@ -53,6 +53,17 @@
 {% block content %}
 {% set section = get_section(path="_index.md") %}
 
+<section class="home-intro" aria-label="About Andrey Krisanov">
+  <p class="home-intro-about">
+    I lead the architecture of Severstal’s shared platform for serving
+    open-weight models on Kubernetes, vLLM, and NVIDIA GPUs.
+  </p>
+  <p class="home-intro-focus">
+    <span class="home-intro-focus-label">Focus</span>
+    <span>Control planes · Performance · Reliability · Observability · GPU capacity</span>
+  </p>
+</section>
+
 <section class="home-writing-section selected-writing" aria-labelledby="selected-writing-title">
   <h2 id="selected-writing-title" class="article-list-heading">Selected writing</h2>
   {% for page in section.pages %}
