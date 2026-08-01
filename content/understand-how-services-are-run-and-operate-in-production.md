@@ -49,7 +49,7 @@ It gets worse when a candidate claims they have experience with (semi)async serv
 but can't explain [a service model](https://docs.gunicorn.org/en/stable/design.html?ref=akrisanov.com#server-model)
 they have chosen and how the services operate because of that (including resources allocating and consumption).
 
-You might say: "Why do I need to know all that low-level stuff in the 2020s?".
+You might say: "Why do I need to know all that low-level stuff in the 2020s?"
 Fair enough...if you don't develop software for thousands of users, have an unlimited budget for
 underutilized hardware, don't design distributed systems, or, simply, have an SRE team ready to
 solve all possible issues for you. Otherwise, please do.

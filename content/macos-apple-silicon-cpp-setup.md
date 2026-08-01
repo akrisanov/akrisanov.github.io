@@ -266,7 +266,7 @@ clang-tidy src/main.cpp -p build
 ```
 
 Do not blindly apply every suggestion. `clang-tidy` is a reviewer, not a enforcer.
-Use your judgement to decide which suggestions to apply.
+Use your judgment to decide which suggestions to apply.
 
 ## VS Code setup
 

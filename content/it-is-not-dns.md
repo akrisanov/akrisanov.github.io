@@ -63,7 +63,7 @@ I decide to take a break and go for a walk. When I'm back, I try to ssh to a VM 
 I notice a few seconds of delay before I can type my commands into a terminal. "It can't be DNS",
 I say to myself. To prove it, I ping a public domain from our network. Again, a few seconds of
 delay and the network packets are flying without a hitch.
-"If DNS was down, the infrastructure team would notice.", I continue to reason.
+"If DNS was down, the infrastructure team would notice," I continue to reason.
 Before escalating the situation further to upper management, I choose to check the DNS
 configuration on the backend virtual machines.
 
