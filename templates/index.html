@@ -49,7 +49,11 @@
   {%- endif -%}
 {%- endblock twitter_description %}
 
-{% block content %} {% if paginator %} {% set pages =
+{% block content %}
+{% if not paginator or paginator.current_index == 1 %}
+<h2 class="article-list-heading">Latest articles</h2>
+{% endif %}
+{% if paginator %} {% set pages =
 paginator.pages %} {% else %} {% set section = get_section(path="_index.md") %}
 {% set pages = section.pages %} {% endif %} {% for page in pages %} {% if
 page.slug != "about" and page.slug != "consulting" and page.slug != "now" %}

@@ -82,10 +82,10 @@
 
   <body>
     <div class="common">
-      <header class="flag">
+      <header class="flag{% if current_path is defined and current_path == '/' %} flag-home{% endif %}">
         <div class="header-content">
           <div class="title">
-            <div class="title-inner">
+            <div class="title-inner{% if current_path is defined and current_path == '/' %} title-inner-home{% endif %}">
               <div class="logo">
                 <a href="/" aria-label="{{ config.title | escape_xml | safe }}">
                   <img
@@ -97,10 +97,26 @@
               </div>
               <div class="title-text">
                 <h1><a href="/">{{ config.title | escape_xml | safe }}</a></h1>
+                {% if current_path is defined and current_path == '/' %}
+                <p class="home-profile-role">
+                  Staff Software Engineer · AI Infrastructure
+                </p>
+                <div class="home-profile-about">
+                  <p>
+                    I lead the architecture of Severstal’s shared platform for
+                    serving open-weight models on Kubernetes, vLLM, and NVIDIA GPUs.
+                  </p>
+                </div>
+                <p class="home-profile-interests">
+                  <span class="home-profile-interests-label">Focus</span>
+                  <span>Control planes · Performance · Reliability · Observability · GPU capacity</span>
+                </p>
+                {% else %}
                 {% if config.extra.blog_subtitle %}
                 <div class="blog-description">
                   <p>{{ config.extra.blog_subtitle | escape_xml | safe }}</p>
                 </div>
+                {% endif %}
                 {% endif %}
                 <nav class="header-nav" aria-label="Navigation">
                   <a
@@ -112,6 +128,16 @@
                     href="/files/andrey-krisanov-cv.pdf"
                     class="header-nav-link"
                     >Résumé</a
+                  >
+                  <a
+                    href="https://github.com/akrisanov"
+                    class="header-nav-link"
+                    >GitHub</a
+                  >
+                  <a
+                    href="https://www.linkedin.com/in/akrisanov/"
+                    class="header-nav-link"
+                    >LinkedIn</a
                   >
                 </nav>
               </div>
