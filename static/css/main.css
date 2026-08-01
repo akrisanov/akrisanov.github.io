@@ -543,23 +543,9 @@ summary:focus-visible {
   margin-top: 72px;
 }
 
-.archive-title {
-  max-width: 720px;
-  margin-bottom: 40px;
-  color: var(--headingsColor);
-  font-size: 36px;
-  font-weight: bold;
-  line-height: 42px;
-}
-
 @media screen and (max-width: 639px) {
   .home-writing-section + .home-writing-section {
     margin-top: 56px;
-  }
-
-  .archive-title {
-    font-size: 28px;
-    line-height: 34px;
   }
 }
 

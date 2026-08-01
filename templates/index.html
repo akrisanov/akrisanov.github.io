@@ -53,6 +53,7 @@
 {% block content %}
 {% set section = get_section(path="_index.md") %}
 
+{% if paginator.current_index == 1 %}
 <section class="home-intro" aria-label="About Andrey Krisanov">
   <p class="home-intro-about">
     I lead the architecture of Severstal’s shared platform for serving
@@ -76,18 +77,22 @@
 
 <section class="home-writing-section latest-writing" aria-labelledby="latest-writing-title">
   <h2 id="latest-writing-title" class="article-list-heading">Latest writing</h2>
-  {% set_global latest_count = 0 %}
-  {% for page in section.pages %}
+  {% for page in paginator.pages %}
     {% set is_selected = page.extra.selected | default(value=false) %}
-    {% if latest_count < 6 and not is_selected %}
+    {% if not is_selected %}
       {{ article_card::render(page=page) }}
-      {% set_global latest_count = latest_count + 1 %}
     {% endif %}
   {% endfor %}
 </section>
-
+{% else %}
+{% for page in paginator.pages %}
+  {{ article_card::render(page=page) }}
+{% endfor %}
+{% endif %}
 {{ writing_navigation::render(
-  older_url="/writing/",
+  newer_url=paginator.previous | default(value=""),
+  newer_label="Newer writing",
+  older_url=paginator.next | default(value=""),
   older_label="Earlier writing"
 ) }}
 {% endblock content %}
