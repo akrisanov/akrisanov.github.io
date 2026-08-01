@@ -10,9 +10,16 @@
       name="description"
       content="{% block description %}{{ config.description | escape_xml | safe }}{% endblock description %}"
     />
-    {% block robots %}{% endblock robots %} {% block canonical %}
+    <meta name="author" content="{{ config.author | escape_xml | safe }}" />
+    {% block robots %}
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    {% endblock robots %} {% block canonical %}
     <link rel="canonical" href="{{ current_url | safe }}" />
     {% endblock canonical %}
+    {% block head_links %}{% endblock head_links %}
 
     <meta
       property="og:type"
@@ -43,8 +50,13 @@
       property="og:image:height"
       content="{% block og_image_height %}784{% endblock og_image_height %}"
     />
+    <meta
+      property="og:image:alt"
+      content="{% block og_image_alt %}Portrait of {{ config.author | escape_xml | safe }}{% endblock og_image_alt %}"
+    />
 
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="{{ config.extra.twitter_handle | escape_xml | safe }}" />
     <meta
       name="twitter:title"
       content="{% block twitter_title %}{{ config.title | escape_xml | safe }}{% endblock twitter_title %}"
@@ -57,6 +69,57 @@
       name="twitter:image"
       content="{% block twitter_image %}{{ config.base_url }}/images/userpic-square.jpg{% endblock twitter_image %}"
     />
+    <meta
+      name="twitter:image:alt"
+      content="{% block twitter_image_alt %}Portrait of {{ config.author | escape_xml | safe }}{% endblock twitter_image_alt %}"
+    />
+
+    {% block social_metadata %}{% endblock social_metadata %}
+
+    {% block structured_data %}
+    {% set author_id = config.extra.author_url ~ "#person" %}
+    {% set website_url = config.base_url ~ "/" %}
+    {% set website_id = website_url ~ "#website" %}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": {{ author_id | json_encode | safe }},
+            "name": {{ config.author | json_encode | safe }},
+            "url": {{ config.extra.author_url | json_encode | safe }},
+            "image": {{ config.extra.default_social_image | json_encode | safe }},
+            "jobTitle": "Staff Software Engineer",
+            "sameAs": [
+              {{ config.extra.github_url | json_encode | safe }},
+              {{ config.extra.linkedin_url | json_encode | safe }},
+              {{ config.extra.x_url | json_encode | safe }}
+            ],
+            "knowsAbout": [
+              "Large language model inference",
+              "AI infrastructure",
+              "Distributed systems",
+              "Kubernetes",
+              "vLLM",
+              "Platform reliability"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": {{ website_id | json_encode | safe }},
+            "url": {{ website_url | json_encode | safe }},
+            "name": {{ config.title | json_encode | safe }},
+            "description": {{ config.description | json_encode | safe }},
+            "inLanguage": {{ lang | json_encode | safe }},
+            "publisher": {
+              "@id": {{ author_id | json_encode | safe }}
+            }
+          }
+        ]
+      }
+    </script>
+    {% endblock structured_data %}
 
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-180.png" />
@@ -92,6 +155,9 @@
                     src="/images/userpic.jpg"
                     class="userpic"
                     alt="{{ config.title | escape_xml | safe }}"
+                    width="400"
+                    height="400"
+                    decoding="async"
                   />
                 </a>
               </div>
@@ -116,11 +182,13 @@
                   <a
                     href="https://github.com/akrisanov"
                     class="header-nav-link"
+                    rel="me"
                     >GitHub</a
                   >
                   <a
                     href="https://www.linkedin.com/in/akrisanov/"
                     class="header-nav-link"
+                    rel="me"
                     >LinkedIn</a
                   >
                 </nav>

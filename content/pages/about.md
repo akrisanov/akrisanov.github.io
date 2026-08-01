@@ -4,6 +4,7 @@ description = "About Andrey Krisanov, a Staff Software Engineer at Severstal foc
 template = "static_page.html"
 path = "about"
 date = 2024-01-01
+updated = 2026-08-01
 
 [extra]
 seo_title = "About Andrey Krisanov — LLM Inference & AI Infrastructure"

@@ -84,6 +84,78 @@
   {%- endif -%}
 {%- endblock twitter_image %}
 
+{% block og_image_alt -%}
+  {%- if page.slug == "about" -%}
+    Social preview for the profile of {{ config.author | escape_xml | safe }}
+  {%- else -%}
+    Social preview for {{ page.title | escape_xml | safe }}
+  {%- endif -%}
+{%- endblock og_image_alt %}
+
+{% block twitter_image_alt -%}
+  {%- if page.slug == "about" -%}
+    Social preview for the profile of {{ config.author | escape_xml | safe }}
+  {%- else -%}
+    Social preview for {{ page.title | escape_xml | safe }}
+  {%- endif -%}
+{%- endblock twitter_image_alt %}
+
+{% block structured_data %}
+{% if page.slug == "about" %}
+{% set author_id = config.extra.author_url ~ "#person" %}
+{% set profile_id = page.permalink ~ "#profile" %}
+{% set website_url = config.base_url ~ "/" %}
+{% set website_id = website_url ~ "#website" %}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "@id": {{ profile_id | json_encode | safe }},
+    "url": {{ page.permalink | json_encode | safe }},
+    "name": {{ page.extra.seo_title | default(value=page.title) | json_encode | safe }},
+    "description": {{ page.description | default(value=config.description) | json_encode | safe }},
+    "dateCreated": {{ page.date | date(format="%Y-%m-%d") | json_encode | safe }},
+    "dateModified": {{ page.updated | default(value=page.date) | date(format="%Y-%m-%d") | json_encode | safe }},
+    "inLanguage": {{ lang | json_encode | safe }},
+    "isPartOf": {
+      "@type": "WebSite",
+      "@id": {{ website_id | json_encode | safe }},
+      "url": {{ website_url | json_encode | safe }},
+      "name": {{ config.title | json_encode | safe }}
+    },
+    "mainEntity": {
+      "@type": "Person",
+      "@id": {{ author_id | json_encode | safe }},
+      "name": {{ config.author | json_encode | safe }},
+      "url": {{ config.extra.author_url | json_encode | safe }},
+      "image": {{ config.extra.default_social_image | json_encode | safe }},
+      "jobTitle": "Staff Software Engineer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Severstal"
+      },
+      "sameAs": [
+        {{ config.extra.github_url | json_encode | safe }},
+        {{ config.extra.linkedin_url | json_encode | safe }},
+        {{ config.extra.x_url | json_encode | safe }}
+      ],
+      "knowsAbout": [
+        "Large language model inference",
+        "AI infrastructure",
+        "Distributed systems",
+        "Kubernetes",
+        "vLLM",
+        "GPU capacity planning",
+        "Platform reliability"
+      ]
+    }
+  }
+</script>
+{% else %}
+{{ super() }}
+{% endif %}
+{% endblock structured_data %}
+
 {% block content %}
 <article class="e2-note e2-note-single">
   <header class="note-header">

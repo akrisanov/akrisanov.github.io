@@ -50,6 +50,11 @@
   {%- endif -%}
 {%- endblock twitter_description %}
 
+{% block head_links %}
+  {% if paginator.previous %}<link rel="prev" href="{{ paginator.previous | safe }}" />{% endif %}
+  {% if paginator.next %}<link rel="next" href="{{ paginator.next | safe }}" />{% endif %}
+{% endblock head_links %}
+
 {% block content %}
 {% set section = get_section(path="_index.md") %}
 

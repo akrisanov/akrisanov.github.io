@@ -4,3 +4,4 @@ set -euo pipefail
 bash scripts/generate-social-previews.sh
 zola build
 bash scripts/verify-site-header.sh public
+bash scripts/verify-seo.sh public

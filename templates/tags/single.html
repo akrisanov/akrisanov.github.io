@@ -5,6 +5,8 @@
 {% block description %}Posts tagged with #{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock description %}
 {% block og_title %}#{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock og_title %}
 {% block og_description %}Posts tagged with #{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock og_description %}
+{% block twitter_title %}#{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock twitter_title %}
+{% block twitter_description %}Posts tagged with #{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock twitter_description %}
 
 {% block content %}
 <div class="tag-header">

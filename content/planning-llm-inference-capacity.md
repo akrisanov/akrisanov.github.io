@@ -12,6 +12,8 @@ selected = true
 keywords = "llm inference capacity planning, gpu capacity, vllm benchmarking, ttft, tpot, goodput, multi-tenant inference, llm observability, enterprise"
 toc = true
 
+static_thumbnail = "/images/social-planning-llm-inference-capacity.png"
+
 +++
 
 Here's an example of a recurring capacity-planning request for an internal LLM platform inside an enterprise company I'm working on:

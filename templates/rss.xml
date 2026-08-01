@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
   <channel>
     <title>{{ config.title }}{% if term %} - {{ term.name }}{% elif section and section.title %} - {{ section.title }}{% endif %}</title>
     <link>{% if section %}{{ section.permalink | escape_xml | safe }}{% else %}{{ config.base_url | escape_xml | safe }}{% endif %}</link>
@@ -15,7 +15,7 @@
     <item>
       <title>{{ page.title }}</title>
       <pubDate>{{ page.updated | default(value=page.date) | date(format="%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
-      <author>{% if page.authors %}{{ page.authors[0] }}{% elif config.author %}{{ config.author }}{% else %}Unknown{% endif %}</author>
+      <dc:creator>{% if page.authors %}{{ page.authors[0] }}{% elif config.author %}{{ config.author }}{% else %}Unknown{% endif %}</dc:creator>
       <link>{{ page.permalink | escape_xml | safe }}</link>
       <guid>{{ page.permalink | escape_xml | safe }}</guid>
       <description xml:base="{{ page.permalink | escape_xml | safe }}"><![CDATA[

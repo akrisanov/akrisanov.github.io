@@ -1,26 +1,100 @@
-{% extends "base.html" %} {% import "macros/toc.html" as toc_macros %} {% block title %}{{ page.title | escape_xml | safe }} — {{ config.title | escape_xml | safe
-}}{% endblock title %} {% block description %}{% if page.description %}{{
-page.description | escape_xml | safe }}{% else %}{{ config.description | escape_xml | safe }}{% endif %}{% endblock
-description %} {% block og_type %}article{% endblock og_type %} {% block
-og_title %}{{ page.title | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock og_title %} {% block
-og_description %}{% if page.description %}{{ page.description | escape_xml | safe }}{% else %}{{
-config.description | escape_xml | safe }}{% endif %}{% endblock og_description %} {% block og_image
-%} {% if page.extra.static_thumbnail %} {{ config.base_url }}{{
-page.extra.static_thumbnail }} {% elif page.static_thumbnail %} {{
-config.base_url }}{{ page.static_thumbnail }} {% else %} {{ config.base_url
-}}/images/userpic-square.jpg {% endif %} {% endblock og_image %} {% block
-og_image_width %} {% if page.extra.static_thumbnail or page.static_thumbnail %}
-1200 {% else %} 784 {% endif %} {% endblock og_image_width %} {% block
-og_image_height %} {% if page.extra.static_thumbnail or page.static_thumbnail %}
-630 {% else %} 784 {% endif %} {% endblock og_image_height %} {% block
-twitter_title %}{{ page.title | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock twitter_title
-%} {% block twitter_description %}{% if page.description %}{{ page.description | escape_xml | safe
-}}{% else %}{{ config.description | escape_xml | safe }}{% endif %}{% endblock twitter_description
-%} {% block twitter_image %} {% if page.extra.static_thumbnail %} {{
-config.base_url }}{{ page.extra.static_thumbnail }} {% elif
-page.static_thumbnail %} {{ config.base_url }}{{ page.static_thumbnail }} {%
-else %} {{ config.base_url }}/images/userpic-square.jpg {% endif %} {% endblock
-twitter_image %} {% block content %}
+{% extends "base.html" %}
+{% import "macros/toc.html" as toc_macros %}
+
+{% block title %}{{ page.title | escape_xml | safe }}{% endblock title %}
+{% block description %}{{ page.description | default(value=config.description) | escape_xml | safe }}{% endblock description %}
+{% block og_type %}article{% endblock og_type %}
+{% block og_title %}{{ page.title | escape_xml | safe }}{% endblock og_title %}
+{% block og_description %}{{ page.description | default(value=config.description) | escape_xml | safe }}{% endblock og_description %}
+{% block og_image -%}
+  {%- if page.extra.static_thumbnail -%}
+    {{ config.base_url }}{{ page.extra.static_thumbnail }}
+  {%- elif page.static_thumbnail -%}
+    {{ config.base_url }}{{ page.static_thumbnail }}
+  {%- else -%}
+    {{ config.extra.default_social_image }}
+  {%- endif -%}
+{%- endblock og_image %}
+{% block og_image_width %}{% if page.extra.static_thumbnail or page.static_thumbnail %}1200{% else %}784{% endif %}{% endblock og_image_width %}
+{% block og_image_height %}{% if page.extra.static_thumbnail or page.static_thumbnail %}630{% else %}784{% endif %}{% endblock og_image_height %}
+{% block twitter_title %}{{ page.title | escape_xml | safe }}{% endblock twitter_title %}
+{% block twitter_description %}{{ page.description | default(value=config.description) | escape_xml | safe }}{% endblock twitter_description %}
+{% block twitter_image -%}
+  {%- if page.extra.static_thumbnail -%}
+    {{ config.base_url }}{{ page.extra.static_thumbnail }}
+  {%- elif page.static_thumbnail -%}
+    {{ config.base_url }}{{ page.static_thumbnail }}
+  {%- else -%}
+    {{ config.extra.default_social_image }}
+  {%- endif -%}
+{%- endblock twitter_image %}
+{% block og_image_alt %}Social preview for {{ page.title | escape_xml | safe }}{% endblock og_image_alt %}
+{% block twitter_image_alt %}Social preview for {{ page.title | escape_xml | safe }}{% endblock twitter_image_alt %}
+{% block social_metadata %}
+    <meta property="article:published_time" content="{{ page.date | date(format='%Y-%m-%d') }}" />
+    <meta property="article:modified_time" content="{{ page.updated | default(value=page.date) | date(format='%Y-%m-%d') }}" />
+    <meta property="article:author" content="{{ config.extra.author_url }}" />
+    {% for tag in page.taxonomies.tags %}
+    <meta property="article:tag" content="{{ tag | escape_xml | safe }}" />
+    {% endfor %}
+{% endblock social_metadata %}
+{% block structured_data %}
+    {% set author_id = config.extra.author_url ~ "#person" %}
+    {% set article_id = page.permalink ~ "#article" %}
+    {% set website_url = config.base_url ~ "/" %}
+    {% set website_id = website_url ~ "#website" %}
+    {% if page.extra.static_thumbnail %}
+      {% set social_image = config.base_url ~ page.extra.static_thumbnail %}
+    {% elif page.static_thumbnail %}
+      {% set social_image = config.base_url ~ page.static_thumbnail %}
+    {% else %}
+      {% set social_image = config.extra.default_social_image %}
+    {% endif %}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": {{ article_id | json_encode | safe }},
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": {{ page.permalink | json_encode | safe }}
+        },
+        "headline": {{ page.title | json_encode | safe }},
+        "description": {{ page.description | default(value=config.description) | json_encode | safe }},
+        "image": {{ social_image | json_encode | safe }},
+        "datePublished": {{ page.date | date(format="%Y-%m-%d") | json_encode | safe }},
+        "dateModified": {{ page.updated | default(value=page.date) | date(format="%Y-%m-%d") | json_encode | safe }},
+        "inLanguage": {{ lang | json_encode | safe }},
+        "wordCount": {{ page.word_count }},
+        "timeRequired": "PT{{ page.reading_time }}M",
+        "keywords": {{ page.taxonomies.tags | json_encode | safe }},
+        "author": {
+          "@type": "Person",
+          "@id": {{ author_id | json_encode | safe }},
+          "name": {{ config.author | json_encode | safe }},
+          "url": {{ config.extra.author_url | json_encode | safe }},
+          "sameAs": [
+            {{ config.extra.github_url | json_encode | safe }},
+            {{ config.extra.linkedin_url | json_encode | safe }},
+            {{ config.extra.x_url | json_encode | safe }}
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": {{ author_id | json_encode | safe }},
+          "name": {{ config.author | json_encode | safe }},
+          "url": {{ config.extra.author_url | json_encode | safe }}
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": {{ website_id | json_encode | safe }},
+          "name": {{ config.title | json_encode | safe }},
+          "url": {{ website_url | json_encode | safe }}
+        }
+      }
+    </script>
+{% endblock structured_data %}
+{% block content %}
 <article
   id="article-top"
   class="e2-note e2-note-single"
@@ -34,6 +108,7 @@ twitter_image %} {% block content %}
   />
   <span itemprop="author" itemscope itemtype="https://schema.org/Person">
     <meta itemprop="name" content="{{ config.author | escape_xml | safe }}" />
+    <meta itemprop="url" content="{{ config.extra.author_url | safe }}" />
   </span>
 
   {% if page.extra.toc and page.toc %}
