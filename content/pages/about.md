@@ -1,6 +1,6 @@
 +++
 title = "About"
-description = "About Andrey Krisanov, a software engineer focused on production LLM inference, GPU-backed AI infrastructure, and distributed systems."
+description = "About Andrey Krisanov, a Staff Software Engineer at Severstal focused on production LLM inference platforms, AI infrastructure, and distributed systems."
 template = "static_page.html"
 path = "about"
 date = 2024-01-01
@@ -13,16 +13,16 @@ static_thumbnail = "/images/social-pages-about.png"
 
 ## Hi, I'm Andrey
 
-I'm a software engineer specializing in production LLM inference, AI infrastructure and distributed systems.
-I enjoy transforming complex systems into something straightforward, dependable, and easy to understand.
-
-At Severstal, I am responsible for the architecture and technical development of DaVinci, a shared GenAI platform
-that supports enterprise AI products and coding agents. Its inference foundation currently runs self-hosted,
-open-weight models on Kubernetes, vLLM and 24 NVIDIA H200 GPUs.
+I'm a Staff Software Engineer at Severstal, specialising in production LLM inference platforms, AI infrastructure,
+and distributed systems. I am responsible for the architecture and technical development of DaVinci, a shared GenAI
+platform that supports enterprise AI products and coding agents. Its inference foundation currently runs self-hosted,
+open-weight models on Kubernetes, vLLM, and 24 NVIDIA H200 GPUs.
 
 My work covers model serving, traffic routing and admission control, performance and reliability, observability,
 capacity planning, safe model rollout and multi-data-centre resilience. I also designed the target topology and
 resilience strategy for a planned expansion to 48 H200 and eight H100 GPUs across two data centres.
+
+I enjoy transforming complex systems into something straightforward, dependable, and easy to understand.
 
 ## Background
 
@@ -42,7 +42,8 @@ reliably in production.
 ## Writing and contact
 
 On this site, I write about AI infrastructure, LLM inference, distributed systems and the practical lessons
-I have learned from operating production platforms.
+I have learned from operating production platforms. You can also browse all of my public projects on
+[GitHub](https://github.com/akrisanov).
 
-You can find my projects on [GitHub](https://github.com/akrisanov), connect with me on
-[LinkedIn](https://www.linkedin.com/in/akrisanov/), or download my [résumé](/files/andrey-krisanov-cv.pdf).
+For professional enquiries, connect with me on [LinkedIn](https://www.linkedin.com/in/akrisanov/) or download my
+[résumé](/files/andrey-krisanov-cv.pdf).

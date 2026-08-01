@@ -1,6 +1,9 @@
 # akrisanov.com
 
-Personal website built with [Zola](https://www.getzola.org/). Engineering notes on AI infrastructure, LLM systems, and software engineering.
+Technical writing on production LLM inference platforms, AI infrastructure,
+distributed systems, Kubernetes, vLLM, and platform reliability.
+
+Built with [Zola](https://www.getzola.org/).
 
 ## Local Development
 
