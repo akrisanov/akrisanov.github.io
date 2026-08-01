@@ -47,4 +47,4 @@ I have learned from operating production platforms. You can also browse all of m
 [GitHub](https://github.com/akrisanov).
 
 For professional enquiries, connect with me on [LinkedIn](https://www.linkedin.com/in/akrisanov/) or download my
-[résumé](/files/andrey-krisanov-cv.pdf).
+[résumé](/files/andrey-krisanov-resume.pdf).

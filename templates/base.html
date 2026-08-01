@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>{% block title %}{{ config.title | escape_xml | safe }}{% endblock title %}</title>
+    <title>
+      {% block title %}{{ config.title | escape_xml | safe }}{% endblock title
+      %}
+    </title>
 
     <meta
       name="description"
@@ -18,8 +21,7 @@
     />
     {% endblock robots %} {% block canonical %}
     <link rel="canonical" href="{{ current_url | safe }}" />
-    {% endblock canonical %}
-    {% block head_links %}{% endblock head_links %}
+    {% endblock canonical %} {% block head_links %}{% endblock head_links %}
 
     <meta
       property="og:type"
@@ -36,7 +38,10 @@
     {% block og_url %}
     <meta property="og:url" content="{{ current_url | safe }}" />
     {% endblock og_url %}
-    <meta property="og:site_name" content="{{ config.title | escape_xml | safe }}" />
+    <meta
+      property="og:site_name"
+      content="{{ config.title | escape_xml | safe }}"
+    />
     <meta property="og:locale" content="en_US" />
     <meta
       property="og:image"
@@ -56,7 +61,10 @@
     />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:creator" content="{{ config.extra.twitter_handle | escape_xml | safe }}" />
+    <meta
+      name="twitter:creator"
+      content="{{ config.extra.twitter_handle | escape_xml | safe }}"
+    />
     <meta
       name="twitter:title"
       content="{% block twitter_title %}{{ config.title | escape_xml | safe }}{% endblock twitter_title %}"
@@ -74,12 +82,10 @@
       content="{% block twitter_image_alt %}Portrait of {{ config.author | escape_xml | safe }}{% endblock twitter_image_alt %}"
     />
 
-    {% block social_metadata %}{% endblock social_metadata %}
-
-    {% block structured_data %}
-    {% set author_id = config.extra.author_url ~ "#person" %}
-    {% set website_url = config.base_url ~ "/" %}
-    {% set website_id = website_url ~ "#website" %}
+    {% block social_metadata %}{% endblock social_metadata %} {% block
+    structured_data %} {% set author_id = config.extra.author_url ~ "#person" %}
+    {% set website_url = config.base_url ~ "/" %} {% set website_id =
+    website_url ~ "#website" %}
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -145,7 +151,9 @@
 
   <body>
     <div class="common">
-      <header class="flag{% if current_path is defined and current_path == '/' %} flag-home{% endif %}">
+      <header
+        class="flag{% if current_path is defined and current_path == '/' %} flag-home{% endif %}"
+      >
         <div class="header-content">
           <div class="title">
             <div class="title-inner">
@@ -176,7 +184,7 @@
                     >About</a
                   >
                   <a
-                    href="/files/andrey-krisanov-cv.pdf"
+                    href="/files/andrey-krisanov-resume.pdf"
                     class="header-nav-link"
                     >Résumé</a
                   >
@@ -203,7 +211,8 @@
 
       <footer class="footer">
         <span class="footer-copy">
-          &copy; {{ config.author | escape_xml | safe }}, {{ now() | date(format="%Y") }}
+          &copy; {{ config.author | escape_xml | safe }}, {{ now() |
+          date(format="%Y") }}
         </span>
         <span class="footer-engine">
           Engine 🦀

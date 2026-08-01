@@ -3,7 +3,7 @@ set -euo pipefail
 
 readonly output_dir="${1:-public}"
 readonly expected_subtitle="Production LLM inference, AI infrastructure, and distributed systems"
-readonly expected_navigation='href="?/about/"?.*href="?/files/andrey-krisanov-cv.pdf"?.*href="?https://github.com/akrisanov"?.*href="?https://www.linkedin.com/in/akrisanov/"?'
+readonly expected_navigation='href="?/about/"?.*href="?/files/andrey-krisanov-resume.pdf"?.*href="?https://github.com/akrisanov"?.*href="?https://www.linkedin.com/in/akrisanov/"?'
 
 if [[ ! -d "$output_dir" ]]; then
   echo "Build output directory does not exist: $output_dir" >&2
