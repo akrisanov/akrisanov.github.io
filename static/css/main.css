@@ -12,7 +12,7 @@
 
   --headingsColor: rgb(192, 0, 120);
   --headingsUnderlineColor: rgba(192, 0, 120, 0.25);
-  --boldColor: var(--headingsColor);
+  --boldColor: var(--foregroundColor);
 
   --linkColor: rgb(23, 107, 194);
   --linkUnderlineColor: rgba(23, 107, 194, 0.3);
@@ -56,10 +56,12 @@
 
   --blogTitleFontSize: 28px;
   --blogTitleLineHeight: 32px;
-  --noteTextFontSize: 20px;
-  --noteTextLineHeight: 28px;
-  --smallFontSize: 13px;
-  --smallLineHeight: 18px;
+  --noteTextFontSize: 19px;
+  --noteTextLineHeight: 30px;
+  --smallFontSize: 14px;
+  --smallLineHeight: 20px;
+  --articleMeasure: 68ch;
+  --articleWideMeasure: 720px;
 
   --mainFontFamily:
     system-ui, -apple-system, BlinkMacSystemFont, "SF UI Text", "Segoe UI",
@@ -158,6 +160,10 @@ button {
 body {
   background: var(--backgroundColor);
   color: var(--foregroundColor);
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
 }
 
 body,
@@ -197,9 +203,9 @@ code * {
   font-feature-settings: "liga" 1, "calt" 1;
 }
 
-pre,
-code {
-  white-space: pre-wrap;
+pre {
+  white-space: pre;
+  tab-size: 2;
 }
 
 img {
@@ -242,6 +248,7 @@ a {
   color: var(--linkColor);
   border-color: var(--linkUnderlineColor);
   text-decoration: none;
+  text-decoration-skip-ink: auto;
   border-bottom: 1px solid var(--linkUnderlineColor);
   transition:
     color var(--time) ease-out,
@@ -529,7 +536,7 @@ summary:focus-visible {
 
 /* --- Post / note list --- */
 .article-list-heading {
-  max-width: 720px;
+  max-width: var(--articleWideMeasure);
   margin-bottom: 28px;
   color: var(--foregroundColor);
   font-size: 16px;
@@ -558,12 +565,14 @@ summary:focus-visible {
 }
 
 .note-title {
-  font-weight: bold;
+  max-width: var(--articleWideMeasure);
+  color: var(--headingsColor);
   font-size: 36px;
   line-height: 42px;
-  color: var(--headingsColor);
-  max-width: 720px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   overflow-wrap: break-word;
+  text-wrap: balance;
   word-wrap: break-word;
 }
 
@@ -635,15 +644,17 @@ summary:focus-visible {
 
 /* --- Single post --- */
 .e2-note-single .note-title {
-  font-size: 36px;
-  line-height: 42px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  font-size: 42px;
+  line-height: 48px;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
 @media screen and (max-width: 1023px) {
   .e2-note-single .note-title {
-    font-size: 28px;
-    line-height: 34px;
+    font-size: 34px;
+    line-height: 40px;
   }
 }
 
@@ -652,12 +663,13 @@ summary:focus-visible {
 }
 
 .note-description {
-  max-width: 720px;
-  margin-bottom: 14px;
+  max-width: 62ch;
+  margin-bottom: 16px;
   color: var(--foregroundColor);
-  font-size: 21px;
-  line-height: 29px;
-  opacity: 0.78;
+  font-size: 20px;
+  line-height: 30px;
+  opacity: 0.76;
+  text-wrap: pretty;
 }
 
 .note-meta {
@@ -668,6 +680,7 @@ summary:focus-visible {
   margin-bottom: 28px;
   font-size: var(--smallFontSize);
   line-height: var(--smallLineHeight);
+  font-variant-numeric: tabular-nums;
 }
 
 .e2-note-single .note-meta {
@@ -724,6 +737,21 @@ summary:focus-visible {
 }
 
 @media screen and (max-width: 639px) {
+  :root {
+    --noteTextFontSize: 18px;
+    --noteTextLineHeight: 28px;
+  }
+
+  .e2-note-single .note-title {
+    font-size: 30px;
+    line-height: 36px;
+  }
+
+  .note-description {
+    font-size: 18px;
+    line-height: 27px;
+  }
+
   .e2-note-list .note-title {
     font-size: 26px;
     line-height: 32px;
@@ -737,7 +765,7 @@ summary:focus-visible {
 .note-body {
   font-size: var(--noteTextFontSize);
   line-height: var(--noteTextLineHeight);
-  max-width: 720px;
+  max-width: var(--articleWideMeasure);
 }
 
 .note-layout {
@@ -938,18 +966,19 @@ summary:focus-visible {
 .e2-text blockquote,
 .e2-text pre,
 .e2-text table {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .e2-text p,
 .e2-text blockquote {
-  max-width: 720px;
+  max-width: var(--articleMeasure);
+  text-wrap: pretty;
 }
 
 .e2-text ul,
 .e2-text ol {
   padding-left: 30px;
-  max-width: 720px;
+  max-width: var(--articleMeasure);
 }
 
 .e2-text li {
@@ -958,7 +987,7 @@ summary:focus-visible {
 }
 
 .e2-text li + li {
-  margin-top: 8px;
+  margin-top: 9px;
 }
 
 .e2-text li::marker {
@@ -982,7 +1011,8 @@ summary:focus-visible {
 
 .e2-text table {
   font-size: 16px;
-  line-height: 23px;
+  line-height: 24px;
+  font-variant-numeric: tabular-nums;
 }
 
 .e2-text tbody tr:nth-child(even) {
@@ -1008,50 +1038,61 @@ summary:focus-visible {
 .e2-text h3,
 .e2-text h4 {
   color: var(--headingsColor);
-  font-weight: bold;
-  margin: 32px 0 12px;
-  line-height: 1.2;
+  max-width: var(--articleMeasure);
+  margin: 44px 0 16px;
+  font-weight: 700;
+  letter-spacing: -0.018em;
   scroll-margin-top: 24px;
+  text-wrap: balance;
 }
 
 .e2-text h2 {
-  font-size: 28px;
-  line-height: 34px;
+  font-size: 30px;
+  line-height: 36px;
 }
 .e2-text h3 {
-  font-size: 22px;
-  line-height: 28px;
+  margin-top: 36px;
+  font-size: 23px;
+  line-height: 30px;
 }
 .e2-text h4 {
-  font-size: 18px;
+  margin-top: 30px;
+  font-size: 19px;
+  line-height: 26px;
 }
 
 .e2-text strong,
 .e2-text b {
-  font-weight: bold;
+  font-weight: 700;
   color: var(--boldColor);
 }
 
 .e2-text code {
   background: var(--inlineCodeBackgroundColor);
   color: var(--inlineCodeColor);
-  padding: 1px 5px;
-  border-radius: 3px;
-  font-size: 0.85em;
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+  font-size: 0.84em;
+  line-height: 1;
+  overflow-wrap: anywhere;
 }
 
 .e2-text pre {
-  padding: 16px 20px;
+  padding: 18px 20px;
   border-radius: 8px;
   overflow-x: auto;
-  font-size: 13.5px;
+  font-size: 14px;
   line-height: 22px;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
 }
 
 .e2-text pre code {
   background: none;
   padding: 0;
   font-size: inherit;
+  line-height: inherit;
+  overflow-wrap: normal;
 }
 
 .mermaid-figure {
@@ -1159,9 +1200,12 @@ summary:focus-visible {
 
 .e2-text blockquote {
   margin-left: 0;
-  padding: 0 0 0 40px;
+  padding: 2px 0 2px 20px;
+  border-left: 2px solid var(--headingsUnderlineColor);
   color: var(--foregroundColor);
-  opacity: 0.8;
+  font-size: 20px;
+  line-height: 31px;
+  opacity: 0.84;
 }
 
 .footnote-reference {
@@ -1180,7 +1224,7 @@ summary:focus-visible {
 .footnote-definition {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr);
-  max-width: 720px;
+  max-width: var(--articleWideMeasure);
   margin-top: 28px;
   padding-top: 12px;
   border-top: 1px solid var(--thinRuleColor);
@@ -1220,7 +1264,7 @@ summary:focus-visible {
   border-radius: 8px;
   background: var(--scopeNoteBackgroundColor);
   font-size: 16px;
-  line-height: 23px;
+  line-height: 24px;
 }
 
 .article-scope-note-title {
@@ -1246,10 +1290,10 @@ summary:focus-visible {
 
 .e2-text .article-key-point p {
   margin: 0;
-  max-width: 680px;
+  max-width: var(--articleMeasure);
   color: var(--keyPointColor);
   font-size: 22px;
-  line-height: 30px;
+  line-height: 32px;
   font-weight: bold;
 }
 
@@ -1262,7 +1306,7 @@ summary:focus-visible {
   border-top: 1px solid var(--thinRuleColor);
   border-bottom: 1px solid var(--thinRuleColor);
   font-size: 15px;
-  line-height: 21px;
+  line-height: 22px;
 }
 
 .article-decision-guide-label {
@@ -1299,7 +1343,7 @@ summary:focus-visible {
   padding: 12px 0;
   border-top: 1px solid var(--thinRuleColor);
   font-size: 16px;
-  line-height: 23px;
+  line-height: 24px;
 }
 
 .further-reading a {
@@ -1311,11 +1355,41 @@ summary:focus-visible {
   margin-top: 3px;
   color: var(--foregroundColor);
   font-size: 14px;
-  line-height: 20px;
+  line-height: 21px;
   opacity: 0.72;
 }
 
 @media screen and (max-width: 639px) {
+  .e2-text h2 {
+    margin-top: 38px;
+    font-size: 26px;
+    line-height: 32px;
+  }
+
+  .e2-text h3 {
+    margin-top: 32px;
+    font-size: 21px;
+    line-height: 27px;
+  }
+
+  .e2-text h4 {
+    margin-top: 28px;
+    font-size: 18px;
+    line-height: 25px;
+  }
+
+  .e2-text pre {
+    padding: 16px;
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .e2-text blockquote {
+    padding-left: 16px;
+    font-size: 18px;
+    line-height: 28px;
+  }
+
   .e2-text ul,
   .e2-text ol {
     padding-left: 24px;
@@ -1370,7 +1444,7 @@ summary:focus-visible {
 }
 
 .article-figure {
-  max-width: 720px;
+  max-width: var(--articleWideMeasure);
   margin: 20px 0 28px;
 }
 
@@ -1386,6 +1460,9 @@ summary:focus-visible {
 .article-quote blockquote {
   margin: 0;
   padding: 0;
+  border: 0;
+  font-size: inherit;
+  line-height: inherit;
   opacity: 1;
 }
 
@@ -1393,9 +1470,9 @@ summary:focus-visible {
   color: var(--keyPointColor);
   font-weight: bold;
   font-size: 22px;
-  line-height: 28px;
-  margin-bottom: 20px;
-  max-width: 720px;
+  line-height: 32px;
+  margin-bottom: 24px;
+  max-width: var(--articleMeasure);
 }
 
 /* --- Tags --- */
@@ -1451,7 +1528,7 @@ summary:focus-visible {
 /* --- Embedded media --- */
 .youtube-embed {
   display: block;
-  width: min(100%, 720px);
+  width: min(100%, var(--articleWideMeasure));
   height: auto;
   aspect-ratio: 16 / 9;
   margin: 20px 0 28px;
@@ -1460,7 +1537,7 @@ summary:focus-visible {
 }
 
 .image-swap {
-  max-width: 720px;
+  max-width: var(--articleWideMeasure);
   margin: 20px 0 28px;
 }
 
@@ -1483,7 +1560,7 @@ summary:focus-visible {
 .media-caption,
 .e2-text .img-title {
   display: block;
-  max-width: 720px;
+  max-width: var(--articleWideMeasure);
   margin: 8px 0 0;
   font-size: var(--smallFontSize);
   line-height: var(--smallLineHeight);
@@ -1494,7 +1571,7 @@ summary:focus-visible {
 
 /* --- Legacy rich-text components still used by older posts --- */
 .e2-text .callout {
-  max-width: 720px;
+  max-width: var(--articleWideMeasure);
   margin: 28px 0;
   padding: 16px 18px;
   border: 1px solid var(--thinRuleColor);
@@ -1502,7 +1579,7 @@ summary:focus-visible {
   border-radius: 8px;
   background: var(--scopeNoteBackgroundColor);
   font-size: 16px;
-  line-height: 23px;
+  line-height: 24px;
 }
 
 .e2-text .callout p {
@@ -1550,6 +1627,8 @@ summary:focus-visible {
   border: 1px solid var(--thinRuleColor);
   border-radius: 10px;
   background: var(--tableStripeBackgroundColor);
+  font-size: 18px;
+  line-height: 27px;
   opacity: 1;
 }
 
@@ -1610,7 +1689,7 @@ summary:focus-visible {
 }
 
 .article-author {
-  max-width: 720px;
+  max-width: var(--articleWideMeasure);
   margin-top: 48px;
   padding: 10px 0 10px 16px;
   border-left: 3px solid var(--headingsUnderlineColor);
