@@ -1,6 +1,6 @@
 +++
-title = "Synchronizing Users from LDAP with Keycloak Using AD Filters"
-description = "Use Keycloak User Federation with a custom LDAP filter to sync only the Active Directory users your realm actually needs."
+title = "Synchronize Active Directory Users with a Keycloak LDAP Filter"
+description = "Configure Keycloak User Federation with a custom LDAP filter to synchronize selected Active Directory users."
 date = 2023-09-23
 draft = false
 
@@ -14,49 +14,39 @@ static_thumbnail = "/images/social-custom-user-ldap-filter-in-keycloak.png"
 
 +++
 
-One of the ways to synchronize users via a third-party provider with Keycloak is a mechanism
-called User Federation. It allows, using Kerberos or LDAP protocol, to pull user entries from your
-corporate authentication storage. However, if your organization is big enough to have a complex
-structure and there are a lot of users in the user directory, it could be challenging to get only
-a subset of the accounts that belong to different organization units.
+Keycloak User Federation can synchronize users from an external directory through LDAP or Kerberos. In a large
+Active Directory structure, the users required by one Keycloak realm may be spread across several organizational
+units. A custom LDAP filter can select only those accounts.
 
-For example, Active Directory models a tree-based structure using the following entities:
+<!-- more -->
+
+Active Directory distinguished names use components such as:
 
 - `CN` = Common Name
 - `OU` = Organizational Unit
 - `DC` = Domain Component
 
-All the distinguished names can be found in [the official documentation](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ldap/distinguished-names)
-provided by Microsoft.
+Microsoft's [distinguished names documentation](https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ldap/distinguished-names)
+describes these components and their syntax.
 
-To configure a new User Federation in Keycloak, it's required to specify a User DN.
-This distinguished name is the base object in the directory information tree where the search
-begins forming candidates for pulling authentication entries. Therefore, we need to know how to
-construct the User DN.
+Keycloak requires a User DN when configuring an LDAP user federation. This value identifies the base object in the
+directory tree where Keycloak starts searching for users.
 
-The base option that an Active Directory administrator could use to create user accounts is to
-organize them under organizational units:
+For users stored under one organizational unit, the User DN can be:
 
 ```text
 OU=Main,DC=Orgname,DC=ru
 ```
 
-Even if your organizational unit has a complex structure, it's still relatively easy for Keycloak
-to find user entries inside it – just activate the `Search Scope: Subtree` setting when configuring
-the user federation. In large organizations, the Active Directory structure can get quite messy.
-Instead of using clear distinguished names, administrators do something surprising even to them.
-How about putting entries under CN in different organizational units?
+Set `Search Scope` to `Subtree` to include users in nested organizational units below this DN.
 
-This is what I encountered while working on corporate user authentication for a media platform's CMS.
-User entries of the editors were grouped via the Common Name. So, there is no way to define User DN
-in the way I've mentioned in the example above. Fortunately, the LDAP connection allows providing
-a filter for Active Directory. In my case, writing the filter to select all of the members of the
-`CMS_EDITOR` group was enough to solve a problem:
+While configuring corporate authentication for a media platform's CMS, I needed accounts that were stored in
+different parts of the directory but belonged to the `CMS_EDITOR` group. A single organizational unit could not
+select them, so I added this value to Keycloak's `Custom User LDAP Filter` setting:
 
 ```text
 (&(objectCategory=Person)(sAMAccountName=*)(|(memberOf=CN=CMS_EDITOR,OU=Security,OU=Groups,OU=Central,OU=Main,DC=Orgname,DC=ru)))
 ```
 
-Moreover, the `Custom User LDAP Filter` setting in Keycloak supports logical operators like _or_
-with `|`, and I could use it for finding not only the members of the editor staff but also
-CMS admins, guests, etc.
+The filter selects person objects with a `sAMAccountName` that belong to `CMS_EDITOR`. The `|` operator is a logical
+OR. Add more `memberOf` expressions inside it to include groups such as CMS administrators or guests.

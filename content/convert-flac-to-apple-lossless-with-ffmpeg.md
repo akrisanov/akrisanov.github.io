@@ -14,13 +14,11 @@ static_thumbnail = "/images/social-convert-flac-to-apple-lossless-with-ffmpeg.pn
 
 +++
 
-I'm a longtime Apple Music user. Most of my so-called music collection is on the streaming service.
-However, I occasionally buy rare or remastered releases ripped from CDs. These releases are usually
-in the FLAC format, which Apple Music doesn't support. But I've found an easy workaround that
-allows me to organize and play albums on the go.
+I use Apple Music for most of my music collection. I also buy rare or remastered CD releases that are sometimes
+distributed as FLAC files, which Apple Music does not support. I convert them to Apple Lossless Audio Codec (ALAC)
+before importing them into my library.
 
-The centerpiece of the workaround is FFmpeg. So if you don't already have it installed,
-it's worth installing now:
+Install FFmpeg with Homebrew:
 
 ```bash
 brew install ffmpeg
@@ -28,13 +26,25 @@ brew install ffmpeg
 
 <p class="media-caption code-caption">Install FFmpeg with Homebrew</p>
 
-When the tool is ready to use, navigate to the folder containing the FLAC files and run the following script:
+Open the directory containing the FLAC files and run:
 
 ```bash
-for file in *.flac; do ffmpeg -i "$file" -acodec alac -vcodec copy "`basename "$file" .flac`.m4a"; done; mkdir flac; mkdir alac; for file in *.flac; do mv "$file" "flac/"; done; for file in *.m4a; do mv "$file" "alac/"; done;
+for file in *.flac; do
+  ffmpeg -i "$file" -acodec alac -vcodec copy "$(basename "$file" .flac).m4a"
+done
+
+mkdir flac alac
+
+for file in *.flac; do
+  mv "$file" flac/
+done
+
+for file in *.m4a; do
+  mv "$file" alac/
+done
 ```
 
-<p class="media-caption code-caption">A one-liner that converts FLAC files to ALAC</p>
+<p class="media-caption code-caption">Convert FLAC files to ALAC and organize the output</p>
 
 <figure class="article-figure">
   <img
@@ -48,7 +58,8 @@ for file in *.flac; do ffmpeg -i "$file" -acodec alac -vcodec copy "`basename "$
   <figcaption class="media-caption">Susumu Hirasawa – Siren [Limited Edition]</figcaption>
 </figure>
 
-The bash script converts the audio to the Apple Lossless format (`*.m4a`) and moves the files to the `alac` directory:
+The script converts each FLAC file to ALAC in an `.m4a` container. It moves the source files to `flac` and the
+converted files to `alac`:
 
 <figure class="article-figure">
   <img
@@ -61,7 +72,7 @@ The bash script converts the audio to the Apple Lossless format (`*.m4a`) and mo
   />
 </figure>
 
-Finally, the `alac` directory can be dragged to Apple Music to import the album and upload its tracks to the cloud.
+Drag the `alac` directory into Apple Music to import the album and upload its tracks to the cloud.
 
 <figure class="article-figure">
   <img
@@ -77,8 +88,8 @@ Finally, the `alac` directory can be dragged to Apple Music to import the album 
 
 <aside class="callout callout-warning" aria-label="Audio quality note">
   <p>
-    You probably wonder why this album has no Lossless icon in Apple Music. Well, it turns out the
-    audio quality of the FLAC files wasn't on par with lossless. So, make sure releases you buy or
-    rip have a proper audio codec and quality.
+    The album shown above has no Lossless badge in Apple Music. Its FLAC files appeared to have been created from
+    a lossy source. Converting a file to ALAC does not improve its source quality. Check the codec and quality of
+    releases you buy or rip.
   </p>
 </aside>

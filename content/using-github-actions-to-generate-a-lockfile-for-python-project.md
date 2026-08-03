@@ -1,6 +1,6 @@
 +++
-title = "Generating a Lockfile for a Python Project Using GitHub Actions"
-description = "Generate a reproducible Python requirements lockfile with GitHub Actions and pip-tools for consistent CI and CD builds."
+title = "Generate a Python Lockfile with GitHub Actions"
+description = "Generate a Python requirements lockfile with pip-tools on the same operating system and Python version used for deployment."
 date = 2023-10-12
 draft = false
 
@@ -14,27 +14,25 @@ static_thumbnail = "/images/social-using-github-actions-to-generate-a-lockfile-f
 
 +++
 
-If you're working on a project that needs to be packaged for a specific environment other than your
-machine, the CI/CD server is your best friend. Products like GitHub Actions can save you time and
-the hassle of building dependencies you won't use in development.
+When development and deployment use different operating systems or processor architectures, generate the Python
+lockfile in the deployment environment. GitHub Actions can run this step without requiring the same environment on
+the developer's machine.
 
-For example, many developers love Mac computers, especially the ones that come with Apple silicon.
-The sad truth is that we rarely deploy our code on servers with these processors and MacOS.
-Most of the time, projects run on Linux. Unfortunately, Python can't guarantee a deterministic
-or reproducible environment.
+I develop on macOS with Apple silicon, while most of my projects run on Linux. Resolved dependencies can differ
+between these environments because not every package provides wheels for every platform. The Python version can
+also affect the result.
 
-Running the command to create a list of all the dependencies that your package will need gives
-a different result on MacOS, Linux, Windows, and so on:
+For example, `pip-compile` can produce different lockfiles on macOS, Linux, and Windows:
 
 ```bash
-pip-compile --allow-unsafe --generate-hashes --no-emit-index-url --output-file=requirements-lock.txt > requirements-lock.txt
+pip-compile --allow-unsafe --generate-hashes --no-emit-index-url --output-file=requirements-lock.txt
 ```
 
 <p class="media-caption code-caption">Using pip-tools to compile a requirements lockfile</p>
 
-Not all dependencies have universal wheels. Moreover, users can install different Python versions.
+<!-- more -->
 
-Now that you see the problem, let's take a quick look at possible solutions.
+The following workflow generates `requirements-lock.txt` on Ubuntu with Python 3.9:
 
 ```yaml
 name: Build requirements-lock.txt
@@ -57,7 +55,7 @@ jobs:
           pip install --upgrade pip-tools
       - name: Run pip-compile
         run: |
-          pip-compile --allow-unsafe --generate-hashes --no-emit-index-url --output-file=requirements-lock.txt > requirements-lock.txt
+          pip-compile --allow-unsafe --generate-hashes --no-emit-index-url --output-file=requirements-lock.txt
       - name: Upload requirements-lock artifact
         uses: actions/upload-artifact@v3.1.1
         with:
@@ -68,12 +66,9 @@ jobs:
 
 <p class="media-caption code-caption">The <code>build-requirements-lock</code> workflow</p>
 
-The GitHub Actions manifest above defines a workflow that can be triggered manually
-on any branch you like.
+The `workflow_dispatch` event makes the workflow manually available for a selected branch.
 
-Suppose you're upgrading some dependencies in requirement.txt. `pip install -r requirements.txt`
-works fine. Now you want to generate a new lock file for the users. You commit the changes to your
-branch, wait for the tests to pass, and trigger the workflow:
+After updating the project's dependencies, commit the changes, wait for the tests to pass, and trigger the workflow:
 
 <figure class="article-figure">
   <img
@@ -87,16 +82,15 @@ branch, wait for the tests to pass, and trigger the workflow:
   <figcaption class="media-caption">GitHub Actions workflow</figcaption>
 </figure>
 
-A freshly generated requirements-lock.txt appears in downloadable artifacts.
-You download the file and add it to the repo.
+The completed run provides `requirements-lock.txt` as a downloadable artifact. Download the file and commit it to
+the repository.
 
-Another option might be to run a similar workflow in a Docker container. I posted a note about
-multi-architecture builds a few months ago. [Take a look!](https://dev.to/akrisanov/building-multi-arch-images-for-arm-and-x86-2802)
-Just make sure you choose the same architecture and Python version that you want to distribute your project to.
+You can also generate the lockfile in a Docker container. Use the same operating system, architecture, and Python
+version as the deployment target. See [Building Multi-Arch Images for Arm and x86](/multi-arch-docker-images/).
 
 <aside class="callout callout-bdc" aria-label="Alternative dependency tools">
   <p>
-    Other tools like Poetry might do the job better and provide more convenient ways of managing lock files.
-    But if you have reasons not to use them, it's totally fine to stick with good old pip.
+    Tools such as Poetry provide their own lockfile workflows. This GitHub Actions approach is useful for projects
+    that use pip and pip-tools.
   </p>
 </aside>

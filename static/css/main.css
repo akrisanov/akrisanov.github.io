@@ -1504,24 +1504,64 @@ summary:focus-visible {
 }
 
 .e2-text blockquote.dialogue {
-  padding: 16px 18px;
+  display: grid;
+  gap: 12px;
+  padding: 18px;
   border: 1px solid var(--thinRuleColor);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--tableStripeBackgroundColor);
   opacity: 1;
 }
 
 .e2-text .dialogue p {
   max-width: none;
-  margin-bottom: 12px;
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 3px solid;
+  border-radius: 6px;
 }
 
-.e2-text .dialogue p:last-child {
-  margin-bottom: 0;
+.e2-text .dialogue .q {
+  margin-right: 32px;
+  border-left-color: var(--headingsColor);
+  background: var(--tableHeaderBackgroundColor);
+}
+
+.e2-text .dialogue .a {
+  margin-left: 32px;
+  border-left-color: var(--linkColor);
+  background: var(--scopeNoteBackgroundColor);
+}
+
+.e2-text .dialogue strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: var(--smallFontSize);
+  line-height: var(--smallLineHeight);
+  letter-spacing: 0.02em;
 }
 
 .e2-text .dialogue .q strong {
   color: var(--headingsColor);
+}
+
+.e2-text .dialogue .a strong {
+  color: var(--linkColor);
+}
+
+@media screen and (max-width: 639px) {
+  .e2-text blockquote.dialogue {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .e2-text .dialogue .q {
+    margin-right: 14px;
+  }
+
+  .e2-text .dialogue .a {
+    margin-left: 14px;
+  }
 }
 
 /* --- Article author --- */

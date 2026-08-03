@@ -1,6 +1,6 @@
 +++
 title = "Identifying Vulnerable Dependencies in .NET Projects"
-description = "Scan .NET dependencies for known NuGet vulnerabilities and automate checks in GitLab CI to improve supply chain security."
+description = "Scan .NET dependencies for known NuGet vulnerabilities and fail GitLab CI when vulnerable packages are found."
 date = 2024-05-07
 draft = false
 
@@ -14,19 +14,19 @@ static_thumbnail = "/images/social-dotnet-list-vulnerable-packages.png"
 
 +++
 
-Some time ago, I was working in a company that was building a SaaS that was written in .NET.
-The code base was a decade old, and like many companies using Microsoft technologies,
-it had been through a few framework upgrades. The intent was to move to modern technologies and
-refactor outdated components, but the execution was rather poor. By the time I put on my engineering
-manager's hat, many of the NuGet packages in the solution were out of date and even deprecated.
+At a previous company, I worked on a decade-old .NET SaaS codebase that had been through several framework upgrades.
+The upgrades were incomplete, and many NuGet packages in the solution were outdated or deprecated by the time I
+became the engineering manager.
 
-In Python and Go projects, I rely heavily on linting, static analysis, and formatting tools.
-Not having these essentials would make me and my teams less productive. So the first thing I did
-was understand what modern .NET brings to the table in this area. And I started by scanning the
-NuGet packages we use in all of our projects in a single solution for potential vulnerabilities.
+I rely on linting, static analysis, and formatting tools in Python and Go projects, so I reviewed the equivalent
+tooling available for .NET. I started by scanning every NuGet package in the solution for known vulnerabilities.
 
-It turned out that developers could simply run `dotnet list package --vulnerable` locally
-to keep an eye on security. But without automation, it's too easy to forget about that.
+The .NET CLI provides this check through `dotnet list package --vulnerable`. Developers can run it locally, but an
+automated check prevents it from being missed.
+
+<!-- more -->
+
+## Scan Packages Locally
 
 My first local scan produced the following result:
 
@@ -63,29 +63,29 @@ The given project `X.Infrastructure.Rules` has no vulnerable packages given the 
 ...
 ```
 
-As you can see, there are several projects vulnerable to [CVE-2022-41064](https://devhub.checkmarx.com/cve-details/CVE-2022-41064/).
+Several projects use a version of `System.Data.SqlClient` affected by
+[CVE-2022-41064](https://devhub.checkmarx.com/cve-details/CVE-2022-41064/):
 
 > .NET Framework System.Data.SqlClient versions prior to 4.8.5 and Microsoft.Data.SqlClient
 > versions prior to 1.1.4 and 2.0.0 prior to 2.1.2 is vulnerable to Information Disclosure Vulnerability.
 
-To get rid of the issue, it's enough to upgrade the package:
+Upgrade the package to resolve the vulnerability:
 
 ```bash
 dotnet add package System.Data.SqlClient -v 4.8.6
 ```
 
-Now, how can developers prevent such situations? You already know the answer: automation!
+## Run the Check in GitLab CI
 
-After sharing my observations with the team, I created a merge request with a new GitLab pipeline
-that runs for every open merge request and master branch.
+I added a GitLab pipeline that runs for merge requests and the `master` branch.
 
-These are the changes in the `.gitlab-ci.yml` manifest:
+The `.gitlab-ci.yml` configuration is:
 
 ```yaml
 stages:
   - security
 
-vulnarable-dependencies:
+vulnerable-dependencies:
   stage: security
   image: mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim
   before_script:
@@ -95,7 +95,7 @@ vulnarable-dependencies:
     - >-
       ! grep -qiw "critical\|high\|moderate\|low" vulnerable-packages.log;
       if [ $? -ne 0 ]; then
-        echo "🚨 Found vulnarable packages";
+        echo "🚨 Found vulnerable packages";
         exit 1
       else
         exit 0
@@ -112,11 +112,9 @@ vulnarable-dependencies:
     - docker
 ```
 
-The pipeline will fail if any of the projects in the solution have vulnerable packages.
-The downloadable log file contains the list of vulnerabilities and their severity.
+The pipeline fails if any project in the solution has a vulnerable package. It stores the command output as a
+downloadable artifact, including each vulnerability and its severity.
 
-This way, the team is always aware of the state of the dependencies and can take action to fix them.
-
-References:
+## Reference
 
 - [How to Scan NuGet Packages for Security Vulnerabilities](https://devblogs.microsoft.com/nuget/how-to-scan-nuget-packages-for-security-vulnerabilities/)

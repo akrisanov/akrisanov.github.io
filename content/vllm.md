@@ -14,97 +14,53 @@ static_thumbnail = "/images/social-vllm.png"
 
 +++
 
-If you’ve ever tried to serve large language models at scale, you’ve probably hit the same wall:
-VRAM runs out much earlier than expected, batching stops scaling, and latency becomes unpredictable.
+[vLLM](https://vllm.ai/) is an LLM inference engine designed to improve GPU utilization.
+Its key mechanism is [PagedAttention](https://arxiv.org/abs/2309.06180), which manages the KV-cache
+without the memory waste common in traditional LLM serving stacks. More efficient memory use supports
+larger batches and steadier latency under load.
 
-[vLLM](https://vllm.ai/) exists almost entirely to fix this.
-
-At its core, vLLM is a high-performance LLM inference engine that dramatically improves GPU utilization.
-The key idea behind it is [PagedAttention](https://arxiv.org/abs/2309.06180) – a different way to manage
-the KV-cache that removes most of the memory waste common in traditional LLM serving stacks.
-
-Let’s break down why this is such a big deal.
-
-## The Core Problem: KV-Cache Fragmentation
+## KV-cache fragmentation
 
 In traditional LLM serving systems, the KV-cache (the keys and values representing token context)
 must live in a single contiguous block of GPU memory.
 
-There’s a catch: you don’t know in advance how long the model’s answer will be.
+The system does not know in advance how long the model’s answer will be.
 
-So the system plays it safe and reserves memory for the maximum context length – say,
-2048 or 4096 tokens – for every request.
-
-The result?
+It therefore reserves memory for the maximum context length—say, 2048 or 4096 tokens—for every request.
 
 - Large chunks of VRAM are reserved but never used
 - Memory becomes fragmented
 - Up to 60–80% of KV-cache memory is effectively wasted
 
-That wasted VRAM could have been used to serve more requests in parallel.
+That VRAM could instead serve more requests in parallel.
 
-## PagedAttention: Borrowing an Idea from Operating Systems
+## PagedAttention
 
 PagedAttention takes inspiration from virtual memory and paging in operating systems.
 
-Instead of allocating one big contiguous block per request, it does this:
+Instead of allocating one large contiguous region per request, it uses fixed-size blocks:
 
-1. **Split KV-cache into fixed-size blocks.** Each request’s KV-cache is divided into blocks (for example, 16 or 32 tokens per block).
-2. **No need for physical continuity.** These blocks can live anywhere in VRAM – they don’t have to be next to each other.
-3. **Virtual addressing with a Block Table.** vLLM keeps a mapping from logical token order to physical memory blocks on the GPU.
-4. **Allocate memory only when needed.** New blocks are allocated only when new tokens are generated – no upfront over-reservation.
+1. **Split the KV-cache into fixed-size blocks.** Each request’s KV-cache is divided into blocks, such as 16 or 32 tokens per block.
+2. **Store blocks non-contiguously.** The blocks can reside anywhere in VRAM.
+3. **Map logical to physical blocks.** A block table maps the logical token order to physical GPU memory blocks.
+4. **Allocate blocks as needed.** vLLM allocates new blocks as it generates tokens instead of reserving the maximum space up front.
 
-This single change unlocks most of vLLM’s performance gains.
+This block-based allocation accounts for much of vLLM’s performance improvement.
 
-## Key Effects of Paged KV-cache
+## Effects of a paged KV-cache
 
-### Almost no external fragmentation
+- **Less external fragmentation.** Because blocks do not need to be contiguous, free memory can be reused instead of becoming unusable holes.
+- **Limited internal fragmentation.** Only the last block of a sequence may be partially empty. With reasonable block sizes, memory loss is typically below 4%.
+- **Larger batch sizes.** Better memory efficiency allows more concurrent requests per GPU, a main driver of performance on modern GPUs.
+- **Higher throughput.** In practice, this enables 2–4× throughput compared with TGI and up to about 24× compared with naïve Hugging Face serving setups.
+- **Continuous batching.** New requests can be added as soon as completed requests free blocks, without waiting for a full batch boundary.
+- **Prefix and prompt caching.** Multiple requests can point to the same physical blocks for shared prefixes, such as system prompts and long examples.
+- **Copy-on-write.** When generating multiple completions from the same prompt, vLLM allocates new blocks only after the outputs diverge. This can save up to about 55% of KV-cache memory.
+- **Lower TTFT under load.** PagedAttention does not reduce the computation required for the first token. Higher throughput can clear queues faster, reducing the queue-time component of TTFT.
+- **Preemption and swapping.** If VRAM runs low, individual blocks can be swapped to CPU memory instead of causing an out-of-memory error.
+- **No recomputation.** Unlike approaches that discard the KV-cache under pressure, PagedAttention preserves progress and resumes generation without processing the prompt again.
 
-Because blocks don’t need to be contiguous, free memory can be reused efficiently instead of becoming unusable holes.
-
-### Minimal internal fragmentation
-
-Only the last block of a sequence may be partially empty. With reasonable block sizes, memory loss is typically below 4%.
-
-### Much larger batch sizes
-
-Better memory efficiency means more concurrent requests per GPU, which is the main driver of performance on modern GPUs.
-
-### Massive throughput gains
-
-In practice, this enables:
-
-- 2–4× throughput vs. TGI
-- Up to ~24× vs. naïve Hugging Face serving setups
-
-### True continuous batching
-
-New requests can be added as soon as finished ones free blocks – no need to wait for a full batch boundary.
-
-### Memory sharing (prefix / prompt caching)
-
-Multiple requests can point to the same physical blocks for shared prefixes (system prompts, long examples).
-
-### Copy-on-write when sequences diverge
-
-If you generate multiple completions from the same prompt, new blocks are allocated only when outputs differ.
-This can save up to ~55% of KV-cache memory.
-
-### Better TTFT under load (indirectly)
-
-PagedAttention doesn’t speed up the first token itself, but higher throughput clears queues faster –
-reducing queue time, which users perceive as better TTFT.
-
-### Graceful preemption and swapping
-
-If VRAM runs low, individual blocks can be swapped to CPU memory instead of crashing the server with OOM.
-
-### No recomputation
-
-Unlike approaches that drop KV-cache under pressure, PagedAttention preserves progress and resumes generation
-without re-processing the prompt.
-
-## Block Size: A Subtle but Important Knob
+## Block size
 
 Block size affects:
 
@@ -112,15 +68,15 @@ Block size affects:
 - Metadata and indexing overhead
 - Eviction and preemption behavior (if used)
 
-Smaller blocks = better memory efficiency, higher overhead.
+Smaller blocks improve memory efficiency but increase overhead.
 
-Larger blocks = lower overhead, more wasted tail space.
+Larger blocks reduce overhead but waste more space at the end of sequences.
 
-There’s no universal best value – it depends on workload shape.
+The best value depends on the workload.
 
-## A Note About Prefill vs Decode
+## Prefill and decode
 
-It’s important to separate these phases:
+The two phases have different bottlenecks:
 
 ### Prefill
 
@@ -140,17 +96,4 @@ So if you see this pattern:
 - tokens/sec ↑
 - p99 TTFT unchanged (or worse)
 
-You optimized decode, but you’re still bottlenecked on queueing or prefill.
-
-## Why vLLM Became the Default Choice
-
-vLLM didn’t win because of a single micro-optimization.
-It won because PagedAttention fundamentally changes how GPU memory is used for LLM serving.
-
-If you care about:
-
-- high throughput
-- stable latency under load
-- efficient use of expensive GPUs
-
-then understanding vLLM is no longer optional – it’s baseline knowledge for modern LLM infrastructure.
+then decode improved, but queueing or prefill remains the bottleneck.

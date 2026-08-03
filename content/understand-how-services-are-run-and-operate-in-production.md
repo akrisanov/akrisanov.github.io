@@ -1,6 +1,6 @@
 +++
 title = "Understand How Services Run and Operate in Production"
-description = "Why software engineers should understand how services run in production, and which operational basics matter most."
+description = "Software engineers should understand the runtime model, resource requirements, and capacity of the services they operate."
 date = 2023-09-06
 draft = false
 
@@ -14,42 +14,40 @@ static_thumbnail = "/images/social-understand-how-services-are-run-and-operate-i
 
 +++
 
-Over the past few years, I've been interviewing dozens of software engineers who didn't know how
-their developed services run and operate in production. The reason for that is a rising trend in
-software engineering trusting in an infrastructure team, the magic of the cloud, Docker,
-Kubernetes, and whatnot.
+Over the past few years, I have interviewed dozens of software engineers who could not explain how the services they
+developed ran in production. Infrastructure or platform teams often manage deployment, but that division of
+responsibility does not remove the need to understand a service's runtime behavior.
 
-A conversation with a talent usually looks the following:
+<!-- more -->
 
-<blockquote class="dialogue">
+A typical conversation goes like this:
+
+<blockquote class="dialogue" aria-label="Interview transcript">
 <p class="q"><strong>Interviewer:</strong> How do you ship your service to production?</p>
 <p class="a"><strong>Candidate:</strong> We build Docker images and run containers.</p>
 
-<p class="q"><strong>Interviewer:</strong> Sounds cool! Can you tell me about the resource requirements for a container?</p>
-<p class="a"><strong>Candidate:</strong> Hmm, to be honest, I don't know the details. DevOps folks take care of that.</p>
+<p class="q"><strong>Interviewer:</strong> What are the resource requirements for a container?</p>
+<p class="a"><strong>Candidate:</strong> I don't know the details. The DevOps team handles that.</p>
 
-<p class="q"><strong>Interviewer:</strong> (discussing Python app) OK. And what application server do you use?</p>
-<p class="a"><strong>Candidate:</strong> Application Server? (Some people even reply: "You mean WSGI?")</p>
+<p class="q"><strong>Interviewer:</strong> Which application server does the Python service use?</p>
+<p class="a"><strong>Candidate:</strong> Application server? Do you mean WSGI?</p>
 
 <p class="q"><strong>Interviewer:</strong> Yes, the thing that handles web requests and runs your Python code.</p>
-<p class="a"><strong>Candidate:</strong> Hmm, let me open a project repo and check..</p>
+<p class="a"><strong>Candidate:</strong> Let me check the repository. It uses Gunicorn.</p>
+<p class="q"><strong>Interviewer:</strong> Can you estimate how many requests the application can handle?</p>
 
-<p class="a"><strong>Candidate:</strong> It's...Gunicorn!</p>
-<p class="q"><strong>Interviewer:</strong> Great. Can you estimate how many requests the web application can handle?</p>
+<p class="a"><strong>Candidate:</strong> No. We don't run load tests.</p>
+<p class="q"><strong>Interviewer:</strong> Can you make a rough estimate?</p>
 
-<p class="a"><strong>Candidate:</strong> I don't think so because we don't do load testing.</p>
-<p class="q"><strong>Interviewer:</strong> So, it's not possible to do even a rough estimation?</p>
-
-<p class="a"><strong>Candidate:</strong> Nope.</p>
-<p class="q"><strong>Interviewer:</strong> OK. Do you understand what happens on a processes and threads level when the application server processes a request?</p>
+<p class="a"><strong>Candidate:</strong> No.</p>
+<p class="q"><strong>Interviewer:</strong> What happens at the process and thread level when the application server handles a request?</p>
+<p class="a"><strong>Candidate:</strong> I can't explain it.</p>
 </blockquote>
 
-This is where the conversation hits a dead end. Many talents don't. And this is a red sign to me.
-It gets worse when a candidate claims they have experience with (semi)async services in production
-but can't explain [a service model](https://docs.gunicorn.org/en/stable/design.html?ref=akrisanov.com#server-model)
-they have chosen and how the services operate because of that (including resources allocating and consumption).
+Not knowing a configuration value from memory is reasonable. Being unable to explain the runtime model or how the
+team measures capacity is a problem. For synchronous and asynchronous services, the chosen
+[Gunicorn server model](https://docs.gunicorn.org/en/stable/design.html#server-model) affects concurrency, resource
+allocation, and throughput.
 
-You might say: "Why do I need to know all that low-level stuff in the 2020s?"
-Fair enough...if you don't develop software for thousands of users, have an unlimited budget for
-underutilized hardware, don't design distributed systems, or, simply, have an SRE team ready to
-solve all possible issues for you. Otherwise, please do.
+Platform and SRE teams can manage the infrastructure, but engineers still need to understand the processes and
+threads that execute their code, the CPU and memory those processes require, and the service's approximate capacity.

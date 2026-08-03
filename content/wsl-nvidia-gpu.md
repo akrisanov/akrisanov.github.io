@@ -14,32 +14,22 @@ static_thumbnail = "/images/social-wsl-nvidia-gpu.png"
 
 +++
 
-## Why I did this
-
-I wanted a local environment where I can:
+I wanted a local environment where I could:
 
 - run Kubernetes
 - schedule GPU workloads
 - experiment with CUDA / inference / device plugins
-- without renting cloud GPUs
+- avoid renting cloud GPUs
 
-I have a Lenovo Legion laptop with an RTX GPU and WSL2. Turns out:
-
-> Yes, you can run Kubernetes with GPU access inside WSL2.
-> But there are a couple of non-obvious traps.
-
-This is a step-by-step guide based on a working setup.
-
-## TL;DR
-
-Final stack:
+I used a Lenovo Legion laptop with an RTX GPU. The working stack was:
 
 - Windows 11 + NVIDIA driver (WSL-enabled)
 - WSL2 (Ubuntu 24.04)
 - K3s (containerd)
 - NVIDIA Container Toolkit
 - NVIDIA device plugin
-- One critical fix: **device plugin must use `runtimeClassName: nvidia`**
+
+The non-obvious part was that the NVIDIA device plugin itself had to use `runtimeClassName: nvidia`.
 
 ## Prerequisites
 
@@ -56,7 +46,7 @@ Inside WSL:
 nvidia-smi
 ```
 
-If this works — you’re good.
+Continue if this command detects the GPU.
 
 ## Step 1: Don’t install Linux NVIDIA drivers
 
@@ -73,13 +63,13 @@ echo 'export PATH=$PATH:/usr/lib/wsl/lib' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-Do **NOT** run:
+Do not install Linux NVIDIA drivers inside WSL:
 
 ```bash
 apt install nvidia-utils-*
 ```
 
-You will break your setup.
+They can conflict with the driver components provided by Windows.
 
 ## Step 2: Install NVIDIA Container Toolkit
 
@@ -118,7 +108,7 @@ Make sure systemd is enabled:
 ps -p 1 -o comm=
 ```
 
-Should print:
+It should print:
 
 ```bash
 systemd
@@ -172,9 +162,9 @@ kubectl get ds -n kube-system | grep nvidia
 kubectl get pods -n kube-system | grep nvidia
 ```
 
-## Step 7: The critical fix (WSL2-specific)
+## Step 7: Run the device plugin with the NVIDIA runtime
 
-At this point the plugin runs but sees zero GPUs.
+On my setup, the plugin started but detected no GPUs.
 
 Logs look like:
 
@@ -182,7 +172,7 @@ Logs look like:
 No devices found. Waiting indefinitely.
 ```
 
-Fix:
+Set the DaemonSet's runtime class to `nvidia`:
 
 ```bash
 kubectl patch daemonset nvidia-device-plugin-daemonset \
@@ -191,7 +181,7 @@ kubectl patch daemonset nvidia-device-plugin-daemonset \
   -p '{"spec":{"template":{"spec":{"runtimeClassName":"nvidia"}}}}'
 ```
 
-Restart pod:
+Restart the plugin pod:
 
 ```bash
 kubectl delete pod -n kube-system -l name=nvidia-device-plugin-ds
@@ -237,36 +227,7 @@ kubectl get pod cuda-smoke-test -w
 kubectl logs cuda-smoke-test
 ```
 
-## What actually broke on my first attempts
-
-Everything worked except one subtle thing:
-
-> The NVIDIA device plugin itself was running under the wrong runtime.
-
-Even though, containerd knew about NVIDIA, Podman could use GPU, and CUDA worked.
-
-The plugin pod still used default runtime → no GPU → no resources.
-
-Setting:
-
-```bash
-runtimeClassName: nvidia
-```
-
-fixed it.
-
-## Final result
-
-After following these steps, you should have:
-
-- local Kubernetes cluster
-- GPU scheduling
-- CUDA workloads
-- no cloud costs
-
-All inside WSL2.
-
-## When to use this
+## Limits
 
 This setup is good for:
 
@@ -275,18 +236,14 @@ This setup is good for:
 - experimenting with device plugins
 - prototyping LLM infra locally
 
-Not great for:
+It is not suitable for:
 
 - performance benchmarking
 - multi-GPU experiments
 - production-like environments
 
-## One last tip
-
-Save your working config:
+Save the working DaemonSet configuration if you want to reuse it:
 
 ```bash
 kubectl get ds nvidia-device-plugin-daemonset -n kube-system -o yaml > nvidia-device-plugin-wsl2.yaml
 ```
-
-This saves you from debugging this again later.

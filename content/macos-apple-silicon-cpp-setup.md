@@ -14,25 +14,21 @@ static_thumbnail = "/images/social-macos-apple-silicon-cpp-setup.png"
 
 +++
 
-I’m starting to learn modern C++ seriously (yes, seriously), so I wanted a clean and repeatable development setup on
-macOS with Apple Silicon.
-
-My goals are simple:
+I’m starting to learn modern C++, so I wanted a repeatable development setup on Apple Silicon:
 
 - use a modern LLVM/Clang toolchain
 - build projects with CMake and Ninja
 - get proper language-server support in VS Code and Helix
 - use sanitizers and static analysis from the beginning
-- keep the setup practical, not over-engineered
-- make sure everything is reproducible on any M-series Mac
+- keep the setup practical
 
-This post is a cheatsheet and assumes that Homebrew is already installed.
+This cheatsheet assumes that Homebrew is already installed.
 
 <!-- more -->
 
 ## Install Xcode Command Line Tools
 
-First, install Apple’s basic developer tools:
+Install Apple’s developer tools:
 
 ```bash
 xcode-select --install
@@ -45,7 +41,7 @@ xcode-select -p
 clang --version
 ```
 
-macOS ships Apple Clang, but for learning modern C++ I prefer installing a newer LLVM toolchain through Homebrew.
+macOS includes Apple Clang. I use a newer LLVM toolchain from Homebrew.
 
 ## Install the core C++ toolchain
 
@@ -59,7 +55,7 @@ brew install \
   pkg-config
 ```
 
-This gives us:
+The packages include:
 
 - `clang`
 - `clang++`
@@ -69,7 +65,7 @@ This gives us:
 - CMake
 - Ninja
 
-llvm is installed as a separate toolchain and its binaries may not be available in PATH automatically.
+Homebrew installs LLVM as a separate toolchain, so its binaries may not be in `PATH` automatically.
 Check the LLVM prefix first:
 
 ```bash
@@ -85,7 +81,7 @@ $(brew --prefix llvm)/bin/clang-format --version
 $(brew --prefix llvm)/bin/clang-tidy --version
 ```
 
-Now add Homebrew LLVM to your interactive shell:
+Add Homebrew LLVM to the interactive shell:
 
 ```shell
 echo 'export PATH="$(brew --prefix llvm)/bin:$PATH"' >> ~/.zshrc
@@ -95,7 +91,7 @@ rehash
 
 ## Recommended project structure
 
-For a small learning project the structure can as simple as this:
+For a small learning project, I use this structure:
 
 ```shell
 cpp-lab/
@@ -110,11 +106,11 @@ cpp-lab/
   .gitignore
 ```
 
-For now, I create such a structure manually, but it can be easily generated with a custom script or CMake template later.
+I create it manually for now.
 
 ## Minimal modern CMake setup
 
-I’ve just started tinking with CMake, so I keep the setup minimal. The `CMakeLists.txt` looks like this:
+I’m new to CMake, so I keep `CMakeLists.txt` minimal:
 
 ```cmake
 cmake_minimum_required(VERSION 3.25)
@@ -138,14 +134,13 @@ add_compile_options(
 add_executable(cpp_lab src/main.cpp)
 ```
 
-The important part here is:
+This setting generates `compile_commands.json`, which `clangd` uses to understand the project:
 
 ```cmake
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 ```
 
-It generates `compile_commands.json`, which helps `clangd` understand the project.
-No Cargo facilities like workspaces or dependencies for now, just a single executable target.
+For now, the project has a single executable target and no dependency management.
 
 ## Build with LLVM and Ninja
 
@@ -183,9 +178,7 @@ cmake --build build-release
 
 ## Enable sanitizers early
 
-When learning C++, sanitizers can help catch common mistakes and bad habits early on.
-
-I’m experimenting with AddressSanitizer for memory bugs and UndefinedBehaviorSanitizer for undefined behavior.
+I use AddressSanitizer for memory errors and UndefinedBehaviorSanitizer for undefined behavior:
 
 ```bash
 cmake -S . -B build-asan -G Ninja \
@@ -211,14 +204,14 @@ cmake --build build-tsan
 ./build-tsan/cpp_lab
 ```
 
-Rule of thumb: do not mix AddressSanitizer and ThreadSanitizer in the same build, use separate build directories.
-This sanitizers are not compatible with each other and will cause false positives.
+Do not combine AddressSanitizer and ThreadSanitizer in the same build. They are incompatible, so use
+separate build directories.
 
 ## Add clang-format
 
-clang-format helps keep the code style consistent and readable. The tools comes with llvm, so it is already installed.
+`clang-format` comes with LLVM and keeps the code style consistent.
 
-The `.clang-format` file defines the code style. I prefer to use 4 spaces for indentation and a 100 character line limit.
+My `.clang-format` uses four spaces for indentation and a 100-character line limit:
 
 ```yaml
 BasedOnStyle: LLVM
@@ -229,21 +222,17 @@ DerivePointerAlignment: false
 PointerAlignment: Left
 ```
 
-Formatting code can be done with the following command:
+Format the source files in place:
 
 ```bash
 find src tests \( -name '*.cpp' -o -name '*.hpp' \) | xargs clang-format -i
 ```
 
-This way we can format all source files in one go. The `-i` flag means “in-place”, so the files will be modified directly.
-
 ## Add clang-tidy
 
-clang-tidy is a powerful static analysis tool that can catch bugs, suggest improvements, and enforce coding standards.
-It also comes with llvm.
+`clang-tidy` also comes with LLVM. It finds bugs, suggests improvements, and checks coding standards.
 
-The `.clang-tidy` file configures the checks to run. I enable a broad set of checks from different categories,
-but you can customize it to your needs:
+I enable checks from several categories in `.clang-tidy`:
 
 ```yaml
 Checks: >
@@ -265,8 +254,7 @@ Run:
 clang-tidy src/main.cpp -p build
 ```
 
-Do not blindly apply every suggestion. `clang-tidy` is a reviewer, not a enforcer.
-Use your judgment to decide which suggestions to apply.
+Review each suggestion before applying it. `clang-tidy` is an aid, not an enforcer.
 
 ## VS Code setup
 
@@ -309,16 +297,13 @@ ls build/compile_commands.json
 
 ## Helix setup
 
-As I mentioned in my previous posts, I’m also trying out Helix as a lightweight editor in parallel to VS Code.
-I’ve already configured the editor for Python and Rust, so now it’s time to add C++ support.
-
-Check health first:
+I also use Helix alongside VS Code. Check its C++ support first:
 
 ```bash
 hx --health cpp
 ```
 
-Next, add the following configuration to `~/.config/helix/languages.toml`:
+Add this configuration to `~/.config/helix/languages.toml`:
 
 ```toml
 [[language]]
@@ -347,17 +332,8 @@ Useful Helix commands:
 
 ## mise setup
 
-I use [mise](https://mise.jdx.dev/) as a project environment manager.
-
-Its main job is to install and activate the right tool versions for a project.
-It can also load project-specific environment variables and run project tasks.
-In small learning projects, this is a convenient way to keep common commands close to the code
-without introducing a Makefile too early.
-
-For this C++ setup, mise is optional. You can run all CMake commands manually. But if you already use mise,
-a small `mise.toml` can make the workflow nicer.
-
-Here is an example `mise.toml`:
+I use [mise](https://mise.jdx.dev/) to manage project environments and tasks. It is optional; all the
+CMake commands can be run manually. This `mise.toml` keeps the common commands with the project:
 
 ```toml
 [tasks.configure]
@@ -402,8 +378,6 @@ mise run format
 mise run tidy
 ```
 
-This gives a simple project workflow without inventing a custom shell script too early.
-
 ## Minimal `main.cpp`
 
 `src/main.cpp`:
@@ -447,7 +421,7 @@ build-*/
 compile_commands.json
 ```
 
-Optionally create a symlink for `clangd`:
+If the editor does not locate the compilation database in `build`, create a symlink for `clangd`:
 
 ```bash
 ln -sf build/compile_commands.json compile_commands.json
@@ -535,7 +509,7 @@ If you use `clangd`, disable Microsoft IntelliSense:
 }
 ```
 
-## Final setup checklist
+## Verify the setup
 
 ```bash
 xcode-select -p
@@ -547,23 +521,3 @@ ninja --version
 hx --health cpp
 mise --version
 ```
-
-If all commands work, the environment is ready.
-
-## Final thought
-
-The goal is not to build the most complicated C++ setup possible.
-
-The goal is to have a small, modern, repeatable environment where I can learn the language properly:
-
-- modern LLVM
-- CMake, Ninja
-- clangd
-- clang-format
-- clang-tidy
-- sanitizers
-- VS Code or Helix
-- simple project tasks through mise.
-
-That is enough to start writing modern C++ and avoid old C++ habits from day one.
-Maybe I will add more tools later or change the setup completely, but for now this is a good starting point.

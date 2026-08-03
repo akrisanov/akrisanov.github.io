@@ -1,5 +1,5 @@
 +++
-title = "uv: A Cargo-Like Python Tool That Replaces pipx, pyenv, and More"
+title = "uv: Managing Python Versions, Dependencies, Tools, and Scripts"
 description = "A concise uv cheat sheet for managing Python versions, environments, dependencies, tools, and scripts in one workflow."
 date = 2025-09-10
 draft = false
@@ -14,17 +14,10 @@ static_thumbnail = "/images/social-uv.png"
 
 +++
 
-## Overview
-
-> `uv` is an end-to-end solution for managing [Python projects](https://docs.astral.sh/uv/guides/projects/),
+`uv` provides a Cargo-like, cross-platform workflow for managing [Python projects](https://docs.astral.sh/uv/guides/projects/),
 [command-line tools](https://docs.astral.sh/uv/guides/tools/),
-[single-file scripts](https://docs.astral.sh/uv/guides/scripts/), and even
-[Python itself](https://docs.astral.sh/uv/guides/install-python/).
-
-Think of it as Python’s Cargo: a unified, cross‑platform tool that’s fast, reliable, and easy to use.
-
-This post is not a deep introduction to uv — many excellent articles already exist; instead,
-it’s a concise cheat sheet for everyday use.
+[single-file scripts](https://docs.astral.sh/uv/guides/scripts/), and
+[Python versions](https://docs.astral.sh/uv/guides/install-python/).
 
 ## Installation & Updates
 
@@ -38,7 +31,7 @@ uv self update
 
 ## Managing Python Versions
 
-Instead of juggling tools like pyenv, mise, asdf, or OS‑specific hacks, you can simply use uv:
+uv can manage Python versions instead of pyenv, mise, asdf, or OS-specific installation methods:
 
 ```bash
 # List available versions
@@ -48,7 +41,7 @@ uv python list
 uv python install 3.13
 ```
 
-- Works the same across all OSes
+- Works across operating systems
 - No admin rights required
 - Independent of system Python
 
@@ -56,14 +49,16 @@ You can also use [mise](https://github.com/jdx/mise) alongside uv if you prefer 
 
 ## Projects & Dependencies
 
-Initialize a new project (creates a pyproject.toml automatically):
+Initialize a project and create `pyproject.toml`:
 
 ```bash
-uv init myproject or # uv init -p 3.13 --name myproject
+uv init myproject
+# Or specify the Python version and project name:
+uv init -p 3.13 --name myproject
 cd myproject
 ```
 
-Sync dependencies (similar to `pip install -r requirements.txt`, but faster and more reliable):
+Sync dependencies:
 
 ```bash
 uv sync
@@ -76,22 +71,22 @@ uv add litestar
 uv add pytest --dev
 ```
 
-Lock dependencies (generates a cross‑platform lockfile, like Pipfile.lock or poetry.lock):
+Generate a cross-platform lockfile, similar to `Pipfile.lock` or `poetry.lock`:
 
 ```bash
 uv lock
 ```
 
-> 💡 The lock file is cross platform, so you can develop on Windows and deploy on Linux.
+The lockfile is cross-platform, so it can be generated on Windows and used for deployment on Linux.
 
-## Fast Virtual Environments
+## Virtual Environments
 
 ```bash
-# Create & activate venv automatically
+# Create and activate a virtual environment
 uv venv
 source .venv/bin/activate
 
-# Or skip activation and run directly with uv:
+# Or run in the environment without activating it
 uv run python app.py
 ```
 
@@ -114,40 +109,39 @@ import requests
 print(requests.get("https://akrisanov.com"))
 ```
 
-Run single‑file scripts with automatic dependency installation:
+Run a single-file script and install its declared dependencies automatically:
 
 ```bash
 uv run script.py
 ```
 
-> 💡  On *nix, add `#!/usr/bin/env -S uv run` (then `chmod +x`) to automatically call `uv run` for a script.
+On Unix-like systems, add `#!/usr/bin/env -S uv run` and run `chmod +x script.py` to make the script executable.
 
 ## Tools
 
-Install CLI tools globally, isolated from system Python:
+Install CLI tools in environments isolated from the system Python:
 
 ```bash
 uv tool install ruff # replaces pipx
 uv tool install httpie
 
-uvx httpie # a shortcut
+uvx httpie # Run the tool without installing it permanently
 
 # --with [temp dependency] runs jupyter in the current project
 # without adding it and its dependencies to the project
 uv run --with jupyter jupyter notebook
 ```
 
-> 💡 `uv` run is fast enough that it implicitly re‑locks and re‑syncs the project each time, keeping your environment
-> up to date automatically.
+`uv run` checks the lockfile and environment before each command and updates them when needed.
 
-If you're developing a CLI tool, uv can help minimize the friction:
+For local CLI tool development:
 
 ```bash
 uv init --package your_tool
 uv tool install . -e
 ```
 
-See the [tools documentation](https://docs.astral.sh/uv/concepts/tools/)
+See the [tools documentation](https://docs.astral.sh/uv/concepts/tools/).
 
 ## Replacing pip-tools
 
@@ -156,7 +150,7 @@ uv pip compile # replaces pip-tools compile
 uv pip sync    # replaces pip-tools sync
 ```
 
-## Building and publishing packages
+## Building and Publishing Packages
 
 ```bash
 # Build a `.whl` package for PyPI
@@ -165,7 +159,7 @@ uv build
 uv publish
 ```
 
-## Pre-commit hooks
+## Pre-commit Hooks
 
 ```bash
 uv run --with pre-commit-uv pre-commit run --all-files
@@ -180,51 +174,37 @@ astral-sh/setup-uv # brings UV to GitHub Actions
 
 ## Docker
 
-Official Docker images provide uv and Python preinstalled:
+The official Docker images include uv and Python:
 
 ```dockerfile
 ghcr.io/astral-sh/uv:latest
 ```
 
-Also, check [Production-ready Python Docker Containers with uv](https://hynek.me/articles/docker-uv/) by Hynek Schlawack.
+See also Hynek Schlawack’s [Production-ready Python Docker Containers with uv](https://hynek.me/articles/docker-uv/).
 
 ## Workspaces
 
-`uv` supports organizing one or more packages into a [workspace](https://docs.astral.sh/uv/concepts/projects/workspaces/)
-to manage them together.
+Use a [workspace](https://docs.astral.sh/uv/concepts/projects/workspaces/) to manage multiple packages together.
 
-*Example*: you might have a FastAPI web application alongside several libraries, all versioned and maintained as separate
-Python packages in the same Git repository.
+For example, a repository can contain a FastAPI application and several libraries, each maintained as a separate Python
+package.
 
-In a workspace, each package has its own `pyproject.toml`, but the workspace shares a single lockfile, ensuring that
-the workspace operates with a consistent set of dependencies.
+Each package has its own `pyproject.toml`, while the workspace uses one lockfile and a consistent set of dependencies.
 
-## Things to Keep in Mind
+## Notes and Limitations
 
 - `uv sync` respects `.python-version`, but the `UV_PYTHON` environment variable takes precedence
-- Uses python‑build‑standalone, which can be slightly slower than system builds (~1–3%) and lacks CPU‑specific optimizations
-- Cache size can grow large (a trade‑off for speed and reliability)
+- Uses [python-build-standalone](https://github.com/astral-sh/python-build-standalone), whose builds can be slightly slower
+  than system builds (~1–3%) and lack CPU-specific optimizations
+- The cache can grow large
 - Legacy projects may fail if they depended on pip’s older, looser dependency resolution rules
+- Faster dependency installation can reduce CI and container build times
+- Astral maintains python-build-standalone, which provides Python builds that do not require installers
 
-## Why uv Matters
-
-Python has always had a fragmented ecosystem of tools: pip, pip-tools, virtualenv, venv, pipx, pyenv, poetry, tox…
-
-With uv, we finally get something closer to Rust’s Cargo or JavaScript’s npm/pnpm:
-a single, consistent, cross‑platform tool for environments, dependencies, scripts, and tools — and it’s fast.
-
-## References & Further Reading
+## Further Reading
 
 - [Dependency Sources](https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-sources)
   — explains how uv resolves dependencies
 - [UV with Django](https://blog.pecar.me/uv-with-django)
 - [PEP 723 – Inline script metadata](https://peps.python.org/pep-0723/)
 - [WIP: Using uv run as a task runner](https://github.com/astral-sh/uv/issues/5903)
-
-## Additional Notes
-
-- While some people don’t care about uv being fast, it’s shaved minutes off CI builds and container rebuilds —
-  saving money and energy.
-- Astral capitalized on a very promising project called
-  [python-build-standalone](https://github.com/astral-sh/python-build-standalone) and now maintains it.
-  These are Python builds that work without installers.
