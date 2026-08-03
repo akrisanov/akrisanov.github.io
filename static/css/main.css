@@ -1096,15 +1096,6 @@ summary:focus-visible {
   max-width: 100%;
 }
 
-.e2-text .mermaid-caption {
-  max-width: 720px;
-  margin: 10px 0 0;
-  color: var(--foregroundColor);
-  font-size: 14px;
-  line-height: 20px;
-  opacity: 0.7;
-}
-
 .mermaid-dialog {
   width: min(94vw, 1180px);
   height: min(90vh, 900px);
@@ -1171,6 +1162,54 @@ summary:focus-visible {
   padding: 0 0 0 40px;
   color: var(--foregroundColor);
   opacity: 0.8;
+}
+
+.footnote-reference {
+  font-size: 0.72em;
+  line-height: 1;
+  vertical-align: super;
+}
+
+.footnote-reference a,
+.footnote-reference a:visited {
+  border-bottom: 0;
+  color: var(--linkColor);
+  font-weight: bold;
+}
+
+.footnote-definition {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  max-width: 720px;
+  margin-top: 28px;
+  padding-top: 12px;
+  border-top: 1px solid var(--thinRuleColor);
+  color: var(--foregroundColor);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.footnote-definition-label {
+  grid-column: 1;
+  color: var(--headingsColor);
+  font-weight: bold;
+}
+
+.e2-text .footnote-definition > p,
+.e2-text .footnote-definition > ul,
+.e2-text .footnote-definition > ol {
+  grid-column: 2;
+  max-width: none;
+  margin: 0;
+}
+
+.e2-text .footnote-definition > p + ul,
+.e2-text .footnote-definition > p + ol {
+  margin-top: 6px;
+}
+
+.e2-text .footnote-definition li + li {
+  margin-top: 4px;
 }
 
 .article-scope-note {
@@ -1440,11 +1479,12 @@ summary:focus-visible {
   border-radius: 8px;
 }
 
+.e2-text .mermaid-caption,
 .media-caption,
 .e2-text .img-title {
   display: block;
   max-width: 720px;
-  margin-top: 8px;
+  margin: 8px 0 0;
   font-size: var(--smallFontSize);
   line-height: var(--smallLineHeight);
   color: var(--foregroundColor);

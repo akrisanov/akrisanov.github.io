@@ -70,6 +70,7 @@ converted files to `alac`:
     loading="lazy"
     decoding="async"
   />
+  <figcaption class="media-caption">Converted ALAC files in Finder</figcaption>
 </figure>
 
 Drag the `alac` directory into Apple Music to import the album and upload its tracks to the cloud.
