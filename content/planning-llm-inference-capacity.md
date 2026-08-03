@@ -16,43 +16,27 @@ static_thumbnail = "/images/social-planning-llm-inference-capacity.png"
 
 +++
 
-Here's an example of a recurring capacity-planning request for an internal LLM platform inside an enterprise company I'm working on:
+A recurring capacity-planning request for an internal LLM platform is:
 
 > We have selected a model. Do we have enough capacity, and how many GPUs would we need for N users?
 
-The question makes sense, but it's missing some key details.
+The question is missing the information needed to answer it.
 
 The model and its serving configuration determine the minimum resources required to start one replica.
-They don't tell us how many requests that replica can handle while meeting a product's latency and reliability requirements.
-It depends on the workload, like how long the prompts and responses are, how often requests arrive, concurrency,
-cache reuse, calls per user task, traffic bursts, and competition with other workloads.
+They don't tell us how many requests that replica can handle while meeting the product's latency and reliability requirements.
+That depends on prompt and response lengths, arrival rate, concurrency, cache reuse, calls per user task, traffic bursts,
+and competition with other workloads.
 
 {% key_point() %}
 The model determines the footprint of one replica. The workload and service-level objectives determine how many
 replicas the product needs.
 {% end %}
 
-This guide is meant to help product teams ask better questions about capacity planning for shared LLM inference and
-avoid making incorrect assumptions from the start. It's not a GPU calculator, but it gives you a way to replace
-guesses with measurements.
-
-## TL;DR
-
-- A registered user isn't a unit of inference load.
-- When you start thinking about inference capacity, just separate three questions: the GPU footprint of one replica,
-  the sustainable serving capacity of that replica, and the total capacity required by the product.
-- Before you start benchmarking, you'll need to define your workload classes and measurable SLOs.
-- Take a look at both the application and the inference server. Neither of these views is enough on its own.
-- Instead of multiplying the results from a small user test, try benchmarking with representative requests and an open-loop arrival model.
-- Size for **goodput**: This is the request rate that the system can handle while meeting latency SLOs.
-  It's not the highest raw throughput it can produce.
-- On a shared platform, capacity planning also requires things like quotas, admission control, isolation rules, and failure reserve.
-  Talk about those with your platform team early on.
-- If you make any changes to the model, runtime, prompt, or workload, just run the benchmark again.
+This guide describes how product and platform teams can replace capacity guesses with measurements. It is not a GPU calculator.
 
 ## Three different capacity questions
 
-When we talk about capacity, we're often dealing with three different problems at once.
+Capacity planning combines three separate questions.
 
 | Question | What it means | Information required |
 | --- | --- | --- |
@@ -60,13 +44,13 @@ When we talk about capacity, we're often dealing with three different problems a
 | **Serving capacity** | How much load can one warm replica sustain within the SLO? | A representative workload, target hardware, request arrival pattern, and load test |
 | **Product capacity** | How many replicas and GPUs are required in production? | Peak offered load, SLO, isolation model, growth forecast, failure reserve, and degradation policy |
 
-The first question is mostly about memory and execution topology. The second is a performance experiment.
-The third one is about how reliable the product is and how it's planned.
+The first question is mostly about memory and execution topology. The second requires a performance experiment.
+The third includes production demand and reliability requirements.
 
-This distinction also explains why a free GPU isn't automatically serving capacity.
-Before the platform can handle traffic, it has to do a few things first. First, it has to place a replica,
+This distinction also explains why an unallocated GPU isn't immediately available as serving capacity.
+Before the platform can handle traffic, it must place a replica,
 load the model, allocate its KV cache, warm the runtime, pass readiness checks, and attach it to the request path.
-Depending on the model size and how it's set up, this could take *minutes*.
+Depending on the model size and configuration, this can take *minutes*.
 If the startup time is longer than the product can handle during a busy period, reactive autoscaling won't replace warm reserve.
 
 ## Why user count is a weak capacity signal
@@ -92,13 +76,12 @@ This is why the following two products may have the same number of users but req
 - a coding agent that performs many LLM calls for every user task
 
 {% key_point() %}
-When it comes to planning for how much your system can handle, it's not about the number of user accounts.
-It's basically the workload generated by the product over time.
+Capacity depends on the workload generated by the product over time, not the number of user accounts.
 {% end %}
 
 ## Start with workload classes
 
-Before collecting aggregate metrics, describe the operations the product performs. Here are some examples:
+Before collecting aggregate metrics, describe the operations the product performs:
 
 | Workload class | Typical shape |
 | --- | --- |
@@ -109,19 +92,16 @@ Before collecting aggregate metrics, describe the operations the product perform
 | Agent task | Multiple LLM calls, tools, retrieval, retries, and context compaction |
 | Batch generation | High throughput, less strict per-request latency |
 
-Don't just build your workload on successful demos. Make sure you include things like long tasks, tool failures,
-retries, user cancellations, large contexts, and sessions that require compaction. These cases often lead to
-tail latency, which is key in determining production capacity.
+Do not build the workload only from successful demos. Include long tasks, tool failures, retries, user cancellations,
+large contexts, and sessions that require compaction. These cases often determine tail latency and production capacity.
 
 Model selection and capacity planning are related, but they shouldn't be combined into one step.
-External APIs (OpenRouter, OpenAI, etc.) are great for quickly comparing model quality.
-But their throughput and latency can't be transferred to a self-hosted deployment.
+External APIs can help compare model quality quickly, but their throughput and latency do not predict a self-hosted deployment.
 The final candidates should be benchmarked against the target runtime and hardware.
 
 ## Define SLOs before measuring capacity
 
-We can't test «comfortable performance for 500 users.»
-It's useful to have requirements that can be measured, and it's best to do that with service-level objectives.
+"Comfortable performance for 500 users" is not a measurable requirement. Define service-level objectives before testing.
 
 For streaming LLM applications, the main latency signals are:
 
@@ -140,8 +120,8 @@ Reliability signals matter as well:
 - SLO attainment percentage
 - behavior during overload, rollout, and infrastructure failure
 
-The product team should choose target values based on user experience and how important they are to the business.
-The platform team can then decide if a certain model configuration can meet their needs.
+The product team should choose target values based on user experience and business requirements.
+The platform team can then test whether a model configuration meets them.
 
 Raw throughput is not the right optimization target. A server may complete more requests per second while allowing
 TTFT or TPOT to become unacceptable. A better concept is **goodput**: the request rate the system can sustain while
@@ -174,8 +154,8 @@ It should also record total token usage, maximum context length, models used, du
 
 A tracing system like [Langfuse](https://langfuse.com/docs/observability/overview) can show LLM calls,
 retrieval, tools, and application logic as nested observations. Its data model also lets you group traces into
-[sessions](https://langfuse.com/docs/observability/data-model). The specific solution isn't as important as
-preserving the causal structure of the task.
+[sessions](https://langfuse.com/docs/observability/data-model). Preserve the causal structure of the task regardless
+of the tracing system.
 
 ### Inference-platform view
 
@@ -189,9 +169,9 @@ The inference layer usually exposes:
 - request failures and runtime errors
 - GPU memory, utilization, throttling, and hardware health
 
-You'll want to measure the incoming offered load at the gateway and the completed throughput at the model server.
-When there's an overload, the throughput might stay the same, but the queue and the incoming demand will keep growing.
-So, when you're looking at just the finished requests, it might make saturation look stable.
+Measure offered load at the gateway and completed throughput at the model server.
+During overload, completed throughput may remain constant while the queue and incoming demand continue to grow.
+Finished requests alone can make a saturated system appear stable.
 
 For example, [vLLM production metrics](https://docs.vllm.ai/en/latest/usage/metrics/) include queue depth, queue time,
 prompt and generation lengths, TTFT, inter-token latency, prefill and decode time, and KV-cache signals.
@@ -200,8 +180,8 @@ The application explains **what workload was created**. The inference platform e
 handled it**. Without both views, it is difficult to distinguish between an overloaded model server, unexpectedly
 large contexts, excessive calls per agent run, slow tools, retries, or contention with another tenant.
 
-High-cardinality identifiers should be in traces or logs, not in Prometheus labels.
-It's important to keep user and business identifiers pseudonymized.
+Store high-cardinality identifiers in traces or logs, not Prometheus labels.
+Pseudonymize user and business identifiers.
 
 ## Preserve workload shape, not only averages
 
@@ -222,9 +202,9 @@ Averages can hide the cases that cause queues and SLO violations. At minimum, an
 - expected growth
 - model mix
 
-Percentiles are great for dashboards, but you need more than a list of independent percentiles to reconstruct a workload.
-The length of the input, the length of the output, the time it arrives, the scenario, and how the cache behaves are all connected.
-Make sure you keep a sample of the request metadata that's been cleaned up, or a replayable trace, so that the benchmark can keep track of these relationships.
+Percentiles are useful for dashboards, but independent percentiles cannot reconstruct a workload.
+Input length, output length, arrival time, scenario, and cache behavior are correlated.
+Retain sanitized request metadata or a replayable trace so the benchmark preserves these relationships.
 
 Arrival patterns matter too. A closed-loop test, in which each virtual user sends a new request only after the
 previous one completes, reduces offered load when the server slows down. It can hide overload. For online serving,
@@ -235,7 +215,7 @@ by generating independent request arrivals and measuring the maximum rate that s
 
 ## A defensible benchmarking process
 
-The following loop should work for a new model or a material workload change.
+Use the following loop for a new model or a material workload change.
 
 ```mermaid
 flowchart LR
@@ -276,17 +256,17 @@ Record:
 - scheduler, batching, and KV-cache settings
 - GPU type, count, interconnect, CPU, memory, and software stack
 
-Changing any of these can change memory usage, TTFT, TPOT, throughput, or quality.
+Changing any of these can affect memory usage, TTFT, TPOT, throughput, or quality. Rebenchmark after a material change.
 
 ### 2. Use the target hardware
 
-Run a warm replica on the same hardware and with the same topology as production. A benchmark on a different GPU,
-interconnect, runtime version, or parallelism plan can be useful for comparison, but it's not the final word on sizing.
+Run a warm replica on the same hardware and topology as production. A benchmark on a different GPU,
+interconnect, runtime version, or parallelism plan can support comparisons, but not final sizing.
 
 ### 3. Replay representative work
 
-Try to use real, sanitized request metadata when you can. Keep the mix of workload classes, input and output lengths,
-arrival times, generation settings, cache reuse, and retries the same. And don't forget to include warm-up requests before collecting results.
+Use real, sanitized request metadata when available. Preserve the mix of workload classes, input and output lengths,
+arrival times, generation settings, cache reuse, and retries. Send warm-up requests before collecting results.
 
 Tools such as [vLLM Bench](https://docs.vllm.ai/en/latest/cli/bench/serve/) and
 [NVIDIA AIPerf](https://docs.nvidia.com/aiperf/reference/ai-perf-metrics-reference) expose the latency and throughput
@@ -294,8 +274,8 @@ metrics needed for this experiment.
 
 ### 4. Increase offered load
 
-Increase the request rate a bit at a time. Don't stop when the GPU utilization hits a good number.
-Keep going until one or more constraints don't work anymore.
+Increase the request rate incrementally. GPU utilization is not the stopping criterion.
+Continue until the system violates one or more constraints:
 
 - TTFT or TPOT crosses its target
 - queue time grows without recovering
@@ -307,21 +287,20 @@ The highest stable rate before these failures is the sustainable capacity of tha
 
 ### 5. Repeat and record variance
 
-Run each important point more than once. Record the benchmark duration, the warm-up plan, the random seed or trace,
-and all the info about the configuration. Short tests might miss things like burst behavior, cache churn, thermal throttling, and long-tail requests.
+Run each important point more than once. Record the benchmark duration, warm-up plan, random seed or trace,
+and complete configuration. Short tests may miss burst behavior, cache churn, thermal throttling, and long-tail requests.
 
 ### 6. Validate the full deployment
 
-A single-replica result is just an input to the plan, not the final answer. Run the test again with the right number
-of replicas and the actual load-balancing strategy. Scaling might be non-linear due to cache affinity, routing, networking,
+A single-replica result is an input to the plan. Run the test again with the planned number
+of replicas and the actual load-balancing strategy. Scaling can be non-linear due to cache affinity, routing, networking,
 distributed execution, and uneven request placement.
 
-Finally, let's cover test failure and maintenance scenarios. This includes things like losing a replica,
-losing a GPU node, rollout, rollback, and reduced capacity in another failure domain.
+Test failure and maintenance scenarios: replica loss, GPU node loss, rollout, rollback, and reduced capacity in another failure domain.
 
 ## Turning the benchmark into a capacity plan
 
-To get one stable workload mix, the calculation is pretty simple:
+For one stable workload mix, calculate:
 
 ```text
 sustainable_load_per_replica =
@@ -337,21 +316,21 @@ planned_replicas =
     base_replicas + reserve_replicas
 ```
 
-This is just shorthand, not a universal scalar formula. A workload has a lot of different parts: the request rate,
-concurrency, input and output lengths, cache reuse, and model mix all need to match the benchmark.
+This is shorthand, not a universal scalar formula. Request rate, concurrency, input and output lengths, cache reuse,
+and model mix must match the benchmark.
 If the product has very different workload classes, you should benchmark the production mix or establish separate
 capacity envelopes and admission rules.
 
-The reserve should cover the actual failure topology. If you lose one pod, you could lose a complete multi-GPU replica.
-If you lose one node, you might lose a bunch of replicas or even the whole model shard. A rollout might mean that old
-and new versions will have to coexist for a while. So, the right reserve depends on placement, model topology,
-recovery time, and the product's permitted degradation mode.
+The reserve should cover the actual failure topology. Losing one pod can remove a complete multi-GPU replica.
+Losing one node can remove several replicas or an entire model shard. During a rollout, old and new versions may
+need to coexist. The required reserve depends on placement, model topology, recovery time, and the product's permitted
+degradation mode.
 
 ## Capacity on a shared platform
 
 A multi-tenant inference platform introduces another variable: **other workloads**.
 
-When a bunch of products use the same replicas, they compete for:
+Products using the same replicas compete for:
 
 - scheduler and gateway queues
 - batching slots
@@ -359,7 +338,7 @@ When a bunch of products use the same replicas, they compete for:
 - GPU compute and memory bandwidth
 - generated-token throughput
 
-If you can't tell which tenant is using what resources, you can't really figure out how much they're using.
+Without per-tenant attribution, resource consumption cannot be measured reliably.
 Every project should use a stable project identity and correlation IDs from the gateway to the inference server.
 
 There are three common operating models:
@@ -370,16 +349,17 @@ There are three common operating models:
 | **Dedicated replicas** | Separate serving endpoints and queues; GPU nodes may still be shared | Important products with predictable demand |
 | **Reserved capacity** | Guaranteed GPU allocation or nodes, dedicated replicas, explicit failover reserve | Critical products with strict SLOs |
 
-You can't get both maximum utilization and an independent SLO for free. Shared platforms need a few things,
-like admission control, rate and concurrency limits, tenant quotas, priorities, and an overload policy.
-Otherwise, one product can use up the queue and KV cache that every other tenant needs.
+Maximum utilization and independent tenant SLOs conflict. Shared platforms need admission control, rate and
+concurrency limits, tenant quotas, priorities, and an overload policy. Otherwise, one product can consume the queue
+and KV cache needed by every other tenant.
 
-The degradation policy should be clear. Here are some options to consider: you could reject excess requests with a retryable error,
-restrict maximum context or output length, reduce agent parallelism, route to a smaller model, pause batch traffic, or accept a lower SLO for a defined workload class.
+Define the degradation policy explicitly. Options include rejecting excess requests with a retryable error,
+restricting maximum context or output length, reducing agent parallelism, routing to a smaller model, pausing batch
+traffic, or accepting a lower SLO for a defined workload class.
 
 ## A practical sizing request
 
-Here's a template for the product team to use when asking the platform team about capacity.
+Product teams can use this template when requesting capacity from the platform team.
 
 ### 1. Product and scenarios
 
@@ -445,61 +425,44 @@ Here's a template for the product team to use when asking the platform team abou
 
 If important data is missing, the platform team can only give a preliminary estimate with explicit assumptions and a wide range.
 
-## How to Be Less Wrong When Asking for a Capacity Sizing Estimate
+## Common sizing mistakes
 
-### We will have 400 users
+**«We will have 400 users.»**
 
-This describes the audience, not the load. Add active-user behavior, scenario frequency, LLM calls per task, token
+This describes the audience, not the load. Specify active-user behavior, scenario frequency, LLM calls per task, token
 distributions, concurrency, and peaks.
 
-### The model fits on eight GPUs, so one node is enough
+**«The model fits on eight GPUs, so one node is enough.»**
 
-Eight GPUs might be the bare minimum for one replica. It doesn't say how much SLO-compliant traffic the replica can handle or if the product can survive a node failure.
+Eight GPUs might be the minimum for one replica. That does not indicate how much SLO-compliant traffic the replica can handle or whether the product can survive a node failure.
 
-### We tested with 30 users and multiplied the result
+**«We tested with 30 users and multiplied the result.»**
 
 LLM inference is non-linear because of batching, queueing, cache pressure, and the distribution of request lengths.
-Just control the request rate and replay the workload.
+Control the request rate and replay the workload instead.
 
-### Average latency is fine
+**«Average latency is fine.»**
 
 The average hides the long tail. Capacity is usually limited by p95 or p99 latency, queue time, errors, and
-the percentage of SLO targets that need to be met. If you're dealing with a low-volume workload, make sure you've
-got a long enough measurement window so the tail percentiles have enough observations to be meaningful.
+SLO attainment. For a low-volume workload, use a measurement window long enough to make tail percentiles meaningful.
 
-### The external API was fast
+**«The external API was fast.»**
 
-External APIs are great for checking the quality of models. We don't know their hardware, batching, routing, or load,
-so we can't predict how they'll perform in a local deployment.
+External APIs can help evaluate model quality. Their hardware, batching, routing, and load are unknown, so their
+performance does not predict a local deployment.
 
-### GPU utilization is below 100%, so capacity is available
+**«GPU utilization is below 100%, so capacity is available.»**
 
-GPU utilization alone doesn't tell the whole story about queueing, KV-cache pressure, memory headroom, TTFT, TPOT, or the impact of one more long request.
+GPU utilization alone does not show queueing, KV-cache pressure, memory headroom, TTFT, TPOT, or the impact of another long request.
 
-### Our tracing tool will tell us how many GPUs to buy
+**«Our tracing tool will tell us how many GPUs to buy.»**
 
-Application tracing explains the workload. You've got to pair it with benchmarks and inference-server metrics to figure out how much GPU capacity there is.
+Application tracing explains the workload. Pair it with benchmarks and inference-server metrics to determine GPU capacity.
 
-### We will log everything and investigate later
+**«We will log everything and investigate later.»**
 
-Capacity planning doesn't usually require storing raw prompts, responses, documents, source code, tool arguments, or terminal output.
-Having too much telemetry can create security and privacy risks without actually improving the calculation.
-
-## Capacity planning is a measurement discipline
-
-A useful capacity plan isn't a model-to-GPU lookup table. It connects four things:
-
-1. the product scenarios users actually run
-2. the workload those scenarios generate
-3. the SLO the product must meet
-4. the sustainable capacity measured on the target serving configuration
-
-The process is iterative. Prompts change. Agent loops gain new steps. Contexts grow.
-Model revisions and inference engines are subject to change. Traffic is moving from a pilot to production.
-Any material change the capacity boundary.
-
-The durable solution is a feedback loop: instrument the product, replay representative work, measure
-SLO-constrained capacity, reserve for failures, and compare the plan with production telemetry.
+Capacity planning rarely requires storing raw prompts, responses, documents, source code, tool arguments, or terminal output.
+Excess telemetry can create security and privacy risks without improving the calculation.
 
 ## Further reading
 
