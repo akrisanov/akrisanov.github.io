@@ -12,7 +12,7 @@
 
 {% block description -%}
   {%- if paginator and paginator.current_index > 1 -%}
-    Page {{ paginator.current_index }} of articles by Andrey Krisanov about production LLM inference, AI infrastructure, distributed systems, and software engineering.
+    Page {{ paginator.current_index }} of articles by Andrey Krisanov about LLM inference, AI infrastructure, distributed systems, and software engineering.
   {%- else -%}
     {{ config.description | escape_xml | safe }}
   {%- endif -%}
@@ -28,7 +28,7 @@
 
 {% block og_description -%}
   {%- if paginator and paginator.current_index > 1 -%}
-    Page {{ paginator.current_index }} of articles by Andrey Krisanov about production LLM inference, AI infrastructure, distributed systems, and software engineering.
+    Page {{ paginator.current_index }} of articles by Andrey Krisanov about LLM inference, AI infrastructure, distributed systems, and software engineering.
   {%- else -%}
     {{ config.description | escape_xml | safe }}
   {%- endif -%}
@@ -44,7 +44,7 @@
 
 {% block twitter_description -%}
   {%- if paginator and paginator.current_index > 1 -%}
-    Page {{ paginator.current_index }} of articles by Andrey Krisanov about production LLM inference, AI infrastructure, distributed systems, and software engineering.
+    Page {{ paginator.current_index }} of articles by Andrey Krisanov about LLM inference, AI infrastructure, distributed systems, and software engineering.
   {%- else -%}
     {{ config.description | escape_xml | safe }}
   {%- endif -%}

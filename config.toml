@@ -1,7 +1,7 @@
 base_url = "https://akrisanov.com"
 title = "Andrey Krisanov"
 
-description = "Software engineer writing about production LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability."
+description = "Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability."
 
 default_language = "en"
 author = "Andrey Krisanov"
@@ -27,7 +27,7 @@ light_theme = "catppuccin-latte"
 dark_theme = "catppuccin-mocha"
 
 [extra]
-blog_subtitle = "Production LLM inference, AI infrastructure, and distributed systems"
+blog_subtitle = "LLM inference, AI infrastructure, and distributed systems"
 home_title = "Andrey Krisanov — LLM Inference & AI Infrastructure"
 author_url = "https://akrisanov.com/about/"
 github_url = "https://github.com/akrisanov"

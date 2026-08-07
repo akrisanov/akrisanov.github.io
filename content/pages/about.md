@@ -1,6 +1,6 @@
 +++
 title = "About"
-description = "About Andrey Krisanov, a Staff Software Engineer at Severstal focused on production LLM inference platforms, AI infrastructure, and distributed systems."
+description = "About Andrey Krisanov, a Staff Software Engineer at Severstal focused on LLM inference platforms, AI infrastructure, and distributed systems."
 template = "static_page.html"
 path = "about"
 date = 2024-01-01
@@ -14,7 +14,7 @@ static_thumbnail = "/images/social-pages-about.png"
 
 ## Hi, I'm Andrey
 
-I'm a Staff Software Engineer at Severstal, focused on production LLM inference platforms, AI infrastructure,
+I'm a Staff Software Engineer at Severstal, focused on LLM inference platforms, AI infrastructure,
 and distributed systems. I am responsible for the architecture and technical development of DaVinci, a shared GenAI
 platform that supports enterprise AI products and coding agents. Its inference foundation currently runs self-hosted,
 open-weight models on Kubernetes, vLLM, and 24 NVIDIA H200 GPUs.
