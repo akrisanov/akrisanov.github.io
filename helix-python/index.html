@@ -1,0 +1,265 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      Helix for Python Development
+    </title><meta content="Set up Helix for Python development with LSP, ty type checking, Ruff formatting and linting, plus a few editor refinements." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/helix-python/ rel=canonical><meta content=article property=og:type><meta content="Helix for Python Development" property=og:title><meta content="Set up Helix for Python development with LSP, ty type checking, Ruff formatting and linting, plus a few editor refinements." property=og:description><meta content=https://akrisanov.com/helix-python/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-helix-python.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content="Social preview for Helix for Python Development" property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content="Helix for Python Development" name=twitter:title><meta content="Set up Helix for Python development with LSP, ty type checking, Ruff formatting and linting, plus a few editor refinements." name=twitter:description><meta content=https://akrisanov.com/images/social-helix-python.png name=twitter:image><meta content="Social preview for Helix for Python Development" name=twitter:image:alt><meta content=2026-03-29 property=article:published_time><meta content=2026-03-29 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=helix property=article:tag><meta content=python property=article:tag><meta content=developer-tooling property=article:tag><meta content=lsp property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/helix-python/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/helix-python/"
+        },
+        "headline": "Helix for Python Development",
+        "description": "Set up Helix for Python development with LSP, ty type checking, Ruff formatting and linting, plus a few editor refinements.",
+        "image": "https://akrisanov.com/images/social-helix-python.png",
+        "datePublished": "2026-03-29",
+        "dateModified": "2026-03-29",
+        "inLanguage": "en",
+        "wordCount": 265,
+        "timeRequired": "PT2M",
+        "keywords": ["helix","python","developer-tooling","lsp"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/helix-python/ itemprop=url><meta content=https://akrisanov.com/images/social-helix-python.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><header class=note-header><h1 class=note-title itemprop=headline>Helix for Python Development</h1><p class=note-description itemprop=description>Set up Helix for Python development with LSP, ty type checking, Ruff formatting and linting, plus a few editor refinements.<div class=note-meta><time class=note-date datetime=2026-03-29 itemprop=datePublished> March 29, 2026 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>2 min read</span><meta content=2026-03-29 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/helix/>#helix</a> <a class=tag href=https://akrisanov.com/tags/python/>#python</a> <a class=tag href=https://akrisanov.com/tags/developer-tooling/>#developer-tooling</a> <a class=tag href=https://akrisanov.com/tags/lsp/>#lsp</a> </span></header><div class="e2-text note-body" itemprop=articleBody><p>I use Visual Studio Code for work and personal projects. It has been my main editor for years, across several languages and ecosystems.<p>Since I started using coding agents and chat-based interfaces, I've also wanted a more focused environment without the panels, notifications, and status updates. This is especially useful when I'm reading a book and reimplementing its examples. I've been using Helix, a terminal-based code editor, for this kind of work.<p>I previously configured Helix for Go but didn't record the steps. This note covers my Python setup: LSP support, type checking with ty, formatting and linting with Ruff, and debugging with debugpy.<p>I use macOS, so some paths and shell commands are platform-specific. The Helix configuration should work on other operating systems as well.<p>Start by checking Helix's Python configuration:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>hx</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-health</span><span style=color:light-dark(#40a02b,#a6e3a1)> python</span></span></code></pre><p>In my case, the output looks like this:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Configured</span><span style=color:light-dark(#40a02b,#a6e3a1)> language</span><span style=color:light-dark(#40a02b,#a6e3a1)> servers:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  ✘</span><span style=color:light-dark(#40a02b,#a6e3a1)> ty:</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>ty</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span><span style=color:light-dark(#40a02b,#a6e3a1)> not</span><span style=color:light-dark(#40a02b,#a6e3a1)> found</span><span style=color:light-dark(#40a02b,#a6e3a1)> in</span><span> $</span><span>PATH</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  ✘</span><span style=color:light-dark(#40a02b,#a6e3a1)> ruff:</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>ruff</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span><span style=color:light-dark(#40a02b,#a6e3a1)> not</span><span style=color:light-dark(#40a02b,#a6e3a1)> found</span><span style=color:light-dark(#40a02b,#a6e3a1)> in</span><span> $</span><span>PATH</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  ✘</span><span style=color:light-dark(#40a02b,#a6e3a1)> jedi:</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>jedi-language-server</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span><span style=color:light-dark(#40a02b,#a6e3a1)> not</span><span style=color:light-dark(#40a02b,#a6e3a1)> found</span><span style=color:light-dark(#40a02b,#a6e3a1)> in</span><span> $</span><span>PATH</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  ✘</span><span style=color:light-dark(#40a02b,#a6e3a1)> pylsp:</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>pylsp</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span><span style=color:light-dark(#40a02b,#a6e3a1)> not</span><span style=color:light-dark(#40a02b,#a6e3a1)> found</span><span style=color:light-dark(#40a02b,#a6e3a1)> in</span><span> $</span><span>PATH</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Configured</span><span style=color:light-dark(#40a02b,#a6e3a1)> debug</span><span style=color:light-dark(#40a02b,#a6e3a1)> adapter:</span><span style=color:light-dark(#40a02b,#a6e3a1)> None</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Configured</span><span style=color:light-dark(#40a02b,#a6e3a1)> formatter:</span><span style=color:light-dark(#40a02b,#a6e3a1)> None</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Tree-sitter</span><span style=color:light-dark(#40a02b,#a6e3a1)> parser:</span><span style=color:light-dark(#40a02b,#a6e3a1)> ✓</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Highlight</span><span style=color:light-dark(#40a02b,#a6e3a1)> queries:</span><span style=color:light-dark(#40a02b,#a6e3a1)> ✓</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Textobject</span><span style=color:light-dark(#40a02b,#a6e3a1)> queries:</span><span style=color:light-dark(#40a02b,#a6e3a1)> ✓</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Indent</span><span style=color:light-dark(#40a02b,#a6e3a1)> queries:</span><span style=color:light-dark(#40a02b,#a6e3a1)> ✓</span></span></code></pre><p>No language servers or formatters are available yet, but the Tree-sitter parser and queries are configured. I use <a href=/uv/>uv</a> to install Ruff and ty:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> tool</span><span style=color:light-dark(#40a02b,#a6e3a1)> install</span><span style=color:light-dark(#40a02b,#a6e3a1)> ruff</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> tool</span><span style=color:light-dark(#40a02b,#a6e3a1)> install</span><span style=color:light-dark(#40a02b,#a6e3a1)> ty</span></span></code></pre><p>This installs Ruff and ty as command-line tools. On macOS, <code>uv tool install</code> puts executables in a user bin directory that must be on <code>PATH</code>. The exact path depends on your setup; a common configuration is:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>echo</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>export PATH="$HOME/.local/bin:$PATH"</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span><span style=color:light-dark(#179299,#94e2d5)> >></span><span style=color:light-dark(#40a02b,#a6e3a1)> ~/.zshrc</span></span>
+<span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>source</span><span style=color:light-dark(#40a02b,#a6e3a1)> ~/.zshrc</span></span></code></pre><p>If needed, update the shell configuration and then check that both tools are available:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>which</span><span style=color:light-dark(#40a02b,#a6e3a1)> ruff</span></span>
+<span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>which</span><span style=color:light-dark(#40a02b,#a6e3a1)> ty</span></span></code></pre><p>If <code>which</code> prints nothing, Helix will not find the tools either. Check the configuration again:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>hx</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-health</span><span style=color:light-dark(#40a02b,#a6e3a1)> python</span></span></code></pre><p>The output should now look like this:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Configured</span><span style=color:light-dark(#40a02b,#a6e3a1)> language</span><span style=color:light-dark(#40a02b,#a6e3a1)> servers:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  ✓</span><span style=color:light-dark(#40a02b,#a6e3a1)> ty:</span><span style=color:light-dark(#40a02b,#a6e3a1)> /Users/akrisanov/.local/bin/ty</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  ✓</span><span style=color:light-dark(#40a02b,#a6e3a1)> ruff:</span><span style=color:light-dark(#40a02b,#a6e3a1)> /Users/akrisanov/.local/bin/ruff</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  ✘</span><span style=color:light-dark(#40a02b,#a6e3a1)> jedi:</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>jedi-language-server</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span><span style=color:light-dark(#40a02b,#a6e3a1)> not</span><span style=color:light-dark(#40a02b,#a6e3a1)> found</span><span style=color:light-dark(#40a02b,#a6e3a1)> in</span><span> $</span><span>PATH</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  ✘</span><span style=color:light-dark(#40a02b,#a6e3a1)> pylsp:</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>pylsp</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span><span style=color:light-dark(#40a02b,#a6e3a1)> not</span><span style=color:light-dark(#40a02b,#a6e3a1)> found</span><span style=color:light-dark(#40a02b,#a6e3a1)> in</span><span> $</span><span>PATH</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Configured</span><span style=color:light-dark(#40a02b,#a6e3a1)> debug</span><span style=color:light-dark(#40a02b,#a6e3a1)> adapter:</span><span style=color:light-dark(#40a02b,#a6e3a1)> None</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Configured</span><span style=color:light-dark(#40a02b,#a6e3a1)> formatter:</span><span style=color:light-dark(#40a02b,#a6e3a1)> None</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Tree-sitter</span><span style=color:light-dark(#40a02b,#a6e3a1)> parser:</span><span style=color:light-dark(#40a02b,#a6e3a1)> ✓</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Highlight</span><span style=color:light-dark(#40a02b,#a6e3a1)> queries:</span><span style=color:light-dark(#40a02b,#a6e3a1)> ✓</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Textobject</span><span style=color:light-dark(#40a02b,#a6e3a1)> queries:</span><span style=color:light-dark(#40a02b,#a6e3a1)> ✓</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Indent</span><span style=color:light-dark(#40a02b,#a6e3a1)> queries:</span><span style=color:light-dark(#40a02b,#a6e3a1)> ✓</span></span></code></pre><p>Open the Helix language configuration, usually <code>~/.config/helix/languages.toml</code>, and add:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=toml><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[[</span><span>language</span><span style=color:light-dark(#7c7f93,#9399b2)>]]</span></span>
+<span class=giallo-l><span>name</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>python</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>language-servers</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> [</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>ruff</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>ty</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>auto-format</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span>
+<span class=giallo-l><span>formatter</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> {</span><span> command</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>ruff</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span><span> args</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> [</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>format</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>-</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span><span style=color:light-dark(#7c7f93,#9399b2)> }</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[</span><span>language-server</span><span>.</span><span>ruff</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>command</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>ruff</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>args</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> [</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>server</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[</span><span>language-server</span><span>.</span><span>ty</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>command</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>ty</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>args</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> [</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>server</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span></code></pre><p>For debugging, install <code>debugpy</code> with pip:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>pip</span><span style=color:light-dark(#40a02b,#a6e3a1)> install</span><span style=color:light-dark(#40a02b,#a6e3a1)> debugpy</span></span></code></pre><p>Then append this configuration to <code>languages.toml</code>:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=toml><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[</span><span>language</span><span>.</span><span>debugger</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>name</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>debugpy</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>transport</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>stdio</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>command</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>python3</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>args</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> [</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>-m</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>debugpy.adapter</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[[</span><span>language</span><span>.</span><span>debugger</span><span>.</span><span>templates</span><span style=color:light-dark(#7c7f93,#9399b2)>]]</span></span>
+<span class=giallo-l><span>name</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>source</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>request</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>launch</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>completion</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> [</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  {</span><span> name</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>entrypoint</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span><span> completion</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>filename</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span><span> default</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>.</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)> }</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>args</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> {</span><span> mode</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>debug</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span><span> program</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>{0}</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)> }</span></span></code></pre></div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/vllm-metrics/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>Monitoring vLLM in Production: Metrics, PromQL, Alerts, and Runbooks</span> </a><a class=nav-newer href=https://akrisanov.com/wsl-nvidia-gpu/> <span class=note-navigation-direction>Newer <span class=note-navigation-shortcut><i class=nav-modifier></i>↑</span></span> <span class=note-navigation-title>Running Kubernetes with a GPU Inside WSL2 on My RTX Laptop</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script>

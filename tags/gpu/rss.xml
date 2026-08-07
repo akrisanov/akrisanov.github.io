@@ -1,0 +1,1087 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - gpu</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/gpu/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Wed, 29 Jul 2026 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>How to Plan LLM Inference Capacity for a Shared Platform</title>
+      <pubDate>Wed, 29 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/planning-llm-inference-capacity/</link>
+      <guid>https://akrisanov.com/planning-llm-inference-capacity/</guid>
+      <description xml:base="https://akrisanov.com/planning-llm-inference-capacity/"><![CDATA[
+        <p>Published: 2026-07-29</p>
+        
+        
+          <p>A recurring capacity-planning request for an internal LLM platform is:</p>
+<blockquote>
+<p>We have selected a model. Do we have enough capacity, and how many GPUs would we need for N users?</p>
+</blockquote>
+<p>The question is missing the information needed to answer it.</p>
+<p>The model and its serving configuration determine the minimum resources required to start one replica.
+They don't tell us how many requests that replica can handle while meeting the product's latency and reliability requirements.
+That depends on prompt and response lengths, arrival rate, concurrency, cache reuse, calls per user task, traffic bursts,
+and competition with other workloads.</p>
+<div class="article-key-point"><p>The model determines the footprint of one replica. The workload and service-level objectives determine how many
+replicas the product needs.</p>
+</div>
+<p>This guide describes how product and platform teams can replace capacity guesses with measurements. It is not a GPU calculator.</p>
+<h2 id="three-different-capacity-questions">Three different capacity questions</h2>
+<p>Capacity planning combines three separate questions.</p>
+<table><thead><tr><th>Question</th><th>What it means</th><th>Information required</th></tr></thead><tbody>
+<tr><td><strong>Replica footprint</strong></td><td>How many GPUs are required to start one model replica?</td><td>Exact checkpoint and revision, precision or quantization, context limit, parallelism strategy, runtime version, and serving configuration</td></tr>
+<tr><td><strong>Serving capacity</strong></td><td>How much load can one warm replica sustain within the SLO?</td><td>A representative workload, target hardware, request arrival pattern, and load test</td></tr>
+<tr><td><strong>Product capacity</strong></td><td>How many replicas and GPUs are required in production?</td><td>Peak offered load, SLO, isolation model, growth forecast, failure reserve, and degradation policy</td></tr>
+</tbody></table>
+<p>The first question is mostly about memory and execution topology. The second requires a performance experiment.
+The third includes production demand and reliability requirements.</p>
+<p>This distinction also explains why an unallocated GPU isn't immediately available as serving capacity.
+Before the platform can handle traffic, it must place a replica,
+load the model, allocate its KV cache, warm the runtime, pass readiness checks, and attach it to the request path.
+Depending on the model size and configuration, this can take <em>minutes</em>.
+If the startup time is longer than the product can handle during a busy period, reactive autoscaling won't replace warm reserve.</p>
+<h2 id="why-user-count-is-a-weak-capacity-signal">Why user count is a weak capacity signal</h2>
+<p>Two requests to the same model can have very different costs:</p>
+<ul>
+<li>a short question with a short answer</li>
+<li>a summarization request with tens of thousands of input tokens</li>
+<li>an agent step containing tool schemas and a long conversation history</li>
+<li>a request that reuses a cached prefix</li>
+<li>a long-running generation that keeps KV-cache blocks active</li>
+<li>a user task that triggers ten LLM calls, several tool calls, retries, and context compaction</li>
+</ul>
+<p>Modern inference engines such as vLLM combine requests through continuous batching.
+They schedule prompt processing (<strong>prefill</strong>) and token generation (<strong>decode</strong>) while managing a queue and KV cache.
+Prefill is usually more compute-intensive, while decode is often constrained by memory bandwidth and the number of active sequences.
+Changes in the input-length distribution can increase time to first token without changing the output throughput.
+Changes in concurrency or output length can make token streaming take longer and fill up the KV cache.</p>
+<p>This is why the following two products may have the same number of users but require very different capacity:</p>
+<ul>
+<li>a chat assistant used a few times per day</li>
+<li>a coding agent that performs many LLM calls for every user task</li>
+</ul>
+<div class="article-key-point"><p>Capacity depends on the workload generated by the product over time, not the number of user accounts.</p>
+</div>
+<h2 id="start-with-workload-classes">Start with workload classes</h2>
+<p>Before collecting aggregate metrics, describe the operations the product performs:</p>
+<table><thead><tr><th>Workload class</th><th>Typical shape</th></tr></thead><tbody>
+<tr><td>Interactive question answering</td><td>Short or medium prompt, short streamed response, latency-sensitive</td></tr>
+<tr><td>Document summarization</td><td>Long prefill, medium output, often asynchronous</td></tr>
+<tr><td>Structured extraction</td><td>Medium prompt, constrained output, potentially high request rate</td></tr>
+<tr><td>Coding assistant</td><td>Repository context, tool definitions, multi-turn interaction</td></tr>
+<tr><td>Agent task</td><td>Multiple LLM calls, tools, retrieval, retries, and context compaction</td></tr>
+<tr><td>Batch generation</td><td>High throughput, less strict per-request latency</td></tr>
+</tbody></table>
+<p>Do not build the workload only from successful demos. Include long tasks, tool failures, retries, user cancellations,
+large contexts, and sessions that require compaction. These cases often determine tail latency and production capacity.</p>
+<p>Model selection and capacity planning are related, but they shouldn't be combined into one step.
+External APIs can help compare model quality quickly, but their throughput and latency do not predict a self-hosted deployment.
+The final candidates should be benchmarked against the target runtime and hardware.</p>
+<h2 id="define-slos-before-measuring-capacity">Define SLOs before measuring capacity</h2>
+<p>"Comfortable performance for 500 users" is not a measurable requirement. Define service-level objectives before testing.</p>
+<p>For streaming LLM applications, the main latency signals are:</p>
+<ul>
+<li><strong>time to first token (TTFT):</strong> how long the user waits before generation begins</li>
+<li><strong>inter-token latency (ITL):</strong> the gaps between streamed tokens and the pauses a user can notice</li>
+<li><strong>time per output token (TPOT):</strong> request-level decode time normalized by the number of generated tokens</li>
+<li><strong>end-to-end request latency:</strong> how long the complete LLM call takes</li>
+<li><strong>queue time:</strong> how long the request waits before execution</li>
+<li><strong>task or agent-run duration:</strong> how long the user waits for the complete workflow</li>
+</ul>
+<p>Reliability signals matter as well:</p>
+<ul>
+<li>error and timeout rate</li>
+<li>cancellation rate</li>
+<li>model availability</li>
+<li>SLO attainment percentage</li>
+<li>behavior during overload, rollout, and infrastructure failure</li>
+</ul>
+<p>The product team should choose target values based on user experience and business requirements.
+The platform team can then test whether a model configuration meets them.</p>
+<p>Raw throughput is not the right optimization target. A server may complete more requests per second while allowing
+TTFT or TPOT to become unacceptable. A better concept is <strong>goodput</strong>: the request rate the system can sustain while
+meeting the defined latency objectives. The <a rel="noopener external" target="_blank" href="https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin">DistServe paper</a>
+uses this framing for LLM serving, and current
+<a rel="noopener external" target="_blank" href="https://docs.vllm.ai/en/latest/cli/bench/serve/">vLLM benchmarking tools</a> can report SLO-constrained goodput.</p>
+<h2 id="observe-the-application-and-the-inference-platform">Observe the application and the inference platform</h2>
+<p>Proper capacity planning needs two complementary views.</p>
+<h3 id="application-view">Application view</h3>
+<p>For every LLM call, capture at least:</p>
+<table><thead><tr><th>Category</th><th>Example fields</th></tr></thead><tbody>
+<tr><td>Correlation</td><td><code>project</code>, <code>environment</code>, <code>session_id</code>, <code>run_id</code>, <code>llm_call_id</code>, <code>trace_id</code></td></tr>
+<tr><td>Model</td><td>Requested alias, selected model, model revision</td></tr>
+<tr><td>Work</td><td>Input, output, cached, and reasoning tokens when the runtime exposes them</td></tr>
+<tr><td>Context</td><td>Context length, <code>max_tokens</code>, shared-prefix indicator</td></tr>
+<tr><td>Timing</td><td>Request start, first-token time, completion time</td></tr>
+<tr><td>Execution</td><td>Streaming mode, finish reason, status</td></tr>
+<tr><td>Reliability</td><td>Timeout, cancellation, retry, attempt number</td></tr>
+<tr><td>Scenario</td><td>Workload class, agent-loop step, compaction or normal call</td></tr>
+</tbody></table>
+<p>For an agentic application, one LLM call is too small a unit. The main unit should be the <strong>run</strong>: one execution of a user task.
+A run should record the number of LLM calls, tool calls, retries, and compactions.
+It should also record total token usage, maximum context length, models used, duration, final status, and a quality signal.</p>
+<p>A tracing system like <a rel="noopener external" target="_blank" href="https://langfuse.com/docs/observability/overview">Langfuse</a> can show LLM calls,
+retrieval, tools, and application logic as nested observations. Its data model also lets you group traces into
+<a rel="noopener external" target="_blank" href="https://langfuse.com/docs/observability/data-model">sessions</a>. Preserve the causal structure of the task regardless
+of the tracing system.</p>
+<h3 id="inference-platform-view">Inference-platform view</h3>
+<p>The inference layer usually exposes:</p>
+<ul>
+<li>running and waiting requests</li>
+<li>queue-time distribution</li>
+<li>prompt and generated token throughput</li>
+<li>TTFT, ITL, request-level TPOT, and end-to-end latency</li>
+<li>KV-cache usage, reuse, eviction, and preemption</li>
+<li>request failures and runtime errors</li>
+<li>GPU memory, utilization, throttling, and hardware health</li>
+</ul>
+<p>Measure offered load at the gateway and completed throughput at the model server.
+During overload, completed throughput may remain constant while the queue and incoming demand continue to grow.
+Finished requests alone can make a saturated system appear stable.</p>
+<p>For example, <a rel="noopener external" target="_blank" href="https://docs.vllm.ai/en/latest/usage/metrics/">vLLM production metrics</a> include queue depth, queue time,
+prompt and generation lengths, TTFT, inter-token latency, prefill and decode time, and KV-cache signals.</p>
+<p>The application explains <strong>what workload was created</strong>. The inference platform explains <strong>how the serving system
+handled it</strong>. Without both views, it is difficult to distinguish between an overloaded model server, unexpectedly
+large contexts, excessive calls per agent run, slow tools, retries, or contention with another tenant.</p>
+<p>Store high-cardinality identifiers in traces or logs, not Prometheus labels.
+Pseudonymize user and business identifiers.</p>
+<h2 id="preserve-workload-shape-not-only-averages">Preserve workload shape, not only averages</h2>
+<p>Averages can hide the cases that cause queues and SLO violations. At minimum, analyze:</p>
+<ul>
+<li>requests per second and per minute</li>
+<li>concurrent LLM calls</li>
+<li>active user or agent runs</li>
+<li>input and output tokens over time</li>
+<li>p50, p95, and p99 input length</li>
+<li>p50, p95, and p99 output length</li>
+<li>p95 and p99 total context length</li>
+<li>LLM calls and tokens per run</li>
+<li>cache-hit and shared-prefix behavior</li>
+<li>retry and cancellation rates</li>
+<li>traffic by time of day</li>
+<li>peak-to-average ratio</li>
+<li>expected growth</li>
+<li>model mix</li>
+</ul>
+<p>Percentiles are useful for dashboards, but independent percentiles cannot reconstruct a workload.
+Input length, output length, arrival time, scenario, and cache behavior are correlated.
+Retain sanitized request metadata or a replayable trace so the benchmark preserves these relationships.</p>
+<p>Arrival patterns matter too. A closed-loop test, in which each virtual user sends a new request only after the
+previous one completes, reduces offered load when the server slows down. It can hide overload. For online serving,
+prefer an open-loop test that sends requests according to a controlled arrival rate and burstiness. vLLM's serving
+benchmark supports request-rate, burstiness, warm-up, detailed per-request output, and timed-trace replay.
+<a rel="noopener external" target="_blank" href="https://mlcommons.org/benchmarks/inference-datacenter/">MLPerf's server scenario</a> follows the same general principle
+by generating independent request arrivals and measuring the maximum rate that stays within a tail-latency constraint.</p>
+<h2 id="a-defensible-benchmarking-process">A defensible benchmarking process</h2>
+<p>Use the following loop for a new model or a material workload change.</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="mermaid"><span class="giallo-l"><span>flowchart LR</span></span>
+<span class="giallo-l"><span>    accTitle: The LLM capacity-planning loop</span></span>
+<span class="giallo-l"><span>    accDescr: Product scenarios produce application traces. Sanitized traces are replayed against a pinned model configuration. The SLO boundary determines the initial replica count, which is then validated in production and updated with new telemetry.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    Scenarios[&quot;Product scenarios&quot;]</span></span>
+<span class="giallo-l"><span>    Telemetry[&quot;Application telemetry&quot;]</span></span>
+<span class="giallo-l"><span>    Replay[&quot;Sanitized workload replay&quot;]</span></span>
+<span class="giallo-l"><span>    Benchmark[&quot;Single-replica benchmark&quot;]</span></span>
+<span class="giallo-l"><span>    Boundary[&quot;SLO-constrained capacity&quot;]</span></span>
+<span class="giallo-l"><span>    Plan[&quot;Replica and reserve plan&quot;]</span></span>
+<span class="giallo-l"><span>    Production[&quot;Production validation&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    Scenarios --&gt; Telemetry</span></span>
+<span class="giallo-l"><span>    Telemetry --&gt; Replay</span></span>
+<span class="giallo-l"><span>    Replay --&gt; Benchmark</span></span>
+<span class="giallo-l"><span>    Benchmark --&gt; Boundary</span></span>
+<span class="giallo-l"><span>    Boundary --&gt; Plan</span></span>
+<span class="giallo-l"><span>    Plan --&gt; Production</span></span>
+<span class="giallo-l"><span>    Production --&gt; Telemetry</span></span></code></pre><p class="mermaid-caption">Figure 1. Capacity planning is a feedback loop, not a one-time calculation.</p>
+<h3 id="1-pin-the-complete-serving-configuration">1. Pin the complete serving configuration</h3>
+<p>Record:</p>
+<ul>
+<li>model checkpoint and revision</li>
+<li>tokenizer and revision</li>
+<li>precision or quantization</li>
+<li>maximum context length</li>
+<li>tensor, pipeline, expert, and data parallelism</li>
+<li>chat template and reasoning settings</li>
+<li>speculative decoding configuration</li>
+<li>inference runtime and version</li>
+<li>scheduler, batching, and KV-cache settings</li>
+<li>GPU type, count, interconnect, CPU, memory, and software stack</li>
+</ul>
+<p>Changing any of these can affect memory usage, TTFT, TPOT, throughput, or quality. Rebenchmark after a material change.</p>
+<h3 id="2-use-the-target-hardware">2. Use the target hardware</h3>
+<p>Run a warm replica on the same hardware and topology as production. A benchmark on a different GPU,
+interconnect, runtime version, or parallelism plan can support comparisons, but not final sizing.</p>
+<h3 id="3-replay-representative-work">3. Replay representative work</h3>
+<p>Use real, sanitized request metadata when available. Preserve the mix of workload classes, input and output lengths,
+arrival times, generation settings, cache reuse, and retries. Send warm-up requests before collecting results.</p>
+<p>Tools such as <a rel="noopener external" target="_blank" href="https://docs.vllm.ai/en/latest/cli/bench/serve/">vLLM Bench</a> and
+<a rel="noopener external" target="_blank" href="https://docs.nvidia.com/aiperf/reference/ai-perf-metrics-reference">NVIDIA AIPerf</a> expose the latency and throughput
+metrics needed for this experiment.</p>
+<h3 id="4-increase-offered-load">4. Increase offered load</h3>
+<p>Increase the request rate incrementally. GPU utilization is not the stopping criterion.
+Continue until the system violates one or more constraints:</p>
+<ul>
+<li>TTFT or TPOT crosses its target</li>
+<li>queue time grows without recovering</li>
+<li>SLO attainment falls below the target</li>
+<li>errors, timeouts, or cancellations rise</li>
+<li>KV-cache pressure causes preemption or instability</li>
+</ul>
+<p>The highest stable rate before these failures is the sustainable capacity of that replica for that workload and SLO.</p>
+<h3 id="5-repeat-and-record-variance">5. Repeat and record variance</h3>
+<p>Run each important point more than once. Record the benchmark duration, warm-up plan, random seed or trace,
+and complete configuration. Short tests may miss burst behavior, cache churn, thermal throttling, and long-tail requests.</p>
+<h3 id="6-validate-the-full-deployment">6. Validate the full deployment</h3>
+<p>A single-replica result is an input to the plan. Run the test again with the planned number
+of replicas and the actual load-balancing strategy. Scaling can be non-linear due to cache affinity, routing, networking,
+distributed execution, and uneven request placement.</p>
+<p>Test failure and maintenance scenarios: replica loss, GPU node loss, rollout, rollback, and reduced capacity in another failure domain.</p>
+<h2 id="turning-the-benchmark-into-a-capacity-plan">Turning the benchmark into a capacity plan</h2>
+<p>For one stable workload mix, calculate:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="plain"><span class="giallo-l"><span>sustainable_load_per_replica =</span></span>
+<span class="giallo-l"><span>    highest offered load at which the required SLO attainment is preserved</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>base_replicas =</span></span>
+<span class="giallo-l"><span>    ceil(projected_peak_offered_load / sustainable_load_per_replica)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>reserve_replicas =</span></span>
+<span class="giallo-l"><span>    capacity needed for failures, rollouts, and near-term growth</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>planned_replicas =</span></span>
+<span class="giallo-l"><span>    base_replicas + reserve_replicas</span></span></code></pre>
+<p>This is shorthand, not a universal scalar formula. Request rate, concurrency, input and output lengths, cache reuse,
+and model mix must match the benchmark.
+If the product has very different workload classes, you should benchmark the production mix or establish separate
+capacity envelopes and admission rules.</p>
+<p>The reserve should cover the actual failure topology. Losing one pod can remove a complete multi-GPU replica.
+Losing one node can remove several replicas or an entire model shard. During a rollout, old and new versions may
+need to coexist. The required reserve depends on placement, model topology, recovery time, and the product's permitted
+degradation mode.</p>
+<h2 id="capacity-on-a-shared-platform">Capacity on a shared platform</h2>
+<p>A multi-tenant inference platform introduces another variable: <strong>other workloads</strong>.</p>
+<p>Products using the same replicas compete for:</p>
+<ul>
+<li>scheduler and gateway queues</li>
+<li>batching slots</li>
+<li>KV cache</li>
+<li>GPU compute and memory bandwidth</li>
+<li>generated-token throughput</li>
+</ul>
+<p>Without per-tenant attribution, resource consumption cannot be measured reliably.
+Every project should use a stable project identity and correlation IDs from the gateway to the inference server.</p>
+<p>There are three common operating models:</p>
+<table><thead><tr><th>Model</th><th>Characteristics</th><th>Suitable for</th></tr></thead><tbody>
+<tr><td><strong>Shared replicas</strong></td><td>Potentially highest utilization, shared queues, quotas and concurrency limits</td><td>Small or non-critical workloads</td></tr>
+<tr><td><strong>Dedicated replicas</strong></td><td>Separate serving endpoints and queues; GPU nodes may still be shared</td><td>Important products with predictable demand</td></tr>
+<tr><td><strong>Reserved capacity</strong></td><td>Guaranteed GPU allocation or nodes, dedicated replicas, explicit failover reserve</td><td>Critical products with strict SLOs</td></tr>
+</tbody></table>
+<p>Maximum utilization and independent tenant SLOs conflict. Shared platforms need admission control, rate and
+concurrency limits, tenant quotas, priorities, and an overload policy. Otherwise, one product can consume the queue
+and KV cache needed by every other tenant.</p>
+<p>Define the degradation policy explicitly. Options include rejecting excess requests with a retryable error,
+restricting maximum context or output length, reducing agent parallelism, routing to a smaller model, pausing batch
+traffic, or accepting a lower SLO for a defined workload class.</p>
+<h2 id="a-practical-sizing-request">A practical sizing request</h2>
+<p>Product teams can use this template when requesting capacity from the platform team.</p>
+<h3 id="1-product-and-scenarios">1. Product and scenarios</h3>
+<ul>
+<li>product or service name</li>
+<li>owner and technical contact</li>
+<li>environments</li>
+<li>workload classes</li>
+<li>interactive, asynchronous, batch, or agentic execution</li>
+<li>expected launch date and growth stages</li>
+</ul>
+<h3 id="2-model-candidates">2. Model candidates</h3>
+<ul>
+<li>exact model identifiers and revisions</li>
+<li>tokenizer revision</li>
+<li>quality-evaluation results</li>
+<li>context-length requirement</li>
+<li>reasoning, multimodal, tool-calling, or structured-output requirements</li>
+<li>acceptable fallback models</li>
+</ul>
+<h3 id="3-workload-profile">3. Workload profile</h3>
+<ul>
+<li>expected active users or jobs</li>
+<li>requests or agent runs per time window</li>
+<li>LLM calls per run</li>
+<li>input tokens p50, p95, and p99</li>
+<li>output tokens p50, p95, and p99</li>
+<li>context length p50, p95, and p99</li>
+<li>concurrent LLM calls</li>
+<li>peak-to-average ratio and burst duration</li>
+<li>expected growth over the next 6-12 months</li>
+<li>representative trace or dataset</li>
+</ul>
+<h3 id="4-slo">4. SLO</h3>
+<ul>
+<li>TTFT target and attainment percentage</li>
+<li>ITL target and attainment percentage</li>
+<li>request-level TPOT target and attainment percentage</li>
+<li>end-to-end LLM latency</li>
+<li>agent-run or job duration</li>
+<li>queue-time limit</li>
+<li>error and timeout rate</li>
+<li>overload behavior</li>
+</ul>
+<h3 id="5-reliability-and-isolation">5. Reliability and isolation</h3>
+<ul>
+<li>shared, dedicated, or reserved capacity</li>
+<li>required availability</li>
+<li>acceptable capacity after a replica, GPU, node, or failure-domain loss</li>
+<li>rollout and rollback requirements</li>
+<li>maximum recovery time</li>
+<li>allowed degradation modes</li>
+</ul>
+<h3 id="6-observability-and-data-handling">6. Observability and data handling</h3>
+<ul>
+<li>tracing system</li>
+<li>token-usage collection</li>
+<li>correlation IDs</li>
+<li>prompt and application versioning</li>
+<li>pseudonymization</li>
+<li>retention and access rules</li>
+<li>confirmation that sensitive prompts, outputs, tool arguments, source code, and documents are not recorded by
+default</li>
+</ul>
+<p>If important data is missing, the platform team can only give a preliminary estimate with explicit assumptions and a wide range.</p>
+<h2 id="common-sizing-mistakes">Common sizing mistakes</h2>
+<p><strong>«We will have 400 users.»</strong></p>
+<p>This describes the audience, not the load. Specify active-user behavior, scenario frequency, LLM calls per task, token
+distributions, concurrency, and peaks.</p>
+<p><strong>«The model fits on eight GPUs, so one node is enough.»</strong></p>
+<p>Eight GPUs might be the minimum for one replica. That does not indicate how much SLO-compliant traffic the replica can handle or whether the product can survive a node failure.</p>
+<p><strong>«We tested with 30 users and multiplied the result.»</strong></p>
+<p>LLM inference is non-linear because of batching, queueing, cache pressure, and the distribution of request lengths.
+Control the request rate and replay the workload instead.</p>
+<p><strong>«Average latency is fine.»</strong></p>
+<p>The average hides the long tail. Capacity is usually limited by p95 or p99 latency, queue time, errors, and
+SLO attainment. For a low-volume workload, use a measurement window long enough to make tail percentiles meaningful.</p>
+<p><strong>«The external API was fast.»</strong></p>
+<p>External APIs can help evaluate model quality. Their hardware, batching, routing, and load are unknown, so their
+performance does not predict a local deployment.</p>
+<p><strong>«GPU utilization is below 100%, so capacity is available.»</strong></p>
+<p>GPU utilization alone does not show queueing, KV-cache pressure, memory headroom, TTFT, TPOT, or the impact of another long request.</p>
+<p><strong>«Our tracing tool will tell us how many GPUs to buy.»</strong></p>
+<p>Application tracing explains the workload. Pair it with benchmarks and inference-server metrics to determine GPU capacity.</p>
+<p><strong>«We will log everything and investigate later.»</strong></p>
+<p>Capacity planning rarely requires storing raw prompts, responses, documents, source code, tool arguments, or terminal output.
+Excess telemetry can create security and privacy risks without improving the calculation.</p>
+<h2 id="further-reading">Further reading</h2>
+<nav class="further-reading" aria-label="Sources and further reading">
+  <ul>
+<li><a rel="noopener external" target="_blank" href="https://docs.vllm.ai/en/latest/cli/bench/serve/">vLLM Bench: online serving benchmark</a>
+<span class="further-reading-description">Reference CLI and metrics for benchmarking an OpenAI-compatible serving endpoint.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://docs.vllm.ai/en/latest/usage/metrics/">vLLM production metrics</a>
+<span class="further-reading-description">Serving-system signals for latency, queues, token throughput, and KV-cache usage.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://docs.nvidia.com/aiperf/reference/ai-perf-metrics-reference">NVIDIA AIPerf metrics reference</a>
+<span class="further-reading-description">Definitions for the latency and throughput metrics reported by NVIDIA AIPerf.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://www.usenix.org/conference/osdi24/presentation/zhong-yinmin">DistServe: goodput-optimized LLM serving</a>
+<span class="further-reading-description">The OSDI paper that frames LLM serving capacity around SLO-constrained goodput.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://langfuse.com/docs/observability/overview">Langfuse observability overview</a>
+<span class="further-reading-description">Tracing concepts for connecting LLM calls, retrieval, tools, and application logic.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://langfuse.com/docs/observability/data-model">Langfuse data model</a>
+<span class="further-reading-description">How traces, observations, scores, and sessions represent an application workload.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://mlcommons.org/benchmarks/inference-datacenter/">MLPerf inference scenarios and metrics</a>
+<span class="further-reading-description">Standard inference scenarios and latency constraints, including open-loop server testing.</span></li>
+</ul>
+
+</nav>
+
+        
+      ]]></description>
+    </item>
+    
+    <item>
+      <title>Kubernetes Model Serving in 2026: What Changed Since 2024</title>
+      <pubDate>Sun, 26 Jul 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/kubernetes-model-serving-in-2026/</link>
+      <guid>https://akrisanov.com/kubernetes-model-serving-in-2026/</guid>
+      <description xml:base="https://akrisanov.com/kubernetes-model-serving-in-2026/"><![CDATA[
+        <p>Published: 2026-07-26</p>
+        
+        
+          <p>In October 2024, <a rel="noopener external" target="_blank" href="https://www.linkedin.com/in/terrytangyuan/">Yuan Tang</a> published
+<a rel="noopener external" target="_blank" href="https://terrytangyuan.github.io/2024/10/22/ai-ml-innovation-in-the-kubernetes-ecosystem/">AI/ML Innovation in the Kubernetes Ecosystem</a>.
+The article described three important developments: Kubeflow Model Registry, KServe ModelCars, and TrustyAI.
+It also pointed toward multi-node serving, inference-aware gateways, speculative decoding, low-rank adaptation
+(LoRA) adapters, and APIs designed for generative AI.</p>
+<p>Since then, Kubernetes model serving has developed into a stack of specialized control-plane and data-plane
+components.</p>
+<p>Kubernetes now has better primitives for distributing model files and allocating accelerators. Gateway API has
+gained inference-aware extensions. KServe has introduced a separate API for generative inference. <code>LeaderWorkerSet</code>
+has become a building block for multi-node model servers, while <a rel="noopener external" target="_blank" href="https://github.com/llm-d/llm-d/">llm-d</a> coordinates
+routing and distributed inference optimizations around engines such as <a rel="noopener external" target="_blank" href="https://vllm.ai/">vLLM</a>.</p>
+<p>These capabilities also introduce more controllers, APIs, compatibility constraints, and failure modes.</p>
+<aside class="article-scope-note" aria-label="Ecosystem snapshot">
+  <div class="article-scope-note-title">
+    Ecosystem snapshot ·
+    <time datetime="2026-07-26">July 26, 2026</time>
+  </div>
+  <div class="article-scope-note-body"><p>This article covers Kubernetes 1.36, KServe 0.18, the generally available Gateway API Inference Extension,
+and related production model-serving projects. The ecosystem evolves quickly, so verify version compatibility
+before adopting a particular combination.</p>
+</div>
+</aside>
+<nav class="article-decision-guide" aria-label="Deployment guidance">
+  <span class="article-decision-guide-label">Choose a deployment:</span>
+  <a href="#case-1-one-model-one-or-a-few-replicas">Single model</a>
+  <a href="#case-2-a-shared-production-llm-service">Shared LLM service</a>
+  <a href="#case-3-models-that-require-several-nodes">Multi-node model</a>
+  <a href="#case-4-large-scale-or-heterogeneous-inference">Heterogeneous inference</a>
+</nav>
+<h2 id="from-isolated-features-to-an-inference-stack">From isolated features to an inference stack</h2>
+<p>The 2024 view centered on several individual improvements. By 2026, those features fit into a more explicit
+architecture:</p>
+<table><thead><tr><th>Concern</th><th>Typical approach in 2024</th><th>State in 2026</th></tr></thead><tbody>
+<tr><td>Model distribution</td><td>Object storage, init containers, KServe ModelCars</td><td>Native OCI image volumes are stable; node-local model caches remain useful</td></tr>
+<tr><td>Serving API</td><td>Mostly <code>InferenceService</code> and engine-specific manifests</td><td><code>InferenceService</code> for predictive serving; <code>LLMInferenceService</code> for generative AI</td></tr>
+<tr><td>Request routing</td><td>Service-level or round-robin load balancing</td><td><code>InferencePool</code> plus inference-aware endpoint selection</td></tr>
+<tr><td>Large-model execution</td><td>Custom multi-node deployments, often tied to Ray</td><td>LeaderWorkerSet-backed multi-node deployments and engine-native distributed modes</td></tr>
+<tr><td>Prefill and decode</td><td>Usually colocated in the same replicas</td><td>Optional separation into specialized prefill and decode pools</td></tr>
+<tr><td>Accelerator allocation</td><td>Device Plugins and extended resources</td><td>Stable DRA core, with driver-dependent adoption</td></tr>
+<tr><td>Group scheduling</td><td>External batch schedulers or custom operators</td><td>Native workload-aware scheduling exists, but remains alpha</td></tr>
+<tr><td>Model metadata</td><td>Early Kubeflow Model Registry</td><td>Kubeflow Hub combines registry and federated catalog capabilities</td></tr>
+<tr><td>AI traffic policy</td><td>Product-specific gateways and middleware</td><td>A Kubernetes AI Gateway Working Group is standardizing common patterns</td></tr>
+</tbody></table>
+<p>Not every layer is mature. Inference now has dedicated components for its distributed-systems requirements.</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="mermaid"><span class="giallo-l"><span>flowchart TD</span></span>
+<span class="giallo-l"><span>    accTitle: The layers of a Kubernetes model-serving stack</span></span>
+<span class="giallo-l"><span>    accDescr: Requests pass from a client through an AI gateway and Gateway API route to an inference-aware endpoint picker, model-serving workloads, and the underlying GPU, network, cache, and storage infrastructure.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    Client[&quot;Client&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    Gateway[&quot;`**AI or API gateway**</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    • Authentication</span></span>
+<span class="giallo-l"><span>    • Quotas and token limits</span></span>
+<span class="giallo-l"><span>    • Payload policy and guardrails`&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    Route[&quot;Gateway API route&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    InferencePool[&quot;`**InferencePool + endpoint picker**</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    • Queue-aware routing</span></span>
+<span class="giallo-l"><span>    • Prefix/KV-cache affinity</span></span>
+<span class="giallo-l"><span>    • Model or adapter availability`&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    Workloads[&quot;`**Model-serving workloads**</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    • Single-node replicas</span></span>
+<span class="giallo-l"><span>    • Multi-node replicas</span></span>
+<span class="giallo-l"><span>    • Separate prefill and decode pools`&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    Infrastructure[&quot;`**Infrastructure**</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    GPU, network, local model cache,</span></span>
+<span class="giallo-l"><span>    and remote storage`&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    Client --&gt; Gateway</span></span>
+<span class="giallo-l"><span>    Gateway --&gt; Route</span></span>
+<span class="giallo-l"><span>    Route --&gt; InferencePool</span></span>
+<span class="giallo-l"><span>    InferencePool --&gt; Workloads</span></span>
+<span class="giallo-l"><span>    Workloads --&gt; Infrastructure</span></span></code></pre><p class="mermaid-caption">Figure 1. A production inference request crosses several independently operated layers.</p>
+<p>KServe can manage much of this control plane. Gateway API Inference Extension defines the routing integration.
+<code>LeaderWorkerSet</code> represents groups of pods that must operate together. <code>llm-d</code> provides distributed inference and
+routing components. Engines such as vLLM or SGLang still execute the model.</p>
+<p>Each component has a separate role despite some overlap.</p>
+<h2 id="1-oci-image-volumes-simplify-model-delivery">1. OCI image volumes simplify model delivery</h2>
+<p>The 2024 article explained why KServe introduced ModelCars: a model could be packaged into an OCI image and exposed
+to the model server through a passive sidecar. This reused container-registry distribution and node caching instead
+of downloading weights from object storage for every replica.</p>
+<p>At that time, Kubernetes could pull an image but could not directly mount its filesystem as a volume. Kubernetes
+1.31 introduced the <code>image</code> volume source as alpha. Kubernetes 1.33 promoted it to beta, and
+<a rel="noopener external" target="_blank" href="https://kubernetes.io/blog/2026/04/22/kubernetes-v1-36-release/">Kubernetes 1.36 made OCI artifact and image volumes stable</a>.</p>
+<p>A pod can now mount read-only content directly from an OCI registry:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">a</span><span style="color: light-dark(#1E66F5, #89B4FA);">piVersion</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> v</span><span style="color: light-dark(#40A02B, #A6E3A1);">1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">k</span><span style="color: light-dark(#1E66F5, #89B4FA);">ind</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> P</span><span style="color: light-dark(#40A02B, #A6E3A1);">od</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">m</span><span style="color: light-dark(#1E66F5, #89B4FA);">etadata</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> m</span><span style="color: light-dark(#40A02B, #A6E3A1);">odel-server</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">s</span><span style="color: light-dark(#1E66F5, #89B4FA);">pec</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  c</span><span style="color: light-dark(#1E66F5, #89B4FA);">ontainers</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">    -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> s</span><span style="color: light-dark(#40A02B, #A6E3A1);">erver</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      i</span><span style="color: light-dark(#1E66F5, #89B4FA);">mage</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> e</span><span style="color: light-dark(#40A02B, #A6E3A1);">xample.com/model-server:v1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      v</span><span style="color: light-dark(#1E66F5, #89B4FA);">olumeMounts</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">        -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> m</span><span style="color: light-dark(#40A02B, #A6E3A1);">odel</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          m</span><span style="color: light-dark(#1E66F5, #89B4FA);">ountPath</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /</span><span style="color: light-dark(#40A02B, #A6E3A1);">models/llama</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          r</span><span style="color: light-dark(#1E66F5, #89B4FA);">eadOnly</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> true</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  v</span><span style="color: light-dark(#1E66F5, #89B4FA);">olumes</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">    -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> m</span><span style="color: light-dark(#40A02B, #A6E3A1);">odel</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      i</span><span style="color: light-dark(#1E66F5, #89B4FA);">mage</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        r</span><span style="color: light-dark(#1E66F5, #89B4FA);">eference</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> r</span><span style="color: light-dark(#40A02B, #A6E3A1);">egistry.example.com/models/llama:2026-07</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        p</span><span style="color: light-dark(#1E66F5, #89B4FA);">ullPolicy</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> I</span><span style="color: light-dark(#40A02B, #A6E3A1);">fNotPresent</span></span></code></pre>
+<p>The sidecar pattern is no longer required merely because Kubernetes lacks an
+OCI-backed volume type. ModelCars can still be useful for KServe integration, compatibility with older clusters,
+and established tooling, but native image volumes provide a cleaner upstream primitive.</p>
+<p>OCI packaging does <strong>not</strong> eliminate cold starts.</p>
+<p>A 100–500 GB model still has to reach the node. Startup behavior still depends on:</p>
+<ul>
+<li>registry throughput and rate limits</li>
+<li>layer structure and decompression cost</li>
+<li>container-runtime support</li>
+<li>node disk capacity and eviction policy</li>
+<li>whether the model is already cached</li>
+<li>how many nodes pull the same model at once</li>
+</ul>
+<p>KServe also maintains a
+<a rel="noopener external" target="_blank" href="https://kserve.github.io/website/docs/model-serving/generative-inference/modelcache/localmodel">Local Model Cache</a>.
+It can pre-download model artifacts to local NVMe and let several inference pods reuse the warmed copy.</p>
+<p>Native OCI volumes improve packaging and delivery semantics. Local caching addresses placement and startup
+latency. They solve related but different problems.</p>
+<h2 id="2-inference-aware-routing-gets-a-standard-api">2. Inference-aware routing gets a standard API</h2>
+<p>A Kubernetes <code>Service</code> assumes that its ready endpoints are roughly interchangeable. That assumption breaks down
+for LLM serving.</p>
+<p>Two healthy replicas can have very different costs for the same request:</p>
+<ul>
+<li>one replica may already have the prompt prefix in its key-value (KV) cache</li>
+<li>one may have a long queue</li>
+<li>one may be close to KV-cache exhaustion</li>
+<li>only one may have the requested LoRA adapter loaded</li>
+<li>replicas may use different accelerators or quantizations</li>
+<li>a long prompt may be better assigned to a different pool than a decode-heavy request</li>
+</ul>
+<p>Round-robin routing ignores all of this.</p>
+<p>The same problem space described as "LLM Instance Gateway" in the 2024 article is now addressed by the
+<a rel="noopener external" target="_blank" href="https://gateway-api-inference-extension.sigs.k8s.io/">Gateway API Inference Extension</a>.
+By July 2026, the project marks itself generally available and defines <code>InferencePool</code> as a specialized backend
+abstraction for model servers. A gateway delegates endpoint choice to an inference router or endpoint picker, which can use live metrics
+and model-server capabilities.</p>
+<p>The request path becomes:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="mermaid"><span class="giallo-l"><span>flowchart LR</span></span>
+<span class="giallo-l"><span>    accTitle: The inference-aware request path</span></span>
+<span class="giallo-l"><span>    accDescr: An HTTPRoute sends a request to an InferencePool, which consults an endpoint picker before selecting a model-server pod.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    HTTPRoute[&quot;HTTPRoute&quot;]</span></span>
+<span class="giallo-l"><span>    InferencePool[&quot;InferencePool&quot;]</span></span>
+<span class="giallo-l"><span>    EndpointPicker[&quot;Endpoint picker&quot;]</span></span>
+<span class="giallo-l"><span>    ModelServer[&quot;Selected model-server pod&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    HTTPRoute --&gt; InferencePool</span></span>
+<span class="giallo-l"><span>    InferencePool --&gt; EndpointPicker</span></span>
+<span class="giallo-l"><span>    EndpointPicker --&gt; ModelServer</span></span></code></pre><p class="mermaid-caption">Figure 2. Gateway API delegates model-server selection to an inference-aware endpoint picker.</p>
+<p>The components have separate responsibilities:</p>
+<ul>
+<li><strong>Gateway API</strong> handles traffic attachment and routing integration.</li>
+<li><strong>InferencePool</strong> identifies a pool of inference endpoints.</li>
+<li><strong>The endpoint picker</strong> decides which endpoint is best for the request.</li>
+<li><strong>The model server</strong> exposes metrics and capabilities used by the picker.</li>
+</ul>
+<p>The reference project does not define every scheduling policy. Its documentation points users
+toward components such as the <a rel="noopener external" target="_blank" href="https://github.com/llm-d/llm-d-router">llm-d router</a>. Some of the advanced features that were
+previously developed in the Inference Extension repository have now moved to the llm-d repositories. These features
+include endpoint selection and model rewrite logic. The extension still owns the Pool API
+and conformance work.</p>
+<p>The integration API defines how a gateway connects to an inference pool without requiring every platform to use the
+same scheduling algorithm. The GA label does not imply that every endpoint-selection policy or gateway implementation
+is equally mature.</p>
+<h2 id="3-kserve-separates-predictive-and-generative-serving">3. KServe separates predictive and generative serving</h2>
+<p>KServe's original <code>InferenceService</code> API was designed for a broad range of predictive models and serving runtimes.
+It still fits many workloads well.</p>
+<p>LLM serving, however, needs concepts that do not map cleanly to a conventional stateless model endpoint:</p>
+<ul>
+<li>tensor, data, and expert parallelism</li>
+<li>groups of pods forming one logical replica</li>
+<li>prefill/decode disaggregation</li>
+<li>KV-cache-aware routing</li>
+<li>LoRA adapter selection</li>
+<li>long-lived streaming responses</li>
+<li>autoscaling signals based on queues, tokens, and cache pressure</li>
+</ul>
+<p>KServe 0.17 presented <code>LLMInferenceService</code> as its API for production generative AI serving. KServe 0.18 added
+multi-node inference without requiring Ray, LeaderWorkerSet-based autoscaling, OpenAI Responses API routing,
+namespace-scoped model-cache work, and llm-d 0.6 integration.</p>
+<p>In KServe 0.18, example manifests still use the
+<code>serving.kserve.io/v1alpha2</code> API. Schema evolution therefore belongs in the upgrade plan.</p>
+<p>The distinction is now explicit:</p>
+<ul>
+<li>use <strong><code>InferenceService</code></strong> for predictive serving and simpler serving patterns</li>
+<li>use <strong><code>LLMInferenceService</code></strong> when you need orchestration designed for generative AI</li>
+</ul>
+<p>A simplified resource can describe the model, replicas, runtime, and managed routing:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">a</span><span style="color: light-dark(#1E66F5, #89B4FA);">piVersion</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> s</span><span style="color: light-dark(#40A02B, #A6E3A1);">erving.kserve.io/v1alpha2</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">k</span><span style="color: light-dark(#1E66F5, #89B4FA);">ind</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> L</span><span style="color: light-dark(#40A02B, #A6E3A1);">LMInferenceService</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">m</span><span style="color: light-dark(#1E66F5, #89B4FA);">etadata</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> m</span><span style="color: light-dark(#40A02B, #A6E3A1);">y-llm</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">s</span><span style="color: light-dark(#1E66F5, #89B4FA);">pec</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  m</span><span style="color: light-dark(#1E66F5, #89B4FA);">odel</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    u</span><span style="color: light-dark(#1E66F5, #89B4FA);">ri</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> h</span><span style="color: light-dark(#40A02B, #A6E3A1);">f://organization/model</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> o</span><span style="color: light-dark(#40A02B, #A6E3A1);">rganization--model</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  r</span><span style="color: light-dark(#1E66F5, #89B4FA);">eplicas</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 3</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  t</span><span style="color: light-dark(#1E66F5, #89B4FA);">emplate</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    c</span><span style="color: light-dark(#1E66F5, #89B4FA);">ontainers</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">      -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> n</span><span style="color: light-dark(#1E66F5, #89B4FA);">ame</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> m</span><span style="color: light-dark(#40A02B, #A6E3A1);">ain</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        i</span><span style="color: light-dark(#1E66F5, #89B4FA);">mage</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> v</span><span style="color: light-dark(#40A02B, #A6E3A1);">llm/vllm-openai:&lt;tested-version&gt;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">        r</span><span style="color: light-dark(#1E66F5, #89B4FA);">esources</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">          l</span><span style="color: light-dark(#1E66F5, #89B4FA);">imits</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">            n</span><span style="color: light-dark(#1E66F5, #89B4FA);">vidia.com/gpu</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">1</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  r</span><span style="color: light-dark(#1E66F5, #89B4FA);">outer</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    g</span><span style="color: light-dark(#1E66F5, #89B4FA);">ateway</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      m</span><span style="color: light-dark(#1E66F5, #89B4FA);">anaged</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#7C7F93, #9399B2);"> {</span><span style="color: light-dark(#7C7F93, #9399B2);">}</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    r</span><span style="color: light-dark(#1E66F5, #89B4FA);">oute</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ttpRoute</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#7C7F93, #9399B2);"> {</span><span style="color: light-dark(#7C7F93, #9399B2);">}</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    s</span><span style="color: light-dark(#1E66F5, #89B4FA);">cheduler</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      p</span><span style="color: light-dark(#1E66F5, #89B4FA);">ool</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#7C7F93, #9399B2);"> {</span><span style="color: light-dark(#7C7F93, #9399B2);">}</span></span></code></pre>
+<p>For multi-node execution, adding a worker template causes KServe to create a <code>LeaderWorkerSet</code>. Adding a prefill
+template selects a disaggregated topology.</p>
+<p>The complete setup may require Kubernetes 1.32 or newer, Gateway API, an inference-extension-compatible gateway,
+Gateway API Inference Extension, <code>LeaderWorkerSet</code> for multi-node workloads, <a rel="noopener external" target="_blank" href="https://keda.sh/">KEDA</a> for some
+autoscaling configurations, cert-manager, KServe, an inference router, and a supported model engine.</p>
+<p>Before adopting it, validate:</p>
+<ol>
+<li>the exact compatibility matrix</li>
+<li>upgrade order and rollback behavior</li>
+<li>CRD conversion and deletion behavior</li>
+<li>which component owns each metric and status condition</li>
+<li>failure handling when the router, gateway, or one worker group is unavailable</li>
+</ol>
+<p><code>LLMInferenceService</code> reduces the amount of custom platform code you need to write. It does not remove the need to
+operate the resulting distributed system.</p>
+<h2 id="4-leaderworkerset-makes-multi-node-inference-declarative">4. LeaderWorkerSet makes multi-node inference declarative</h2>
+<p>Some models do not fit on one node. Others technically fit but need several nodes to reach the required throughput.
+A normal <code>Deployment</code> is a poor representation of this topology because several pods may jointly form one model
+replica and must start, stop, and recover as a group.</p>
+<p><a rel="noopener external" target="_blank" href="https://lws.sigs.k8s.io/docs/overview/">LeaderWorkerSet</a> provides an API for deploying a group of pods as a unit of
+replication. It targets multi-host AI/ML workloads where a model is sharded across devices and nodes.</p>
+<p>KServe can use LeaderWorkerSet for:</p>
+<ul>
+<li>multi-node tensor parallelism</li>
+<li>distributed data parallel replicas</li>
+<li>expert parallelism for mixture-of-experts models</li>
+<li>coordinated lifecycle and autoscaling of worker groups</li>
+</ul>
+<p>llm-d builds a higher-level distributed inference system around engines such as vLLM. Its current architecture
+includes prefix-cache-aware routing, prefill/decode disaggregation, distributed KV-cache capabilities, multi-node
+execution, and workload-aware autoscaling. The project entered the CNCF Sandbox in March 2026.</p>
+<h3 id="prefill-decode-disaggregation">Prefill/decode disaggregation</h3>
+<p>LLM inference has two phases with different resource profiles:</p>
+<ul>
+<li><strong>Prefill</strong> processes the input prompt. It is often compute-heavy, especially for long contexts.</li>
+<li><strong>Decode</strong> generates tokens iteratively. It is commonly limited by memory bandwidth and KV-cache access.</li>
+</ul>
+<p>A disaggregated architecture runs these phases in different pools and scales them independently:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="mermaid"><span class="giallo-l"><span>flowchart LR</span></span>
+<span class="giallo-l"><span>    accTitle: Disaggregated prefill and decode</span></span>
+<span class="giallo-l"><span>    accDescr: A request is processed by a prefill worker, its KV state is transferred to a decode worker, and the response is streamed to the client.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    Request[&quot;Request&quot;]</span></span>
+<span class="giallo-l"><span>    Prefill[&quot;Prefill worker&quot;]</span></span>
+<span class="giallo-l"><span>    KVTransfer[&quot;Transfer KV state&quot;]</span></span>
+<span class="giallo-l"><span>    Decode[&quot;Decode worker&quot;]</span></span>
+<span class="giallo-l"><span>    Response[&quot;Streamed response&quot;]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>    Request --&gt; Prefill</span></span>
+<span class="giallo-l"><span>    Prefill --&gt; KVTransfer</span></span>
+<span class="giallo-l"><span>    KVTransfer --&gt; Decode</span></span>
+<span class="giallo-l"><span>    Decode --&gt; Response</span></span></code></pre><p class="mermaid-caption">Figure 3. Disaggregation introduces an explicit KV-state transfer between prefill and decode.</p>
+<p>This can reduce interference between long prefills and active decodes and let each phase use a different
+replica count or hardware shape.</p>
+<p>But it also adds a KV-transfer path before the first token. The result depends heavily on network bandwidth,
+latency, topology, transfer libraries, and the distribution of input and output lengths. On a bandwidth-constrained
+or high-latency inter-node network, disaggregation can move the bottleneck rather than remove it.</p>
+<p>Use disaggregation when measurements show that it improves the target workload.</p>
+<h2 id="5-dra-improves-accelerator-allocation-but-depends-on-drivers">5. DRA improves accelerator allocation—but depends on drivers</h2>
+<p>For years, most Kubernetes GPU workloads have requested extended resources exposed by Device Plugins:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">r</span><span style="color: light-dark(#1E66F5, #89B4FA);">esources</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  l</span><span style="color: light-dark(#1E66F5, #89B4FA);">imits</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    n</span><span style="color: light-dark(#1E66F5, #89B4FA);">vidia.com/gpu</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">8</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span></code></pre>
+<p>This works, but it expresses little about the requested devices. It does not naturally represent properties such as
+GPU model, memory size, interconnect topology, sharing mode, or a reusable claim.</p>
+<p><a rel="noopener external" target="_blank" href="https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/">Dynamic Resource Allocation</a>
+provides a richer model based on resources such as <code>DeviceClass</code>, <code>ResourceClaim</code>, and <code>ResourceClaimTemplate</code>.
+The core DRA APIs graduated to stable in Kubernetes 1.34. Kubernetes 1.36 continued work on device health,
+partitionable devices, consumable capacity, and additional drivers.</p>
+<p>DRA is Kubernetes's upstream direction for allocating specialized hardware, but a stable API does not make every
+accelerator stack ready for production.</p>
+<p>You still need to check:</p>
+<ul>
+<li>whether your vendor provides a supported DRA driver</li>
+<li>which Kubernetes and driver versions are compatible</li>
+<li>how Multi-Instance GPU (MIG), time slicing, or other partitioning modes are represented</li>
+<li>whether device health reaches the controllers that perform recovery</li>
+<li>how upgrades coexist with existing Device Plugin workloads</li>
+<li>whether your managed Kubernetes provider exposes the required features</li>
+</ul>
+<p>For many current clusters, Device Plugins remain the production default. DRA is useful when its
+richer selection and sharing semantics solve a concrete placement problem.</p>
+<h2 id="6-workload-aware-scheduling-arrives-in-alpha">6. Workload-aware scheduling arrives in alpha</h2>
+<p>Distributed inference may require several pods and devices to become available together. Scheduling them one at a
+time can leave partially allocated workloads holding scarce GPUs while waiting for the rest of the group.</p>
+<p>Kubernetes 1.35 introduced native workload-aware scheduling work, including gang-scheduling foundations.
+Kubernetes 1.36 expanded it with <code>Workload</code> and <code>PodGroup</code> APIs and atomic scheduling of related pod groups.</p>
+<p>The feature is <strong>alpha</strong>.</p>
+<p>It moves group scheduling closer to the upstream scheduler and Job controller and may eventually replace some
+external scheduling layers. Do not replace an existing production scheduler or queueing system without extensive
+testing.</p>
+<p>LeaderWorkerSet and workload-aware scheduling also solve different concerns:</p>
+<ul>
+<li>LeaderWorkerSet describes and manages a replicated group of cooperating pods.</li>
+<li>Workload-aware scheduling determines how related pods receive resources together.</li>
+</ul>
+<p>A platform may eventually use both.</p>
+<h2 id="7-kubeflow-hub-expands-model-discovery-and-governance">7. Kubeflow Hub expands model discovery and governance</h2>
+<p>The Model Registry described in 2024 has expanded into
+<a rel="noopener external" target="_blank" href="https://www.kubeflow.org/docs/components/hub/">Kubeflow Hub</a>, which combines:</p>
+<ul>
+<li><strong>Model Registry:</strong> metadata, versions, artifacts, lifecycle status, and governance</li>
+<li><strong>Model Catalog:</strong> read-only discovery across configured external catalogs</li>
+</ul>
+<p>The catalog can federate metadata from sources such as Hugging Face. The registry can integrate with deployment
+workflows and KServe storage initialization.</p>
+<p>Kubeflow Hub is primarily a metadata and discovery system. Its architecture documentation
+explicitly describes the registry as a passive repository rather than a Kubernetes control plane. The catalog does
+not store model weights.</p>
+<p>As of July 2026, the registry is still offered as an opt-in alpha component in Kubeflow Community Distribution 1.9
+and newer, and its REST API remains versioned as <code>v1alpha3</code>.</p>
+<p>Treat it as an early lifecycle component, not as a dependency for every inference request.</p>
+<p>Keep large weight distribution in OCI registries, object storage, or a dedicated model-cache layer. Keep approval,
+lineage, versions, and deployment metadata in the registry.</p>
+<h2 id="8-ai-policy-moves-toward-gateways">8. AI policy moves toward gateways</h2>
+<p>TrustyAI has continued beyond its early explainability focus, with tools for metrics, evaluation, bias and drift
+analysis, and language-model testing. It remains a pluggable part of the wider lifecycle rather than the central
+serving control plane.</p>
+<p>A newer development is the formation of the
+<a rel="noopener external" target="_blank" href="https://kubernetes.io/blog/2026/03/09/announcing-ai-gateway-wg/">Kubernetes AI Gateway Working Group</a>.
+Its scope includes common patterns such as:</p>
+<ul>
+<li>token-based rate limiting</li>
+<li>fine-grained access control</li>
+<li>payload inspection</li>
+<li>routing, caching, and guardrail hooks</li>
+<li>secure access to external model providers</li>
+<li>regional policy and failover</li>
+</ul>
+<p>Model-serving engines schedule and execute inference. A gateway can apply tenant policy consistently to self-hosted
+and external providers.</p>
+<p>The working group is new. Its proposals are not stable APIs with broad implementation support.</p>
+<h2 id="what-i-would-deploy-today">What I would deploy today</h2>
+<p>There is no single "Kubernetes AI stack." I would choose the smallest architecture that can handle the workload.</p>
+<h3 id="case-1-one-model-one-or-a-few-replicas">Case 1: One model, one or a few replicas</h3>
+<p>Start with:</p>
+<ul>
+<li>a tested model-server image, such as vLLM, SGLang, or TensorRT-LLM</li>
+<li>a <code>Deployment</code>, <code>StatefulSet</code>, or a basic KServe <code>InferenceService</code></li>
+<li>a standard <code>Service</code> and Gateway API route</li>
+<li>model files from object storage, an OCI image volume, or a pre-warmed node cache</li>
+<li>Prometheus metrics at the gateway, engine, GPU, and node layers</li>
+</ul>
+<p>Do not install an inference-aware router until replicas are sufficiently busy for routing quality to matter.</p>
+<h3 id="case-2-a-shared-production-llm-service">Case 2: A shared production LLM service</h3>
+<p>Add:</p>
+<ul>
+<li>multiple replicas with an explicit latency and throughput SLO</li>
+<li><code>InferencePool</code> and a production endpoint picker when queue or cache affinity matters</li>
+<li>KServe <code>LLMInferenceService</code> when its lifecycle automation is worth the dependencies</li>
+<li>request priorities, admission control, quotas, and maximum context/output limits</li>
+<li>autoscaling based on queueing, prompt length, output length, concurrency, and request mix—not GPU utilization alone</li>
+</ul>
+<p>Keep the model server and routing policy independently observable. A healthy gateway does not prove that the engine
+is healthy, and a healthy engine does not prove that clients receive timely streamed tokens.</p>
+<h3 id="case-3-models-that-require-several-nodes">Case 3: Models that require several nodes</h3>
+<p>Add <code>LeaderWorkerSet</code> only when one logical replica spans multiple pods or nodes.</p>
+<p>Before production, test:</p>
+<ul>
+<li>startup and restart of the whole worker group</li>
+<li>one worker or node failing during generation</li>
+<li>collective-communication failures</li>
+<li>rack and topology placement</li>
+<li>network saturation</li>
+<li>rolling updates when old and new model copies cannot fit simultaneously</li>
+<li>whether failed replicas release all GPUs promptly</li>
+</ul>
+<p>Treat network bandwidth and topology as capacity constraints.</p>
+<h3 id="case-4-large-scale-or-heterogeneous-inference">Case 4: Large-scale or heterogeneous inference</h3>
+<p>Evaluate DRA when you need richer accelerator selection, sharing, or health semantics and your vendor's driver is
+ready. Consider llm-d when prefix affinity, prefill/decode disaggregation, or distributed serving produces a
+measurable improvement over simpler routing.</p>
+<p>Do not adopt every available CRD. Every controller adds:</p>
+<ul>
+<li>reconciliation behavior</li>
+<li>status you must monitor</li>
+<li>upgrade compatibility</li>
+<li>RBAC and security surface</li>
+<li>another place where desired and actual state can diverge</li>
+</ul>
+<h2 id="what-is-still-not-solved">What is still not solved</h2>
+<ul>
+<li><strong>Predictable cold starts:</strong> OCI volumes and local caches improve delivery, but very large models still require
+substantial disk, network, and initialization time. Autoscaling cannot create warm GPU capacity instantly.</li>
+<li><strong>Safe autoscaling:</strong> Inference demand is measured in prompts, tokens, context lengths, and active sequences, not
+only requests per second. Replica startup may take many minutes, and scaling down can interrupt streams or destroy
+useful cache state.</li>
+<li><strong>Portable accelerator management:</strong> DRA provides a stable upstream API, but production behavior still depends on
+vendor drivers, managed-platform support, partitioning features, and integration with the existing device stack.</li>
+<li><strong>Operational simplicity:</strong> A full deployment may combine KServe, Gateway API, Inference Extension, a gateway,
+LeaderWorkerSet, KEDA, llm-d components, an engine, a model cache, and accelerator drivers. The combination requires
+compatibility testing.</li>
+<li><strong>Distributed-inference networking:</strong> Tensor parallelism, expert parallelism, and KV transfer are sensitive to
+topology and bandwidth. Kubernetes can place and restart pods, but it cannot compensate for insufficient network
+capacity.</li>
+<li><strong>Stable, interoperable APIs:</strong> Several APIs remain alpha or project-specific and will continue to change.</li>
+</ul>
+<p>Inference performance still depends on the model engine, kernels, quantization, batching, KV-cache management,
+accelerator topology, and request characteristics. Kubernetes supplies control, placement, lifecycle, and routing.</p>
+<div class="article-key-point"><p>Build the smallest serving stack that meets current SLOs. Add inference-specific layers when measurements show that
+the existing architecture has reached its limit.</p>
+</div>
+<h2 id="sources-and-further-reading">Sources and further reading</h2>
+<nav class="further-reading" aria-label="Sources and further reading">
+  <ul>
+<li><a rel="noopener external" target="_blank" href="https://terrytangyuan.github.io/2024/10/22/ai-ml-innovation-in-the-kubernetes-ecosystem/">AI/ML Innovation in the Kubernetes Ecosystem (2024)</a>
+<span class="further-reading-description">The original ecosystem overview revisited by this article.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://kubernetes.io/blog/2026/04/22/kubernetes-v1-36-release/">Kubernetes 1.36 release notes</a>
+<span class="further-reading-description">Upstream changes including stable OCI image volumes.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://gateway-api-inference-extension.sigs.k8s.io/">Gateway API Inference Extension</a>
+<span class="further-reading-description">API definitions and concepts for inference-aware routing.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://kserve.github.io/website/blog/kserve-0.18-release">KServe 0.18 release</a>
+<span class="further-reading-description">Generative inference and model-serving control-plane changes.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://kserve.github.io/website/docs/model-serving/generative-inference/llmisvc/llmisvc-overview">KServe LLMInferenceService overview</a>
+<span class="further-reading-description">The serving API designed for generative AI and its architecture.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://lws.sigs.k8s.io/docs/overview/">LeaderWorkerSet overview</a>
+<span class="further-reading-description">A Kubernetes API for groups of cooperating pods.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://llm-d.ai/docs/0.7">llm-d documentation</a>
+<span class="further-reading-description">Distributed inference, routing, and disaggregation components.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/">Kubernetes Dynamic Resource Allocation</a>
+<span class="further-reading-description">The upstream resource-allocation model used by accelerator drivers.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://www.kubeflow.org/docs/components/hub/">Kubeflow Hub</a>
+<span class="further-reading-description">Model registry and federated catalog capabilities.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://kubernetes.io/blog/2026/03/09/announcing-ai-gateway-wg/">Kubernetes AI Gateway Working Group</a>
+<span class="further-reading-description">The effort to standardize AI gateway patterns in Kubernetes.</span></li>
+</ul>
+
+</nav>
+
+        
+      ]]></description>
+    </item>
+    
+    <item>
+      <title>Running Kubernetes with a GPU Inside WSL2 on My RTX Laptop</title>
+      <pubDate>Wed, 22 Apr 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/wsl-nvidia-gpu/</link>
+      <guid>https://akrisanov.com/wsl-nvidia-gpu/</guid>
+      <description xml:base="https://akrisanov.com/wsl-nvidia-gpu/"><![CDATA[
+        <p>Published: 2026-04-22</p>
+        
+        
+          <p>I wanted a local environment where I could:</p>
+<ul>
+<li>run Kubernetes</li>
+<li>schedule GPU workloads</li>
+<li>experiment with CUDA / inference / device plugins</li>
+<li>avoid renting cloud GPUs</li>
+</ul>
+<p>I used a Lenovo Legion laptop with an RTX GPU. The working stack was:</p>
+<ul>
+<li>Windows 11 + NVIDIA driver (WSL-enabled)</li>
+<li>WSL2 (Ubuntu 24.04)</li>
+<li>K3s (containerd)</li>
+<li>NVIDIA Container Toolkit</li>
+<li>NVIDIA device plugin</li>
+</ul>
+<p>The non-obvious part was that the NVIDIA device plugin itself had to use <code>runtimeClassName: nvidia</code>.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>You need:</p>
+<ul>
+<li>Windows 11</li>
+<li>NVIDIA GPU (RTX in my case)</li>
+<li>Latest NVIDIA driver <strong>with WSL support</strong></li>
+<li>WSL2 installed</li>
+</ul>
+<p>Inside WSL:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">nvidia-smi</span></span></code></pre>
+<p>Continue if this command detects the GPU.</p>
+<h2 id="step-1-don-t-install-linux-nvidia-drivers">Step 1: Don’t install Linux NVIDIA drivers</h2>
+<p>WSL already provides everything via:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">/usr/lib/wsl/lib/</span></span></code></pre>
+<p>If <code>nvidia-smi</code> is missing:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">echo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">export PATH=$PATH:/usr/lib/wsl/lib</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#179299, #94E2D5);"> &gt;&gt;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ~/.bashrc</span></span>
+<span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">source</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ~/.bashrc</span></span></code></pre>
+<p>Do not install Linux NVIDIA drivers inside WSL:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">apt</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia-utils-</span><span>*</span></span></code></pre>
+<p>They can conflict with the driver components provided by Windows.</p>
+<h2 id="step-2-install-nvidia-container-toolkit">Step 2: Install NVIDIA Container Toolkit</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">curl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">fsSL</span><span style="color: light-dark(#40A02B, #A6E3A1);"> https://nvidia.github.io/libnvidia-container/gpgkey</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#EA76CB, #F5C2E7);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> gpg</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-dearmor</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">o</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">curl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">s</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">L</span><span style="color: light-dark(#40A02B, #A6E3A1);"> https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#EA76CB, #F5C2E7);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  sed</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">s#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#EA76CB, #F5C2E7);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> tee</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /etc/apt/sources.list.d/nvidia-container-toolkit.list</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> apt</span><span style="color: light-dark(#40A02B, #A6E3A1);"> update</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> apt</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">y</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia-container-toolkit</span></span></code></pre><h2 id="step-3-verify-gpu-in-containers-podman">Step 3: Verify GPU in containers (Podman)</h2>
+<p>Generate CDI config:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> mkdir</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">p</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /etc/cdi</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia-ctk</span><span style="color: light-dark(#40A02B, #A6E3A1);"> cdi</span><span style="color: light-dark(#40A02B, #A6E3A1);"> generate</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-output=/etc/cdi/nvidia.yaml</span></span></code></pre>
+<p>Test:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">podman</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-rm</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-device=nvidia.com/gpu=all</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ubuntu</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia-smi</span></span></code></pre><h2 id="step-4-install-k3s">Step 4: Install K3s</h2>
+<p>Make sure systemd is enabled:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">ps</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">p</span><span style="color: light-dark(#FE640B, #FAB387);"> 1</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">o</span><span style="color: light-dark(#40A02B, #A6E3A1);"> comm=</span></span></code></pre>
+<p>It should print:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">systemd</span></span></code></pre>
+<p>Install K3s:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">curl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">sfL</span><span style="color: light-dark(#40A02B, #A6E3A1);"> https://get.k3s.io</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> sh</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span></span></code></pre>
+<p>Configure kubeconfig:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">mkdir</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">p</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ~/.kube</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> cp</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /etc/rancher/k3s/k3s.yaml</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ~/.kube/config</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> chown</span><span> $</span><span>USER</span><span style="color: light-dark(#40A02B, #A6E3A1);">:</span><span>$</span><span>USER</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ~/.kube/config</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">export</span><span> KUBECONFIG</span><span style="color: light-dark(#179299, #94E2D5);">=</span><span style="color: light-dark(#179299, #94E2D5);">~</span><span>/.</span><span>kube</span><span>/</span><span>config</span></span></code></pre>
+<p>Check:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> get</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nodes</span></span></code></pre><h2 id="step-5-enable-nvidia-runtime-in-k3s">Step 5: Enable NVIDIA runtime in K3s</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia-ctk</span><span style="color: light-dark(#40A02B, #A6E3A1);"> runtime</span><span style="color: light-dark(#40A02B, #A6E3A1);"> configure</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-runtime=containerd</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> systemctl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> restart</span><span style="color: light-dark(#40A02B, #A6E3A1);"> k3s</span></span></code></pre>
+<p>Verify:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">sudo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> grep</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /var/lib/rancher/k3s/agent/etc/containerd/config.toml</span></span></code></pre><h2 id="step-6-install-nvidia-device-plugin">Step 6: Install NVIDIA device plugin</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> apply</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">f</span><span style="color: light-dark(#EA76CB, #F5C2E7);"> \</span></span>
+<span class="giallo-l"><span>https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.17.1/deployments/static/nvidia-device-plugin.yml</span></span></code></pre>
+<p>Check:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> get</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ds</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">n</span><span style="color: light-dark(#40A02B, #A6E3A1);"> kube-system</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> grep</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> get</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pods</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">n</span><span style="color: light-dark(#40A02B, #A6E3A1);"> kube-system</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> grep</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia</span></span></code></pre><h2 id="step-7-run-the-device-plugin-with-the-nvidia-runtime">Step 7: Run the device plugin with the NVIDIA runtime</h2>
+<p>On my setup, the plugin started but detected no GPUs.</p>
+<p>Logs look like:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">No</span><span style="color: light-dark(#40A02B, #A6E3A1);"> devices</span><span style="color: light-dark(#40A02B, #A6E3A1);"> found.</span><span style="color: light-dark(#40A02B, #A6E3A1);"> Waiting</span><span style="color: light-dark(#40A02B, #A6E3A1);"> indefinitely.</span></span></code></pre>
+<p>Set the DaemonSet's runtime class to <code>nvidia</code>:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> patch</span><span style="color: light-dark(#40A02B, #A6E3A1);"> daemonset</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia-device-plugin-daemonset</span><span style="color: light-dark(#EA76CB, #F5C2E7);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">  -</span><span style="color: light-dark(#40A02B, #A6E3A1);">n</span><span style="color: light-dark(#40A02B, #A6E3A1);"> kube-system</span><span style="color: light-dark(#EA76CB, #F5C2E7);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">  -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-type=</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">merge</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#EA76CB, #F5C2E7);"> \</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">  -</span><span style="color: light-dark(#40A02B, #A6E3A1);">p</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">{&quot;spec&quot;:{&quot;template&quot;:{&quot;spec&quot;:{&quot;runtimeClassName&quot;:&quot;nvidia&quot;}}}}</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span></span></code></pre>
+<p>Restart the plugin pod:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> delete</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pod</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">n</span><span style="color: light-dark(#40A02B, #A6E3A1);"> kube-system</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">l</span><span style="color: light-dark(#40A02B, #A6E3A1);"> name=nvidia-device-plugin-ds</span></span></code></pre>
+<p>Verify:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> get</span><span style="color: light-dark(#40A02B, #A6E3A1);"> node</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">o</span><span style="color: light-dark(#40A02B, #A6E3A1);"> jsonpath=</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">{.status.capacity.nvidia\.com/gpu}</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span></span></code></pre>
+<p>Expected:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">1</span></span></code></pre><h2 id="step-8-run-a-gpu-workload">Step 8: Run a GPU workload</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">cat</span><span style="color: light-dark(#179299, #94E2D5);"> &lt;&lt;</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">EOF</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> apply</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">f</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">apiVersion: v1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">kind: Pod</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">metadata:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">  name: cuda-smoke-test</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">spec:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">  restartPolicy: Never</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">  runtimeClassName: nvidia</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">  containers:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">  - name: cuda</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">    image: nvcr.io/nvidia/k8s/cuda-sample:nbody</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">    args: [&quot;nbody&quot;, &quot;-gpu&quot;, &quot;-benchmark&quot;]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">    resources:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">      limits:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">        nvidia.com/gpu: 1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">EOF</span></span></code></pre>
+<p>Watch:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> get</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pod</span><span style="color: light-dark(#40A02B, #A6E3A1);"> cuda-smoke-test</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">w</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> logs</span><span style="color: light-dark(#40A02B, #A6E3A1);"> cuda-smoke-test</span></span></code></pre><h2 id="limits">Limits</h2>
+<p>This setup is good for:</p>
+<ul>
+<li>learning Kubernetes GPU scheduling</li>
+<li>testing inference workloads</li>
+<li>experimenting with device plugins</li>
+<li>prototyping LLM infra locally</li>
+</ul>
+<p>It is not suitable for:</p>
+<ul>
+<li>performance benchmarking</li>
+<li>multi-GPU experiments</li>
+<li>production-like environments</li>
+</ul>
+<p>Save the working DaemonSet configuration if you want to reuse it:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">kubectl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> get</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ds</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia-device-plugin-daemonset</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">n</span><span style="color: light-dark(#40A02B, #A6E3A1);"> kube-system</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">o</span><span style="color: light-dark(#40A02B, #A6E3A1);"> yaml</span><span style="color: light-dark(#179299, #94E2D5);"> &gt;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> nvidia-device-plugin-wsl2.yaml</span></span></code></pre>
+        
+      ]]></description>
+    </item>
+    
+    <item>
+      <title>Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference</title>
+      <pubDate>Tue, 27 Jan 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/vllm/</link>
+      <guid>https://akrisanov.com/vllm/</guid>
+      <description xml:base="https://akrisanov.com/vllm/"><![CDATA[
+        <p>Published: 2026-01-27</p>
+        
+        
+          <p><a rel="noopener external" target="_blank" href="https://vllm.ai/">vLLM</a> is an LLM inference engine designed to improve GPU utilization.
+Its key mechanism is <a rel="noopener external" target="_blank" href="https://arxiv.org/abs/2309.06180">PagedAttention</a>, which manages the KV-cache
+without the memory waste common in traditional LLM serving stacks. More efficient memory use supports
+larger batches and steadier latency under load.</p>
+<h2 id="kv-cache-fragmentation">KV-cache fragmentation</h2>
+<p>In traditional LLM serving systems, the KV-cache (the keys and values representing token context)
+must live in a single contiguous block of GPU memory.</p>
+<p>The system does not know in advance how long the model’s answer will be.</p>
+<p>It therefore reserves memory for the maximum context length—say, 2048 or 4096 tokens—for every request.</p>
+<ul>
+<li>Large chunks of VRAM are reserved but never used</li>
+<li>Memory becomes fragmented</li>
+<li>Up to 60–80% of KV-cache memory is effectively wasted</li>
+</ul>
+<p>That VRAM could instead serve more requests in parallel.</p>
+<h2 id="pagedattention">PagedAttention</h2>
+<p>PagedAttention takes inspiration from virtual memory and paging in operating systems.</p>
+<p>Instead of allocating one large contiguous region per request, it uses fixed-size blocks:</p>
+<ol>
+<li><strong>Split the KV-cache into fixed-size blocks.</strong> Each request’s KV-cache is divided into blocks, such as 16 or 32 tokens per block.</li>
+<li><strong>Store blocks non-contiguously.</strong> The blocks can reside anywhere in VRAM.</li>
+<li><strong>Map logical to physical blocks.</strong> A block table maps the logical token order to physical GPU memory blocks.</li>
+<li><strong>Allocate blocks as needed.</strong> vLLM allocates new blocks as it generates tokens instead of reserving the maximum space up front.</li>
+</ol>
+<p>This block-based allocation accounts for much of vLLM’s performance improvement.</p>
+<h2 id="effects-of-a-paged-kv-cache">Effects of a paged KV-cache</h2>
+<ul>
+<li><strong>Less external fragmentation.</strong> Because blocks do not need to be contiguous, free memory can be reused instead of becoming unusable holes.</li>
+<li><strong>Limited internal fragmentation.</strong> Only the last block of a sequence may be partially empty. With reasonable block sizes, memory loss is typically below 4%.</li>
+<li><strong>Larger batch sizes.</strong> Better memory efficiency allows more concurrent requests per GPU, a main driver of performance on modern GPUs.</li>
+<li><strong>Higher throughput.</strong> In practice, this enables 2–4× throughput compared with TGI and up to about 24× compared with naïve Hugging Face serving setups.</li>
+<li><strong>Continuous batching.</strong> New requests can be added as soon as completed requests free blocks, without waiting for a full batch boundary.</li>
+<li><strong>Prefix and prompt caching.</strong> Multiple requests can point to the same physical blocks for shared prefixes, such as system prompts and long examples.</li>
+<li><strong>Copy-on-write.</strong> When generating multiple completions from the same prompt, vLLM allocates new blocks only after the outputs diverge. This can save up to about 55% of KV-cache memory.</li>
+<li><strong>Lower TTFT under load.</strong> PagedAttention does not reduce the computation required for the first token. Higher throughput can clear queues faster, reducing the queue-time component of TTFT.</li>
+<li><strong>Preemption and swapping.</strong> If VRAM runs low, individual blocks can be swapped to CPU memory instead of causing an out-of-memory error.</li>
+<li><strong>No recomputation.</strong> Unlike approaches that discard the KV-cache under pressure, PagedAttention preserves progress and resumes generation without processing the prompt again.</li>
+</ul>
+<h2 id="block-size">Block size</h2>
+<p>Block size affects:</p>
+<ul>
+<li>Internal fragmentation</li>
+<li>Metadata and indexing overhead</li>
+<li>Eviction and preemption behavior (if used)</li>
+</ul>
+<p>Smaller blocks improve memory efficiency but increase overhead.</p>
+<p>Larger blocks reduce overhead but waste more space at the end of sequences.</p>
+<p>The best value depends on the workload.</p>
+<h2 id="prefill-and-decode">Prefill and decode</h2>
+<p>The two phases have different bottlenecks:</p>
+<h3 id="prefill">Prefill</h3>
+<ul>
+<li>Often compute- or memory-bound</li>
+<li>Cost grows with input sequence length</li>
+</ul>
+<h3 id="decode">Decode</h3>
+<ul>
+<li>Usually memory-bandwidth-bound</li>
+<li>Heavily dependent on KV-cache efficiency and batching</li>
+<li>TTFT (Time to First Token) = queue time + prefill latency</li>
+</ul>
+<p>PagedAttention mainly improves decode throughput.</p>
+<p>So if you see this pattern:</p>
+<ul>
+<li>tokens/sec ↑</li>
+<li>p99 TTFT unchanged (or worse)</li>
+</ul>
+<p>then decode improved, but queueing or prefill remains the bottleneck.</p>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

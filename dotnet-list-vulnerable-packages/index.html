@@ -1,0 +1,274 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      Identifying Vulnerable Dependencies in .NET Projects
+    </title><meta content="Scan .NET dependencies for known NuGet vulnerabilities and fail GitLab CI when vulnerable packages are found." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/dotnet-list-vulnerable-packages/ rel=canonical><meta content=article property=og:type><meta content="Identifying Vulnerable Dependencies in .NET Projects" property=og:title><meta content="Scan .NET dependencies for known NuGet vulnerabilities and fail GitLab CI when vulnerable packages are found." property=og:description><meta content=https://akrisanov.com/dotnet-list-vulnerable-packages/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-dotnet-list-vulnerable-packages.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content="Social preview for Identifying Vulnerable Dependencies in .NET Projects" property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content="Identifying Vulnerable Dependencies in .NET Projects" name=twitter:title><meta content="Scan .NET dependencies for known NuGet vulnerabilities and fail GitLab CI when vulnerable packages are found." name=twitter:description><meta content=https://akrisanov.com/images/social-dotnet-list-vulnerable-packages.png name=twitter:image><meta content="Social preview for Identifying Vulnerable Dependencies in .NET Projects" name=twitter:image:alt><meta content=2024-05-07 property=article:published_time><meta content=2024-05-07 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=dotnet property=article:tag><meta content=nuget property=article:tag><meta content=dependency-scanning property=article:tag><meta content=supply-chain-security property=article:tag><meta content=gitlab-ci property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/dotnet-list-vulnerable-packages/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/dotnet-list-vulnerable-packages/"
+        },
+        "headline": "Identifying Vulnerable Dependencies in .NET Projects",
+        "description": "Scan .NET dependencies for known NuGet vulnerabilities and fail GitLab CI when vulnerable packages are found.",
+        "image": "https://akrisanov.com/images/social-dotnet-list-vulnerable-packages.png",
+        "datePublished": "2024-05-07",
+        "dateModified": "2024-05-07",
+        "inLanguage": "en",
+        "wordCount": 239,
+        "timeRequired": "PT2M",
+        "keywords": ["dotnet","nuget","dependency-scanning","supply-chain-security","gitlab-ci"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/dotnet-list-vulnerable-packages/ itemprop=url><meta content=https://akrisanov.com/images/social-dotnet-list-vulnerable-packages.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><header class=note-header><h1 class=note-title itemprop=headline>Identifying Vulnerable Dependencies in .NET Projects</h1><p class=note-description itemprop=description>Scan .NET dependencies for known NuGet vulnerabilities and fail GitLab CI when vulnerable packages are found.<div class=note-meta><time class=note-date datetime=2024-05-07 itemprop=datePublished> May 7, 2024 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>2 min read</span><meta content=2024-05-07 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/dotnet/>#dotnet</a> <a class=tag href=https://akrisanov.com/tags/nuget/>#nuget</a> <a class=tag href=https://akrisanov.com/tags/dependency-scanning/>#dependency-scanning</a> <a class=tag href=https://akrisanov.com/tags/supply-chain-security/>#supply-chain-security</a> <a class=tag href=https://akrisanov.com/tags/gitlab-ci/>#gitlab-ci</a> </span></header><div class="e2-text note-body" itemprop=articleBody><p>At a previous company, I worked on a decade-old .NET SaaS codebase that had been through several framework upgrades. The upgrades were incomplete, and many NuGet packages in the solution were outdated or deprecated by the time I became the engineering manager.<p>I rely on linting, static analysis, and formatting tools in Python and Go projects, so I reviewed the equivalent tooling available for .NET. I started by scanning every NuGet package in the solution for known vulnerabilities.<p>The .NET CLI provides this check through <code>dotnet list package --vulnerable</code>. Developers can run it locally, but an automated check prevents it from being missed.</p><span id=continue-reading></span><h2 id=scan-packages-locally>Scan Packages Locally</h2><p>My first local scan produced the following result:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>.</span><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>.</span><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>.</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Project</span><span style=color:light-dark(#179299,#94e2d5)> `</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>X.Infrastructure.Calendar</span><span style=color:light-dark(#179299,#94e2d5)>`</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> has</span><span style=color:light-dark(#40a02b,#a6e3a1)> the</span><span style=color:light-dark(#40a02b,#a6e3a1)> following</span><span style=color:light-dark(#40a02b,#a6e3a1)> vulnerable</span><span style=color:light-dark(#40a02b,#a6e3a1)> packages</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>   [</span><span>net6.0</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>   Top-level</span><span style=color:light-dark(#40a02b,#a6e3a1)> Package</span><span style=color:light-dark(#40a02b,#a6e3a1)>            Requested</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Resolved</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Severity</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Advisory</span><span style=color:light-dark(#40a02b,#a6e3a1)> URL</span></span>
+<span class=giallo-l><span style=color:light-dark(#179299,#94e2d5)>   ></span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> System.Data.SqlClient</span><span style=color:light-dark(#fe640b,#fab387)>      4.8.3</span><span style=color:light-dark(#fe640b,#fab387)>       4.8.3</span><span style=color:light-dark(#40a02b,#a6e3a1)>      Moderate</span><span style=color:light-dark(#40a02b,#a6e3a1)>   https://github.com/advisories/GHSA-8g2p-5pqh-5jmc</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>                                                       High</span><span style=color:light-dark(#40a02b,#a6e3a1)>       https://github.com/advisories/GHSA-98g6-xh36-x2p7</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>The</span><span style=color:light-dark(#40a02b,#a6e3a1)> given</span><span style=color:light-dark(#40a02b,#a6e3a1)> project</span><span style=color:light-dark(#179299,#94e2d5)> `</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>X.Infrastructure.Common</span><span style=color:light-dark(#179299,#94e2d5)>`</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> has</span><span style=color:light-dark(#40a02b,#a6e3a1)> no</span><span style=color:light-dark(#40a02b,#a6e3a1)> vulnerable</span><span style=color:light-dark(#40a02b,#a6e3a1)> packages</span><span style=color:light-dark(#40a02b,#a6e3a1)> given</span><span style=color:light-dark(#40a02b,#a6e3a1)> the</span><span style=color:light-dark(#40a02b,#a6e3a1)> current</span><span style=color:light-dark(#40a02b,#a6e3a1)> sources.</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Project</span><span style=color:light-dark(#179299,#94e2d5)> `</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>X.Infrastructure.Currency</span><span style=color:light-dark(#179299,#94e2d5)>`</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> has</span><span style=color:light-dark(#40a02b,#a6e3a1)> the</span><span style=color:light-dark(#40a02b,#a6e3a1)> following</span><span style=color:light-dark(#40a02b,#a6e3a1)> vulnerable</span><span style=color:light-dark(#40a02b,#a6e3a1)> packages</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>   [</span><span>net6.0</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>   Top-level</span><span style=color:light-dark(#40a02b,#a6e3a1)> Package</span><span style=color:light-dark(#40a02b,#a6e3a1)>            Requested</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Resolved</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Severity</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Advisory</span><span style=color:light-dark(#40a02b,#a6e3a1)> URL</span></span>
+<span class=giallo-l><span style=color:light-dark(#179299,#94e2d5)>   ></span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> System.Data.SqlClient</span><span style=color:light-dark(#fe640b,#fab387)>      4.8.3</span><span style=color:light-dark(#fe640b,#fab387)>       4.8.3</span><span style=color:light-dark(#40a02b,#a6e3a1)>      Moderate</span><span style=color:light-dark(#40a02b,#a6e3a1)>   https://github.com/advisories/GHSA-8g2p-5pqh-5jmc</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>                                                       High</span><span style=color:light-dark(#40a02b,#a6e3a1)>       https://github.com/advisories/GHSA-98g6-xh36-x2p7</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Project</span><span style=color:light-dark(#179299,#94e2d5)> `</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>X.Infrastructure.Locker</span><span style=color:light-dark(#179299,#94e2d5)>`</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> has</span><span style=color:light-dark(#40a02b,#a6e3a1)> the</span><span style=color:light-dark(#40a02b,#a6e3a1)> following</span><span style=color:light-dark(#40a02b,#a6e3a1)> vulnerable</span><span style=color:light-dark(#40a02b,#a6e3a1)> packages</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>   [</span><span>net6.0</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>   Top-level</span><span style=color:light-dark(#40a02b,#a6e3a1)> Package</span><span style=color:light-dark(#40a02b,#a6e3a1)>            Requested</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Resolved</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Severity</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Advisory</span><span style=color:light-dark(#40a02b,#a6e3a1)> URL</span></span>
+<span class=giallo-l><span style=color:light-dark(#179299,#94e2d5)>   ></span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> System.Data.SqlClient</span><span style=color:light-dark(#fe640b,#fab387)>      4.8.3</span><span style=color:light-dark(#fe640b,#fab387)>       4.8.3</span><span style=color:light-dark(#40a02b,#a6e3a1)>      Moderate</span><span style=color:light-dark(#40a02b,#a6e3a1)>   https://github.com/advisories/GHSA-8g2p-5pqh-5jmc</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>                                                       High</span><span style=color:light-dark(#40a02b,#a6e3a1)>       https://github.com/advisories/GHSA-98g6-xh36-x2p7</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>The</span><span style=color:light-dark(#40a02b,#a6e3a1)> given</span><span style=color:light-dark(#40a02b,#a6e3a1)> project</span><span style=color:light-dark(#179299,#94e2d5)> `</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>X.Infrastructure.Locker.Tests.Unit</span><span style=color:light-dark(#179299,#94e2d5)>`</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> has</span><span style=color:light-dark(#40a02b,#a6e3a1)> no</span><span style=color:light-dark(#40a02b,#a6e3a1)> vulnerable</span><span style=color:light-dark(#40a02b,#a6e3a1)> packages</span><span style=color:light-dark(#40a02b,#a6e3a1)> given</span><span style=color:light-dark(#40a02b,#a6e3a1)> the</span><span style=color:light-dark(#40a02b,#a6e3a1)> current</span><span style=color:light-dark(#40a02b,#a6e3a1)> sources.</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>The</span><span style=color:light-dark(#40a02b,#a6e3a1)> given</span><span style=color:light-dark(#40a02b,#a6e3a1)> project</span><span style=color:light-dark(#179299,#94e2d5)> `</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>X.Infrastructure.Pool</span><span style=color:light-dark(#179299,#94e2d5)>`</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> has</span><span style=color:light-dark(#40a02b,#a6e3a1)> no</span><span style=color:light-dark(#40a02b,#a6e3a1)> vulnerable</span><span style=color:light-dark(#40a02b,#a6e3a1)> packages</span><span style=color:light-dark(#40a02b,#a6e3a1)> given</span><span style=color:light-dark(#40a02b,#a6e3a1)> the</span><span style=color:light-dark(#40a02b,#a6e3a1)> current</span><span style=color:light-dark(#40a02b,#a6e3a1)> sources.</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>Project</span><span style=color:light-dark(#179299,#94e2d5)> `</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>X.Infrastructure.Repositories</span><span style=color:light-dark(#179299,#94e2d5)>`</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> has</span><span style=color:light-dark(#40a02b,#a6e3a1)> the</span><span style=color:light-dark(#40a02b,#a6e3a1)> following</span><span style=color:light-dark(#40a02b,#a6e3a1)> vulnerable</span><span style=color:light-dark(#40a02b,#a6e3a1)> packages</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>   [</span><span>net6.0</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>   Top-level</span><span style=color:light-dark(#40a02b,#a6e3a1)> Package</span><span style=color:light-dark(#40a02b,#a6e3a1)>            Requested</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Resolved</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Severity</span><span style=color:light-dark(#40a02b,#a6e3a1)>   Advisory</span><span style=color:light-dark(#40a02b,#a6e3a1)> URL</span></span>
+<span class=giallo-l><span style=color:light-dark(#179299,#94e2d5)>   ></span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> System.Data.SqlClient</span><span style=color:light-dark(#fe640b,#fab387)>      4.8.3</span><span style=color:light-dark(#fe640b,#fab387)>       4.8.3</span><span style=color:light-dark(#40a02b,#a6e3a1)>      Moderate</span><span style=color:light-dark(#40a02b,#a6e3a1)>   https://github.com/advisories/GHSA-8g2p-5pqh-5jmc</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>                                                       High</span><span style=color:light-dark(#40a02b,#a6e3a1)>       https://github.com/advisories/GHSA-98g6-xh36-x2p7</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>The</span><span style=color:light-dark(#40a02b,#a6e3a1)> given</span><span style=color:light-dark(#40a02b,#a6e3a1)> project</span><span style=color:light-dark(#179299,#94e2d5)> `</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>X.Infrastructure.Rules</span><span style=color:light-dark(#179299,#94e2d5)>`</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> has</span><span style=color:light-dark(#40a02b,#a6e3a1)> no</span><span style=color:light-dark(#40a02b,#a6e3a1)> vulnerable</span><span style=color:light-dark(#40a02b,#a6e3a1)> packages</span><span style=color:light-dark(#40a02b,#a6e3a1)> given</span><span style=color:light-dark(#40a02b,#a6e3a1)> the</span><span style=color:light-dark(#40a02b,#a6e3a1)> current</span><span style=color:light-dark(#40a02b,#a6e3a1)> sources.</span></span>
+<span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>.</span><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>.</span><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>.</span></span></code></pre><p>Several projects use a version of <code>System.Data.SqlClient</code> affected by <a rel="noopener external" href=https://devhub.checkmarx.com/cve-details/CVE-2022-41064/ target=_blank>CVE-2022-41064</a>:<blockquote><p>.NET Framework System.Data.SqlClient versions prior to 4.8.5 and Microsoft.Data.SqlClient versions prior to 1.1.4 and 2.0.0 prior to 2.1.2 is vulnerable to Information Disclosure Vulnerability.</blockquote><p>Upgrade the package to resolve the vulnerability:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>dotnet</span><span style=color:light-dark(#40a02b,#a6e3a1)> add</span><span style=color:light-dark(#40a02b,#a6e3a1)> package</span><span style=color:light-dark(#40a02b,#a6e3a1)> System.Data.SqlClient</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>v</span><span style=color:light-dark(#fe640b,#fab387)> 4.8.6</span></span></code></pre><h2 id=run-the-check-in-gitlab-ci>Run the Check in GitLab CI</h2><p>I added a GitLab pipeline that runs for merge requests and the <code>master</code> branch.<p>The <code>.gitlab-ci.yml</code> configuration is:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>s</span><span style=color:light-dark(#1e66f5,#89b4fa)>tages</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)> s</span><span style=color:light-dark(#40a02b,#a6e3a1)>ecurity</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>v</span><span style=color:light-dark(#1e66f5,#89b4fa)>ulnerable-dependencies</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  s</span><span style=color:light-dark(#1e66f5,#89b4fa)>tage</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> s</span><span style=color:light-dark(#40a02b,#a6e3a1)>ecurity</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  i</span><span style=color:light-dark(#1e66f5,#89b4fa)>mage</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> m</span><span style=color:light-dark(#40a02b,#a6e3a1)>cr.microsoft.com/dotnet/sdk:6.0-bullseye-slim</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  b</span><span style=color:light-dark(#1e66f5,#89b4fa)>efore_script</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>    -</span><span style=color:light-dark(#40a02b,#a6e3a1)> d</span><span style=color:light-dark(#40a02b,#a6e3a1)>otnet restore</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  s</span><span style=color:light-dark(#1e66f5,#89b4fa)>cript</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>    -</span><span style=color:light-dark(#40a02b,#a6e3a1)> d</span><span style=color:light-dark(#40a02b,#a6e3a1)>otnet list package --vulnerable 2>&1 | tee vulnerable-packages.log</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>    -</span><span style=color:light-dark(#8839ef,#cba6f7)> ></span><span style=color:light-dark(#8839ef,#cba6f7)>-</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>      ! grep -qiw "critical\|high\|moderate\|low" vulnerable-packages.log;</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>      if [ $? -ne 0 ]; then</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>        echo "🚨 Found vulnerable packages";</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>        exit 1</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>      else</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>        exit 0</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>      fi</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  a</span><span style=color:light-dark(#1e66f5,#89b4fa)>rtifacts</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    w</span><span style=color:light-dark(#1e66f5,#89b4fa)>hen</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> a</span><span style=color:light-dark(#40a02b,#a6e3a1)>lways</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    e</span><span style=color:light-dark(#1e66f5,#89b4fa)>xpire_in</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> 1</span><span style=color:light-dark(#40a02b,#a6e3a1)>2h</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    p</span><span style=color:light-dark(#1e66f5,#89b4fa)>aths</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>      -</span><span style=color:light-dark(#40a02b,#a6e3a1)> v</span><span style=color:light-dark(#40a02b,#a6e3a1)>ulnerable-packages.log</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  o</span><span style=color:light-dark(#1e66f5,#89b4fa)>nly</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>    -</span><span style=color:light-dark(#40a02b,#a6e3a1)> m</span><span style=color:light-dark(#40a02b,#a6e3a1)>aster</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>    -</span><span style=color:light-dark(#40a02b,#a6e3a1)> m</span><span style=color:light-dark(#40a02b,#a6e3a1)>erge_requests</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  t</span><span style=color:light-dark(#1e66f5,#89b4fa)>ags</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>    -</span><span style=color:light-dark(#40a02b,#a6e3a1)> d</span><span style=color:light-dark(#40a02b,#a6e3a1)>ocker</span></span></code></pre><p>The pipeline fails if any project in the solution has a vulnerable package. It stores the command output as a downloadable artifact, including each vulnerability and its severity.<h2 id=reference>Reference</h2><ul><li><a rel="noopener external" href=https://devblogs.microsoft.com/nuget/how-to-scan-nuget-packages-for-security-vulnerabilities/ target=_blank>How to Scan NuGet Packages for Security Vulnerabilities</a></ul></div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>Convert FLAC to Apple Lossless with FFmpeg</span> </a><a class=nav-newer href=https://akrisanov.com/uv/> <span class=note-navigation-direction>Newer <span class=note-navigation-shortcut><i class=nav-modifier></i>↑</span></span> <span class=note-navigation-title>uv: Managing Python Versions, Dependencies, Tools, and Scripts</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script>

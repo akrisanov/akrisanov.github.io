@@ -1,0 +1,419 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      uv: Managing Python Versions, Dependencies, Tools, and Scripts
+    </title><meta content="A concise uv cheat sheet for managing Python versions, environments, dependencies, tools, and scripts in one workflow." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/uv/ rel=canonical><meta content=article property=og:type><meta content="uv: Managing Python Versions, Dependencies, Tools, and Scripts" property=og:title><meta content="A concise uv cheat sheet for managing Python versions, environments, dependencies, tools, and scripts in one workflow." property=og:description><meta content=https://akrisanov.com/uv/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-uv.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content="Social preview for uv: Managing Python Versions, Dependencies, Tools, and Scripts" property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content="uv: Managing Python Versions, Dependencies, Tools, and Scripts" name=twitter:title><meta content="A concise uv cheat sheet for managing Python versions, environments, dependencies, tools, and scripts in one workflow." name=twitter:description><meta content=https://akrisanov.com/images/social-uv.png name=twitter:image><meta content="Social preview for uv: Managing Python Versions, Dependencies, Tools, and Scripts" name=twitter:image:alt><meta content=2025-09-10 property=article:published_time><meta content=2025-09-10 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=python property=article:tag><meta content=uv property=article:tag><meta content=developer-tooling property=article:tag><meta content=package-management property=article:tag><meta content=cheat-sheet property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/uv/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/uv/"
+        },
+        "headline": "uv: Managing Python Versions, Dependencies, Tools, and Scripts",
+        "description": "A concise uv cheat sheet for managing Python versions, environments, dependencies, tools, and scripts in one workflow.",
+        "image": "https://akrisanov.com/images/social-uv.png",
+        "datePublished": "2025-09-10",
+        "dateModified": "2025-09-10",
+        "inLanguage": "en",
+        "wordCount": 430,
+        "timeRequired": "PT3M",
+        "keywords": ["python","uv","developer-tooling","package-management","cheat-sheet"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/uv/ itemprop=url><meta content=https://akrisanov.com/images/social-uv.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><div class=note-layout><div class=note-main><header class=note-header><h1 class=note-title itemprop=headline>uv: Managing Python Versions, Dependencies, Tools, and Scripts</h1><p class=note-description itemprop=description>A concise uv cheat sheet for managing Python versions, environments, dependencies, tools, and scripts in one workflow.<div class=note-meta><time class=note-date datetime=2025-09-10 itemprop=datePublished> September 10, 2025 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>3 min read</span><meta content=2025-09-10 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/python/>#python</a> <a class=tag href=https://akrisanov.com/tags/uv/>#uv</a> <a class=tag href=https://akrisanov.com/tags/developer-tooling/>#developer-tooling</a> <a class=tag href=https://akrisanov.com/tags/package-management/>#package-management</a> <a class=tag href=https://akrisanov.com/tags/cheat-sheet/>#cheat-sheet</a> </span></header><details class=note-toc-mobile><summary class=note-toc-mobile-summary>On this page</summary> <div class=note-toc-mobile-panel><nav aria-label="Table of contents" class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#installation-updates> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Installation & Updates</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#managing-python-versions> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Managing Python Versions</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#projects-dependencies> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Projects & Dependencies</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#virtual-environments> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Virtual Environments</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#scripts> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Scripts</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#tools> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Tools</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#replacing-pip-tools> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Replacing pip-tools</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#building-and-publishing-packages> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Building and Publishing Packages</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#pre-commit-hooks> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Pre-commit Hooks</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#github-actions> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>GitHub Actions</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#docker> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Docker</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#workspaces> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Workspaces</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#notes-and-limitations> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Notes and Limitations</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#further-reading> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Further Reading</span> </a></ul></nav></div></details><div class="e2-text note-body" itemprop=articleBody><p><code>uv</code> provides a Cargo-like, cross-platform workflow for managing <a rel="noopener external" href=https://docs.astral.sh/uv/guides/projects/ target=_blank>Python projects</a>, <a rel="noopener external" href=https://docs.astral.sh/uv/guides/tools/ target=_blank>command-line tools</a>, <a rel="noopener external" href=https://docs.astral.sh/uv/guides/scripts/ target=_blank>single-file scripts</a>, and <a rel="noopener external" href=https://docs.astral.sh/uv/guides/install-python/ target=_blank>Python versions</a>.<h2 id=installation-updates>Installation & Updates</h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Install</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>curl</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>LsSf</span><span style=color:light-dark(#40a02b,#a6e3a1)> https://astral.sh/uv/install.sh</span><span style=color:light-dark(#179299,#94e2d5)> |</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> sh</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Update</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> self</span><span style=color:light-dark(#40a02b,#a6e3a1)> update</span></span></code></pre><h2 id=managing-python-versions>Managing Python Versions</h2><p>uv can manage Python versions instead of pyenv, mise, asdf, or OS-specific installation methods:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> List available versions</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> python</span><span style=color:light-dark(#40a02b,#a6e3a1)> list</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Install Python 3.13</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> python</span><span style=color:light-dark(#40a02b,#a6e3a1)> install</span><span style=color:light-dark(#fe640b,#fab387)> 3.13</span></span></code></pre><ul><li>Works across operating systems<li>No admin rights required<li>Independent of system Python</ul><p>You can also use <a rel="noopener external" href=https://github.com/jdx/mise target=_blank>mise</a> alongside uv if you prefer a global version manager.<h2 id=projects-dependencies>Projects & Dependencies</h2><p>Initialize a project and create <code>pyproject.toml</code>:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> init</span><span style=color:light-dark(#40a02b,#a6e3a1)> myproject</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Or specify the Python version and project name:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> init</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>p</span><span style=color:light-dark(#fe640b,#fab387)> 3.13</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-name</span><span style=color:light-dark(#40a02b,#a6e3a1)> myproject</span></span>
+<span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>cd</span><span style=color:light-dark(#40a02b,#a6e3a1)> myproject</span></span></code></pre><p>Sync dependencies:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> sync</span></span></code></pre><p>Add dependencies:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> add</span><span style=color:light-dark(#40a02b,#a6e3a1)> litestar</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> add</span><span style=color:light-dark(#40a02b,#a6e3a1)> pytest</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-dev</span></span></code></pre><p>Generate a cross-platform lockfile, similar to <code>Pipfile.lock</code> or <code>poetry.lock</code>:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> lock</span></span></code></pre><p>The lockfile is cross-platform, so it can be generated on Windows and used for deployment on Linux.<h2 id=virtual-environments>Virtual Environments</h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Create and activate a virtual environment</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> venv</span></span>
+<span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>source</span><span style=color:light-dark(#40a02b,#a6e3a1)> .venv/bin/activate</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Or run in the environment without activating it</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> python</span><span style=color:light-dark(#40a02b,#a6e3a1)> app.py</span></span></code></pre><h2 id=scripts>Scripts</h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Create a new script</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> init</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-script</span></span></code></pre><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=python><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> /// script</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> requires-python = ">=3.13"</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> dependencies = [</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>     "requests",</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> ]</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> ///</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>import</span><span> requests</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#fe640b,#fab387);font-style:italic>print</span><span style=color:light-dark(#7c7f93,#9399b2)>(</span><span>requests</span><span style=color:light-dark(#7c7f93,#9399b2)>.</span><span style=color:light-dark(#1e66f5,#89b4fa)>get</span><span style=color:light-dark(#7c7f93,#9399b2)>(</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>https://akrisanov.com</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>)</span><span style=color:light-dark(#7c7f93,#9399b2)>)</span></span></code></pre><p>Run a single-file script and install its declared dependencies automatically:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> script.py</span></span></code></pre><p>On Unix-like systems, add <code>#!/usr/bin/env -S uv run</code> and run <code>chmod +x script.py</code> to make the script executable.<h2 id=tools>Tools</h2><p>Install CLI tools in environments isolated from the system Python:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> tool</span><span style=color:light-dark(#40a02b,#a6e3a1)> install</span><span style=color:light-dark(#40a02b,#a6e3a1)> ruff</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> #</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> replaces pipx</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> tool</span><span style=color:light-dark(#40a02b,#a6e3a1)> install</span><span style=color:light-dark(#40a02b,#a6e3a1)> httpie</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uvx</span><span style=color:light-dark(#40a02b,#a6e3a1)> httpie</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> #</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Run the tool without installing it permanently</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> --with [temp dependency] runs jupyter in the current project</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> without adding it and its dependencies to the project</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-with</span><span style=color:light-dark(#40a02b,#a6e3a1)> jupyter</span><span style=color:light-dark(#40a02b,#a6e3a1)> jupyter</span><span style=color:light-dark(#40a02b,#a6e3a1)> notebook</span></span></code></pre><p><code>uv run</code> checks the lockfile and environment before each command and updates them when needed.<p>For local CLI tool development:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> init</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-package</span><span style=color:light-dark(#40a02b,#a6e3a1)> your_tool</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> tool</span><span style=color:light-dark(#40a02b,#a6e3a1)> install</span><span style=color:light-dark(#40a02b,#a6e3a1)> .</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>e</span></span></code></pre><p>See the <a rel="noopener external" href=https://docs.astral.sh/uv/concepts/tools/ target=_blank>tools documentation</a>.<h2 id=replacing-pip-tools>Replacing pip-tools</h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> pip</span><span style=color:light-dark(#40a02b,#a6e3a1)> compile</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> #</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> replaces pip-tools compile</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> pip</span><span style=color:light-dark(#40a02b,#a6e3a1)> sync</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>    #</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> replaces pip-tools sync</span></span></code></pre><h2 id=building-and-publishing-packages>Building and Publishing Packages</h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Build a `.whl` package for PyPI</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Upload your Python package to PyPI</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> publish</span></span></code></pre><h2 id=pre-commit-hooks>Pre-commit Hooks</h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-with</span><span style=color:light-dark(#40a02b,#a6e3a1)> pre-commit-uv</span><span style=color:light-dark(#40a02b,#a6e3a1)> pre-commit</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-all-files</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>pre-commit-uv</span></span></code></pre><h2 id=github-actions>GitHub Actions</h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>a</span><span style=color:light-dark(#40a02b,#a6e3a1)>stral-sh/setup-uv</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> #</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> brings UV to GitHub Actions</span></span></code></pre><h2 id=docker>Docker</h2><p>The official Docker images include uv and Python:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=docker><span class=giallo-l><span>ghcr.io/astral-sh/uv:latest</span></span></code></pre><p>See also Hynek Schlawack’s <a rel="noopener external" href=https://hynek.me/articles/docker-uv/ target=_blank>Production-ready Python Docker Containers with uv</a>.<h2 id=workspaces>Workspaces</h2><p>Use a <a rel="noopener external" href=https://docs.astral.sh/uv/concepts/projects/workspaces/ target=_blank>workspace</a> to manage multiple packages together.<p>For example, a repository can contain a FastAPI application and several libraries, each maintained as a separate Python package.<p>Each package has its own <code>pyproject.toml</code>, while the workspace uses one lockfile and a consistent set of dependencies.<h2 id=notes-and-limitations>Notes and Limitations</h2><ul><li><code>uv sync</code> respects <code>.python-version</code>, but the <code>UV_PYTHON</code> environment variable takes precedence<li>Uses <a rel="noopener external" href=https://github.com/astral-sh/python-build-standalone target=_blank>python-build-standalone</a>, whose builds can be slightly slower than system builds (~1–3%) and lack CPU-specific optimizations<li>The cache can grow large<li>Legacy projects may fail if they depended on pip’s older, looser dependency resolution rules<li>Faster dependency installation can reduce CI and container build times<li>Astral maintains python-build-standalone, which provides Python builds that do not require installers</ul><h2 id=further-reading>Further Reading</h2><ul><li><a rel="noopener external" href=https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-sources target=_blank>Dependency Sources</a> — explains how uv resolves dependencies<li><a rel="noopener external" href=https://blog.pecar.me/uv-with-django target=_blank>UV with Django</a><li><a rel="noopener external" href=https://peps.python.org/pep-0723/ target=_blank>PEP 723 – Inline script metadata</a><li><a rel="noopener external" href=https://github.com/astral-sh/uv/issues/5903 target=_blank>WIP: Using uv run as a task runner</a></ul></div></div><aside aria-label="Table of contents" class="note-toc note-toc-desktop"><div class=note-toc-card><div class=note-toc-title>On this page</div><nav aria-label="Table of contents" class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#installation-updates> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Installation & Updates</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#managing-python-versions> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Managing Python Versions</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#projects-dependencies> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Projects & Dependencies</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#virtual-environments> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Virtual Environments</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#scripts> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Scripts</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#tools> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Tools</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#replacing-pip-tools> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Replacing pip-tools</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#building-and-publishing-packages> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Building and Publishing Packages</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#pre-commit-hooks> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Pre-commit Hooks</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#github-actions> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>GitHub Actions</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#docker> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Docker</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#workspaces> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Workspaces</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#notes-and-limitations> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Notes and Limitations</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/uv/#further-reading> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Further Reading</span> </a></ul></nav></div></aside></div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/dotnet-list-vulnerable-packages/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>Identifying Vulnerable Dependencies in .NET Projects</span> </a><a class=nav-newer href=https://akrisanov.com/vllm/> <span class=note-navigation-direction>Newer <span class=note-navigation-shortcut><i class=nav-modifier></i>↑</span></span> <span class=note-navigation-title>Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script><script>(function () {
+    var tocs = Array.prototype.slice.call(
+      document.querySelectorAll("[data-note-toc]"),
+    );
+    if (!tocs.length) return;
+
+    var groups = tocs
+      .map(function (toc) {
+        var links = Array.prototype.slice.call(
+          toc.querySelectorAll("[data-toc-link]"),
+        );
+        var items = Array.prototype.slice.call(
+          toc.querySelectorAll("[data-toc-item]"),
+        );
+        var entries = links
+          .map(function (link, index) {
+            var id = decodeURIComponent(link.hash.slice(1));
+            return {
+              link: link,
+              item: items[index],
+              heading: document.getElementById(id),
+              top: 0,
+            };
+          })
+          .filter(function (entry) {
+            return entry.heading;
+          });
+        return {
+          toc: toc,
+          entries: entries,
+          activeIndex: -1,
+        };
+      })
+      .filter(function (group) {
+        return group.entries.length;
+      });
+
+    if (!groups.length) return;
+
+    var frame = null;
+
+    function measure() {
+      groups.forEach(function (group) {
+        group.entries.forEach(function (entry) {
+          var headingRect = entry.heading.getBoundingClientRect();
+          entry.top = headingRect.top + window.pageYOffset;
+        });
+      });
+    }
+
+    function keepActiveLinkVisible(group, entry) {
+      var scroller = group.toc.closest(
+        ".note-toc, .note-toc-mobile-panel",
+      );
+      if (
+        !scroller ||
+        scroller.offsetParent === null ||
+        scroller.scrollHeight <= scroller.clientHeight
+      ) {
+        return;
+      }
+
+      var linkRect = entry.link.getBoundingClientRect();
+      var scrollerRect = scroller.getBoundingClientRect();
+      var padding = 10;
+
+      if (linkRect.top < scrollerRect.top + padding) {
+        scroller.scrollTop -= scrollerRect.top + padding - linkRect.top;
+      } else if (linkRect.bottom > scrollerRect.bottom - padding) {
+        scroller.scrollTop += linkRect.bottom - scrollerRect.bottom + padding;
+      }
+    }
+
+    function update() {
+      frame = null;
+      var position =
+        window.pageYOffset +
+        Math.max(120, Math.round(window.innerHeight * 0.22));
+
+      groups.forEach(function (group) {
+        var nextActive = 0;
+
+        for (var i = 0; i < group.entries.length; i += 1) {
+          if (position >= group.entries[i].top) {
+            nextActive = i;
+          }
+        }
+
+        if (nextActive !== group.activeIndex) {
+          group.activeIndex = nextActive;
+          group.entries.forEach(function (entry, index) {
+            var isActive = index === group.activeIndex;
+            var isPast = index < group.activeIndex;
+            entry.item.classList.toggle("is-active", isActive);
+            entry.item.classList.toggle("is-past", isPast);
+            if (isActive) {
+              entry.link.setAttribute("aria-current", "location");
+            } else {
+              entry.link.removeAttribute("aria-current");
+            }
+          });
+
+          keepActiveLinkVisible(
+            group,
+            group.entries[group.activeIndex],
+          );
+        }
+      });
+    }
+
+    function schedule() {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(update);
+    }
+
+    measure();
+    update();
+    window.addEventListener("resize", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("load", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("pageshow", function () {
+      measure();
+      schedule();
+    });
+    document.addEventListener("article:layoutchange", function () {
+      measure();
+      schedule();
+    });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        measure();
+        schedule();
+      });
+    }
+
+    var noteMain = document.querySelector(".note-main");
+    if ("ResizeObserver" in window && noteMain) {
+      var resizeObserver = new ResizeObserver(function () {
+        measure();
+        schedule();
+      });
+      resizeObserver.observe(noteMain);
+    }
+
+    document
+      .querySelectorAll(".note-toc-mobile")
+      .forEach(function (details) {
+        details.addEventListener("toggle", function () {
+          if (!details.open) return;
+          groups.forEach(function (group) {
+            group.activeIndex = -1;
+          });
+          schedule();
+        });
+      });
+  })();</script>

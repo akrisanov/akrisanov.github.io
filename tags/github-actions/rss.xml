@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - github-actions</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/github-actions/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Thu, 12 Oct 2023 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Generate a Python Lockfile with GitHub Actions</title>
+      <pubDate>Thu, 12 Oct 2023 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/</link>
+      <guid>https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/</guid>
+      <description xml:base="https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/"><![CDATA[
+        <p>Published: 2023-10-12</p>
+        
+        
+          <p>When development and deployment use different operating systems or processor architectures, generate the Python
+lockfile in the deployment environment. GitHub Actions can run this step without requiring the same environment on
+the developer's machine.</p>
+<p>I develop on macOS with Apple silicon, while most of my projects run on Linux. Resolved dependencies can differ
+between these environments because not every package provides wheels for every platform. The Python version can
+also affect the result.</p>
+<p>For example, <code>pip-compile</code> can produce different lockfiles on macOS, Linux, and Windows:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">pip-compile</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-allow-unsafe</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-generate-hashes</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-no-emit-index-url</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-output-file=requirements-lock.txt</span></span></code></pre><p class="media-caption code-caption">Using pip-tools to compile a requirements lockfile</p>
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - event-driven-architecture</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/event-driven-architecture/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Tue, 29 Aug 2023 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Choosing Apache Kafka for a New Project</title>
+      <pubDate>Tue, 29 Aug 2023 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/choosing-kafka/</link>
+      <guid>https://akrisanov.com/choosing-kafka/</guid>
+      <description xml:base="https://akrisanov.com/choosing-kafka/"><![CDATA[
+        <p>Published: 2023-08-29</p>
+        
+        
+          <p>Apache Kafka is often proposed whenever a project needs to process events, messages, or data streams.
+The choice is not always deliberate. A conventional message broker such as ActiveMQ may be enough,
+but Kafka's popularity can influence the decision.</p>
+<p>If Kafka has been selected deliberately or mandated by the infrastructure team, settle the following
+points before configuring the brokers and writing producers and consumers.</p>
+<ol>
+<li>
+<p><strong>Estimate producer data volume.</strong> Confirm that the network can handle the load across the system,
+especially on critical paths. Evaluate
+<a rel="noopener external" target="_blank" href="https://www.conduktor.io/kafka/kafka-message-compression/">message compression</a> where appropriate.</p>
+</li>
+<li>
+<p><strong>Define the <a rel="noopener external" target="_blank" href="https://strimzi.io/blog/2021/12/17/kafka-segment-retention/">data retention policy</a>.</strong>
+Set the retention period from the product's business and data-protection requirements, then account
+for the storage cost.</p>
+</li>
+<li>
+<p><strong>Choose producer <a rel="noopener external" target="_blank" href="https://www.conduktor.io/kafka/kafka-producer-acks-deep-dive/">acknowledgement settings</a>.</strong>
+Balance latency against reliability and durability under replication.</p>
+</li>
+<li>
+<p><strong>Define delivery guarantees.</strong> Establish how the product handles message loss and duplicate messages.
+Decide whether it needs
+<a rel="noopener external" target="_blank" href="https://www.conduktor.io/kafka/idempotent-kafka-producer/">idempotent producers</a> or
+<a rel="noopener external" target="_blank" href="https://www.confluent.io/blog/transactions-apache-kafka/">transactions</a>.</p>
+</li>
+<li>
+<p><strong>Choose a <a rel="noopener external" target="_blank" href="https://redpanda.com/guides/kafka-tutorial/kafka-partition-strategy">partitioning strategy</a>.</strong>
+Verify that Kafka's default partitioner matches the required ordering and load distribution.</p>
+</li>
+<li>
+<p><strong>Choose the topic cleanup policy.</strong> Keep the complete message log when every record matters. If only
+the latest value for each key matters, consider
+<a rel="noopener external" target="_blank" href="https://docs.confluent.io/kafka/design/log_compaction.html">log-compacted topics</a>.</p>
+</li>
+<li>
+<p><strong>Plan <a rel="noopener external" target="_blank" href="https://www.conduktor.io/kafka/kafka-consumer-groups-and-consumer-offsets/">consumer groups</a>.</strong>
+Define how consumers will scale, what throughput they need, and how they will behave during
+<a rel="noopener external" target="_blank" href="https://www.verica.io/blog/understanding-kafkas-consumer-group-rebalancing/">group rebalancing</a>.</p>
+</li>
+</ol>
+<p>This checklist covers application-facing decisions. Encryption, authentication, authorization, and
+cluster configuration still need explicit ownership, even when an SRE team or a PaaS manages them.</p>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

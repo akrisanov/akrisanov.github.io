@@ -1,0 +1,219 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      My "It's Not DNS" Story
+    </title><meta content="An incident story about DNS resolution failures on Linux VMs and the troubleshooting process that led to the real root cause." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/it-is-not-dns/ rel=canonical><meta content=article property=og:type><meta content='My "It&#39;s Not DNS" Story' property=og:title><meta content="An incident story about DNS resolution failures on Linux VMs and the troubleshooting process that led to the real root cause." property=og:description><meta content=https://akrisanov.com/it-is-not-dns/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-it-is-not-dns.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content='Social preview for My "It&#39;s Not DNS" Story' property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content='My "It&#39;s Not DNS" Story' name=twitter:title><meta content="An incident story about DNS resolution failures on Linux VMs and the troubleshooting process that led to the real root cause." name=twitter:description><meta content=https://akrisanov.com/images/social-it-is-not-dns.png name=twitter:image><meta content='Social preview for My "It&#39;s Not DNS" Story' name=twitter:image:alt><meta content=2023-08-12 property=article:published_time><meta content=2023-08-12 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=dns property=article:tag><meta content=linux property=article:tag><meta content=incident-response property=article:tag><meta content=troubleshooting property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/it-is-not-dns/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/it-is-not-dns/"
+        },
+        "headline": "My \"It's Not DNS\" Story",
+        "description": "An incident story about DNS resolution failures on Linux VMs and the troubleshooting process that led to the real root cause.",
+        "image": "https://akrisanov.com/images/social-it-is-not-dns.png",
+        "datePublished": "2023-08-12",
+        "dateModified": "2023-08-12",
+        "inLanguage": "en",
+        "wordCount": 746,
+        "timeRequired": "PT4M",
+        "keywords": ["dns","linux","incident-response","troubleshooting"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/it-is-not-dns/ itemprop=url><meta content=https://akrisanov.com/images/social-it-is-not-dns.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><header class=note-header><h1 class=note-title itemprop=headline>My "It's Not DNS" Story</h1><p class=note-description itemprop=description>An incident story about DNS resolution failures on Linux VMs and the troubleshooting process that led to the real root cause.<div class=note-meta><time class=note-date datetime=2023-08-12 itemprop=datePublished> August 12, 2023 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>4 min read</span><meta content=2023-08-12 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/dns/>#dns</a> <a class=tag href=https://akrisanov.com/tags/linux/>#linux</a> <a class=tag href=https://akrisanov.com/tags/incident-response/>#incident-response</a> <a class=tag href=https://akrisanov.com/tags/troubleshooting/>#troubleshooting</a> </span></header><div class="e2-text note-body" itemprop=articleBody><p>Summer of 2019. I'm joining a large retail organization that is undergoing a digital transformation. The role I've been hired for is a technical leadership role. The project I'm taking over doesn't even have a complete team yet, which means I'll be wearing all sorts of hats until I hire someone and delegate work. You could say, I'm the only "developer" on the team. Also, the code base is already serving users, and the services are part of a lead generation funnel for one of the grocery networks. So if something goes down, the company loses potential customers and revenue. The fact that the project was developed by an outsourced team that has already left without handing over proper documentation makes things more complicated and fragile.<p>In a few days, I try to understand how the services are run in production, write missing README and system design papers, and create initial tasks for maintenance. All goes well, and I manage to deploy some changes to the backend. It's Friday afternoon, so I still have time to do a rollback if I've made a mistake. But nothing suspicious has been observed during the day, and I leave the office for the weekend.<p>The fun begins on Sunday. Because I'm in charge of the project, I'm the one who is on-call. I get a call from our support team telling me that the web application isn't responding from time to time and that they're getting complaints from customers.<p>The first thing I do is open my browser to check what users are seeing. Surprisingly, a web page loads just fine. I hit refresh – same result. Then I turn off Wi-Fi on my iPhone and open Safari – 504 error. It's a Nginx page. Now it is something.<figure class=article-figure><img alt="Simplified diagram of the project architecture" decoding=async height=1382 loading=lazy src=/images/karusel-arch.webp width=1464><figcaption class=media-caption>Simplified diagram of the project architecture</figcaption></figure><p>I open the monitoring and observe no high load. CPU usage is low, more than 50% of memory is free, plenty of free disk space on each of the virtual machines, no spikes in the network bandwidth. Looking at the Nginx logs only proves that there's a gateway timeout error related to the backend. I should check the application backend logs. Nothing there, no errors at all.<p>At this point, I start to blame the network and call the network infrastructure team. These guys work on an organisational level and potentially can see what I can't. After spending an hour investigating together, we see nothing. It's already Sunday evening, and I'm almost hopeless.<p>I decide to take a break and go for a walk. When I'm back, I try to ssh to a VM again. Suddenly, I notice a few seconds of delay before I can type my commands into a terminal. "It can't be DNS", I say to myself. To prove it, I ping a public domain from our network. Again, a few seconds of delay and the network packets are flying without a hitch. "If DNS was down, the infrastructure team would notice," I continue to reason. Before escalating the situation further to upper management, I choose to check the DNS configuration on the backend virtual machines.<p>The <code>/etc/resolv.conf</code> file contains DNS resolver configuration in the following format:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>nameserver</span><span> [ip</span><span>]</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>nameserver</span><span> [ip</span><span>]</span></span></code></pre><p>In my developer's mind, a Linux machine receives these records at boot time and caches them. This file is then queried to resolve domains. What could possibly go wrong? Well, I ask the infrastructure team about the IP addresses I see in <code>/etc/resolv.conf</code> and get a surprising answer: "The IP addresses are DNS load balancers and the first one in the list is currently down". Hearing this, I begin to understand why the ssh and initial ping delays are happening. The first DNS load balancer is queried, but because it's down, it doesn't respond, and the resolution continues with the second IP address.<p>I remove the first nameserver from <code>/etc/resolv.conf</code> and drop the DNS cache on each of the VMs. After a few seconds, the 504 error and the gateway timeout disappear. In the morning, we'll discuss the incident with the infrastructure team and senior management. Fun week ahead.<figure class="callout callout-bdc article-quote"><blockquote><p>It's not DNS<br> There's no way it's DNS<br> It was DNS</blockquote><figcaption class=author>Old Japanese haiku</figcaption></figure></div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/multi-arch-docker-images/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>Building Multi-Arch Images for Arm and x86</span> </a><a class=nav-newer href=https://akrisanov.com/choosing-kafka/> <span class=note-navigation-direction>Newer <span class=note-navigation-shortcut><i class=nav-modifier></i>↑</span></span> <span class=note-navigation-title>Choosing Apache Kafka for a New Project</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script>

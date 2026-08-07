@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - production</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/production/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Wed, 06 Sep 2023 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Understand How Services Run and Operate in Production</title>
+      <pubDate>Wed, 06 Sep 2023 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/</link>
+      <guid>https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/</guid>
+      <description xml:base="https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/"><![CDATA[
+        <p>Published: 2023-09-06</p>
+        
+        
+          <p>Over the past few years, I have interviewed dozens of software engineers who could not explain how the services they
+developed ran in production. Infrastructure or platform teams often manage deployment, but that division of
+responsibility does not remove the need to understand a service's runtime behavior.</p>
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

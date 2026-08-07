@@ -1,0 +1,218 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      Understand How Services Run and Operate in Production
+    </title><meta content="Software engineers should understand the runtime model, resource requirements, and capacity of the services they operate." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/ rel=canonical><meta content=article property=og:type><meta content="Understand How Services Run and Operate in Production" property=og:title><meta content="Software engineers should understand the runtime model, resource requirements, and capacity of the services they operate." property=og:description><meta content=https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-understand-how-services-are-run-and-operate-in-production.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content="Social preview for Understand How Services Run and Operate in Production" property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content="Understand How Services Run and Operate in Production" name=twitter:title><meta content="Software engineers should understand the runtime model, resource requirements, and capacity of the services they operate." name=twitter:description><meta content=https://akrisanov.com/images/social-understand-how-services-are-run-and-operate-in-production.png name=twitter:image><meta content="Social preview for Understand How Services Run and Operate in Production" name=twitter:image:alt><meta content=2023-09-06 property=article:published_time><meta content=2023-09-06 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=software-engineering property=article:tag><meta content=production property=article:tag><meta content=devops property=article:tag><meta content=platform-engineering property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/"
+        },
+        "headline": "Understand How Services Run and Operate in Production",
+        "description": "Software engineers should understand the runtime model, resource requirements, and capacity of the services they operate.",
+        "image": "https://akrisanov.com/images/social-understand-how-services-are-run-and-operate-in-production.png",
+        "datePublished": "2023-09-06",
+        "dateModified": "2023-09-06",
+        "inLanguage": "en",
+        "wordCount": 351,
+        "timeRequired": "PT2M",
+        "keywords": ["software-engineering","production","devops","platform-engineering"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/ itemprop=url><meta content=https://akrisanov.com/images/social-understand-how-services-are-run-and-operate-in-production.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><header class=note-header><h1 class=note-title itemprop=headline>Understand How Services Run and Operate in Production</h1><p class=note-description itemprop=description>Software engineers should understand the runtime model, resource requirements, and capacity of the services they operate.<div class=note-meta><time class=note-date datetime=2023-09-06 itemprop=datePublished> September 6, 2023 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>2 min read</span><meta content=2023-09-06 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/software-engineering/>#software-engineering</a> <a class=tag href=https://akrisanov.com/tags/production/>#production</a> <a class=tag href=https://akrisanov.com/tags/devops/>#devops</a> <a class=tag href=https://akrisanov.com/tags/platform-engineering/>#platform-engineering</a> </span></header><div class="e2-text note-body" itemprop=articleBody><p>Over the past few years, I have interviewed dozens of software engineers who could not explain how the services they developed ran in production. Infrastructure or platform teams often manage deployment, but that division of responsibility does not remove the need to understand a service's runtime behavior.</p><span id=continue-reading></span><p>A typical conversation goes like this:<blockquote aria-label="Interview transcript" class=dialogue><p class=q><strong>Interviewer:</strong> How do you ship your service to production?<p class=a><strong>Candidate:</strong> We build Docker images and run containers.<p class=q><strong>Interviewer:</strong> What are the resource requirements for a container?<p class=a><strong>Candidate:</strong> I don't know the details. The DevOps team handles that.<p class=q><strong>Interviewer:</strong> Which application server does the Python service use?<p class=a><strong>Candidate:</strong> Application server? Do you mean WSGI?<p class=q><strong>Interviewer:</strong> Yes, the thing that handles web requests and runs your Python code.<p class=a><strong>Candidate:</strong> Let me check the repository. It uses Gunicorn.<p class=q><strong>Interviewer:</strong> Can you estimate how many requests the application can handle?<p class=a><strong>Candidate:</strong> No. We don't run load tests.<p class=q><strong>Interviewer:</strong> Can you make a rough estimate?<p class=a><strong>Candidate:</strong> No.<p class=q><strong>Interviewer:</strong> What happens at the process and thread level when the application server handles a request?<p class=a><strong>Candidate:</strong> I can't explain it.</blockquote><p>Not knowing a configuration value from memory is reasonable. Being unable to explain the runtime model or how the team measures capacity is a problem. For synchronous and asynchronous services, the chosen <a rel="noopener external" href=https://docs.gunicorn.org/en/stable/design.html#server-model target=_blank>Gunicorn server model</a> affects concurrency, resource allocation, and throughput.<p>Platform and SRE teams can manage the infrastructure, but engineers still need to understand the processes and threads that execute their code, the CPU and memory those processes require, and the service's approximate capacity.</div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/choosing-kafka/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>Choosing Apache Kafka for a New Project</span> </a><a class=nav-newer href=https://akrisanov.com/custom-user-ldap-filter-in-keycloak/> <span class=note-navigation-direction>Newer <span class=note-navigation-shortcut><i class=nav-modifier></i>↑</span></span> <span class=note-navigation-title>Synchronize Active Directory Users with a Keycloak LDAP Filter</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script>

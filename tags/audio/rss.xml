@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - audio</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/audio/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Mon, 23 Oct 2023 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Convert FLAC to Apple Lossless with FFmpeg</title>
+      <pubDate>Mon, 23 Oct 2023 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/</link>
+      <guid>https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/</guid>
+      <description xml:base="https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/"><![CDATA[
+        <p>Published: 2023-10-23</p>
+        
+        
+          <p>I use Apple Music for most of my music collection. I also buy rare or remastered CD releases that are sometimes
+distributed as FLAC files, which Apple Music does not support. I convert them to Apple Lossless Audio Codec (ALAC)
+before importing them into my library.</p>
+<p>Install FFmpeg with Homebrew:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">brew</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ffmpeg</span></span></code></pre><p class="media-caption code-caption">Install FFmpeg with Homebrew</p>
+<p>Open the directory containing the FLAC files and run:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);"><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">for</span><span> file</span><span style="color: light-dark(#8839EF, #CBA6F7);"> in</span><span style="color: light-dark(#40A02B, #A6E3A1);"> *</span><span style="color: light-dark(#40A02B, #A6E3A1);">.</span><span style="color: light-dark(#40A02B, #A6E3A1);">f</span><span style="color: light-dark(#40A02B, #A6E3A1);">l</span><span style="color: light-dark(#40A02B, #A6E3A1);">a</span><span style="color: light-dark(#40A02B, #A6E3A1);">c</span><span style="color: light-dark(#7C7F93, #9399B2);">;</span><span style="color: light-dark(#8839EF, #CBA6F7);"> do</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  ffmpeg</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">i</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span>$</span><span>file</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">acodec</span><span style="color: light-dark(#40A02B, #A6E3A1);"> alac</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">vcodec</span><span style="color: light-dark(#40A02B, #A6E3A1);"> copy</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">$(</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">basename</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span>$</span><span>file</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> .flac</span><span style="color: light-dark(#7C7F93, #9399B2);">)</span><span style="color: light-dark(#40A02B, #A6E3A1);">.m4a</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">done</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">mkdir</span><span style="color: light-dark(#40A02B, #A6E3A1);"> flac</span><span style="color: light-dark(#40A02B, #A6E3A1);"> alac</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">for</span><span> file</span><span style="color: light-dark(#8839EF, #CBA6F7);"> in</span><span style="color: light-dark(#40A02B, #A6E3A1);"> *</span><span style="color: light-dark(#40A02B, #A6E3A1);">.</span><span style="color: light-dark(#40A02B, #A6E3A1);">f</span><span style="color: light-dark(#40A02B, #A6E3A1);">l</span><span style="color: light-dark(#40A02B, #A6E3A1);">a</span><span style="color: light-dark(#40A02B, #A6E3A1);">c</span><span style="color: light-dark(#7C7F93, #9399B2);">;</span><span style="color: light-dark(#8839EF, #CBA6F7);"> do</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  mv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span>$</span><span>file</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> flac/</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">done</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">for</span><span> file</span><span style="color: light-dark(#8839EF, #CBA6F7);"> in</span><span style="color: light-dark(#40A02B, #A6E3A1);"> *</span><span style="color: light-dark(#40A02B, #A6E3A1);">.</span><span style="color: light-dark(#40A02B, #A6E3A1);">m</span><span style="color: light-dark(#40A02B, #A6E3A1);">4</span><span style="color: light-dark(#40A02B, #A6E3A1);">a</span><span style="color: light-dark(#7C7F93, #9399B2);">;</span><span style="color: light-dark(#8839EF, #CBA6F7);"> do</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  mv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span>$</span><span>file</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> alac/</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">done</span></span></code></pre><p class="media-caption code-caption">Convert FLAC files to ALAC and organize the output</p>
+<figure class="article-figure">
+  <img
+    src="/images/Screenshot-2023-10-22-at-18.26.25.webp"
+    alt="FLAC files for Susumu Hirasawa's album Siren in Finder"
+    width="1160"
+    height="900"
+    loading="lazy"
+    decoding="async"
+  />
+  <figcaption class="media-caption">Susumu Hirasawa – Siren [Limited Edition]</figcaption>
+</figure>
+<p>The script converts each FLAC file to ALAC in an <code>.m4a</code> container. It moves the source files to <code>flac</code> and the
+converted files to <code>alac</code>:</p>
+<figure class="article-figure">
+  <img
+    src="/images/Screenshot-2023-10-22-at-18.27.10.webp"
+    alt="Converted M4A files in the ALAC directory in Finder"
+    width="1160"
+    height="1106"
+    loading="lazy"
+    decoding="async"
+  />
+  <figcaption class="media-caption">Converted ALAC files in Finder</figcaption>
+</figure>
+<p>Drag the <code>alac</code> directory into Apple Music to import the album and upload its tracks to the cloud.</p>
+<figure class="article-figure">
+  <img
+    src="/images/Screenshot-2023-10-22-at-18.27.41.webp"
+    alt="The imported Siren album in Apple Music"
+    width="1600"
+    height="946"
+    loading="lazy"
+    decoding="async"
+  />
+  <figcaption class="media-caption">The uploaded album</figcaption>
+</figure>
+<aside class="callout callout-warning" aria-label="Audio quality note">
+  <p>
+    The album shown above has no Lossless badge in Apple Music. Its FLAC files appeared to have been created from
+    a lossy source. Converting a file to ALAC does not improve its source quality. Check the codec and quality of
+    releases you buy or rip.
+  </p>
+</aside>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>
