@@ -1,4 +1,4 @@
-{% macro render(page) %}
+{% component article_card(page) %}
 <article class="e2-note e2-note-list">
   <header class="note-header">
     <h2 class="note-title">
@@ -41,7 +41,7 @@
       {% for tag in page.taxonomies.tags %}
         {% if loop.index <= 3 %}
         <a
-          href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}"
+          href="{{ get_taxonomy_url(kind='tags', term=tag) | safe }}"
           class="tag"
           >#{{ tag | escape_xml | safe }}</a
         >
@@ -59,4 +59,4 @@
     {% endif %}
   </footer>
 </article>
-{% endmacro render %}
+{% endcomponent article_card %}

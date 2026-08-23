@@ -378,6 +378,7 @@ Alert thresholds should come from SLOs and representative load tests, not generi
 
 The following rules show alert patterns. Replace the example thresholds and selectors with values derived from your service.
 
+{% raw %}
 ```yaml
 groups:
   - name: vllm-serving
@@ -431,6 +432,7 @@ groups:
           summary: "vLLM preemptions correlate with degraded TTFT"
           description: "Requests are being recomputed while TTFT is above the service objective."
 ```
+{% endraw %}
 
 The preemption expression is intentionally correlated with latency and aggregated to the same
 `cluster` and `model_name` labels as TTFT. Page on user impact, not on an isolated internal event.
@@ -535,7 +537,7 @@ which wastes compute and increases latency.
 
 ## Further reading
 
-{% further_reading() %}
+{% <further_reading> %}
 
 - [vLLM production metrics](https://docs.vllm.ai/en/v0.23.0/usage/metrics/)
   <span class="further-reading-description">Metric definitions and examples for monitoring vLLM in production.</span>
@@ -545,4 +547,4 @@ which wastes compute and increases latency.
   <span class="further-reading-description">Reference Grafana and Perses dashboards for vLLM.</span>
 - [Prometheus metric and label naming](https://prometheus.io/docs/concepts/data_model/)
   <span class="further-reading-description">Prometheus rules for metric names, labels, and time series.</span>
-{% end %}
+{% </further_reading> %}

@@ -1,4 +1,4 @@
-{% macro render(headings) %}
+{% component table_of_contents(headings) %}
 <nav class="note-toc-nav" data-note-toc aria-label="Table of contents">
   <ul class="note-toc-list note-toc-list-root">
     {% for h1 in headings %}
@@ -47,4 +47,4 @@
     {% endfor %}
   </ul>
 </nav>
-{% endmacro render %}
+{% endcomponent table_of_contents %}

@@ -14,7 +14,7 @@
     {% for page in pages %}
     <item>
       <title>{{ page.title }}</title>
-      <pubDate>{{ page.updated | default(value=page.date) | date(format="%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
+      <pubDate>{{ (page.updated or page.date) | date(format="%a, %d %b %Y %H:%M:%S %z") }}</pubDate>
       <dc:creator>{% if page.authors %}{{ page.authors[0] }}{% elif config.author %}{{ config.author }}{% else %}Unknown{% endif %}</dc:creator>
       <link>{{ page.permalink | escape_xml | safe }}</link>
       <guid>{{ page.permalink | escape_xml | safe }}</guid>

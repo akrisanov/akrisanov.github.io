@@ -1,10 +1,9 @@
 {% extends "base.html" %}
-{% import "macros/article_card.html" as article_card %}
 {% block content %} {% if paginator %} {% set pages =
 paginator.pages %} {% else %} {% set pages = section.pages %} {% endif %} {% for
 page in pages %} {% if page.slug != "about" and page.slug != "consulting" and
 page.slug != "now" %}
-{{ article_card::render(page=page) }}
+{{ <article_card page={page} /> }}
 {% endif %} {% endfor %} {% if paginator %}
 <nav class="pagination">
   {% if paginator.previous %}

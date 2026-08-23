@@ -119,10 +119,10 @@ This is the distinction that matters:
 | `/health/readiness`        | Proxy readiness and configured DB reachability  | No            |
 | LiteLLM model health check | Test a deployment and update model health state | Yes           |
 
-{% key_point() %}
+{% <key_point> %}
 A LiteLLM model health check is inference traffic.
 For a paid upstream API, health-check policy is also a cost-control decision.
-{% end %}
+{% </key_point> %}
 
 ## What we changed
 
@@ -205,15 +205,15 @@ GET /health/shared-status
 It reports Redis availability, lock state, cache age, and the pod that produced the cached result.
 This is useful for verifying that cross-pod coordination is actually working.
 
-{% scope_note(as_of="August 15, 2026", datetime="2026-08-15") %}
+{% <scope_note as_of="August 15, 2026" datetime="2026-08-15"> %}
 The incident occurred on LiteLLM 1.82.x. The present-day behavior and configuration in this article were verified
 against LiteLLM 1.96.2 as of August 15, 2026. Health-check behavior has changed over time, so verify it against the
 version you deploy.
-{% end %}
+{% </scope_note> %}
 
 ## Sources and further reading
 
-{% further_reading() %}
+{% <further_reading> %}
 
 - [LiteLLM: Health Checks](https://docs.litellm.ai/docs/proxy/health)
   <span class="further-reading-description">Proxy and model health-check endpoints, configuration, and behavior.</span>
@@ -229,4 +229,4 @@ version you deploy.
   <span class="further-reading-description">The current health-check request, token defaults, and model opt-out filtering.</span>
 - [LiteLLM 1.96.2 source: `shared_health_check_manager.py`](https://github.com/BerriAI/litellm/blob/v1.96.2/litellm/proxy/health_check_utils/shared_health_check_manager.py)
   <span class="further-reading-description">The current lock-TTL polling and fallback behavior.</span>
-{% end %}
+{% </further_reading> %}

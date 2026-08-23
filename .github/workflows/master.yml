@@ -17,7 +17,7 @@ jobs:
       - name: Install Zola
         uses: taiki-e/install-action@v2
         with:
-          tool: zola@0.22.1
+          tool: zola@0.23.4
 
       - name: Install ImageMagick
         run: sudo apt-get update && sudo apt-get install -y imagemagick fonts-dejavu-core
@@ -37,7 +37,7 @@ jobs:
           bash scripts/verify-performance.sh public
 
       - name: build_and_deploy
-        uses: shalzz/zola-deploy-action@v0.22.1
+        uses: shalzz/zola-deploy-action@v0.23.4
         env:
           PAGES_BRANCH: gh-pages
           TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,3 +1,4 @@
+{% component scope_note(as_of, datetime) %}
 <aside class="article-scope-note" aria-label="Ecosystem snapshot">
   <div class="article-scope-note-title">
     Ecosystem snapshot ·
@@ -5,3 +6,4 @@
   </div>
   <div class="article-scope-note-body">{{ body | markdown | safe }}</div>
 </aside>
+{% endcomponent scope_note %}

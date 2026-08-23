@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% import "macros/article_card.html" as article_card %}
 
 {% block title %}#{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock title %}
 {% block description %}Posts tagged with #{{ term.name | escape_xml | safe }} — {{ config.title | escape_xml | safe }}{% endblock description %}
@@ -14,6 +13,6 @@
 </div>
 
 {% for page in term.pages %}
-{{ article_card::render(page=page) }}
+{{ <article_card page={page} /> }}
 {% endfor %}
 {% endblock content %}

@@ -31,11 +31,11 @@ routing and distributed inference optimizations around engines such as [vLLM](ht
 
 These capabilities also introduce more controllers, APIs, compatibility constraints, and failure modes.
 
-{% scope_note(as_of="July 26, 2026", datetime="2026-07-26") %}
+{% <scope_note as_of="July 26, 2026" datetime="2026-07-26"> %}
 This article covers Kubernetes 1.36, KServe 0.18, the generally available Gateway API Inference Extension,
 and related production model-serving projects. The ecosystem evolves quickly, so verify version compatibility
 before adopting a particular combination.
-{% end %}
+{% </scope_note> %}
 
 <nav class="article-decision-guide" aria-label="Deployment guidance">
   <span class="article-decision-guide-label">Choose a deployment:</span>
@@ -531,14 +531,14 @@ Do not adopt every available CRD. Every controller adds:
 Inference performance still depends on the model engine, kernels, quantization, batching, KV-cache management,
 accelerator topology, and request characteristics. Kubernetes supplies control, placement, lifecycle, and routing.
 
-{% key_point() %}
+{% <key_point> %}
 Build the smallest serving stack that meets current SLOs. Add inference-specific layers when measurements show that
 the existing architecture has reached its limit.
-{% end %}
+{% </key_point> %}
 
 ## Sources and further reading
 
-{% further_reading() %}
+{% <further_reading> %}
 
 - [AI/ML Innovation in the Kubernetes Ecosystem (2024)](https://terrytangyuan.github.io/2024/10/22/ai-ml-innovation-in-the-kubernetes-ecosystem/)
   <span class="further-reading-description">The original ecosystem overview revisited by this article.</span>
@@ -560,4 +560,4 @@ the existing architecture has reached its limit.
   <span class="further-reading-description">Model registry and federated catalog capabilities.</span>
 - [Kubernetes AI Gateway Working Group](https://kubernetes.io/blog/2026/03/09/announcing-ai-gateway-wg/)
   <span class="further-reading-description">The effort to standardize AI gateway patterns in Kubernetes.</span>
-{% end %}
+{% </further_reading> %}

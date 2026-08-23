@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-{% import "macros/article_card.html" as article_card %}
-{% import "macros/writing_navigation.html" as writing_navigation %}
 
 {% block title -%}
   {%- if paginator and paginator.current_index > 1 -%}
@@ -73,9 +71,9 @@
 <section class="home-writing-section selected-writing" aria-labelledby="selected-writing-title">
   <h2 id="selected-writing-title" class="article-list-heading">Selected writing</h2>
   {% for page in section.pages %}
-    {% set is_selected = page.extra.selected | default(value=false) %}
+    {% set is_selected = page.extra.selected or false %}
     {% if is_selected %}
-      {{ article_card::render(page=page) }}
+      {{ <article_card page={page} /> }}
     {% endif %}
   {% endfor %}
 </section>
@@ -83,21 +81,21 @@
 <section class="home-writing-section latest-writing" aria-labelledby="latest-writing-title">
   <h2 id="latest-writing-title" class="article-list-heading">Latest writing</h2>
   {% for page in paginator.pages %}
-    {% set is_selected = page.extra.selected | default(value=false) %}
+    {% set is_selected = page.extra.selected or false %}
     {% if not is_selected %}
-      {{ article_card::render(page=page) }}
+      {{ <article_card page={page} /> }}
     {% endif %}
   {% endfor %}
 </section>
 {% else %}
 {% for page in paginator.pages %}
-  {{ article_card::render(page=page) }}
+  {{ <article_card page={page} /> }}
 {% endfor %}
 {% endif %}
-{{ writing_navigation::render(
-  newer_url=paginator.previous | default(value=""),
-  newer_label="Newer writing",
-  older_url=paginator.next | default(value=""),
+{{ <writing_navigation
+  newer_url={paginator.previous or ""}
+  newer_label="Newer writing"
+  older_url={paginator.next or ""}
   older_label="Earlier writing"
-) }}
+/> }}
 {% endblock content %}

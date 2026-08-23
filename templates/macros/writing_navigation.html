@@ -1,4 +1,4 @@
-{% macro render(newer_url="", newer_label="", older_url="", older_label="") %}
+{% component writing_navigation(newer_url="", newer_label="", older_url="", older_label="") %}
 <nav class="pagination" aria-label="Writing navigation">
   {% if newer_url %}
   <a href="{{ newer_url }}" class="pagination-newer"
@@ -28,4 +28,4 @@
     });
   })();
 </script>
-{% endmacro render %}
+{% endcomponent writing_navigation %}
