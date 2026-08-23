@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.extra.seo_title | escape_xml | safe }}{% endblock title %}
+{% block description %}{{ page.description | escape_xml | safe }}{% endblock description %}
+{% block og_title %}{{ page.extra.seo_title | escape_xml | safe }}{% endblock og_title %}
+{% block og_description %}{{ page.description | escape_xml | safe }}{% endblock og_description %}
+{% block twitter_title %}{{ page.extra.seo_title | escape_xml | safe }}{% endblock twitter_title %}
+{% block twitter_description %}{{ page.description | escape_xml | safe }}{% endblock twitter_description %}
+
+{% block head_links %}
+<link rel="stylesheet" href="{{ get_url(path='css/shelf.css', cachebust=true) }}" />
+{% endblock head_links %}
+
+{% block content %}
+{% set shelf = load_data(path="data/shelf.toml", format="toml") %}
+{% set shelves = shelf.shelves | sort(attribute="order") %}
+<article class="media-library">
+  <header class="library-intro">
+    <div class="library-kicker">
+      <span>{{ shelf.label | escape_xml | safe }}</span>
+      <span aria-hidden="true">•</span>
+      <span>Updated {{ shelf.updated | escape_xml | safe }}</span>
+    </div>
+    <h1>{{ shelf.title | escape_xml | safe }}</h1>
+    <p>{{ shelf.intro | escape_xml | safe }}</p>
+    <nav class="shelf-index" aria-label="Shelf index">
+      {% for section in shelves %}
+      <a href="#{{ section.id | escape_xml | safe }}">
+        <span>{{ section.number | escape_xml | safe }}</span>
+        {{ section.label | escape_xml | safe }}
+      </a>
+      {% endfor %}
+    </nav>
+  </header>
+
+  <div class="cabinet" aria-label="Shelves of favorite media">
+    {% for section in shelves %}
+    {% set items = section.items | default(value=[]) %}
+    <section class="shelf" id="{{ section.id | escape_xml | safe }}" aria-labelledby="{{ section.id | escape_xml | safe }}-title">
+      <header class="shelf-heading">
+        <span class="shelf-number">{{ section.number | escape_xml | safe }}</span>
+        <div>
+          <h2 id="{{ section.id | escape_xml | safe }}-title">{{ section.label | escape_xml | safe }}</h2>
+          <p>{{ section.description | escape_xml | safe }}</p>
+        </div>
+        <span class="shelf-count">{{ items | length }} titles</span>
+      </header>
+
+      <div class="shelf-stage">
+        <div class="shelf-objects">
+          {% for item in items %}
+          {% set cover = item.cover | default(value="") %}
+          <button
+            class="media-object media-object--{{ item.kind | escape_xml | safe }}{% if cover %} media-object--has-cover{% endif %}"
+            type="button"
+            aria-label="Open notes for {{ item.title | escape_xml | safe }}"
+            data-title="{{ item.title | escape_xml | safe }}"
+            data-creator="{{ item.creator | escape_xml | safe }}"
+            data-year="{{ item.year | escape_xml | safe }}"
+            data-format="{{ item.format | escape_xml | safe }}"
+            data-note="{{ item.note | escape_xml | safe }}"
+            data-kind="{{ item.kind | escape_xml | safe }}"
+            data-link="{{ item.link | default(value='') | escape_xml | safe }}"
+            data-link-label="{{ item.link_label | default(value='') | escape_xml | safe }}"
+            data-favorite="{{ item.favorite | default(value='') | escape_xml | safe }}"
+            data-tracks="{{ item.tracks | default(value=[]) | join(sep='|') | escape_xml | safe }}"
+          >
+            <span class="object-case">
+              {% if cover %}
+              <img
+                class="media-cover"
+                src="{{ get_url(path=cover, cachebust=true) }}"
+                alt=""
+                width="600"
+                height="900"
+                loading="lazy"
+                decoding="async"
+              >
+              {% endif %}
+              <span class="spine-title">{{ item.title | escape_xml | safe }}</span>
+              <span class="spine-meta">{{ item.year | escape_xml | safe }}</span>
+              <span class="spine-edge" aria-hidden="true"></span>
+            </span>
+          </button>
+          {% endfor %}
+          {% if items | length == 0 %}
+          <p class="shelf-empty">The first record is waiting to be added.</p>
+          {% else %}
+          <span class="shelf-bookend" aria-hidden="true"></span>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+    {% endfor %}
+  </div>
+
+  <footer class="library-note">
+    <span class="library-note-mark" aria-hidden="true">✦</span>
+    <p>Not a ranking. Just things I love.</p>
+  </footer>
+</article>
+
+<dialog class="media-dialog" id="media-dialog" aria-labelledby="media-dialog-title">
+  <form method="dialog">
+    <button class="media-dialog-close" aria-label="Close details">×</button>
+  </form>
+  <div class="media-dialog-content">
+    <img class="media-dialog-cover" id="media-dialog-cover" src="" alt="" hidden>
+    <div class="media-dialog-details">
+      <div class="media-dialog-edition" id="media-dialog-format"></div>
+      <h2 id="media-dialog-title"></h2>
+      <p class="media-dialog-creator" id="media-dialog-creator"></p>
+      <p class="media-dialog-note" id="media-dialog-note"></p>
+      <div class="media-dialog-selection" id="media-dialog-selection" hidden>
+        <span id="media-dialog-selection-label"></span>
+        <p id="media-dialog-tracks" hidden></p>
+      </div>
+      <a class="media-dialog-link" id="media-dialog-link" href="" target="_blank" rel="noopener noreferrer" hidden></a>
+      <div class="media-dialog-rule" aria-hidden="true"></div>
+      <p class="media-dialog-hint">On the shelf because it deserves another visit.</p>
+    </div>
+  </div>
+</dialog>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{{ get_url(path='js/shelf.js', cachebust=true) }}" defer></script>
+{% endblock scripts %}

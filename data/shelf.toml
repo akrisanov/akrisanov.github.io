@@ -1,0 +1,258 @@
+label = "Things I love"
+title = "The shelf"
+intro = "Movies, shows, games, and books I’d revisit or want you to experience. No particular order, just a few things that have stayed with me."
+updated = "August 2026"
+
+[[shelves]]
+id = "books"
+order = 1
+number = "01"
+label = "Books"
+description = "Read, underlined, revisited, and worth keeping."
+
+[[shelves.items]]
+title = "The Master and Margarita"
+creator = "Mikhail Bulgakov"
+year = "1967"
+format = "50th-anniversary edition"
+kind = "book"
+cover = "images/shelf/master-and-margarita.webp"
+note = "Past and present collide in a story of tyranny, cowardice, absurdity, and the redemptive power of love."
+link = "https://en.wikipedia.org/wiki/The_Master_and_Margarita"
+link_label = "Wikipedia"
+
+[[shelves]]
+id = "movies"
+order = 2
+number = "02"
+label = "Movies"
+description = "An inner journey through freedom, memory, love, work, and the systems that shape us."
+
+# Agent note: The movie order is intentional and personal, not alphabetical,
+# chronological, or a quality ranking. Preserve its emotional progression:
+# freedom and solitude → memory and unrealized lives → love and ordinary time →
+# ambition and professional identity → institutions, power, empathy, and survival.
+# Place new films where they belong in that arc; do not simply append or re-sort.
+
+[[shelves.items]]
+title = "The Big Blue"
+creator = "Luc Besson"
+year = "1988"
+format = "Director’s cut"
+kind = "bluray"
+cover = "images/shelf/the-big-blue.webp"
+note = "A dreamlike meditation on obsession, freedom, and the ocean’s pull toward something beyond ordinary life."
+link = "https://letterboxd.com/film/the-big-blue/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "Perfect Days"
+creator = "Wim Wenders"
+year = "2023"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/perfect-days.jpg"
+note = "A quiet argument that attention can turn routine into a form of freedom."
+link = "https://letterboxd.com/film/perfect-days-2023/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "Nomadland"
+creator = "Chloé Zhao"
+year = "2020"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/nomadland.jpg"
+note = "A portrait of grief and precarity that finds dignity not in escape, but in continuing down the road."
+link = "https://letterboxd.com/film/nomadland/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "Cinema Paradiso"
+creator = "Giuseppe Tornatore"
+year = "1988"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/cinema-paradiso.jpg"
+note = "A love letter to the movies, but also to memory itself: what time takes from us, and what art quietly gives back."
+link = "https://letterboxd.com/film/cinema-paradiso/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "Past Lives"
+creator = "Celine Song"
+year = "2023"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/past-lives.jpg"
+note = "A tender study of the selves we leave behind, and of how love can remain real without becoming a life."
+link = "https://letterboxd.com/film/past-lives/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "About Time"
+creator = "Richard Curtis"
+year = "2013"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/about-time.jpg"
+note = "A time-travel story that slowly reveals its true subject: the ordinary day as something already worth reliving."
+link = "https://letterboxd.com/film/about-time/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "La La Land"
+creator = "Damien Chazelle"
+year = "2016"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/la-la-land.jpg"
+note = "A bittersweet romance about the price of becoming who you hoped to be, and the lives that remain imaginable."
+link = "https://letterboxd.com/film/la-la-land/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "Heat"
+creator = "Michael Mann"
+year = "1995"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/heat-1995.jpg"
+note = "Two men define themselves through work so completely that recognition becomes the closest thing they have to intimacy."
+link = "https://letterboxd.com/film/heat-1995/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "3 Idiots"
+creator = "Rajkumar Hirani"
+year = "2009"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/3-idiots.jpg"
+note = "Its exuberance carries a serious refusal of an education system that mistakes obedience and competition for learning."
+link = "https://letterboxd.com/film/3-idiots/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "The Killer"
+creator = "David Fincher"
+year = "2023"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/the-killer-2023.jpg"
+note = "A study of control as self-deception: immaculate routines collapsing under the pressure of chance."
+link = "https://letterboxd.com/film/the-killer-2023/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "There Will Be Blood"
+creator = "Paul Thomas Anderson"
+year = "2007"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/there-will-be-blood.jpg"
+note = "Capital, faith, and loneliness distilled into a brutal contest between two men who can imagine power more easily than love."
+link = "https://letterboxd.com/film/there-will-be-blood/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "Life Is Beautiful"
+creator = "Roberto Benigni"
+year = "1997"
+format = "4K UHD"
+kind = "bluray"
+cover = "images/shelf/life-is-beautiful.webp"
+note = "An unforgettable fable that proves love, family and imagination conquer all."
+link = "https://letterboxd.com/film/life-is-beautiful/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "Jojo Rabbit"
+creator = "Taika Waititi"
+year = "2019"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/jojo-rabbit.jpg"
+note = "A child’s fantasy colliding with moral reality, where tenderness becomes an antidote to inherited hatred."
+link = "https://letterboxd.com/film/jojo-rabbit/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "Three Billboards Outside Ebbing, Missouri"
+creator = "Martin McDonagh"
+year = "2017"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/three-billboards.jpg"
+note = "Anger moves through a wounded town until blame gives way to the harder work of recognizing another person’s pain."
+link = "https://letterboxd.com/film/three-billboards-outside-ebbing-missouri/"
+link_label = "Letterboxd"
+
+[[shelves.items]]
+title = "Shot Caller"
+creator = "Ric Roman Waugh"
+year = "2017"
+format = "Blu-ray"
+kind = "bluray"
+cover = "images/shelf/shot-caller.jpg"
+note = "A grim account of how institutions do not merely punish people, but remake them for survival."
+link = "https://letterboxd.com/film/shot-caller/"
+link_label = "Letterboxd"
+
+[[shelves]]
+id = "television"
+order = 3
+number = "03"
+label = "TV shows"
+description = "Stories I lived with long enough to miss when they ended."
+
+[[shelves.items]]
+title = "Severance"
+creator = "Dan Erickson"
+year = "2022–"
+format = "Season archive"
+kind = "boxset"
+cover = "images/shelf/severance.webp"
+note = "A study of alienated labor and divided consciousness, staged with the sterile precision of corporate modernism."
+link = "https://www.themoviedb.org/tv/95396-severance"
+link_label = "TMDB"
+
+[[shelves]]
+id = "games"
+order = 4
+number = "04"
+label = "Games"
+description = "Places that only exist while you are moving through them."
+
+[[shelves.items]]
+title = "Mass Effect"
+creator = "BioWare"
+year = "2007"
+format = "PC edition"
+kind = "game"
+cover = "images/shelf/mass-effect.webp"
+note = "It gave me the feeling of actually traveling through space: immense distances, quiet anticipation, and the pull of worlds still unknown."
+link = "https://store.steampowered.com/app/17460/Mass_Effect_2007/"
+link_label = "Steam"
+
+[[shelves.items]]
+title = "Max Payne"
+creator = "Remedy Entertainment"
+year = "2001"
+format = "PC edition"
+kind = "game"
+cover = "images/shelf/max-payne.jpg"
+note = "Its snowbound noir, graphic-novel voice, and impossible sadness made action feel less like spectacle than a man forcing himself through grief."
+link = "https://store.steampowered.com/app/12140/Max_Payne/"
+link_label = "Steam"
+
+[[shelves]]
+id = "albums"
+order = 5
+number = "05"
+label = "Albums"
+description = "Records I return to, whether for the whole journey or a few indispensable songs."
+
+# Album cards support either:
+# favorite = "album"
+# tracks = ["Song one", "Song two"]
