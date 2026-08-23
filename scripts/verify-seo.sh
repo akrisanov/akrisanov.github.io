@@ -44,6 +44,22 @@ while IFS= read -r -d '' page; do
     echo "Invalid JSON-LD: $page" >&2
     status=1
   fi
+
+  if ! perl -0ne 'while (/<script type=application\/ld\+json>(.*?)<\/script>/sg) { print "$1\n" }' "$page" | jq -s -e '
+    def valid_profile_datetime:
+      . as $value
+      | (($value | type) == "string")
+        and (($value | try fromdateiso8601 catch null) != null);
+
+    [.. | objects | select(."@type" == "ProfilePage")] as $profiles
+    | all($profiles[];
+        (.dateCreated | valid_profile_datetime)
+        and (.dateModified | valid_profile_datetime)
+      )
+  ' >/dev/null; then
+    echo "ProfilePage dates must be ISO 8601 UTC datetimes: $page" >&2
+    status=1
+  fi
 done < <(find "$output_dir" -type f -name '*.html' -print0)
 
 if grep -Fq '<loc>https://akrisanov.com/blog/</loc>' "$output_dir/sitemap.xml"; then

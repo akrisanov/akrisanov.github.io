@@ -114,8 +114,8 @@
     "url": {{ page.permalink | json_encode | safe }},
     "name": {{ page.extra.seo_title | default(value=page.title) | json_encode | safe }},
     "description": {{ page.description | default(value=config.description) | json_encode | safe }},
-    "dateCreated": {{ page.date | date(format="%Y-%m-%d") | json_encode | safe }},
-    "dateModified": {{ page.updated | default(value=page.date) | date(format="%Y-%m-%d") | json_encode | safe }},
+    "dateCreated": {{ page.date | date(format="%Y-%m-%dT%H:%M:%SZ", timezone="UTC") | json_encode | safe }},
+    "dateModified": {{ page.updated | default(value=page.date) | date(format="%Y-%m-%dT%H:%M:%SZ", timezone="UTC") | json_encode | safe }},
     "inLanguage": {{ lang | json_encode | safe }},
     "isPartOf": {
       "@type": "WebSite",
