@@ -21,6 +21,17 @@ note = "Past and present collide in a story of tyranny, cowardice, absurdity, an
 link = "https://en.wikipedia.org/wiki/The_Master_and_Margarita"
 link_label = "Wikipedia"
 
+[[shelves.items]]
+title = "Evenings on a Farm Near Dikanka"
+creator = "Nikolai Gogol"
+year = "1831–1832"
+format = "English edition"
+kind = "book"
+cover = "images/shelf/evenings-near-dikanka.webp"
+note = "I grew up in a small village near the Russian, Belarusian, and Ukrainian borders. This book returns me to that childhood: to the folklore, humor, and inherited memory ordinary people carry quietly across generations."
+link = "https://en.wikipedia.org/wiki/Evenings_on_a_Farm_Near_Dikanka"
+link_label = "Wikipedia"
+
 [[shelves]]
 id = "movies"
 order = 2
