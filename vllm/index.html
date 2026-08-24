@@ -1,0 +1,380 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference
+    </title><meta content="How vLLM improves LLM serving efficiency with PagedAttention, better KV-cache utilization, higher throughput, and steadier latency." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/vllm/ rel=canonical><meta content=article property=og:type><meta content="Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference" property=og:title><meta content="How vLLM improves LLM serving efficiency with PagedAttention, better KV-cache utilization, higher throughput, and steadier latency." property=og:description><meta content=https://akrisanov.com/vllm/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-vllm.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content="Social preview for Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference" property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content="Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference" name=twitter:title><meta content="How vLLM improves LLM serving efficiency with PagedAttention, better KV-cache utilization, higher throughput, and steadier latency." name=twitter:description><meta content=https://akrisanov.com/images/social-vllm.png name=twitter:image><meta content="Social preview for Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference" name=twitter:image:alt><meta content=2026-01-27 property=article:published_time><meta content=2026-01-27 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=vllm property=article:tag><meta content=llm-inference property=article:tag><meta content=gpu property=article:tag><meta content=performance property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/vllm/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/vllm/"
+        },
+        "headline": "Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference",
+        "description": "How vLLM improves LLM serving efficiency with PagedAttention, better KV-cache utilization, higher throughput, and steadier latency.",
+        "image": "https://akrisanov.com/images/social-vllm.png",
+        "datePublished": "2026-01-27",
+        "dateModified": "2026-01-27",
+        "inLanguage": "en",
+        "wordCount": 613,
+        "timeRequired": "PT3M",
+        "keywords": ["vllm","llm-inference","gpu","performance"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/shelf/>Shelf</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/vllm/ itemprop=url><meta content=https://akrisanov.com/images/social-vllm.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><div class=note-layout><div class=note-main><header class=note-header><h1 class=note-title itemprop=headline>Why vLLM Scales: Paging the KV-Cache for Faster LLM Inference</h1><p class=note-description itemprop=description>How vLLM improves LLM serving efficiency with PagedAttention, better KV-cache utilization, higher throughput, and steadier latency.<div class=note-meta><time class=note-date datetime=2026-01-27 itemprop=datePublished> January 27, 2026 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>3 min read</span><meta content=2026-01-27 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/vllm/>#vllm</a> <a class=tag href=https://akrisanov.com/tags/llm-inference/>#llm-inference</a> <a class=tag href=https://akrisanov.com/tags/gpu/>#gpu</a> <a class=tag href=https://akrisanov.com/tags/performance/>#performance</a> </span></header><details class=note-toc-mobile><summary class=note-toc-mobile-summary>On this page</summary> <div class=note-toc-mobile-panel><nav aria-label="Table of contents" class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#kv-cache-fragmentation> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>KV-cache fragmentation</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#pagedattention> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>PagedAttention</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#effects-of-a-paged-kv-cache> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Effects of a paged KV-cache</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#block-size> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Block size</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#prefill-and-decode> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Prefill and decode</span> </a> <ul class="note-toc-list note-toc-list-child"><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#prefill> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Prefill</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#decode> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Decode</span> </a></ul></ul></nav></div></details><div class="e2-text note-body" itemprop=articleBody><p><a rel="noopener external" href=https://vllm.ai/ target=_blank>vLLM</a> is an LLM inference engine designed to improve GPU utilization. Its key mechanism is <a rel="noopener external" href=https://arxiv.org/abs/2309.06180 target=_blank>PagedAttention</a>, which manages the KV-cache without the memory waste common in traditional LLM serving stacks. More efficient memory use supports larger batches and steadier latency under load.<h2 id=kv-cache-fragmentation>KV-cache fragmentation</h2><p>In traditional LLM serving systems, the KV-cache (the keys and values representing token context) must live in a single contiguous block of GPU memory.<p>The system does not know in advance how long the model’s answer will be.<p>It therefore reserves memory for the maximum context length—say, 2048 or 4096 tokens—for every request.<ul><li>Large chunks of VRAM are reserved but never used<li>Memory becomes fragmented<li>Up to 60–80% of KV-cache memory is effectively wasted</ul><p>That VRAM could instead serve more requests in parallel.<h2 id=pagedattention>PagedAttention</h2><p>PagedAttention takes inspiration from virtual memory and paging in operating systems.<p>Instead of allocating one large contiguous region per request, it uses fixed-size blocks:<ol><li><strong>Split the KV-cache into fixed-size blocks.</strong> Each request’s KV-cache is divided into blocks, such as 16 or 32 tokens per block.<li><strong>Store blocks non-contiguously.</strong> The blocks can reside anywhere in VRAM.<li><strong>Map logical to physical blocks.</strong> A block table maps the logical token order to physical GPU memory blocks.<li><strong>Allocate blocks as needed.</strong> vLLM allocates new blocks as it generates tokens instead of reserving the maximum space up front.</ol><p>This block-based allocation accounts for much of vLLM’s performance improvement.<h2 id=effects-of-a-paged-kv-cache>Effects of a paged KV-cache</h2><ul><li><strong>Less external fragmentation.</strong> Because blocks do not need to be contiguous, free memory can be reused instead of becoming unusable holes.<li><strong>Limited internal fragmentation.</strong> Only the last block of a sequence may be partially empty. With reasonable block sizes, memory loss is typically below 4%.<li><strong>Larger batch sizes.</strong> Better memory efficiency allows more concurrent requests per GPU, a main driver of performance on modern GPUs.<li><strong>Higher throughput.</strong> In practice, this enables 2–4× throughput compared with TGI and up to about 24× compared with naïve Hugging Face serving setups.<li><strong>Continuous batching.</strong> New requests can be added as soon as completed requests free blocks, without waiting for a full batch boundary.<li><strong>Prefix and prompt caching.</strong> Multiple requests can point to the same physical blocks for shared prefixes, such as system prompts and long examples.<li><strong>Copy-on-write.</strong> When generating multiple completions from the same prompt, vLLM allocates new blocks only after the outputs diverge. This can save up to about 55% of KV-cache memory.<li><strong>Lower TTFT under load.</strong> PagedAttention does not reduce the computation required for the first token. Higher throughput can clear queues faster, reducing the queue-time component of TTFT.<li><strong>Preemption and swapping.</strong> If VRAM runs low, individual blocks can be swapped to CPU memory instead of causing an out-of-memory error.<li><strong>No recomputation.</strong> Unlike approaches that discard the KV-cache under pressure, PagedAttention preserves progress and resumes generation without processing the prompt again.</ul><h2 id=block-size>Block size</h2><p>Block size affects:<ul><li>Internal fragmentation<li>Metadata and indexing overhead<li>Eviction and preemption behavior (if used)</ul><p>Smaller blocks improve memory efficiency but increase overhead.<p>Larger blocks reduce overhead but waste more space at the end of sequences.<p>The best value depends on the workload.<h2 id=prefill-and-decode>Prefill and decode</h2><p>The two phases have different bottlenecks:<h3 id=prefill>Prefill</h3><ul><li>Often compute- or memory-bound<li>Cost grows with input sequence length</ul><h3 id=decode>Decode</h3><ul><li>Usually memory-bandwidth-bound<li>Heavily dependent on KV-cache efficiency and batching<li>TTFT (Time to First Token) = queue time + prefill latency</ul><p>PagedAttention mainly improves decode throughput.<p>So if you see this pattern:<ul><li>tokens/sec ↑<li>p99 TTFT unchanged (or worse)</ul><p>then decode improved, but queueing or prefill remains the bottleneck.</div></div><aside aria-label="Table of contents" class="note-toc note-toc-desktop"><div class=note-toc-card><div class=note-toc-title>On this page</div><nav aria-label="Table of contents" class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#kv-cache-fragmentation> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>KV-cache fragmentation</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#pagedattention> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>PagedAttention</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#effects-of-a-paged-kv-cache> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Effects of a paged KV-cache</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#block-size> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Block size</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#prefill-and-decode> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Prefill and decode</span> </a> <ul class="note-toc-list note-toc-list-child"><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#prefill> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Prefill</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/vllm/#decode> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Decode</span> </a></ul></ul></nav></div></aside></div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/uv/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>uv: Managing Python Versions, Dependencies, Tools, and Scripts</span> </a><a class=nav-newer href=https://akrisanov.com/vllm-metrics/> <span class=note-navigation-direction>Newer <span class=note-navigation-shortcut><i class=nav-modifier></i>↑</span></span> <span class=note-navigation-title>Monitoring vLLM in Production: Metrics, PromQL, Alerts, and Runbooks</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script><script>(function () {
+    var tocs = Array.prototype.slice.call(
+      document.querySelectorAll("[data-note-toc]"),
+    );
+    if (!tocs.length) return;
+
+    var groups = tocs
+      .map(function (toc) {
+        var links = Array.prototype.slice.call(
+          toc.querySelectorAll("[data-toc-link]"),
+        );
+        var items = Array.prototype.slice.call(
+          toc.querySelectorAll("[data-toc-item]"),
+        );
+        var entries = links
+          .map(function (link, index) {
+            var id = decodeURIComponent(link.hash.slice(1));
+            return {
+              link: link,
+              item: items[index],
+              heading: document.getElementById(id),
+              top: 0,
+            };
+          })
+          .filter(function (entry) {
+            return entry.heading;
+          });
+        return {
+          toc: toc,
+          entries: entries,
+          activeIndex: -1,
+        };
+      })
+      .filter(function (group) {
+        return group.entries.length;
+      });
+
+    if (!groups.length) return;
+
+    var frame = null;
+
+    function measure() {
+      groups.forEach(function (group) {
+        group.entries.forEach(function (entry) {
+          var headingRect = entry.heading.getBoundingClientRect();
+          entry.top = headingRect.top + window.pageYOffset;
+        });
+      });
+    }
+
+    function keepActiveLinkVisible(group, entry) {
+      var scroller = group.toc.closest(
+        ".note-toc, .note-toc-mobile-panel",
+      );
+      if (
+        !scroller ||
+        scroller.offsetParent === null ||
+        scroller.scrollHeight <= scroller.clientHeight
+      ) {
+        return;
+      }
+
+      var linkRect = entry.link.getBoundingClientRect();
+      var scrollerRect = scroller.getBoundingClientRect();
+      var padding = 10;
+
+      if (linkRect.top < scrollerRect.top + padding) {
+        scroller.scrollTop -= scrollerRect.top + padding - linkRect.top;
+      } else if (linkRect.bottom > scrollerRect.bottom - padding) {
+        scroller.scrollTop += linkRect.bottom - scrollerRect.bottom + padding;
+      }
+    }
+
+    function update() {
+      frame = null;
+      var position =
+        window.pageYOffset +
+        Math.max(120, Math.round(window.innerHeight * 0.22));
+
+      groups.forEach(function (group) {
+        var nextActive = 0;
+
+        for (var i = 0; i < group.entries.length; i += 1) {
+          if (position >= group.entries[i].top) {
+            nextActive = i;
+          }
+        }
+
+        if (nextActive !== group.activeIndex) {
+          group.activeIndex = nextActive;
+          group.entries.forEach(function (entry, index) {
+            var isActive = index === group.activeIndex;
+            var isPast = index < group.activeIndex;
+            entry.item.classList.toggle("is-active", isActive);
+            entry.item.classList.toggle("is-past", isPast);
+            if (isActive) {
+              entry.link.setAttribute("aria-current", "location");
+            } else {
+              entry.link.removeAttribute("aria-current");
+            }
+          });
+
+          keepActiveLinkVisible(
+            group,
+            group.entries[group.activeIndex],
+          );
+        }
+      });
+    }
+
+    function schedule() {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(update);
+    }
+
+    measure();
+    update();
+    window.addEventListener("resize", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("load", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("pageshow", function () {
+      measure();
+      schedule();
+    });
+    document.addEventListener("article:layoutchange", function () {
+      measure();
+      schedule();
+    });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        measure();
+        schedule();
+      });
+    }
+
+    var noteMain = document.querySelector(".note-main");
+    if ("ResizeObserver" in window && noteMain) {
+      var resizeObserver = new ResizeObserver(function () {
+        measure();
+        schedule();
+      });
+      resizeObserver.observe(noteMain);
+    }
+
+    document
+      .querySelectorAll(".note-toc-mobile")
+      .forEach(function (details) {
+        details.addEventListener("toggle", function () {
+          if (!details.open) return;
+          groups.forEach(function (group) {
+            group.activeIndex = -1;
+          });
+          schedule();
+        });
+      });
+  })();</script>

@@ -1,0 +1,244 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      Generate a Python Lockfile with GitHub Actions
+    </title><meta content="Generate a Python requirements lockfile with pip-tools on the same operating system and Python version used for deployment." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/ rel=canonical><meta content=article property=og:type><meta content="Generate a Python Lockfile with GitHub Actions" property=og:title><meta content="Generate a Python requirements lockfile with pip-tools on the same operating system and Python version used for deployment." property=og:description><meta content=https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-using-github-actions-to-generate-a-lockfile-for-python-project.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content="Social preview for Generate a Python Lockfile with GitHub Actions" property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content="Generate a Python Lockfile with GitHub Actions" name=twitter:title><meta content="Generate a Python requirements lockfile with pip-tools on the same operating system and Python version used for deployment." name=twitter:description><meta content=https://akrisanov.com/images/social-using-github-actions-to-generate-a-lockfile-for-python-project.png name=twitter:image><meta content="Social preview for Generate a Python Lockfile with GitHub Actions" name=twitter:image:alt><meta content=2023-10-12 property=article:published_time><meta content=2023-10-12 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=python property=article:tag><meta content=github-actions property=article:tag><meta content=dependency-management property=article:tag><meta content=pip-tools property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/"
+        },
+        "headline": "Generate a Python Lockfile with GitHub Actions",
+        "description": "Generate a Python requirements lockfile with pip-tools on the same operating system and Python version used for deployment.",
+        "image": "https://akrisanov.com/images/social-using-github-actions-to-generate-a-lockfile-for-python-project.png",
+        "datePublished": "2023-10-12",
+        "dateModified": "2023-10-12",
+        "inLanguage": "en",
+        "wordCount": 285,
+        "timeRequired": "PT2M",
+        "keywords": ["python","github-actions","dependency-management","pip-tools"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/shelf/>Shelf</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/using-github-actions-to-generate-a-lockfile-for-python-project/ itemprop=url><meta content=https://akrisanov.com/images/social-using-github-actions-to-generate-a-lockfile-for-python-project.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><header class=note-header><h1 class=note-title itemprop=headline>Generate a Python Lockfile with GitHub Actions</h1><p class=note-description itemprop=description>Generate a Python requirements lockfile with pip-tools on the same operating system and Python version used for deployment.<div class=note-meta><time class=note-date datetime=2023-10-12 itemprop=datePublished> October 12, 2023 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>2 min read</span><meta content=2023-10-12 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/python/>#python</a> <a class=tag href=https://akrisanov.com/tags/github-actions/>#github-actions</a> <a class=tag href=https://akrisanov.com/tags/dependency-management/>#dependency-management</a> <a class=tag href=https://akrisanov.com/tags/pip-tools/>#pip-tools</a> </span></header><div class="e2-text note-body" itemprop=articleBody><p>When development and deployment use different operating systems or processor architectures, generate the Python lockfile in the deployment environment. GitHub Actions can run this step without requiring the same environment on the developer's machine.<p>I develop on macOS with Apple silicon, while most of my projects run on Linux. Resolved dependencies can differ between these environments because not every package provides wheels for every platform. The Python version can also affect the result.<p>For example, <code>pip-compile</code> can produce different lockfiles on macOS, Linux, and Windows:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>pip-compile</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-allow-unsafe</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-generate-hashes</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-no-emit-index-url</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-output-file=requirements-lock.txt</span></span></code></pre><p class="media-caption code-caption">Using pip-tools to compile a requirements lockfile</p><span id=continue-reading></span><p>The following workflow generates <code>requirements-lock.txt</code> on Ubuntu with Python 3.9:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> B</span><span style=color:light-dark(#40a02b,#a6e3a1)>uild requirements-lock.txt</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#fe640b,#fab387)>on</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  w</span><span style=color:light-dark(#1e66f5,#89b4fa)>orkflow_dispatch</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>j</span><span style=color:light-dark(#1e66f5,#89b4fa)>obs</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  b</span><span style=color:light-dark(#1e66f5,#89b4fa)>uild-requirements-lock</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    r</span><span style=color:light-dark(#1e66f5,#89b4fa)>uns-on</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> u</span><span style=color:light-dark(#40a02b,#a6e3a1)>buntu-22.04</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    s</span><span style=color:light-dark(#1e66f5,#89b4fa)>teps</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>      -</span><span style=color:light-dark(#1e66f5,#89b4fa)> u</span><span style=color:light-dark(#1e66f5,#89b4fa)>ses</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> a</span><span style=color:light-dark(#40a02b,#a6e3a1)>ctions/checkout@v3</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>      -</span><span style=color:light-dark(#1e66f5,#89b4fa)> n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> S</span><span style=color:light-dark(#40a02b,#a6e3a1)>et up Python 3.9</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>        u</span><span style=color:light-dark(#1e66f5,#89b4fa)>ses</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> a</span><span style=color:light-dark(#40a02b,#a6e3a1)>ctions/setup-python@v3</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>        w</span><span style=color:light-dark(#1e66f5,#89b4fa)>ith</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>          p</span><span style=color:light-dark(#1e66f5,#89b4fa)>ython-version</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>3.9</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>      -</span><span style=color:light-dark(#1e66f5,#89b4fa)> n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> I</span><span style=color:light-dark(#40a02b,#a6e3a1)>nstall pip and pip-tools</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>        r</span><span style=color:light-dark(#1e66f5,#89b4fa)>un</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#8839ef,#cba6f7)> |</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>          pip install --upgrade pip</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>          pip install --upgrade pip-tools</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>      -</span><span style=color:light-dark(#1e66f5,#89b4fa)> n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> R</span><span style=color:light-dark(#40a02b,#a6e3a1)>un pip-compile</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>        r</span><span style=color:light-dark(#1e66f5,#89b4fa)>un</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#8839ef,#cba6f7)> |</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>          pip-compile --allow-unsafe --generate-hashes --no-emit-index-url --output-file=requirements-lock.txt</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>      -</span><span style=color:light-dark(#1e66f5,#89b4fa)> n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> U</span><span style=color:light-dark(#40a02b,#a6e3a1)>pload requirements-lock artifact</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>        u</span><span style=color:light-dark(#1e66f5,#89b4fa)>ses</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> a</span><span style=color:light-dark(#40a02b,#a6e3a1)>ctions/upload-artifact@v3.1.1</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>        w</span><span style=color:light-dark(#1e66f5,#89b4fa)>ith</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>          n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> r</span><span style=color:light-dark(#40a02b,#a6e3a1)>equirements-lock</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>          p</span><span style=color:light-dark(#1e66f5,#89b4fa)>ath</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> r</span><span style=color:light-dark(#40a02b,#a6e3a1)>equirements-lock.txt</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>          r</span><span style=color:light-dark(#1e66f5,#89b4fa)>etention-days</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 3</span></span></code></pre><p class="media-caption code-caption">The <code>build-requirements-lock</code> workflow<p>The <code>workflow_dispatch</code> event makes the workflow manually available for a selected branch.<p>After updating the project's dependencies, commit the changes, wait for the tests to pass, and trigger the workflow:<figure class=article-figure><img alt="GitHub Actions page showing a successful lockfile workflow run" decoding=async height=1318 loading=lazy src=/images/gh-actions-lockfile.webp width=2992><figcaption class=media-caption>GitHub Actions workflow</figcaption></figure><p>The completed run provides <code>requirements-lock.txt</code> as a downloadable artifact. Download the file and commit it to the repository.<p>You can also generate the lockfile in a Docker container. Use the same operating system, architecture, and Python version as the deployment target. See <a href=/multi-arch-docker-images/>Building Multi-Arch Images for Arm and x86</a>.<aside aria-label="Alternative dependency tools" class="callout callout-bdc"><p>Tools such as Poetry provide their own lockfile workflows. This GitHub Actions approach is useful for projects that use pip and pip-tools.</aside></div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/custom-user-ldap-filter-in-keycloak/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>Synchronize Active Directory Users with a Keycloak LDAP Filter</span> </a><a class=nav-newer href=https://akrisanov.com/convert-flac-to-apple-lossless-with-ffmpeg/> <span class=note-navigation-direction>Newer <span class=note-navigation-shortcut><i class=nav-modifier></i>↑</span></span> <span class=note-navigation-title>Convert FLAC to Apple Lossless with FFmpeg</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script>

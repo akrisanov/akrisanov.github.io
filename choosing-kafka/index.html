@@ -1,0 +1,218 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      Choosing Apache Kafka for a New Project
+    </title><meta content="A checklist for evaluating Kafka throughput, retention, delivery guarantees, partitioning, and consumer groups before starting a project." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/choosing-kafka/ rel=canonical><meta content=article property=og:type><meta content="Choosing Apache Kafka for a New Project" property=og:title><meta content="A checklist for evaluating Kafka throughput, retention, delivery guarantees, partitioning, and consumer groups before starting a project." property=og:description><meta content=https://akrisanov.com/choosing-kafka/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-choosing-kafka.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content="Social preview for Choosing Apache Kafka for a New Project" property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content="Choosing Apache Kafka for a New Project" name=twitter:title><meta content="A checklist for evaluating Kafka throughput, retention, delivery guarantees, partitioning, and consumer groups before starting a project." name=twitter:description><meta content=https://akrisanov.com/images/social-choosing-kafka.png name=twitter:image><meta content="Social preview for Choosing Apache Kafka for a New Project" name=twitter:image:alt><meta content=2023-08-29 property=article:published_time><meta content=2023-08-29 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=kafka property=article:tag><meta content=event-driven-architecture property=article:tag><meta content=system-design property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/choosing-kafka/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/choosing-kafka/"
+        },
+        "headline": "Choosing Apache Kafka for a New Project",
+        "description": "A checklist for evaluating Kafka throughput, retention, delivery guarantees, partitioning, and consumer groups before starting a project.",
+        "image": "https://akrisanov.com/images/social-choosing-kafka.png",
+        "datePublished": "2023-08-29",
+        "dateModified": "2023-08-29",
+        "inLanguage": "en",
+        "wordCount": 305,
+        "timeRequired": "PT2M",
+        "keywords": ["kafka","event-driven-architecture","system-design"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/shelf/>Shelf</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/choosing-kafka/ itemprop=url><meta content=https://akrisanov.com/images/social-choosing-kafka.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><header class=note-header><h1 class=note-title itemprop=headline>Choosing Apache Kafka for a New Project</h1><p class=note-description itemprop=description>A checklist for evaluating Kafka throughput, retention, delivery guarantees, partitioning, and consumer groups before starting a project.<div class=note-meta><time class=note-date datetime=2023-08-29 itemprop=datePublished> August 29, 2023 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>2 min read</span><meta content=2023-08-29 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/kafka/>#kafka</a> <a class=tag href=https://akrisanov.com/tags/event-driven-architecture/>#event-driven-architecture</a> <a class=tag href=https://akrisanov.com/tags/system-design/>#system-design</a> </span></header><div class="e2-text note-body" itemprop=articleBody><p>Apache Kafka is often proposed whenever a project needs to process events, messages, or data streams. The choice is not always deliberate. A conventional message broker such as ActiveMQ may be enough, but Kafka's popularity can influence the decision.<p>If Kafka has been selected deliberately or mandated by the infrastructure team, settle the following points before configuring the brokers and writing producers and consumers.<ol><li><p><strong>Estimate producer data volume.</strong> Confirm that the network can handle the load across the system, especially on critical paths. Evaluate <a rel="noopener external" href=https://www.conduktor.io/kafka/kafka-message-compression/ target=_blank>message compression</a> where appropriate.</p><li><p><strong>Define the <a rel="noopener external" href=https://strimzi.io/blog/2021/12/17/kafka-segment-retention/ target=_blank>data retention policy</a>.</strong> Set the retention period from the product's business and data-protection requirements, then account for the storage cost.</p><li><p><strong>Choose producer <a rel="noopener external" href=https://www.conduktor.io/kafka/kafka-producer-acks-deep-dive/ target=_blank>acknowledgement settings</a>.</strong> Balance latency against reliability and durability under replication.</p><li><p><strong>Define delivery guarantees.</strong> Establish how the product handles message loss and duplicate messages. Decide whether it needs <a rel="noopener external" href=https://www.conduktor.io/kafka/idempotent-kafka-producer/ target=_blank>idempotent producers</a> or <a rel="noopener external" href=https://www.confluent.io/blog/transactions-apache-kafka/ target=_blank>transactions</a>.</p><li><p><strong>Choose a <a rel="noopener external" href=https://redpanda.com/guides/kafka-tutorial/kafka-partition-strategy target=_blank>partitioning strategy</a>.</strong> Verify that Kafka's default partitioner matches the required ordering and load distribution.</p><li><p><strong>Choose the topic cleanup policy.</strong> Keep the complete message log when every record matters. If only the latest value for each key matters, consider <a rel="noopener external" href=https://docs.confluent.io/kafka/design/log_compaction.html target=_blank>log-compacted topics</a>.</p><li><p><strong>Plan <a rel="noopener external" href=https://www.conduktor.io/kafka/kafka-consumer-groups-and-consumer-offsets/ target=_blank>consumer groups</a>.</strong> Define how consumers will scale, what throughput they need, and how they will behave during <a rel="noopener external" href=https://www.verica.io/blog/understanding-kafkas-consumer-group-rebalancing/ target=_blank>group rebalancing</a>.</p></ol><p>This checklist covers application-facing decisions. Encryption, authentication, authorization, and cluster configuration still need explicit ownership, even when an SRE team or a PaaS manages them.</div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/it-is-not-dns/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>My "It's Not DNS" Story</span> </a><a class=nav-newer href=https://akrisanov.com/understand-how-services-are-run-and-operate-in-production/> <span class=note-navigation-direction>Newer <span class=note-navigation-shortcut><i class=nav-modifier></i>↑</span></span> <span class=note-navigation-title>Understand How Services Run and Operate in Production</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script>

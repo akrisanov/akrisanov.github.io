@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - nuget</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/nuget/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Tue, 07 May 2024 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Identifying Vulnerable Dependencies in .NET Projects</title>
+      <pubDate>Tue, 07 May 2024 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/dotnet-list-vulnerable-packages/</link>
+      <guid>https://akrisanov.com/dotnet-list-vulnerable-packages/</guid>
+      <description xml:base="https://akrisanov.com/dotnet-list-vulnerable-packages/"><![CDATA[
+        <p>Published: 2024-05-07</p>
+        
+        
+          <p>At a previous company, I worked on a decade-old .NET SaaS codebase that had been through several framework upgrades.
+The upgrades were incomplete, and many NuGet packages in the solution were outdated or deprecated by the time I
+became the engineering manager.</p>
+<p>I rely on linting, static analysis, and formatting tools in Python and Go projects, so I reviewed the equivalent
+tooling available for .NET. I started by scanning every NuGet package in the solution for known vulnerabilities.</p>
+<p>The .NET CLI provides this check through <code>dotnet list package --vulnerable</code>. Developers can run it locally, but an
+automated check prevents it from being missed.</p>
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

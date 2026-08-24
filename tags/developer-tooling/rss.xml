@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - developer-tooling</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/developer-tooling/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Tue, 19 May 2026 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>My Modern C++ Setup on macOS and Apple Silicon</title>
+      <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/macos-apple-silicon-cpp-setup/</link>
+      <guid>https://akrisanov.com/macos-apple-silicon-cpp-setup/</guid>
+      <description xml:base="https://akrisanov.com/macos-apple-silicon-cpp-setup/"><![CDATA[
+        <p>Published: 2026-05-19</p>
+        
+        
+          <p>I’m starting to learn modern C++, so I wanted a repeatable development setup on Apple Silicon:</p>
+<ul>
+<li>use a modern LLVM/Clang toolchain</li>
+<li>build projects with CMake and Ninja</li>
+<li>get proper language-server support in VS Code and Helix</li>
+<li>use sanitizers and static analysis from the beginning</li>
+<li>keep the setup practical</li>
+</ul>
+<p>This cheatsheet assumes that Homebrew is already installed.</p>
+        
+      ]]></description>
+    </item>
+    
+    <item>
+      <title>Helix for Python Development</title>
+      <pubDate>Sun, 29 Mar 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/helix-python/</link>
+      <guid>https://akrisanov.com/helix-python/</guid>
+      <description xml:base="https://akrisanov.com/helix-python/"><![CDATA[
+        <p>Published: 2026-03-29</p>
+        
+        
+          <p>I use Visual Studio Code for work and personal projects. It has been my main editor for years, across several languages
+and ecosystems.</p>
+<p>Since I started using coding agents and chat-based interfaces, I've also wanted a more focused environment without
+the panels, notifications, and status updates. This is especially useful when I'm reading a book and reimplementing
+its examples. I've been using Helix, a terminal-based code editor, for this kind of work.</p>
+<p>I previously configured Helix for Go but didn't record the steps. This note covers my Python setup: LSP support,
+type checking with ty, formatting and linting with Ruff, and debugging with debugpy.</p>
+<p>I use macOS, so some paths and shell commands are platform-specific. The Helix configuration should work on other
+operating systems as well.</p>
+<p>Start by checking Helix's Python configuration:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">hx</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-health</span><span style="color: light-dark(#40A02B, #A6E3A1);"> python</span></span></code></pre>
+<p>In my case, the output looks like this:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Configured</span><span style="color: light-dark(#40A02B, #A6E3A1);"> language</span><span style="color: light-dark(#40A02B, #A6E3A1);"> servers:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  ✘</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ty:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">ty</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> not</span><span style="color: light-dark(#40A02B, #A6E3A1);"> found</span><span style="color: light-dark(#40A02B, #A6E3A1);"> in</span><span> $</span><span>PATH</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  ✘</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ruff:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">ruff</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> not</span><span style="color: light-dark(#40A02B, #A6E3A1);"> found</span><span style="color: light-dark(#40A02B, #A6E3A1);"> in</span><span> $</span><span>PATH</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  ✘</span><span style="color: light-dark(#40A02B, #A6E3A1);"> jedi:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">jedi-language-server</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> not</span><span style="color: light-dark(#40A02B, #A6E3A1);"> found</span><span style="color: light-dark(#40A02B, #A6E3A1);"> in</span><span> $</span><span>PATH</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  ✘</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pylsp:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">pylsp</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> not</span><span style="color: light-dark(#40A02B, #A6E3A1);"> found</span><span style="color: light-dark(#40A02B, #A6E3A1);"> in</span><span> $</span><span>PATH</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Configured</span><span style="color: light-dark(#40A02B, #A6E3A1);"> debug</span><span style="color: light-dark(#40A02B, #A6E3A1);"> adapter:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> None</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Configured</span><span style="color: light-dark(#40A02B, #A6E3A1);"> formatter:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> None</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Tree-sitter</span><span style="color: light-dark(#40A02B, #A6E3A1);"> parser:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Highlight</span><span style="color: light-dark(#40A02B, #A6E3A1);"> queries:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Textobject</span><span style="color: light-dark(#40A02B, #A6E3A1);"> queries:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Indent</span><span style="color: light-dark(#40A02B, #A6E3A1);"> queries:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ✓</span></span></code></pre>
+<p>No language servers or formatters are available yet, but the Tree-sitter parser and queries are configured. I use
+<a href="/uv/">uv</a> to install Ruff and ty:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> tool</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ruff</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> tool</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ty</span></span></code></pre>
+<p>This installs Ruff and ty as command-line tools. On macOS, <code>uv tool install</code> puts executables in a user bin directory
+that must be on <code>PATH</code>. The exact path depends on your setup; a common configuration is:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">echo</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">export PATH=&quot;$HOME/.local/bin:$PATH&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#179299, #94E2D5);"> &gt;&gt;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ~/.zshrc</span></span>
+<span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">source</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ~/.zshrc</span></span></code></pre>
+<p>If needed, update the shell configuration and then check that both tools are available:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">which</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ruff</span></span>
+<span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">which</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ty</span></span></code></pre>
+<p>If <code>which</code> prints nothing, Helix will not find the tools either. Check the configuration again:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">hx</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-health</span><span style="color: light-dark(#40A02B, #A6E3A1);"> python</span></span></code></pre>
+<p>The output should now look like this:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Configured</span><span style="color: light-dark(#40A02B, #A6E3A1);"> language</span><span style="color: light-dark(#40A02B, #A6E3A1);"> servers:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  ✓</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ty:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /Users/akrisanov/.local/bin/ty</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  ✓</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ruff:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /Users/akrisanov/.local/bin/ruff</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  ✘</span><span style="color: light-dark(#40A02B, #A6E3A1);"> jedi:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">jedi-language-server</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> not</span><span style="color: light-dark(#40A02B, #A6E3A1);"> found</span><span style="color: light-dark(#40A02B, #A6E3A1);"> in</span><span> $</span><span>PATH</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">  ✘</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pylsp:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);">pylsp</span><span style="color: light-dark(#40A02B, #A6E3A1);">&#39;</span><span style="color: light-dark(#40A02B, #A6E3A1);"> not</span><span style="color: light-dark(#40A02B, #A6E3A1);"> found</span><span style="color: light-dark(#40A02B, #A6E3A1);"> in</span><span> $</span><span>PATH</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Configured</span><span style="color: light-dark(#40A02B, #A6E3A1);"> debug</span><span style="color: light-dark(#40A02B, #A6E3A1);"> adapter:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> None</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Configured</span><span style="color: light-dark(#40A02B, #A6E3A1);"> formatter:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> None</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Tree-sitter</span><span style="color: light-dark(#40A02B, #A6E3A1);"> parser:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Highlight</span><span style="color: light-dark(#40A02B, #A6E3A1);"> queries:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Textobject</span><span style="color: light-dark(#40A02B, #A6E3A1);"> queries:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ✓</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">Indent</span><span style="color: light-dark(#40A02B, #A6E3A1);"> queries:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ✓</span></span></code></pre>
+<p>Open the Helix language configuration, usually <code>~/.config/helix/languages.toml</code>, and add:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="toml"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">[[</span><span>language</span><span style="color: light-dark(#7C7F93, #9399B2);">]]</span></span>
+<span class="giallo-l"><span>name</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">python</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span>language-servers</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#7C7F93, #9399B2);"> [</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">ruff</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">ty</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">]</span></span>
+<span class="giallo-l"><span>auto-format</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#FE640B, #FAB387);"> true</span></span>
+<span class="giallo-l"><span>formatter</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#7C7F93, #9399B2);"> {</span><span> command</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">ruff</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span><span> args</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#7C7F93, #9399B2);"> [</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">format</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">-</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">]</span><span style="color: light-dark(#7C7F93, #9399B2);"> }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">[</span><span>language-server</span><span>.</span><span>ruff</span><span style="color: light-dark(#7C7F93, #9399B2);">]</span></span>
+<span class="giallo-l"><span>command</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">ruff</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span>args</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#7C7F93, #9399B2);"> [</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">server</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">[</span><span>language-server</span><span>.</span><span>ty</span><span style="color: light-dark(#7C7F93, #9399B2);">]</span></span>
+<span class="giallo-l"><span>command</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">ty</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span>args</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#7C7F93, #9399B2);"> [</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">server</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">]</span></span></code></pre>
+<p>For debugging, install <code>debugpy</code> with pip:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">pip</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> debugpy</span></span></code></pre>
+<p>Then append this configuration to <code>languages.toml</code>:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="toml"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">[</span><span>language</span><span>.</span><span>debugger</span><span style="color: light-dark(#7C7F93, #9399B2);">]</span></span>
+<span class="giallo-l"><span>name</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">debugpy</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span>transport</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">stdio</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span>command</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">python3</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span>args</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#7C7F93, #9399B2);"> [</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">-m</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">debugpy.adapter</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">[[</span><span>language</span><span>.</span><span>debugger</span><span>.</span><span>templates</span><span style="color: light-dark(#7C7F93, #9399B2);">]]</span></span>
+<span class="giallo-l"><span>name</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">source</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span>request</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">launch</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span>completion</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#7C7F93, #9399B2);"> [</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">  {</span><span> name</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">entrypoint</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span><span> completion</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">filename</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span><span> default</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">.</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);"> }</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">]</span></span>
+<span class="giallo-l"><span>args</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#7C7F93, #9399B2);"> {</span><span> mode</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">debug</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">,</span><span> program</span><span style="color: light-dark(#179299, #94E2D5);"> =</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">{0}</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);"> }</span></span></code></pre>
+        
+      ]]></description>
+    </item>
+    
+    <item>
+      <title>uv: Managing Python Versions, Dependencies, Tools, and Scripts</title>
+      <pubDate>Wed, 10 Sep 2025 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/uv/</link>
+      <guid>https://akrisanov.com/uv/</guid>
+      <description xml:base="https://akrisanov.com/uv/"><![CDATA[
+        <p>Published: 2025-09-10</p>
+        
+        
+          <p><code>uv</code> provides a Cargo-like, cross-platform workflow for managing <a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/guides/projects/">Python projects</a>,
+<a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/guides/tools/">command-line tools</a>,
+<a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/guides/scripts/">single-file scripts</a>, and
+<a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/guides/install-python/">Python versions</a>.</p>
+<h2 id="installation-updates">Installation &amp; Updates</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Install</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">curl</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">LsSf</span><span style="color: light-dark(#40A02B, #A6E3A1);"> https://astral.sh/uv/install.sh</span><span style="color: light-dark(#179299, #94E2D5);"> |</span><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;"> sh</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Update</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> self</span><span style="color: light-dark(#40A02B, #A6E3A1);"> update</span></span></code></pre><h2 id="managing-python-versions">Managing Python Versions</h2>
+<p>uv can manage Python versions instead of pyenv, mise, asdf, or OS-specific installation methods:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> List available versions</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> python</span><span style="color: light-dark(#40A02B, #A6E3A1);"> list</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Install Python 3.13</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> python</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#FE640B, #FAB387);"> 3.13</span></span></code></pre>
+<ul>
+<li>Works across operating systems</li>
+<li>No admin rights required</li>
+<li>Independent of system Python</li>
+</ul>
+<p>You can also use <a rel="noopener external" target="_blank" href="https://github.com/jdx/mise">mise</a> alongside uv if you prefer a global version manager.</p>
+<h2 id="projects-dependencies">Projects &amp; Dependencies</h2>
+<p>Initialize a project and create <code>pyproject.toml</code>:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> init</span><span style="color: light-dark(#40A02B, #A6E3A1);"> myproject</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Or specify the Python version and project name:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> init</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">p</span><span style="color: light-dark(#FE640B, #FAB387);"> 3.13</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-name</span><span style="color: light-dark(#40A02B, #A6E3A1);"> myproject</span></span>
+<span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">cd</span><span style="color: light-dark(#40A02B, #A6E3A1);"> myproject</span></span></code></pre>
+<p>Sync dependencies:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> sync</span></span></code></pre>
+<p>Add dependencies:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> add</span><span style="color: light-dark(#40A02B, #A6E3A1);"> litestar</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> add</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pytest</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-dev</span></span></code></pre>
+<p>Generate a cross-platform lockfile, similar to <code>Pipfile.lock</code> or <code>poetry.lock</code>:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> lock</span></span></code></pre>
+<p>The lockfile is cross-platform, so it can be generated on Windows and used for deployment on Linux.</p>
+<h2 id="virtual-environments">Virtual Environments</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Create and activate a virtual environment</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> venv</span></span>
+<span class="giallo-l"><span style="color: light-dark(#D20F39, #F38BA8);font-style: italic;">source</span><span style="color: light-dark(#40A02B, #A6E3A1);"> .venv/bin/activate</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Or run in the environment without activating it</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> python</span><span style="color: light-dark(#40A02B, #A6E3A1);"> app.py</span></span></code></pre><h2 id="scripts">Scripts</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Create a new script</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> init</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-script</span></span></code></pre><pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="python"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> /// script</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> requires-python = &quot;&gt;=3.13&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> dependencies = [</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">     &quot;requests&quot;,</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> ]</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> ///</span></span>
+<span class="giallo-l"><span style="color: light-dark(#8839EF, #CBA6F7);">import</span><span> requests</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#FE640B, #FAB387);font-style: italic;">print</span><span style="color: light-dark(#7C7F93, #9399B2);">(</span><span>requests</span><span style="color: light-dark(#7C7F93, #9399B2);">.</span><span style="color: light-dark(#1E66F5, #89B4FA);">get</span><span style="color: light-dark(#7C7F93, #9399B2);">(</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">https://akrisanov.com</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span><span style="color: light-dark(#7C7F93, #9399B2);">)</span><span style="color: light-dark(#7C7F93, #9399B2);">)</span></span></code></pre>
+<p>Run a single-file script and install its declared dependencies automatically:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> script.py</span></span></code></pre>
+<p>On Unix-like systems, add <code>#!/usr/bin/env -S uv run</code> and run <code>chmod +x script.py</code> to make the script executable.</p>
+<h2 id="tools">Tools</h2>
+<p>Install CLI tools in environments isolated from the system Python:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> tool</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> ruff</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> replaces pipx</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> tool</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> httpie</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uvx</span><span style="color: light-dark(#40A02B, #A6E3A1);"> httpie</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Run the tool without installing it permanently</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> --with [temp dependency] runs jupyter in the current project</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> without adding it and its dependencies to the project</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-with</span><span style="color: light-dark(#40A02B, #A6E3A1);"> jupyter</span><span style="color: light-dark(#40A02B, #A6E3A1);"> jupyter</span><span style="color: light-dark(#40A02B, #A6E3A1);"> notebook</span></span></code></pre>
+<p><code>uv run</code> checks the lockfile and environment before each command and updates them when needed.</p>
+<p>For local CLI tool development:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> init</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-package</span><span style="color: light-dark(#40A02B, #A6E3A1);"> your_tool</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> tool</span><span style="color: light-dark(#40A02B, #A6E3A1);"> install</span><span style="color: light-dark(#40A02B, #A6E3A1);"> .</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">e</span></span></code></pre>
+<p>See the <a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/concepts/tools/">tools documentation</a>.</p>
+<h2 id="replacing-pip-tools">Replacing pip-tools</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pip</span><span style="color: light-dark(#40A02B, #A6E3A1);"> compile</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> replaces pip-tools compile</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pip</span><span style="color: light-dark(#40A02B, #A6E3A1);"> sync</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">    #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> replaces pip-tools sync</span></span></code></pre><h2 id="building-and-publishing-packages">Building and Publishing Packages</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Build a `.whl` package for PyPI</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> build</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;">#</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> Upload your Python package to PyPI</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> publish</span></span></code></pre><h2 id="pre-commit-hooks">Pre-commit Hooks</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="shellscript"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-with</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pre-commit-uv</span><span style="color: light-dark(#40A02B, #A6E3A1);"> pre-commit</span><span style="color: light-dark(#40A02B, #A6E3A1);"> run</span><span style="color: light-dark(#40A02B, #A6E3A1);"> -</span><span style="color: light-dark(#40A02B, #A6E3A1);">-all-files</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);font-style: italic;">pre-commit-uv</span></span></code></pre><h2 id="github-actions">GitHub Actions</h2>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#40A02B, #A6E3A1);">a</span><span style="color: light-dark(#40A02B, #A6E3A1);">stral-sh/setup-uv</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> #</span><span style="color: light-dark(#7C7F93, #9399B2);font-style: italic;"> brings UV to GitHub Actions</span></span></code></pre><h2 id="docker">Docker</h2>
+<p>The official Docker images include uv and Python:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="docker"><span class="giallo-l"><span>ghcr.io/astral-sh/uv:latest</span></span></code></pre>
+<p>See also Hynek Schlawack’s <a rel="noopener external" target="_blank" href="https://hynek.me/articles/docker-uv/">Production-ready Python Docker Containers with uv</a>.</p>
+<h2 id="workspaces">Workspaces</h2>
+<p>Use a <a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/concepts/projects/workspaces/">workspace</a> to manage multiple packages together.</p>
+<p>For example, a repository can contain a FastAPI application and several libraries, each maintained as a separate Python
+package.</p>
+<p>Each package has its own <code>pyproject.toml</code>, while the workspace uses one lockfile and a consistent set of dependencies.</p>
+<h2 id="notes-and-limitations">Notes and Limitations</h2>
+<ul>
+<li><code>uv sync</code> respects <code>.python-version</code>, but the <code>UV_PYTHON</code> environment variable takes precedence</li>
+<li>Uses <a rel="noopener external" target="_blank" href="https://github.com/astral-sh/python-build-standalone">python-build-standalone</a>, whose builds can be slightly slower
+than system builds (~1–3%) and lack CPU-specific optimizations</li>
+<li>The cache can grow large</li>
+<li>Legacy projects may fail if they depended on pip’s older, looser dependency resolution rules</li>
+<li>Faster dependency installation can reduce CI and container build times</li>
+<li>Astral maintains python-build-standalone, which provides Python builds that do not require installers</li>
+</ul>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li><a rel="noopener external" target="_blank" href="https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-sources">Dependency Sources</a>
+— explains how uv resolves dependencies</li>
+<li><a rel="noopener external" target="_blank" href="https://blog.pecar.me/uv-with-django">UV with Django</a></li>
+<li><a rel="noopener external" target="_blank" href="https://peps.python.org/pep-0723/">PEP 723 – Inline script metadata</a></li>
+<li><a rel="noopener external" target="_blank" href="https://github.com/astral-sh/uv/issues/5903">WIP: Using uv run as a task runner</a></li>
+</ul>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

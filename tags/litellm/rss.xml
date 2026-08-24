@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - litellm</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/litellm/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Sat, 15 Aug 2026 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Hidden Costs of LiteLLM&#39;s Health Checks</title>
+      <pubDate>Sat, 15 Aug 2026 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/hidden-costs-of-litellm-health-checks/</link>
+      <guid>https://akrisanov.com/hidden-costs-of-litellm-health-checks/</guid>
+      <description xml:base="https://akrisanov.com/hidden-costs-of-litellm-health-checks/"><![CDATA[
+        <p>Published: 2026-08-15</p>
+        
+        
+          <p>We run LiteLLM as an internal gateway in front of two kinds of models: local vLLM deployments and paid external
+models. At the time of the incident, the proxy was running LiteLLM 1.82.x with four replicas, Redis for shared state,
+and background model health checks enabled.</p>
+<p>The relevant part of the configuration looked like this:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">g</span><span style="color: light-dark(#1E66F5, #89B4FA);">eneral_settings</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  b</span><span style="color: light-dark(#1E66F5, #89B4FA);">ackground_health_checks</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> true</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  u</span><span style="color: light-dark(#1E66F5, #89B4FA);">se_shared_health_check</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> true</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ealth_check_interval</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 30</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ealth_check_concurrency</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 4</span></span></code></pre>
+<p>The problem showed up in the external provider's usage view. Over roughly one to two weeks, a key reserved for
+LiteLLM health checks accumulated 63,011 successful requests, 9.0 million tokens, and $372.59 in spend. One
+deep-research model accounted for $295.40. Similar spend appeared in other environments, so this was not a one-off
+request or a single-model anomaly.</p>
+<h2 id="what-was-not-causing-the-spend">What was not causing the spend</h2>
+<p>Our Kubernetes probes were configured like this:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">s</span><span style="color: light-dark(#1E66F5, #89B4FA);">tartupProbe</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ttpGet</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    p</span><span style="color: light-dark(#1E66F5, #89B4FA);">ath</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /</span><span style="color: light-dark(#40A02B, #A6E3A1);">health/liveliness</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    p</span><span style="color: light-dark(#1E66F5, #89B4FA);">ort</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 4000</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">l</span><span style="color: light-dark(#1E66F5, #89B4FA);">ivenessProbe</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ttpGet</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    p</span><span style="color: light-dark(#1E66F5, #89B4FA);">ath</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /</span><span style="color: light-dark(#40A02B, #A6E3A1);">health/liveliness</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    p</span><span style="color: light-dark(#1E66F5, #89B4FA);">ort</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 4000</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">r</span><span style="color: light-dark(#1E66F5, #89B4FA);">eadinessProbe</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ttpGet</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    p</span><span style="color: light-dark(#1E66F5, #89B4FA);">ath</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> /</span><span style="color: light-dark(#40A02B, #A6E3A1);">health/readiness</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    p</span><span style="color: light-dark(#1E66F5, #89B4FA);">ort</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 4000</span></span></code></pre>
+<p>These probes were not generating model traffic. LiteLLM documents <code>/health/liveliness</code> and <code>/health/readiness</code> as
+lightweight proxy probes that do not make LLM calls. Liveness only checks that the process is up.
+Readiness checks whether the worker can accept traffic and, when a database is configured,
+returns 503 if the database is unreachable.</p>
+<p>We also had <code>use_shared_health_check: true</code>. With Redis coordination working, LiteLLM uses a distributed lock and
+cached results so that multiple proxy pods do not all perform the same model checks independently.</p>
+<p>The paid traffic came from LiteLLM's <strong>model</strong> health checks. In our configuration, background checks were enabled
+for both local and external deployments.</p>
+<h2 id="root-cause">Root cause</h2>
+<p>A LiteLLM model health check is a real model request, not just an HTTP connectivity check.</p>
+<p>For a deployment with <code>model_info.mode: chat</code>, LiteLLM tests the <code>/chat/completions</code> path. In LiteLLM
+v1.82.0, a non-wildcard route defaulted to one output token unless <code>health_check_max_tokens</code> was set
+explicitly. In LiteLLM 1.96.2, the default is 16, with additional model-specific and global overrides. In both
+versions, the provider processes the prompt and generated tokens, so a paid upstream can charge for the request
+according to the selected model's pricing. The one-output-token limit in v1.82.0 did not bound other billable
+work performed by a research model, which explains how these small probes could still accumulate substantial usage.</p>
+<p>The exact request volume needs one qualification. <code>health_check_interval</code> controls how often the background loop runs,
+but with shared health checks enabled it is not necessarily the same as the upstream model-call interval.</p>
+<p>Both the incident-era and current implementations cache shared health-check results in Redis. The default shared-cache
+TTL is 300 seconds, so a background loop running every 30 seconds can reuse a cached result instead of calling every
+model on every iteration. The effective upstream request rate therefore depends on both the loop interval and whether
+shared coordination is actually working.</p>
+<p>The incident-era implementation in LiteLLM v1.82.0 had another important detail. If a pod could not acquire
+the shared Redis lock, it waited only two seconds for the lock holder to publish cached results. If no cache was
+available after that wait, the pod fell back to running the model health checks locally. Redis could therefore be
+available and the shared-health-check feature enabled, yet slow health-check cycles could still cause several proxy
+pods to issue overlapping paid probes.</p>
+<p>We did not have enough evidence to prove that this fallback path accounted for every one of the 63,011 requests,
+but it is a plausible contributor in a multi-pod deployment and makes <code>use_shared_health_check: true</code> insufficient
+as the only cost-control measure.</p>
+<p>LiteLLM has since changed this logic. In the current implementation, a pod that misses the lock polls for cached
+results for up to the lock TTL instead of falling back after a fixed two-second wait. This is one reason the article
+distinguishes the v1.82.x incident from the current configuration.</p>
+<p>Without shared caching, a 30-second model-check interval would be roughly:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="plain"><span class="giallo-l"><span>2 checks/minute x 60 minutes x 24 hours = 2,880 checks/day</span></span>
+<span class="giallo-l"><span>2,880 x 30 days ≈ 86,400 checks/month per deployment</span></span></code></pre>
+<p>That is an upper-bound calculation for a setup that effectively executes every scheduled probe upstream. It is not the
+expected request count when shared health-check caching is working correctly.</p>
+<p><code>health_check_concurrency: 4</code> does not lower the number of model checks.
+It only bounds how many health-check requests LiteLLM runs concurrently.</p>
+<p>This is the distinction that matters:</p>
+<table><thead><tr><th>Mechanism</th><th>Purpose</th><th>Calls a model</th></tr></thead><tbody>
+<tr><td><code>/health/liveliness</code></td><td>Proxy liveness</td><td>No</td></tr>
+<tr><td><code>/health/readiness</code></td><td>Proxy readiness and configured DB reachability</td><td>No</td></tr>
+<tr><td>LiteLLM model health check</td><td>Test a deployment and update model health state</td><td>Yes</td></tr>
+</tbody></table>
+<div class="article-key-point"><p>A LiteLLM model health check is inference traffic.
+For a paid upstream API, health-check policy is also a cost-control decision.</p>
+</div>
+<h2 id="what-we-changed">What we changed</h2>
+<p>We still wanted proactive checks for local models. Those deployments are part of the infrastructure we operate, and
+LiteLLM can use their health state to avoid routing new requests to an unhealthy deployment. For paid external models,
+the same probe policy had a direct dollar cost and much less operational value in our setup.</p>
+<p>Current LiteLLM uses global enablement with per-deployment opt-out. The equivalent configuration in LiteLLM 1.96.2
+keeps background checks enabled:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">g</span><span style="color: light-dark(#1E66F5, #89B4FA);">eneral_settings</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  b</span><span style="color: light-dark(#1E66F5, #89B4FA);">ackground_health_checks</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> true</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  u</span><span style="color: light-dark(#1E66F5, #89B4FA);">se_shared_health_check</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> true</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ealth_check_interval</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 30</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ealth_check_staleness_threshold</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 90</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ealth_check_concurrency</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> 4</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  e</span><span style="color: light-dark(#1E66F5, #89B4FA);">nable_health_check_routing</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> true</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ealth_check_ignore_transient_errors</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> true</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">  h</span><span style="color: light-dark(#1E66F5, #89B4FA);">ealth_check_skip_disabled_background_models</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> true</span></span></code></pre>
+<p>Local deployments remain eligible for background checks by default:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">m</span><span style="color: light-dark(#1E66F5, #89B4FA);">odel_list</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">  -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> m</span><span style="color: light-dark(#1E66F5, #89B4FA);">odel_name</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> i</span><span style="color: light-dark(#40A02B, #A6E3A1);">nternal-model</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    l</span><span style="color: light-dark(#1E66F5, #89B4FA);">itellm_params</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      m</span><span style="color: light-dark(#1E66F5, #89B4FA);">odel</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> h</span><span style="color: light-dark(#40A02B, #A6E3A1);">osted_vllm/internal-model</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      a</span><span style="color: light-dark(#1E66F5, #89B4FA);">pi_base</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> h</span><span style="color: light-dark(#40A02B, #A6E3A1);">ttp://internal-vllm:8000/v1</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    m</span><span style="color: light-dark(#1E66F5, #89B4FA);">odel_info</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      m</span><span style="color: light-dark(#1E66F5, #89B4FA);">ode</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> c</span><span style="color: light-dark(#40A02B, #A6E3A1);">hat</span></span></code></pre>
+<p>For paid external deployments, we set <code>disable_background_health_check</code> in <code>model_info</code>:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="yaml"><span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">m</span><span style="color: light-dark(#1E66F5, #89B4FA);">odel_list</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#7C7F93, #9399B2);">  -</span><span style="color: light-dark(#1E66F5, #89B4FA);"> m</span><span style="color: light-dark(#1E66F5, #89B4FA);">odel_name</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> e</span><span style="color: light-dark(#40A02B, #A6E3A1);">xternal-model</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    l</span><span style="color: light-dark(#1E66F5, #89B4FA);">itellm_params</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      m</span><span style="color: light-dark(#1E66F5, #89B4FA);">odel</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> &quot;</span><span style="color: light-dark(#40A02B, #A6E3A1);">&lt;provider&gt;/&lt;model&gt;</span><span style="color: light-dark(#40A02B, #A6E3A1);">&quot;</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      a</span><span style="color: light-dark(#1E66F5, #89B4FA);">pi_key</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> o</span><span style="color: light-dark(#40A02B, #A6E3A1);">s.environ/EXTERNAL_PROVIDER_API_KEY</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">    m</span><span style="color: light-dark(#1E66F5, #89B4FA);">odel_info</span><span style="color: light-dark(#179299, #94E2D5);">:</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      m</span><span style="color: light-dark(#1E66F5, #89B4FA);">ode</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#40A02B, #A6E3A1);"> c</span><span style="color: light-dark(#40A02B, #A6E3A1);">hat</span></span>
+<span class="giallo-l"><span style="color: light-dark(#1E66F5, #89B4FA);">      d</span><span style="color: light-dark(#1E66F5, #89B4FA);">isable_background_health_check</span><span style="color: light-dark(#179299, #94E2D5);">:</span><span style="color: light-dark(#FE640B, #FAB387);"> true</span></span></code></pre>
+<p><code>disable_background_health_check: true</code> excludes that deployment from the background loop.
+The default is <code>false</code>, so local deployments do not need an explicit enable flag.</p>
+<p><code>health_check_skip_disabled_background_models: true</code> extends the opt-out to on-demand <code>/health</code> and shared health checks.
+Without it, a deployment excluded from the background loop can still be probed by an on-demand model health check.
+This setting is part of the current configuration and was not available in LiteLLM v1.82.0-stable.</p>
+<p>This flag only controls health-check participation; it does not disable the deployment for normal user traffic.</p>
+<h2 id="what-i-would-configure-from-the-start">What I would configure from the start</h2>
+<p>For an in-house setup that mixes self-hosted and paid models:</p>
+<ul>
+<li>Use <code>/health/liveliness</code> and <code>/health/readiness</code> for Kubernetes probes.</li>
+<li>Keep model health checks for deployments where proactive routing state is useful and the probe cost is acceptable.</li>
+<li>Opt paid external deployments out of background checks unless continuous active probing is a deliberate requirement.</li>
+<li>If an external provider needs synthetic monitoring, run it at a deliberate interval with an explicit cost budget.</li>
+<li>Use shared health checks for a multi-pod LiteLLM deployment, but do not rely on them as the only cost-control measure.
+Monitor Redis coordination and understand the fallback behavior of the LiteLLM version you run.</li>
+<li>Check both <code>health_check_interval</code> and <code>DEFAULT_SHARED_HEALTH_CHECK_TTL</code> when estimating probe frequency.
+They control different parts of the mechanism.</li>
+<li>Measure actual provider-side health-check traffic instead of deriving spend from the interval alone. The provider's
+usage view was what exposed this incident.</li>
+</ul>
+<p>For shared checks, LiteLLM exposes:</p>
+<pre class="giallo" style="color-scheme: light dark; color: light-dark(#4C4F69, #CDD6F4); background-color: light-dark(#EFF1F5, #1E1E2E);" ><code data-lang="plain"><span class="giallo-l"><span>GET /health/shared-status</span></span></code></pre>
+<p>It reports Redis availability, lock state, cache age, and the pod that produced the cached result.
+This is useful for verifying that cross-pod coordination is actually working.</p>
+<aside class="article-scope-note" aria-label="Ecosystem snapshot">
+  <div class="article-scope-note-title">
+    Ecosystem snapshot ·
+    <time datetime="2026-08-15">August 15, 2026</time>
+  </div>
+  <div class="article-scope-note-body"><p>The incident occurred on LiteLLM 1.82.x. The present-day behavior and configuration in this article were verified
+against LiteLLM 1.96.2 as of August 15, 2026. Health-check behavior has changed over time, so verify it against the
+version you deploy.</p>
+</div>
+</aside>
+<h2 id="sources-and-further-reading">Sources and further reading</h2>
+<nav class="further-reading" aria-label="Sources and further reading">
+  <ul>
+<li><a rel="noopener external" target="_blank" href="https://docs.litellm.ai/docs/proxy/health">LiteLLM: Health Checks</a>
+<span class="further-reading-description">Proxy and model health-check endpoints, configuration, and behavior.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://docs.litellm.ai/docs/proxy/shared_health_check">LiteLLM: Shared Health Check State Across Pods</a>
+<span class="further-reading-description">Redis-backed coordination and caching for multi-pod deployments.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://docs.litellm.ai/docs/proxy/health_check_routing">LiteLLM: Health Check Driven Routing</a>
+<span class="further-reading-description">How health-check results affect deployment routing.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://github.com/BerriAI/litellm/blob/v1.82.0-stable/litellm/proxy/health_check.py">LiteLLM 1.82.0 source: <code>proxy/health_check.py</code></a>
+<span class="further-reading-description">The incident-era health-check request and one-token default.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://github.com/BerriAI/litellm/blob/v1.82.0-stable/litellm/proxy/health_check_utils/shared_health_check_manager.py">LiteLLM 1.82.0 source: <code>shared_health_check_manager.py</code></a>
+<span class="further-reading-description">The incident-era shared locks, cached results, and two-second fallback to local checks.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://github.com/BerriAI/litellm/blob/v1.96.2/litellm/proxy/health_check.py">LiteLLM 1.96.2 source: <code>proxy/health_check.py</code></a>
+<span class="further-reading-description">The current health-check request, token defaults, and model opt-out filtering.</span></li>
+<li><a rel="noopener external" target="_blank" href="https://github.com/BerriAI/litellm/blob/v1.96.2/litellm/proxy/health_check_utils/shared_health_check_manager.py">LiteLLM 1.96.2 source: <code>shared_health_check_manager.py</code></a>
+<span class="further-reading-description">The current lock-TTL polling and fallback behavior.</span></li>
+</ul>
+</nav>
+
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,569 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      My Modern C++ Setup on macOS and Apple Silicon
+    </title><meta content="Set up a modern C++ toolchain on Apple Silicon macOS with LLVM, CMake, Ninja, VS Code, Helix, and mise." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/ rel=canonical><meta content=article property=og:type><meta content="My Modern C++ Setup on macOS and Apple Silicon" property=og:title><meta content="Set up a modern C++ toolchain on Apple Silicon macOS with LLVM, CMake, Ninja, VS Code, Helix, and mise." property=og:description><meta content=https://akrisanov.com/macos-apple-silicon-cpp-setup/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-macos-apple-silicon-cpp-setup.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content="Social preview for My Modern C++ Setup on macOS and Apple Silicon" property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content="My Modern C++ Setup on macOS and Apple Silicon" name=twitter:title><meta content="Set up a modern C++ toolchain on Apple Silicon macOS with LLVM, CMake, Ninja, VS Code, Helix, and mise." name=twitter:description><meta content=https://akrisanov.com/images/social-macos-apple-silicon-cpp-setup.png name=twitter:image><meta content="Social preview for My Modern C++ Setup on macOS and Apple Silicon" name=twitter:image:alt><meta content=2026-05-19 property=article:published_time><meta content=2026-05-19 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=cpp property=article:tag><meta content=macos property=article:tag><meta content=apple-silicon property=article:tag><meta content=llvm property=article:tag><meta content=cmake property=article:tag><meta content=developer-tooling property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/macos-apple-silicon-cpp-setup/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/macos-apple-silicon-cpp-setup/"
+        },
+        "headline": "My Modern C++ Setup on macOS and Apple Silicon",
+        "description": "Set up a modern C++ toolchain on Apple Silicon macOS with LLVM, CMake, Ninja, VS Code, Helix, and mise.",
+        "image": "https://akrisanov.com/images/social-macos-apple-silicon-cpp-setup.png",
+        "datePublished": "2026-05-19",
+        "dateModified": "2026-05-19",
+        "inLanguage": "en",
+        "wordCount": 508,
+        "timeRequired": "PT3M",
+        "keywords": ["cpp","macos","apple-silicon","llvm","cmake","developer-tooling"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/shelf/>Shelf</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/macos-apple-silicon-cpp-setup/ itemprop=url><meta content=https://akrisanov.com/images/social-macos-apple-silicon-cpp-setup.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><div class=note-layout><div class=note-main><header class=note-header><h1 class=note-title itemprop=headline>My Modern C++ Setup on macOS and Apple Silicon</h1><p class=note-description itemprop=description>Set up a modern C++ toolchain on Apple Silicon macOS with LLVM, CMake, Ninja, VS Code, Helix, and mise.<div class=note-meta><time class=note-date datetime=2026-05-19 itemprop=datePublished> May 19, 2026 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>3 min read</span><meta content=2026-05-19 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/cpp/>#cpp</a> <a class=tag href=https://akrisanov.com/tags/macos/>#macos</a> <a class=tag href=https://akrisanov.com/tags/apple-silicon/>#apple-silicon</a> <a class=tag href=https://akrisanov.com/tags/llvm/>#llvm</a> <a class=tag href=https://akrisanov.com/tags/cmake/>#cmake</a> <a class=tag href=https://akrisanov.com/tags/developer-tooling/>#developer-tooling</a> </span></header><details class=note-toc-mobile><summary class=note-toc-mobile-summary>On this page</summary> <div class=note-toc-mobile-panel><nav aria-label="Table of contents" class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#install-xcode-command-line-tools> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Install Xcode Command Line Tools</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#install-the-core-c-toolchain> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Install the core C++ toolchain</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#recommended-project-structure> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Recommended project structure</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#minimal-modern-cmake-setup> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Minimal modern CMake setup</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#build-with-llvm-and-ninja> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Build with LLVM and Ninja</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#enable-sanitizers-early> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Enable sanitizers early</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#add-clang-format> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Add clang-format</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#add-clang-tidy> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Add clang-tidy</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#vs-code-setup> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>VS Code setup</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#helix-setup> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Helix setup</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#mise-setup> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>mise setup</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#minimal-main-cpp> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Minimal main.cpp</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#gitignore> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>.gitignore</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#daily-workflow> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Daily workflow</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#quick-troubleshooting> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Quick troubleshooting</span> </a> <ul class="note-toc-list note-toc-list-child"><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#clang-still-points-to-apple-clang> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>clang++ still points to Apple Clang</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#clangd-cannot-find-headers> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>clangd cannot find headers</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#helix-does-not-see-clangd> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Helix does not see clangd</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#vs-code-shows-duplicate-diagnostics> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>VS Code shows duplicate diagnostics</span> </a></ul><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#verify-the-setup> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Verify the setup</span> </a></ul></nav></div></details><div class="e2-text note-body" itemprop=articleBody><p>I’m starting to learn modern C++, so I wanted a repeatable development setup on Apple Silicon:<ul><li>use a modern LLVM/Clang toolchain<li>build projects with CMake and Ninja<li>get proper language-server support in VS Code and Helix<li>use sanitizers and static analysis from the beginning<li>keep the setup practical</ul><p>This cheatsheet assumes that Homebrew is already installed.</p><span id=continue-reading></span><h2 id=install-xcode-command-line-tools>Install Xcode Command Line Tools</h2><p>Install Apple’s developer tools:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>xcode-select</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-install</span></span></code></pre><p>Check that they are available:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>xcode-select</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>p</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>clang</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-version</span></span></code></pre><p>macOS includes Apple Clang. I use a newer LLVM toolchain from Homebrew.<h2 id=install-the-core-c-toolchain>Install the core C++ toolchain</h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>brew</span><span style=color:light-dark(#40a02b,#a6e3a1)> install</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  llvm</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  cmake</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  ninja</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  ccache</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  git</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  pkg-config</span></span></code></pre><p>The packages include:<ul><li><code>clang</code><li><code>clang++</code><li><code>clangd</code><li><code>clang-format</code><li><code>clang-tidy</code><li>CMake<li>Ninja</ul><p>Homebrew installs LLVM as a separate toolchain, so its binaries may not be in <code>PATH</code> automatically. Check the LLVM prefix first:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>brew</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-prefix</span><span style=color:light-dark(#40a02b,#a6e3a1)> llvm</span></span></code></pre><p>On Apple Silicon, it is usually <code>/opt/homebrew/opt/llvm</code>. Then check the LLVM tools directly:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>$(</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>brew</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-prefix</span><span style=color:light-dark(#40a02b,#a6e3a1)> llvm</span><span style=color:light-dark(#7c7f93,#9399b2)>)</span><span>/bin/clang++ --version</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>$(</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>brew</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-prefix</span><span style=color:light-dark(#40a02b,#a6e3a1)> llvm</span><span style=color:light-dark(#7c7f93,#9399b2)>)</span><span>/bin/clangd --version</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>$(</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>brew</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-prefix</span><span style=color:light-dark(#40a02b,#a6e3a1)> llvm</span><span style=color:light-dark(#7c7f93,#9399b2)>)</span><span>/bin/clang-format --version</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>$(</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>brew</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-prefix</span><span style=color:light-dark(#40a02b,#a6e3a1)> llvm</span><span style=color:light-dark(#7c7f93,#9399b2)>)</span><span>/bin/clang-tidy --version</span></span></code></pre><p>Add Homebrew LLVM to the interactive shell:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>echo</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>export PATH="$(brew --prefix llvm)/bin:$PATH"</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span><span style=color:light-dark(#179299,#94e2d5)> >></span><span style=color:light-dark(#40a02b,#a6e3a1)> ~/.zshrc</span></span>
+<span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>source</span><span style=color:light-dark(#40a02b,#a6e3a1)> ~/.zshrc</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>rehash</span></span></code></pre><h2 id=recommended-project-structure>Recommended project structure</h2><p>For a small learning project, I use this structure:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cpp-lab/</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  CMakeLists.txt</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  src/</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>    main.cpp</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  tests/</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>    test_main.cpp</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  build/</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  .clang-format</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  .clang-tidy</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>  .gitignore</span></span></code></pre><p>I create it manually for now.<h2 id=minimal-modern-cmake-setup>Minimal modern CMake setup</h2><p>I’m new to CMake, so I keep <code>CMakeLists.txt</code> minimal:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=cmake><span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>cmake_minimum_required</span><span>(</span><span>VERSION</span><span> 3.25)</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>project</span><span>(cpp_lab LANGUAGES CXX)</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>set</span><span>(CMAKE_CXX_STANDARD 20)</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>set</span><span>(CMAKE_CXX_STANDARD_REQUIRED </span><span style=color:light-dark(#8839ef,#cba6f7)>ON</span><span>)</span></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>set</span><span>(CMAKE_CXX_EXTENSIONS </span><span style=color:light-dark(#8839ef,#cba6f7)>OFF</span><span>)</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>set</span><span>(CMAKE_EXPORT_COMPILE_COMMANDS </span><span style=color:light-dark(#8839ef,#cba6f7)>ON</span><span>)</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>add_compile_options</span><span>(</span></span>
+<span class=giallo-l><span>    -Wall</span></span>
+<span class=giallo-l><span>    -Wextra</span></span>
+<span class=giallo-l><span>    -Wpedantic</span></span>
+<span class=giallo-l><span>    -Wconversion</span></span>
+<span class=giallo-l><span>    -Wshadow</span></span>
+<span class=giallo-l><span>)</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>add_executable</span><span>(cpp_lab src/main.cpp)</span></span></code></pre><p>This setting generates <code>compile_commands.json</code>, which <code>clangd</code> uses to understand the project:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=cmake><span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>set</span><span>(CMAKE_EXPORT_COMPILE_COMMANDS </span><span style=color:light-dark(#8839ef,#cba6f7)>ON</span><span>)</span></span></code></pre><p>For now, the project has a single executable target and no dependency management.<h2 id=build-with-llvm-and-ninja>Build with LLVM and Ninja</h2><p>Configure:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cmake</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>S</span><span style=color:light-dark(#40a02b,#a6e3a1)> .</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>B</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>G</span><span style=color:light-dark(#40a02b,#a6e3a1)> Ninja</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm/bin/clang</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_BUILD_TYPE=Debug</span></span></code></pre><p>Build:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cmake</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-build</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span></span></code></pre><p>Run:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>./build/cpp_lab</span></span></code></pre><p>For a release build:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cmake</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>S</span><span style=color:light-dark(#40a02b,#a6e3a1)> .</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>B</span><span style=color:light-dark(#40a02b,#a6e3a1)> build-release</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>G</span><span style=color:light-dark(#40a02b,#a6e3a1)> Ninja</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm/bin/clang</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_BUILD_TYPE=Release</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cmake</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-build</span><span style=color:light-dark(#40a02b,#a6e3a1)> build-release</span></span></code></pre><h2 id=enable-sanitizers-early>Enable sanitizers early</h2><p>I use AddressSanitizer for memory errors and UndefinedBehaviorSanitizer for undefined behavior:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cmake</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>S</span><span style=color:light-dark(#40a02b,#a6e3a1)> .</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>B</span><span style=color:light-dark(#40a02b,#a6e3a1)> build-asan</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>G</span><span style=color:light-dark(#40a02b,#a6e3a1)> Ninja</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm/bin/clang</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_BUILD_TYPE=Debug</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_CXX_FLAGS=</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>-fsanitize=address,undefined -fno-omit-frame-pointer</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cmake</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-build</span><span style=color:light-dark(#40a02b,#a6e3a1)> build-asan</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>./build-asan/cpp_lab</span></span></code></pre><p>ThreadSanitizer is also useful for concurrency code:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cmake</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>S</span><span style=color:light-dark(#40a02b,#a6e3a1)> .</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>B</span><span style=color:light-dark(#40a02b,#a6e3a1)> build-tsan</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>G</span><span style=color:light-dark(#40a02b,#a6e3a1)> Ninja</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm/bin/clang</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_BUILD_TYPE=Debug</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_CXX_FLAGS=</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>-fsanitize=thread -fno-omit-frame-pointer</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cmake</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-build</span><span style=color:light-dark(#40a02b,#a6e3a1)> build-tsan</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>./build-tsan/cpp_lab</span></span></code></pre><p>Do not combine AddressSanitizer and ThreadSanitizer in the same build. They are incompatible, so use separate build directories.<h2 id=add-clang-format>Add clang-format</h2><p><code>clang-format</code> comes with LLVM and keeps the code style consistent.<p>My <code>.clang-format</code> uses four spaces for indentation and a 100-character line limit:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>B</span><span style=color:light-dark(#1e66f5,#89b4fa)>asedOnStyle</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> L</span><span style=color:light-dark(#40a02b,#a6e3a1)>LVM</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>I</span><span style=color:light-dark(#1e66f5,#89b4fa)>ndentWidth</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 4</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>C</span><span style=color:light-dark(#1e66f5,#89b4fa)>olumnLimit</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 100</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>A</span><span style=color:light-dark(#1e66f5,#89b4fa)>llowShortFunctionsOnASingleLine</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> E</span><span style=color:light-dark(#40a02b,#a6e3a1)>mpty</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>D</span><span style=color:light-dark(#1e66f5,#89b4fa)>erivePointerAlignment</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> false</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>P</span><span style=color:light-dark(#1e66f5,#89b4fa)>ointerAlignment</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> L</span><span style=color:light-dark(#40a02b,#a6e3a1)>eft</span></span></code></pre><p>Format the source files in place:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>find</span><span style=color:light-dark(#40a02b,#a6e3a1)> src</span><span style=color:light-dark(#40a02b,#a6e3a1)> tests</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \(</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>name</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>*.cpp</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>o</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>name</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>*.hpp</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \)</span><span style=color:light-dark(#179299,#94e2d5)> |</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> xargs</span><span style=color:light-dark(#40a02b,#a6e3a1)> clang-format</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>i</span></span></code></pre><h2 id=add-clang-tidy>Add clang-tidy</h2><p><code>clang-tidy</code> also comes with LLVM. It finds bugs, suggests improvements, and checks coding standards.<p>I enable checks from several categories in <code>.clang-tidy</code>:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>C</span><span style=color:light-dark(#1e66f5,#89b4fa)>hecks</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#8839ef,#cba6f7)> ></span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  clang-analyzer-*,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  bugprone-*,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  performance-*,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  modernize-*,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  readability-*,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  cppcoreguidelines-*</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>W</span><span style=color:light-dark(#1e66f5,#89b4fa)>arningsAsErrors</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>H</span><span style=color:light-dark(#1e66f5,#89b4fa)>eaderFilterRegex</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> '</span><span style=color:light-dark(#40a02b,#a6e3a1)>.*</span><span style=color:light-dark(#40a02b,#a6e3a1)>'</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>F</span><span style=color:light-dark(#1e66f5,#89b4fa)>ormatStyle</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> f</span><span style=color:light-dark(#40a02b,#a6e3a1)>ile</span></span></code></pre><p>Run:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>clang-tidy</span><span style=color:light-dark(#40a02b,#a6e3a1)> src/main.cpp</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>p</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span></span></code></pre><p>Review each suggestion before applying it. <code>clang-tidy</code> is an aid, not an enforcer.<h2 id=vs-code-setup>VS Code setup</h2><p>Recommended extensions:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=plain><span class=giallo-l><span>llvm-vs-code-extensions.vscode-clangd</span></span>
+<span class=giallo-l><span>ms-vscode.cmake-tools</span></span>
+<span class=giallo-l><span>vadimcn.vscode-lldb</span></span></code></pre><p>If you use <code>clangd</code>, disable Microsoft IntelliSense to avoid duplicate diagnostics.<p>This is what to place in <code>.vscode/settings.json</code>:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=json><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>{</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  "</span><span style=color:light-dark(#1e66f5,#89b4fa)>clangd.path</span><span style=color:light-dark(#7c7f93,#9399b2)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>/opt/homebrew/opt/llvm/bin/clangd</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  "</span><span style=color:light-dark(#1e66f5,#89b4fa)>clangd.arguments</span><span style=color:light-dark(#7c7f93,#9399b2)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>:</span><span style=color:light-dark(#7c7f93,#9399b2)> [</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    "</span><span style=color:light-dark(#40a02b,#a6e3a1)>--background-index</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    "</span><span style=color:light-dark(#40a02b,#a6e3a1)>--clang-tidy</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    "</span><span style=color:light-dark(#40a02b,#a6e3a1)>--completion-style=detailed</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    "</span><span style=color:light-dark(#40a02b,#a6e3a1)>--header-insertion=iwyu</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  ]</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  "</span><span style=color:light-dark(#1e66f5,#89b4fa)>C_Cpp.intelliSenseEngine</span><span style=color:light-dark(#7c7f93,#9399b2)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>disabled</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  "</span><span style=color:light-dark(#1e66f5,#89b4fa)>cmake.generator</span><span style=color:light-dark(#7c7f93,#9399b2)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>Ninja</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  "</span><span style=color:light-dark(#1e66f5,#89b4fa)>cmake.configureArgs</span><span style=color:light-dark(#7c7f93,#9399b2)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>:</span><span style=color:light-dark(#7c7f93,#9399b2)> [</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    "</span><span style=color:light-dark(#40a02b,#a6e3a1)>-DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm/bin/clang</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    "</span><span style=color:light-dark(#40a02b,#a6e3a1)>-DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    "</span><span style=color:light-dark(#40a02b,#a6e3a1)>-DCMAKE_EXPORT_COMPILE_COMMANDS=ON</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  ]</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>}</span></span></code></pre><p>If <code>clangd</code> does not understand your project, check that this file exists:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>ls</span><span style=color:light-dark(#40a02b,#a6e3a1)> build/compile_commands.json</span></span></code></pre><h2 id=helix-setup>Helix setup</h2><p>I also use Helix alongside VS Code. Check its C++ support first:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>hx</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-health</span><span style=color:light-dark(#40a02b,#a6e3a1)> cpp</span></span></code></pre><p>Add this configuration to <code>~/.config/helix/languages.toml</code>:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=toml><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[[</span><span>language</span><span style=color:light-dark(#7c7f93,#9399b2)>]]</span></span>
+<span class=giallo-l><span>name</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>cpp</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>language-servers</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> [</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>clangd</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>formatter</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> {</span><span> command</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>clang-format</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)> }</span></span>
+<span class=giallo-l><span>auto-format</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[</span><span>language-server</span><span>.</span><span>clangd</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>command</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>/opt/homebrew/opt/llvm/bin/clangd</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>args</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#7c7f93,#9399b2)> [</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  "</span><span style=color:light-dark(#40a02b,#a6e3a1)>--background-index</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  "</span><span style=color:light-dark(#40a02b,#a6e3a1)>--clang-tidy</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  "</span><span style=color:light-dark(#40a02b,#a6e3a1)>--completion-style=detailed</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  "</span><span style=color:light-dark(#40a02b,#a6e3a1)>--header-insertion=iwyu</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span></code></pre><p>Useful Helix commands:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=plain><span class=giallo-l><span>:config-reload</span></span>
+<span class=giallo-l><span>:format</span></span>
+<span class=giallo-l><span>:sh cmake --build build</span></span></code></pre><h2 id=mise-setup>mise setup</h2><p>I use <a rel="noopener external" href=https://mise.jdx.dev/ target=_blank>mise</a> to manage project environments and tasks. It is optional; all the CMake commands can be run manually. This <code>mise.toml</code> keeps the common commands with the project:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=toml><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[</span><span>tasks</span><span>.</span><span>configure</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>description</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>Configure the Debug build with CMake and Ninja</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>run</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> """</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>LLVM_PREFIX="$(brew --prefix llvm)"</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>cmake -S . -B build -G Ninja \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -DCMAKE_C_COMPILER="$LLVM_PREFIX/bin/clang" \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -DCMAKE_CXX_COMPILER="$LLVM_PREFIX/bin/clang++" \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -DCMAKE_BUILD_TYPE=Debug</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>"""</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[</span><span>tasks</span><span>.</span><span>build</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>description</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>Build the project</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>run</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>cmake --build build</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[</span><span>tasks</span><span>.</span><span>run</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>description</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>Run the executable</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>run</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>./build/cpp_lab</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[</span><span>tasks</span><span>.</span><span>format</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>description</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>Format C++ source files</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>run</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> """</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>find src tests -type f </span><span style=color:light-dark(#ea76cb,#f5c2e7)>\\</span><span style=color:light-dark(#40a02b,#a6e3a1)>( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' </span><span style=color:light-dark(#ea76cb,#f5c2e7)>\\</span><span style=color:light-dark(#40a02b,#a6e3a1)>) 2>/dev/null \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  | xargs clang-format -i</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>"""</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>[</span><span>tasks</span><span>.</span><span>tidy</span><span style=color:light-dark(#7c7f93,#9399b2)>]</span></span>
+<span class=giallo-l><span>description</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>Run clang-tidy on the main source file</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span>run</span><span style=color:light-dark(#179299,#94e2d5)> =</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>clang-tidy src/main.cpp -p build</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span></code></pre><p>Usage:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> configure</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> format</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> tidy</span></span></code></pre><h2 id=minimal-main-cpp>Minimal <code>main.cpp</code></h2><p><code>src/main.cpp</code>:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=cpp><span class=giallo-l><span style=color:light-dark(#df8e1d,#f9e2af)>#</span><span style=color:light-dark(#df8e1d,#f9e2af)>include</span><span style=color:light-dark(#40a02b,#a6e3a1)> &lt;</span><span style=color:light-dark(#40a02b,#a6e3a1)>iostream</span><span style=color:light-dark(#40a02b,#a6e3a1)>></span></span>
+<span class=giallo-l><span style=color:light-dark(#df8e1d,#f9e2af)>#</span><span style=color:light-dark(#df8e1d,#f9e2af)>include</span><span style=color:light-dark(#40a02b,#a6e3a1)> &lt;</span><span style=color:light-dark(#40a02b,#a6e3a1)>string_view</span><span style=color:light-dark(#40a02b,#a6e3a1)>></span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>void</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> greet</span><span style=color:light-dark(#7c7f93,#9399b2)>(</span><span style=color:light-dark(#df8e1d,#f9e2af)>std</span><span style=color:light-dark(#7c7f93,#9399b2)>::</span><span style=color:light-dark(#df8e1d,#f9e2af);font-style:italic>string_view</span><span style=color:light-dark(#e64553,#eba0ac);font-style:italic> name</span><span style=color:light-dark(#7c7f93,#9399b2)>)</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>{</span></span>
+<span class=giallo-l><span style=color:light-dark(#df8e1d,#f9e2af)>    std</span><span style=color:light-dark(#7c7f93,#9399b2)>::</span><span>cout</span><span style=color:light-dark(#179299,#94e2d5)> &lt;&lt;</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>Hello, </span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#179299,#94e2d5)> &lt;&lt;</span><span> name</span><span style=color:light-dark(#179299,#94e2d5)> &lt;&lt;</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>!</span><span style=color:light-dark(#ea76cb,#f5c2e7)>\n</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>;</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>}</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>int</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> main</span><span style=color:light-dark(#7c7f93,#9399b2)>(</span><span style=color:light-dark(#7c7f93,#9399b2)>)</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>{</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>    greet</span><span style=color:light-dark(#7c7f93,#9399b2)>(</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>modern C++</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>)</span><span style=color:light-dark(#7c7f93,#9399b2)>;</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>}</span></span></code></pre><p>Build and run:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> configure</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span></span></code></pre><p>Expected output:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=plain><span class=giallo-l><span>Hello, modern C++!</span></span></code></pre><h2 id=gitignore><code>.gitignore</code></h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=plain><span class=giallo-l><span>build/</span></span>
+<span class=giallo-l><span>build-*/</span></span>
+<span class=giallo-l><span>.cache/</span></span>
+<span class=giallo-l><span>.DS_Store</span></span>
+<span class=giallo-l><span>compile_commands.json</span></span></code></pre><p>If the editor does not locate the compilation database in <code>build</code>, create a symlink for <code>clangd</code>:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>ln</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>sf</span><span style=color:light-dark(#40a02b,#a6e3a1)> build/compile_commands.json</span><span style=color:light-dark(#40a02b,#a6e3a1)> compile_commands.json</span></span></code></pre><h2 id=daily-workflow>Daily workflow</h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Configure once</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> configure</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Build</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Run</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Format</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> format</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Static analysis</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> tidy</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic>#</span><span style=color:light-dark(#7c7f93,#9399b2);font-style:italic> Clean build</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>rm</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>rf</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> configure</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> run</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span></span></code></pre><h2 id=quick-troubleshooting>Quick troubleshooting</h2><h3 id=clang-still-points-to-apple-clang><code>clang++</code> still points to Apple Clang</h3><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>which</span><span style=color:light-dark(#40a02b,#a6e3a1)> clang++</span></span></code></pre><p>If it does not point to Homebrew LLVM, update your <code>PATH</code>:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>export</span><span> PATH</span><span style=color:light-dark(#179299,#94e2d5)>=</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>/opt/homebrew/opt/llvm/bin:</span><span>$</span><span>PATH</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span></code></pre><p>Then reload your shell:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>source</span><span style=color:light-dark(#40a02b,#a6e3a1)> ~/.zprofile</span></span></code></pre><h3 id=clangd-cannot-find-headers><code>clangd</code> cannot find headers</h3><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>ls</span><span style=color:light-dark(#40a02b,#a6e3a1)> build/compile_commands.json</span></span></code></pre><p>If it does not exist, reconfigure:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cmake</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>S</span><span style=color:light-dark(#40a02b,#a6e3a1)> .</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>B</span><span style=color:light-dark(#40a02b,#a6e3a1)> build</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>G</span><span style=color:light-dark(#40a02b,#a6e3a1)> Ninja</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm/bin/clang</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++</span><span style=color:light-dark(#ea76cb,#f5c2e7)> \</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>  -</span><span style=color:light-dark(#40a02b,#a6e3a1)>DCMAKE_EXPORT_COMPILE_COMMANDS=ON</span></span></code></pre><h3 id=helix-does-not-see-clangd>Helix does not see <code>clangd</code></h3><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#d20f39,#f38ba8);font-style:italic>which</span><span style=color:light-dark(#40a02b,#a6e3a1)> clangd</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>hx</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-health</span><span style=color:light-dark(#40a02b,#a6e3a1)> cpp</span></span></code></pre><p>Make sure <code>languages.toml</code> points to:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=plain><span class=giallo-l><span>/opt/homebrew/opt/llvm/bin/clangd</span></span></code></pre><h3 id=vs-code-shows-duplicate-diagnostics>VS Code shows duplicate diagnostics</h3><p>If you use <code>clangd</code>, disable Microsoft IntelliSense:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=json><span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>{</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  "</span><span style=color:light-dark(#1e66f5,#89b4fa)>C_Cpp.intelliSenseEngine</span><span style=color:light-dark(#7c7f93,#9399b2)>"</span><span style=color:light-dark(#7c7f93,#9399b2)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>disabled</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>}</span></span></code></pre><h2 id=verify-the-setup>Verify the setup</h2><pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=shellscript><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>xcode-select</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>p</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>brew</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-version</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>clang++</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-version</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>clangd</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-version</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>cmake</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-version</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>ninja</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-version</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>hx</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-health</span><span style=color:light-dark(#40a02b,#a6e3a1)> cpp</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic>mise</span><span style=color:light-dark(#40a02b,#a6e3a1)> -</span><span style=color:light-dark(#40a02b,#a6e3a1)>-version</span></span></code></pre></div></div><aside aria-label="Table of contents" class="note-toc note-toc-desktop"><div class=note-toc-card><div class=note-toc-title>On this page</div><nav aria-label="Table of contents" class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#install-xcode-command-line-tools> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Install Xcode Command Line Tools</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#install-the-core-c-toolchain> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Install the core C++ toolchain</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#recommended-project-structure> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Recommended project structure</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#minimal-modern-cmake-setup> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Minimal modern CMake setup</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#build-with-llvm-and-ninja> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Build with LLVM and Ninja</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#enable-sanitizers-early> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Enable sanitizers early</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#add-clang-format> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Add clang-format</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#add-clang-tidy> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Add clang-tidy</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#vs-code-setup> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>VS Code setup</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#helix-setup> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Helix setup</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#mise-setup> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>mise setup</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#minimal-main-cpp> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Minimal main.cpp</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#gitignore> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>.gitignore</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#daily-workflow> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Daily workflow</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#quick-troubleshooting> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Quick troubleshooting</span> </a> <ul class="note-toc-list note-toc-list-child"><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#clang-still-points-to-apple-clang> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>clang++ still points to Apple Clang</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#clangd-cannot-find-headers> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>clangd cannot find headers</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#helix-does-not-see-clangd> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Helix does not see clangd</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#vs-code-shows-duplicate-diagnostics> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>VS Code shows duplicate diagnostics</span> </a></ul><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/macos-apple-silicon-cpp-setup/#verify-the-setup> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Verify the setup</span> </a></ul></nav></div></aside></div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/wsl-nvidia-gpu/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>Running Kubernetes with a GPU Inside WSL2 on My RTX Laptop</span> </a><a class=nav-newer href=https://akrisanov.com/kubernetes-model-serving-in-2026/> <span class=note-navigation-direction>Newer <span class=note-navigation-shortcut><i class=nav-modifier></i>↑</span></span> <span class=note-navigation-title>Kubernetes Model Serving in 2026: What Changed Since 2024</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script><script>(function () {
+    var tocs = Array.prototype.slice.call(
+      document.querySelectorAll("[data-note-toc]"),
+    );
+    if (!tocs.length) return;
+
+    var groups = tocs
+      .map(function (toc) {
+        var links = Array.prototype.slice.call(
+          toc.querySelectorAll("[data-toc-link]"),
+        );
+        var items = Array.prototype.slice.call(
+          toc.querySelectorAll("[data-toc-item]"),
+        );
+        var entries = links
+          .map(function (link, index) {
+            var id = decodeURIComponent(link.hash.slice(1));
+            return {
+              link: link,
+              item: items[index],
+              heading: document.getElementById(id),
+              top: 0,
+            };
+          })
+          .filter(function (entry) {
+            return entry.heading;
+          });
+        return {
+          toc: toc,
+          entries: entries,
+          activeIndex: -1,
+        };
+      })
+      .filter(function (group) {
+        return group.entries.length;
+      });
+
+    if (!groups.length) return;
+
+    var frame = null;
+
+    function measure() {
+      groups.forEach(function (group) {
+        group.entries.forEach(function (entry) {
+          var headingRect = entry.heading.getBoundingClientRect();
+          entry.top = headingRect.top + window.pageYOffset;
+        });
+      });
+    }
+
+    function keepActiveLinkVisible(group, entry) {
+      var scroller = group.toc.closest(
+        ".note-toc, .note-toc-mobile-panel",
+      );
+      if (
+        !scroller ||
+        scroller.offsetParent === null ||
+        scroller.scrollHeight <= scroller.clientHeight
+      ) {
+        return;
+      }
+
+      var linkRect = entry.link.getBoundingClientRect();
+      var scrollerRect = scroller.getBoundingClientRect();
+      var padding = 10;
+
+      if (linkRect.top < scrollerRect.top + padding) {
+        scroller.scrollTop -= scrollerRect.top + padding - linkRect.top;
+      } else if (linkRect.bottom > scrollerRect.bottom - padding) {
+        scroller.scrollTop += linkRect.bottom - scrollerRect.bottom + padding;
+      }
+    }
+
+    function update() {
+      frame = null;
+      var position =
+        window.pageYOffset +
+        Math.max(120, Math.round(window.innerHeight * 0.22));
+
+      groups.forEach(function (group) {
+        var nextActive = 0;
+
+        for (var i = 0; i < group.entries.length; i += 1) {
+          if (position >= group.entries[i].top) {
+            nextActive = i;
+          }
+        }
+
+        if (nextActive !== group.activeIndex) {
+          group.activeIndex = nextActive;
+          group.entries.forEach(function (entry, index) {
+            var isActive = index === group.activeIndex;
+            var isPast = index < group.activeIndex;
+            entry.item.classList.toggle("is-active", isActive);
+            entry.item.classList.toggle("is-past", isPast);
+            if (isActive) {
+              entry.link.setAttribute("aria-current", "location");
+            } else {
+              entry.link.removeAttribute("aria-current");
+            }
+          });
+
+          keepActiveLinkVisible(
+            group,
+            group.entries[group.activeIndex],
+          );
+        }
+      });
+    }
+
+    function schedule() {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(update);
+    }
+
+    measure();
+    update();
+    window.addEventListener("resize", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("load", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("pageshow", function () {
+      measure();
+      schedule();
+    });
+    document.addEventListener("article:layoutchange", function () {
+      measure();
+      schedule();
+    });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        measure();
+        schedule();
+      });
+    }
+
+    var noteMain = document.querySelector(".note-main");
+    if ("ResizeObserver" in window && noteMain) {
+      var resizeObserver = new ResizeObserver(function () {
+        measure();
+        schedule();
+      });
+      resizeObserver.observe(noteMain);
+    }
+
+    document
+      .querySelectorAll(".note-toc-mobile")
+      .forEach(function (details) {
+        details.addEventListener("toggle", function () {
+          if (!details.open) return;
+          groups.forEach(function (group) {
+            group.activeIndex = -1;
+          });
+          schedule();
+        });
+      });
+  })();</script>

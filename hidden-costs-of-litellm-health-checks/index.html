@@ -1,0 +1,421 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      Hidden Costs of LiteLLM's Health Checks
+    </title><meta content="How LiteLLM model health checks generated unexpected external-model spend, and how we kept checks for local models only." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/ rel=canonical><meta content=article property=og:type><meta content="Hidden Costs of LiteLLM's Health Checks" property=og:title><meta content="How LiteLLM model health checks generated unexpected external-model spend, and how we kept checks for local models only." property=og:description><meta content=https://akrisanov.com/hidden-costs-of-litellm-health-checks/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-hidden-costs-of-litellm-health-checks.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content="Social preview for Hidden Costs of LiteLLM's Health Checks" property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content="Hidden Costs of LiteLLM's Health Checks" name=twitter:title><meta content="How LiteLLM model health checks generated unexpected external-model spend, and how we kept checks for local models only." name=twitter:description><meta content=https://akrisanov.com/images/social-hidden-costs-of-litellm-health-checks.png name=twitter:image><meta content="Social preview for Hidden Costs of LiteLLM's Health Checks" name=twitter:image:alt><meta content=2026-08-15 property=article:published_time><meta content=2026-08-15 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=litellm property=article:tag><meta content=llm-inference property=article:tag><meta content=ai-infrastructure property=article:tag><meta content=observability property=article:tag><meta content=cost-optimization property=article:tag><meta content=kubernetes property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/hidden-costs-of-litellm-health-checks/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/hidden-costs-of-litellm-health-checks/"
+        },
+        "headline": "Hidden Costs of LiteLLM's Health Checks",
+        "description": "How LiteLLM model health checks generated unexpected external-model spend, and how we kept checks for local models only.",
+        "image": "https://akrisanov.com/images/social-hidden-costs-of-litellm-health-checks.png",
+        "datePublished": "2026-08-15",
+        "dateModified": "2026-08-15",
+        "inLanguage": "en",
+        "wordCount": 1376,
+        "timeRequired": "PT6M",
+        "keywords": ["litellm","llm-inference","ai-infrastructure","observability","cost-optimization","kubernetes"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/shelf/>Shelf</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/hidden-costs-of-litellm-health-checks/ itemprop=url><meta content=https://akrisanov.com/images/social-hidden-costs-of-litellm-health-checks.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><div class=note-layout><div class=note-main><header class=note-header><h1 class=note-title itemprop=headline>Hidden Costs of LiteLLM's Health Checks</h1><p class=note-description itemprop=description>How LiteLLM model health checks generated unexpected external-model spend, and how we kept checks for local models only.<div class=note-meta><time class=note-date datetime=2026-08-15 itemprop=datePublished> August 15, 2026 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>6 min read</span><meta content=2026-08-15 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/litellm/>#litellm</a> <a class=tag href=https://akrisanov.com/tags/llm-inference/>#llm-inference</a> <a class=tag href=https://akrisanov.com/tags/ai-infrastructure/>#ai-infrastructure</a> <a class=tag href=https://akrisanov.com/tags/observability/>#observability</a> <a class=tag href=https://akrisanov.com/tags/cost-optimization/>#cost-optimization</a> <a class=tag href=https://akrisanov.com/tags/kubernetes/>#kubernetes</a> </span></header><details class=note-toc-mobile><summary class=note-toc-mobile-summary>On this page</summary> <div class=note-toc-mobile-panel><nav aria-label="Table of contents" class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/#what-was-not-causing-the-spend> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>What was not causing the spend</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/#root-cause> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Root cause</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/#what-we-changed> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>What we changed</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/#what-i-would-configure-from-the-start> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>What I would configure from the start</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/#sources-and-further-reading> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Sources and further reading</span> </a></ul></nav></div></details><div class="e2-text note-body" itemprop=articleBody><p>We run LiteLLM as an internal gateway in front of two kinds of models: local vLLM deployments and paid external models. At the time of the incident, the proxy was running LiteLLM 1.82.x with four replicas, Redis for shared state, and background model health checks enabled.<p>The relevant part of the configuration looked like this:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>g</span><span style=color:light-dark(#1e66f5,#89b4fa)>eneral_settings</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  b</span><span style=color:light-dark(#1e66f5,#89b4fa)>ackground_health_checks</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  u</span><span style=color:light-dark(#1e66f5,#89b4fa)>se_shared_health_check</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ealth_check_interval</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 30</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ealth_check_concurrency</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 4</span></span></code></pre><p>The problem showed up in the external provider's usage view. Over roughly one to two weeks, a key reserved for LiteLLM health checks accumulated 63,011 successful requests, 9.0 million tokens, and $372.59 in spend. One deep-research model accounted for $295.40. Similar spend appeared in other environments, so this was not a one-off request or a single-model anomaly.<h2 id=what-was-not-causing-the-spend>What was not causing the spend</h2><p>Our Kubernetes probes were configured like this:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>s</span><span style=color:light-dark(#1e66f5,#89b4fa)>tartupProbe</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ttpGet</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    p</span><span style=color:light-dark(#1e66f5,#89b4fa)>ath</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> /</span><span style=color:light-dark(#40a02b,#a6e3a1)>health/liveliness</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    p</span><span style=color:light-dark(#1e66f5,#89b4fa)>ort</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 4000</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>l</span><span style=color:light-dark(#1e66f5,#89b4fa)>ivenessProbe</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ttpGet</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    p</span><span style=color:light-dark(#1e66f5,#89b4fa)>ath</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> /</span><span style=color:light-dark(#40a02b,#a6e3a1)>health/liveliness</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    p</span><span style=color:light-dark(#1e66f5,#89b4fa)>ort</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 4000</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>r</span><span style=color:light-dark(#1e66f5,#89b4fa)>eadinessProbe</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ttpGet</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    p</span><span style=color:light-dark(#1e66f5,#89b4fa)>ath</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> /</span><span style=color:light-dark(#40a02b,#a6e3a1)>health/readiness</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    p</span><span style=color:light-dark(#1e66f5,#89b4fa)>ort</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 4000</span></span></code></pre><p>These probes were not generating model traffic. LiteLLM documents <code>/health/liveliness</code> and <code>/health/readiness</code> as lightweight proxy probes that do not make LLM calls. Liveness only checks that the process is up. Readiness checks whether the worker can accept traffic and, when a database is configured, returns 503 if the database is unreachable.<p>We also had <code>use_shared_health_check: true</code>. With Redis coordination working, LiteLLM uses a distributed lock and cached results so that multiple proxy pods do not all perform the same model checks independently.<p>The paid traffic came from LiteLLM's <strong>model</strong> health checks. In our configuration, background checks were enabled for both local and external deployments.<h2 id=root-cause>Root cause</h2><p>A LiteLLM model health check is a real model request, not just an HTTP connectivity check.<p>For a deployment with <code>model_info.mode: chat</code>, LiteLLM tests the <code>/chat/completions</code> path. In LiteLLM v1.82.0, a non-wildcard route defaulted to one output token unless <code>health_check_max_tokens</code> was set explicitly. In LiteLLM 1.96.2, the default is 16, with additional model-specific and global overrides. In both versions, the provider processes the prompt and generated tokens, so a paid upstream can charge for the request according to the selected model's pricing. The one-output-token limit in v1.82.0 did not bound other billable work performed by a research model, which explains how these small probes could still accumulate substantial usage.<p>The exact request volume needs one qualification. <code>health_check_interval</code> controls how often the background loop runs, but with shared health checks enabled it is not necessarily the same as the upstream model-call interval.<p>Both the incident-era and current implementations cache shared health-check results in Redis. The default shared-cache TTL is 300 seconds, so a background loop running every 30 seconds can reuse a cached result instead of calling every model on every iteration. The effective upstream request rate therefore depends on both the loop interval and whether shared coordination is actually working.<p>The incident-era implementation in LiteLLM v1.82.0 had another important detail. If a pod could not acquire the shared Redis lock, it waited only two seconds for the lock holder to publish cached results. If no cache was available after that wait, the pod fell back to running the model health checks locally. Redis could therefore be available and the shared-health-check feature enabled, yet slow health-check cycles could still cause several proxy pods to issue overlapping paid probes.<p>We did not have enough evidence to prove that this fallback path accounted for every one of the 63,011 requests, but it is a plausible contributor in a multi-pod deployment and makes <code>use_shared_health_check: true</code> insufficient as the only cost-control measure.<p>LiteLLM has since changed this logic. In the current implementation, a pod that misses the lock polls for cached results for up to the lock TTL instead of falling back after a fixed two-second wait. This is one reason the article distinguishes the v1.82.x incident from the current configuration.<p>Without shared caching, a 30-second model-check interval would be roughly:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=plain><span class=giallo-l><span>2 checks/minute x 60 minutes x 24 hours = 2,880 checks/day</span></span>
+<span class=giallo-l><span>2,880 x 30 days ≈ 86,400 checks/month per deployment</span></span></code></pre><p>That is an upper-bound calculation for a setup that effectively executes every scheduled probe upstream. It is not the expected request count when shared health-check caching is working correctly.<p><code>health_check_concurrency: 4</code> does not lower the number of model checks. It only bounds how many health-check requests LiteLLM runs concurrently.<p>This is the distinction that matters:<table><thead><tr><th>Mechanism<th>Purpose<th>Calls a model<tbody><tr><td><code>/health/liveliness</code><td>Proxy liveness<td>No<tr><td><code>/health/readiness</code><td>Proxy readiness and configured DB reachability<td>No<tr><td>LiteLLM model health check<td>Test a deployment and update model health state<td>Yes</table><div class=article-key-point><p>A LiteLLM model health check is inference traffic. For a paid upstream API, health-check policy is also a cost-control decision.</div><h2 id=what-we-changed>What we changed</h2><p>We still wanted proactive checks for local models. Those deployments are part of the infrastructure we operate, and LiteLLM can use their health state to avoid routing new requests to an unhealthy deployment. For paid external models, the same probe policy had a direct dollar cost and much less operational value in our setup.<p>Current LiteLLM uses global enablement with per-deployment opt-out. The equivalent configuration in LiteLLM 1.96.2 keeps background checks enabled:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>g</span><span style=color:light-dark(#1e66f5,#89b4fa)>eneral_settings</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  b</span><span style=color:light-dark(#1e66f5,#89b4fa)>ackground_health_checks</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  u</span><span style=color:light-dark(#1e66f5,#89b4fa)>se_shared_health_check</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ealth_check_interval</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 30</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ealth_check_staleness_threshold</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 90</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ealth_check_concurrency</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 4</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  e</span><span style=color:light-dark(#1e66f5,#89b4fa)>nable_health_check_routing</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ealth_check_ignore_transient_errors</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ealth_check_skip_disabled_background_models</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span></code></pre><p>Local deployments remain eligible for background checks by default:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>m</span><span style=color:light-dark(#1e66f5,#89b4fa)>odel_list</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  -</span><span style=color:light-dark(#1e66f5,#89b4fa)> m</span><span style=color:light-dark(#1e66f5,#89b4fa)>odel_name</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> i</span><span style=color:light-dark(#40a02b,#a6e3a1)>nternal-model</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    l</span><span style=color:light-dark(#1e66f5,#89b4fa)>itellm_params</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      m</span><span style=color:light-dark(#1e66f5,#89b4fa)>odel</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> h</span><span style=color:light-dark(#40a02b,#a6e3a1)>osted_vllm/internal-model</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      a</span><span style=color:light-dark(#1e66f5,#89b4fa)>pi_base</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> h</span><span style=color:light-dark(#40a02b,#a6e3a1)>ttp://internal-vllm:8000/v1</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    m</span><span style=color:light-dark(#1e66f5,#89b4fa)>odel_info</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      m</span><span style=color:light-dark(#1e66f5,#89b4fa)>ode</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> c</span><span style=color:light-dark(#40a02b,#a6e3a1)>hat</span></span></code></pre><p>For paid external deployments, we set <code>disable_background_health_check</code> in <code>model_info</code>:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>m</span><span style=color:light-dark(#1e66f5,#89b4fa)>odel_list</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>  -</span><span style=color:light-dark(#1e66f5,#89b4fa)> m</span><span style=color:light-dark(#1e66f5,#89b4fa)>odel_name</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> e</span><span style=color:light-dark(#40a02b,#a6e3a1)>xternal-model</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    l</span><span style=color:light-dark(#1e66f5,#89b4fa)>itellm_params</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      m</span><span style=color:light-dark(#1e66f5,#89b4fa)>odel</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>&lt;provider>/&lt;model></span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      a</span><span style=color:light-dark(#1e66f5,#89b4fa)>pi_key</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> o</span><span style=color:light-dark(#40a02b,#a6e3a1)>s.environ/EXTERNAL_PROVIDER_API_KEY</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    m</span><span style=color:light-dark(#1e66f5,#89b4fa)>odel_info</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      m</span><span style=color:light-dark(#1e66f5,#89b4fa)>ode</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> c</span><span style=color:light-dark(#40a02b,#a6e3a1)>hat</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      d</span><span style=color:light-dark(#1e66f5,#89b4fa)>isable_background_health_check</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span></code></pre><p><code>disable_background_health_check: true</code> excludes that deployment from the background loop. The default is <code>false</code>, so local deployments do not need an explicit enable flag.<p><code>health_check_skip_disabled_background_models: true</code> extends the opt-out to on-demand <code>/health</code> and shared health checks. Without it, a deployment excluded from the background loop can still be probed by an on-demand model health check. This setting is part of the current configuration and was not available in LiteLLM v1.82.0-stable.<p>This flag only controls health-check participation; it does not disable the deployment for normal user traffic.<h2 id=what-i-would-configure-from-the-start>What I would configure from the start</h2><p>For an in-house setup that mixes self-hosted and paid models:<ul><li>Use <code>/health/liveliness</code> and <code>/health/readiness</code> for Kubernetes probes.<li>Keep model health checks for deployments where proactive routing state is useful and the probe cost is acceptable.<li>Opt paid external deployments out of background checks unless continuous active probing is a deliberate requirement.<li>If an external provider needs synthetic monitoring, run it at a deliberate interval with an explicit cost budget.<li>Use shared health checks for a multi-pod LiteLLM deployment, but do not rely on them as the only cost-control measure. Monitor Redis coordination and understand the fallback behavior of the LiteLLM version you run.<li>Check both <code>health_check_interval</code> and <code>DEFAULT_SHARED_HEALTH_CHECK_TTL</code> when estimating probe frequency. They control different parts of the mechanism.<li>Measure actual provider-side health-check traffic instead of deriving spend from the interval alone. The provider's usage view was what exposed this incident.</ul><p>For shared checks, LiteLLM exposes:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=plain><span class=giallo-l><span>GET /health/shared-status</span></span></code></pre><p>It reports Redis availability, lock state, cache age, and the pod that produced the cached result. This is useful for verifying that cross-pod coordination is actually working.<aside aria-label="Ecosystem snapshot" class=article-scope-note><div class=article-scope-note-title>Ecosystem snapshot · <time datetime=2026-08-15>August 15, 2026</time></div><div class=article-scope-note-body><p>The incident occurred on LiteLLM 1.82.x. The present-day behavior and configuration in this article were verified against LiteLLM 1.96.2 as of August 15, 2026. Health-check behavior has changed over time, so verify it against the version you deploy.</div></aside><h2 id=sources-and-further-reading>Sources and further reading</h2><nav aria-label="Sources and further reading" class=further-reading><ul><li><a rel="noopener external" href=https://docs.litellm.ai/docs/proxy/health target=_blank>LiteLLM: Health Checks</a> <span class=further-reading-description>Proxy and model health-check endpoints, configuration, and behavior.</span><li><a rel="noopener external" href=https://docs.litellm.ai/docs/proxy/shared_health_check target=_blank>LiteLLM: Shared Health Check State Across Pods</a> <span class=further-reading-description>Redis-backed coordination and caching for multi-pod deployments.</span><li><a rel="noopener external" href=https://docs.litellm.ai/docs/proxy/health_check_routing target=_blank>LiteLLM: Health Check Driven Routing</a> <span class=further-reading-description>How health-check results affect deployment routing.</span><li><a rel="noopener external" href=https://github.com/BerriAI/litellm/blob/v1.82.0-stable/litellm/proxy/health_check.py target=_blank>LiteLLM 1.82.0 source: <code>proxy/health_check.py</code></a> <span class=further-reading-description>The incident-era health-check request and one-token default.</span><li><a rel="noopener external" href=https://github.com/BerriAI/litellm/blob/v1.82.0-stable/litellm/proxy/health_check_utils/shared_health_check_manager.py target=_blank>LiteLLM 1.82.0 source: <code>shared_health_check_manager.py</code></a> <span class=further-reading-description>The incident-era shared locks, cached results, and two-second fallback to local checks.</span><li><a rel="noopener external" href=https://github.com/BerriAI/litellm/blob/v1.96.2/litellm/proxy/health_check.py target=_blank>LiteLLM 1.96.2 source: <code>proxy/health_check.py</code></a> <span class=further-reading-description>The current health-check request, token defaults, and model opt-out filtering.</span><li><a rel="noopener external" href=https://github.com/BerriAI/litellm/blob/v1.96.2/litellm/proxy/health_check_utils/shared_health_check_manager.py target=_blank>LiteLLM 1.96.2 source: <code>shared_health_check_manager.py</code></a> <span class=further-reading-description>The current lock-TTL polling and fallback behavior.</span></ul></nav></div></div><aside aria-label="Table of contents" class="note-toc note-toc-desktop"><div class=note-toc-card><div class=note-toc-title>On this page</div><nav aria-label="Table of contents" class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/#what-was-not-causing-the-spend> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>What was not causing the spend</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/#root-cause> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Root cause</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/#what-we-changed> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>What we changed</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/#what-i-would-configure-from-the-start> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>What I would configure from the start</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/hidden-costs-of-litellm-health-checks/#sources-and-further-reading> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Sources and further reading</span> </a></ul></nav></div></aside></div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/planning-llm-inference-capacity/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>How to Plan LLM Inference Capacity for a Shared Platform</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script><script>(function () {
+    var tocs = Array.prototype.slice.call(
+      document.querySelectorAll("[data-note-toc]"),
+    );
+    if (!tocs.length) return;
+
+    var groups = tocs
+      .map(function (toc) {
+        var links = Array.prototype.slice.call(
+          toc.querySelectorAll("[data-toc-link]"),
+        );
+        var items = Array.prototype.slice.call(
+          toc.querySelectorAll("[data-toc-item]"),
+        );
+        var entries = links
+          .map(function (link, index) {
+            var id = decodeURIComponent(link.hash.slice(1));
+            return {
+              link: link,
+              item: items[index],
+              heading: document.getElementById(id),
+              top: 0,
+            };
+          })
+          .filter(function (entry) {
+            return entry.heading;
+          });
+        return {
+          toc: toc,
+          entries: entries,
+          activeIndex: -1,
+        };
+      })
+      .filter(function (group) {
+        return group.entries.length;
+      });
+
+    if (!groups.length) return;
+
+    var frame = null;
+
+    function measure() {
+      groups.forEach(function (group) {
+        group.entries.forEach(function (entry) {
+          var headingRect = entry.heading.getBoundingClientRect();
+          entry.top = headingRect.top + window.pageYOffset;
+        });
+      });
+    }
+
+    function keepActiveLinkVisible(group, entry) {
+      var scroller = group.toc.closest(
+        ".note-toc, .note-toc-mobile-panel",
+      );
+      if (
+        !scroller ||
+        scroller.offsetParent === null ||
+        scroller.scrollHeight <= scroller.clientHeight
+      ) {
+        return;
+      }
+
+      var linkRect = entry.link.getBoundingClientRect();
+      var scrollerRect = scroller.getBoundingClientRect();
+      var padding = 10;
+
+      if (linkRect.top < scrollerRect.top + padding) {
+        scroller.scrollTop -= scrollerRect.top + padding - linkRect.top;
+      } else if (linkRect.bottom > scrollerRect.bottom - padding) {
+        scroller.scrollTop += linkRect.bottom - scrollerRect.bottom + padding;
+      }
+    }
+
+    function update() {
+      frame = null;
+      var position =
+        window.pageYOffset +
+        Math.max(120, Math.round(window.innerHeight * 0.22));
+
+      groups.forEach(function (group) {
+        var nextActive = 0;
+
+        for (var i = 0; i < group.entries.length; i += 1) {
+          if (position >= group.entries[i].top) {
+            nextActive = i;
+          }
+        }
+
+        if (nextActive !== group.activeIndex) {
+          group.activeIndex = nextActive;
+          group.entries.forEach(function (entry, index) {
+            var isActive = index === group.activeIndex;
+            var isPast = index < group.activeIndex;
+            entry.item.classList.toggle("is-active", isActive);
+            entry.item.classList.toggle("is-past", isPast);
+            if (isActive) {
+              entry.link.setAttribute("aria-current", "location");
+            } else {
+              entry.link.removeAttribute("aria-current");
+            }
+          });
+
+          keepActiveLinkVisible(
+            group,
+            group.entries[group.activeIndex],
+          );
+        }
+      });
+    }
+
+    function schedule() {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(update);
+    }
+
+    measure();
+    update();
+    window.addEventListener("resize", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("load", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("pageshow", function () {
+      measure();
+      schedule();
+    });
+    document.addEventListener("article:layoutchange", function () {
+      measure();
+      schedule();
+    });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        measure();
+        schedule();
+      });
+    }
+
+    var noteMain = document.querySelector(".note-main");
+    if ("ResizeObserver" in window && noteMain) {
+      var resizeObserver = new ResizeObserver(function () {
+        measure();
+        schedule();
+      });
+      resizeObserver.observe(noteMain);
+    }
+
+    document
+      .querySelectorAll(".note-toc-mobile")
+      .forEach(function (details) {
+        details.addEventListener("toggle", function () {
+          if (!details.open) return;
+          groups.forEach(function (group) {
+            group.activeIndex = -1;
+          });
+          schedule();
+        });
+      });
+  })();</script>

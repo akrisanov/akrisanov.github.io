@@ -1,0 +1,479 @@
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta content="width=device-width,initial-scale=1" name=viewport><title>
+      Kubernetes Model Serving in 2026: What Changed Since 2024
+    </title><meta content="An update on OCI model volumes, inference-aware routing, KServe, llm-d, multi-node inference, GPU scheduling, and the remaining gaps." name=description><meta content="Andrey Krisanov" name=author><meta content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" name=robots><link href=https://akrisanov.com/kubernetes-model-serving-in-2026/ rel=canonical><meta content=article property=og:type><meta content="Kubernetes Model Serving in 2026: What Changed Since 2024" property=og:title><meta content="An update on OCI model volumes, inference-aware routing, KServe, llm-d, multi-node inference, GPU scheduling, and the remaining gaps." property=og:description><meta content=https://akrisanov.com/kubernetes-model-serving-in-2026/ property=og:url><meta content="Andrey Krisanov" property=og:site_name><meta content=en_US property=og:locale><meta content=https://akrisanov.com/images/social-kubernetes-model-serving-in-2026.png property=og:image><meta content=1200 property=og:image:width><meta content=630 property=og:image:height><meta content="Social preview for Kubernetes Model Serving in 2026: What Changed Since 2024" property=og:image:alt><meta content=summary_large_image name=twitter:card><meta content=@_akrisanov name=twitter:creator><meta content="Kubernetes Model Serving in 2026: What Changed Since 2024" name=twitter:title><meta content="An update on OCI model volumes, inference-aware routing, KServe, llm-d, multi-node inference, GPU scheduling, and the remaining gaps." name=twitter:description><meta content=https://akrisanov.com/images/social-kubernetes-model-serving-in-2026.png name=twitter:image><meta content="Social preview for Kubernetes Model Serving in 2026: What Changed Since 2024" name=twitter:image:alt><meta content=2026-07-26 property=article:published_time><meta content=2026-07-26 property=article:modified_time><meta content=https://akrisanov.com/about/ property=article:author><meta content=kubernetes property=article:tag><meta content=llm-inference property=article:tag><meta content=ai-infrastructure property=article:tag><meta content=gpu property=article:tag><meta content=gateway-api property=article:tag><script type=application/ld+json>
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "@id": "https://akrisanov.com/kubernetes-model-serving-in-2026/#article",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "https://akrisanov.com/kubernetes-model-serving-in-2026/"
+        },
+        "headline": "Kubernetes Model Serving in 2026: What Changed Since 2024",
+        "description": "An update on OCI model volumes, inference-aware routing, KServe, llm-d, multi-node inference, GPU scheduling, and the remaining gaps.",
+        "image": "https://akrisanov.com/images/social-kubernetes-model-serving-in-2026.png",
+        "datePublished": "2026-07-26",
+        "dateModified": "2026-07-26",
+        "inLanguage": "en",
+        "wordCount": 3264,
+        "timeRequired": "PT14M",
+        "keywords": ["kubernetes","llm-inference","ai-infrastructure","gpu","gateway-api"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/",
+          "sameAs": [
+            "https://github.com/akrisanov",
+            "https://www.linkedin.com/in/akrisanov/",
+            "https://x.com/_akrisanov"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://akrisanov.com/about/#person",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/about/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://akrisanov.com/#website",
+          "name": "Andrey Krisanov",
+          "url": "https://akrisanov.com/"
+        }
+      }
+    </script><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link href=/favicon-180.png rel=icon sizes=32x32 type=image/png><link href=/favicon-180.png rel=apple-touch-icon sizes=180x180><link href="https://akrisanov.com/css/main.css?h=627e4d4da71d34a8f622" rel=stylesheet><script>if (!/Mac/.test(navigator.platform))
+        document.documentElement.dataset.os = "other";</script><link title="Andrey Krisanov" href=https://akrisanov.com/rss.xml rel=alternate type=application/rss+xml><body><div class=common><header class=flag><div class=header-content><div class=title><div class=title-inner><div class=logo><a aria-label="Andrey Krisanov" href=/> <img alt="Andrey Krisanov" class=userpic decoding=async fetchpriority=high height=144 src=/images/userpic-144.webp width=144> </a></div><div class=title-text><h1><a href=/>Andrey Krisanov</a></h1><div class=blog-description><p>LLM inference, AI infrastructure, and distributed systems</div><nav aria-label=Navigation class=header-nav><a class=header-nav-link href=/about/>About</a><a class=header-nav-link href=/shelf/>Shelf</a><a class=header-nav-link href=/files/andrey-krisanov-resume.pdf>Résumé</a><a class=header-nav-link href=https://github.com/akrisanov rel=me>GitHub</a><a class=header-nav-link href=https://www.linkedin.com/in/akrisanov/ rel=me>LinkedIn</a></nav></div></div></div></div></header><main class=content><article class="e2-note e2-note-single" id=article-top itemscope itemtype=https://schema.org/BlogPosting><meta content=https://akrisanov.com/kubernetes-model-serving-in-2026/ itemprop=url><meta content=https://akrisanov.com/images/social-kubernetes-model-serving-in-2026.png itemprop=image><span itemprop=author itemscope itemtype=https://schema.org/Person> <meta content="Andrey Krisanov" itemprop=name> <meta content=https://akrisanov.com/about/ itemprop=url> </span><div class=note-layout><div class=note-main><header class=note-header><h1 class=note-title itemprop=headline>Kubernetes Model Serving in 2026: What Changed Since 2024</h1><p class=note-description itemprop=description>An update on OCI model volumes, inference-aware routing, KServe, llm-d, multi-node inference, GPU scheduling, and the remaining gaps.<div class=note-meta><time class=note-date datetime=2026-07-26 itemprop=datePublished> July 26, 2026 </time><span class="note-date note-date-separator">•</span><span class=note-reading-time>14 min read</span><meta content=2026-07-26 itemprop=dateModified></div><span class=note-tags-inline> <a class=tag href=https://akrisanov.com/tags/kubernetes/>#kubernetes</a> <a class=tag href=https://akrisanov.com/tags/llm-inference/>#llm-inference</a> <a class=tag href=https://akrisanov.com/tags/ai-infrastructure/>#ai-infrastructure</a> <a class=tag href=https://akrisanov.com/tags/gpu/>#gpu</a> <a class=tag href=https://akrisanov.com/tags/gateway-api/>#gateway-api</a> </span></header><details class=note-toc-mobile><summary class=note-toc-mobile-summary>On this page</summary> <div class=note-toc-mobile-panel><nav aria-label="Table of contents" class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#from-isolated-features-to-an-inference-stack> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>From isolated features to an inference stack</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#1-oci-image-volumes-simplify-model-delivery> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>1. OCI image volumes simplify model delivery</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#2-inference-aware-routing-gets-a-standard-api> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>2. Inference-aware routing gets a standard API</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#3-kserve-separates-predictive-and-generative-serving> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>3. KServe separates predictive and generative serving</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#4-leaderworkerset-makes-multi-node-inference-declarative> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>4. LeaderWorkerSet makes multi-node inference declarative</span> </a> <ul class="note-toc-list note-toc-list-child"><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#prefill-decode-disaggregation> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Prefill/decode disaggregation</span> </a></ul><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#5-dra-improves-accelerator-allocation-but-depends-on-drivers> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>5. DRA improves accelerator allocation—but depends on drivers</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#6-workload-aware-scheduling-arrives-in-alpha> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>6. Workload-aware scheduling arrives in alpha</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#7-kubeflow-hub-expands-model-discovery-and-governance> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>7. Kubeflow Hub expands model discovery and governance</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#8-ai-policy-moves-toward-gateways> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>8. AI policy moves toward gateways</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#what-i-would-deploy-today> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>What I would deploy today</span> </a> <ul class="note-toc-list note-toc-list-child"><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#case-1-one-model-one-or-a-few-replicas> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Case 1: One model, one or a few replicas</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#case-2-a-shared-production-llm-service> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Case 2: A shared production LLM service</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#case-3-models-that-require-several-nodes> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Case 3: Models that require several nodes</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#case-4-large-scale-or-heterogeneous-inference> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Case 4: Large-scale or heterogeneous inference</span> </a></ul><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#what-is-still-not-solved> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>What is still not solved</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#sources-and-further-reading> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Sources and further reading</span> </a></ul></nav></div></details><div class="e2-text note-body" itemprop=articleBody><p>In October 2024, <a rel="noopener external" href=https://www.linkedin.com/in/terrytangyuan/ target=_blank>Yuan Tang</a> published <a rel="noopener external" href=https://terrytangyuan.github.io/2024/10/22/ai-ml-innovation-in-the-kubernetes-ecosystem/ target=_blank>AI/ML Innovation in the Kubernetes Ecosystem</a>. The article described three important developments: Kubeflow Model Registry, KServe ModelCars, and TrustyAI. It also pointed toward multi-node serving, inference-aware gateways, speculative decoding, low-rank adaptation (LoRA) adapters, and APIs designed for generative AI.<p>Since then, Kubernetes model serving has developed into a stack of specialized control-plane and data-plane components.<p>Kubernetes now has better primitives for distributing model files and allocating accelerators. Gateway API has gained inference-aware extensions. KServe has introduced a separate API for generative inference. <code>LeaderWorkerSet</code> has become a building block for multi-node model servers, while <a rel="noopener external" href=https://github.com/llm-d/llm-d/ target=_blank>llm-d</a> coordinates routing and distributed inference optimizations around engines such as <a rel="noopener external" href=https://vllm.ai/ target=_blank>vLLM</a>.<p>These capabilities also introduce more controllers, APIs, compatibility constraints, and failure modes.<aside aria-label="Ecosystem snapshot" class=article-scope-note><div class=article-scope-note-title>Ecosystem snapshot · <time datetime=2026-07-26>July 26, 2026</time></div><div class=article-scope-note-body><p>This article covers Kubernetes 1.36, KServe 0.18, the generally available Gateway API Inference Extension, and related production model-serving projects. The ecosystem evolves quickly, so verify version compatibility before adopting a particular combination.</div></aside><nav aria-label="Deployment guidance" class=article-decision-guide><span class=article-decision-guide-label>Choose a deployment:</span><a href=#case-1-one-model-one-or-a-few-replicas>Single model</a><a href=#case-2-a-shared-production-llm-service>Shared LLM service</a><a href=#case-3-models-that-require-several-nodes>Multi-node model</a><a href=#case-4-large-scale-or-heterogeneous-inference>Heterogeneous inference</a></nav><h2 id=from-isolated-features-to-an-inference-stack>From isolated features to an inference stack</h2><p>The 2024 view centered on several individual improvements. By 2026, those features fit into a more explicit architecture:<table><thead><tr><th>Concern<th>Typical approach in 2024<th>State in 2026<tbody><tr><td>Model distribution<td>Object storage, init containers, KServe ModelCars<td>Native OCI image volumes are stable; node-local model caches remain useful<tr><td>Serving API<td>Mostly <code>InferenceService</code> and engine-specific manifests<td><code>InferenceService</code> for predictive serving; <code>LLMInferenceService</code> for generative AI<tr><td>Request routing<td>Service-level or round-robin load balancing<td><code>InferencePool</code> plus inference-aware endpoint selection<tr><td>Large-model execution<td>Custom multi-node deployments, often tied to Ray<td>LeaderWorkerSet-backed multi-node deployments and engine-native distributed modes<tr><td>Prefill and decode<td>Usually colocated in the same replicas<td>Optional separation into specialized prefill and decode pools<tr><td>Accelerator allocation<td>Device Plugins and extended resources<td>Stable DRA core, with driver-dependent adoption<tr><td>Group scheduling<td>External batch schedulers or custom operators<td>Native workload-aware scheduling exists, but remains alpha<tr><td>Model metadata<td>Early Kubeflow Model Registry<td>Kubeflow Hub combines registry and federated catalog capabilities<tr><td>AI traffic policy<td>Product-specific gateways and middleware<td>A Kubernetes AI Gateway Working Group is standardizing common patterns</table><p>Not every layer is mature. Inference now has dedicated components for its distributed-systems requirements.<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=mermaid><span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>flowchart</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> TD</span></span>
+<span class=giallo-l><span>    accTitle</span><span>: </span><span>The </span><span>layers </span><span>of </span><span>a </span><span>Kubernetes </span><span>model-serving </span><span>stack</span></span>
+<span class=giallo-l><span>    accDescr</span><span>: </span><span>Requests </span><span>pass </span><span>from </span><span>a </span><span>client </span><span>through </span><span>an </span><span>AI </span><span>gateway </span><span>and </span><span>Gateway </span><span>API </span><span>route </span><span>to </span><span>an </span><span>inference-aware </span><span>endpoint </span><span>picker</span><span>, </span><span>model-serving </span><span>workloads</span><span>, </span><span>and </span><span>the </span><span>underlying </span><span>GPU</span><span>, </span><span>network</span><span>, </span><span>cache</span><span>, </span><span>and </span><span>storage </span><span>infrastructure</span><span>.</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    Client</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>Client</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    Gateway</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>`**AI or API gateway**</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    • Authentication</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    • Quotas and token limits</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    • Payload policy and guardrails`</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    Route</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>Gateway API route</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    InferencePool</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>`**InferencePool + endpoint picker**</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    • Queue-aware routing</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    • Prefix/KV-cache affinity</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    • Model or adapter availability`</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    Workloads</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>`**Model-serving workloads**</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    • Single-node replicas</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    • Multi-node replicas</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    • Separate prefill and decode pools`</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    Infrastructure</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>`**Infrastructure**</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    GPU, network, local model cache,</span></span>
+<span class=giallo-l><span style=color:light-dark(#40a02b,#a6e3a1)>    and remote storage`</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    Client </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> Gateway</span></span>
+<span class=giallo-l><span>    Gateway </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> Route</span></span>
+<span class=giallo-l><span>    Route </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> InferencePool</span></span>
+<span class=giallo-l><span>    InferencePool </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> Workloads</span></span>
+<span class=giallo-l><span>    Workloads </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> Infrastructure</span></span></code></pre><p class=mermaid-caption>Figure 1. A production inference request crosses several independently operated layers.<p>KServe can manage much of this control plane. Gateway API Inference Extension defines the routing integration. <code>LeaderWorkerSet</code> represents groups of pods that must operate together. <code>llm-d</code> provides distributed inference and routing components. Engines such as vLLM or SGLang still execute the model.<p>Each component has a separate role despite some overlap.<h2 id=1-oci-image-volumes-simplify-model-delivery>1. OCI image volumes simplify model delivery</h2><p>The 2024 article explained why KServe introduced ModelCars: a model could be packaged into an OCI image and exposed to the model server through a passive sidecar. This reused container-registry distribution and node caching instead of downloading weights from object storage for every replica.<p>At that time, Kubernetes could pull an image but could not directly mount its filesystem as a volume. Kubernetes 1.31 introduced the <code>image</code> volume source as alpha. Kubernetes 1.33 promoted it to beta, and <a rel="noopener external" href=https://kubernetes.io/blog/2026/04/22/kubernetes-v1-36-release/ target=_blank>Kubernetes 1.36 made OCI artifact and image volumes stable</a>.<p>A pod can now mount read-only content directly from an OCI registry:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>a</span><span style=color:light-dark(#1e66f5,#89b4fa)>piVersion</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> v</span><span style=color:light-dark(#40a02b,#a6e3a1)>1</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>k</span><span style=color:light-dark(#1e66f5,#89b4fa)>ind</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> P</span><span style=color:light-dark(#40a02b,#a6e3a1)>od</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>m</span><span style=color:light-dark(#1e66f5,#89b4fa)>etadata</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> m</span><span style=color:light-dark(#40a02b,#a6e3a1)>odel-server</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>s</span><span style=color:light-dark(#1e66f5,#89b4fa)>pec</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  c</span><span style=color:light-dark(#1e66f5,#89b4fa)>ontainers</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>    -</span><span style=color:light-dark(#1e66f5,#89b4fa)> n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> s</span><span style=color:light-dark(#40a02b,#a6e3a1)>erver</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      i</span><span style=color:light-dark(#1e66f5,#89b4fa)>mage</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> e</span><span style=color:light-dark(#40a02b,#a6e3a1)>xample.com/model-server:v1</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      v</span><span style=color:light-dark(#1e66f5,#89b4fa)>olumeMounts</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>        -</span><span style=color:light-dark(#1e66f5,#89b4fa)> n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> m</span><span style=color:light-dark(#40a02b,#a6e3a1)>odel</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>          m</span><span style=color:light-dark(#1e66f5,#89b4fa)>ountPath</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> /</span><span style=color:light-dark(#40a02b,#a6e3a1)>models/llama</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>          r</span><span style=color:light-dark(#1e66f5,#89b4fa)>eadOnly</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> true</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  v</span><span style=color:light-dark(#1e66f5,#89b4fa)>olumes</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>    -</span><span style=color:light-dark(#1e66f5,#89b4fa)> n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> m</span><span style=color:light-dark(#40a02b,#a6e3a1)>odel</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      i</span><span style=color:light-dark(#1e66f5,#89b4fa)>mage</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>        r</span><span style=color:light-dark(#1e66f5,#89b4fa)>eference</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> r</span><span style=color:light-dark(#40a02b,#a6e3a1)>egistry.example.com/models/llama:2026-07</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>        p</span><span style=color:light-dark(#1e66f5,#89b4fa)>ullPolicy</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> I</span><span style=color:light-dark(#40a02b,#a6e3a1)>fNotPresent</span></span></code></pre><p>The sidecar pattern is no longer required merely because Kubernetes lacks an OCI-backed volume type. ModelCars can still be useful for KServe integration, compatibility with older clusters, and established tooling, but native image volumes provide a cleaner upstream primitive.<p>OCI packaging does <strong>not</strong> eliminate cold starts.<p>A 100–500 GB model still has to reach the node. Startup behavior still depends on:<ul><li>registry throughput and rate limits<li>layer structure and decompression cost<li>container-runtime support<li>node disk capacity and eviction policy<li>whether the model is already cached<li>how many nodes pull the same model at once</ul><p>KServe also maintains a <a rel="noopener external" href=https://kserve.github.io/website/docs/model-serving/generative-inference/modelcache/localmodel target=_blank>Local Model Cache</a>. It can pre-download model artifacts to local NVMe and let several inference pods reuse the warmed copy.<p>Native OCI volumes improve packaging and delivery semantics. Local caching addresses placement and startup latency. They solve related but different problems.<h2 id=2-inference-aware-routing-gets-a-standard-api>2. Inference-aware routing gets a standard API</h2><p>A Kubernetes <code>Service</code> assumes that its ready endpoints are roughly interchangeable. That assumption breaks down for LLM serving.<p>Two healthy replicas can have very different costs for the same request:<ul><li>one replica may already have the prompt prefix in its key-value (KV) cache<li>one may have a long queue<li>one may be close to KV-cache exhaustion<li>only one may have the requested LoRA adapter loaded<li>replicas may use different accelerators or quantizations<li>a long prompt may be better assigned to a different pool than a decode-heavy request</ul><p>Round-robin routing ignores all of this.<p>The same problem space described as "LLM Instance Gateway" in the 2024 article is now addressed by the <a rel="noopener external" href=https://gateway-api-inference-extension.sigs.k8s.io/ target=_blank>Gateway API Inference Extension</a>. By July 2026, the project marks itself generally available and defines <code>InferencePool</code> as a specialized backend abstraction for model servers. A gateway delegates endpoint choice to an inference router or endpoint picker, which can use live metrics and model-server capabilities.<p>The request path becomes:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=mermaid><span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>flowchart</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> LR</span></span>
+<span class=giallo-l><span>    accTitle</span><span>: </span><span>The </span><span>inference-aware </span><span>request </span><span>path</span></span>
+<span class=giallo-l><span>    accDescr</span><span>: </span><span>An </span><span>HTTPRoute </span><span>sends </span><span>a </span><span>request </span><span>to </span><span>an </span><span>InferencePool</span><span>, </span><span>which </span><span>consults </span><span>an </span><span>endpoint </span><span>picker </span><span>before </span><span>selecting </span><span>a </span><span>model-server </span><span>pod</span><span>.</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    HTTPRoute</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>HTTPRoute</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l><span>    InferencePool</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>InferencePool</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l><span>    EndpointPicker</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>Endpoint picker</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l><span>    ModelServer</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>Selected model-server pod</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    HTTPRoute </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> InferencePool</span></span>
+<span class=giallo-l><span>    InferencePool </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> EndpointPicker</span></span>
+<span class=giallo-l><span>    EndpointPicker </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> ModelServer</span></span></code></pre><p class=mermaid-caption>Figure 2. Gateway API delegates model-server selection to an inference-aware endpoint picker.<p>The components have separate responsibilities:<ul><li><strong>Gateway API</strong> handles traffic attachment and routing integration.<li><strong>InferencePool</strong> identifies a pool of inference endpoints.<li><strong>The endpoint picker</strong> decides which endpoint is best for the request.<li><strong>The model server</strong> exposes metrics and capabilities used by the picker.</ul><p>The reference project does not define every scheduling policy. Its documentation points users toward components such as the <a rel="noopener external" href=https://github.com/llm-d/llm-d-router target=_blank>llm-d router</a>. Some of the advanced features that were previously developed in the Inference Extension repository have now moved to the llm-d repositories. These features include endpoint selection and model rewrite logic. The extension still owns the Pool API and conformance work.<p>The integration API defines how a gateway connects to an inference pool without requiring every platform to use the same scheduling algorithm. The GA label does not imply that every endpoint-selection policy or gateway implementation is equally mature.<h2 id=3-kserve-separates-predictive-and-generative-serving>3. KServe separates predictive and generative serving</h2><p>KServe's original <code>InferenceService</code> API was designed for a broad range of predictive models and serving runtimes. It still fits many workloads well.<p>LLM serving, however, needs concepts that do not map cleanly to a conventional stateless model endpoint:<ul><li>tensor, data, and expert parallelism<li>groups of pods forming one logical replica<li>prefill/decode disaggregation<li>KV-cache-aware routing<li>LoRA adapter selection<li>long-lived streaming responses<li>autoscaling signals based on queues, tokens, and cache pressure</ul><p>KServe 0.17 presented <code>LLMInferenceService</code> as its API for production generative AI serving. KServe 0.18 added multi-node inference without requiring Ray, LeaderWorkerSet-based autoscaling, OpenAI Responses API routing, namespace-scoped model-cache work, and llm-d 0.6 integration.<p>In KServe 0.18, example manifests still use the <code>serving.kserve.io/v1alpha2</code> API. Schema evolution therefore belongs in the upgrade plan.<p>The distinction is now explicit:<ul><li>use <strong><code>InferenceService</code></strong> for predictive serving and simpler serving patterns<li>use <strong><code>LLMInferenceService</code></strong> when you need orchestration designed for generative AI</ul><p>A simplified resource can describe the model, replicas, runtime, and managed routing:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>a</span><span style=color:light-dark(#1e66f5,#89b4fa)>piVersion</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> s</span><span style=color:light-dark(#40a02b,#a6e3a1)>erving.kserve.io/v1alpha2</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>k</span><span style=color:light-dark(#1e66f5,#89b4fa)>ind</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> L</span><span style=color:light-dark(#40a02b,#a6e3a1)>LMInferenceService</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>m</span><span style=color:light-dark(#1e66f5,#89b4fa)>etadata</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> m</span><span style=color:light-dark(#40a02b,#a6e3a1)>y-llm</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>s</span><span style=color:light-dark(#1e66f5,#89b4fa)>pec</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  m</span><span style=color:light-dark(#1e66f5,#89b4fa)>odel</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    u</span><span style=color:light-dark(#1e66f5,#89b4fa)>ri</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> h</span><span style=color:light-dark(#40a02b,#a6e3a1)>f://organization/model</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> o</span><span style=color:light-dark(#40a02b,#a6e3a1)>rganization--model</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  r</span><span style=color:light-dark(#1e66f5,#89b4fa)>eplicas</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#fe640b,#fab387)> 3</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  t</span><span style=color:light-dark(#1e66f5,#89b4fa)>emplate</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    c</span><span style=color:light-dark(#1e66f5,#89b4fa)>ontainers</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#7c7f93,#9399b2)>      -</span><span style=color:light-dark(#1e66f5,#89b4fa)> n</span><span style=color:light-dark(#1e66f5,#89b4fa)>ame</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> m</span><span style=color:light-dark(#40a02b,#a6e3a1)>ain</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>        i</span><span style=color:light-dark(#1e66f5,#89b4fa)>mage</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> v</span><span style=color:light-dark(#40a02b,#a6e3a1)>llm/vllm-openai:&lt;tested-version></span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>        r</span><span style=color:light-dark(#1e66f5,#89b4fa)>esources</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>          l</span><span style=color:light-dark(#1e66f5,#89b4fa)>imits</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>            n</span><span style=color:light-dark(#1e66f5,#89b4fa)>vidia.com/gpu</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>1</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  r</span><span style=color:light-dark(#1e66f5,#89b4fa)>outer</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    g</span><span style=color:light-dark(#1e66f5,#89b4fa)>ateway</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      m</span><span style=color:light-dark(#1e66f5,#89b4fa)>anaged</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#7c7f93,#9399b2)> {</span><span style=color:light-dark(#7c7f93,#9399b2)>}</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    r</span><span style=color:light-dark(#1e66f5,#89b4fa)>oute</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      h</span><span style=color:light-dark(#1e66f5,#89b4fa)>ttpRoute</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#7c7f93,#9399b2)> {</span><span style=color:light-dark(#7c7f93,#9399b2)>}</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    s</span><span style=color:light-dark(#1e66f5,#89b4fa)>cheduler</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>      p</span><span style=color:light-dark(#1e66f5,#89b4fa)>ool</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#7c7f93,#9399b2)> {</span><span style=color:light-dark(#7c7f93,#9399b2)>}</span></span></code></pre><p>For multi-node execution, adding a worker template causes KServe to create a <code>LeaderWorkerSet</code>. Adding a prefill template selects a disaggregated topology.<p>The complete setup may require Kubernetes 1.32 or newer, Gateway API, an inference-extension-compatible gateway, Gateway API Inference Extension, <code>LeaderWorkerSet</code> for multi-node workloads, <a rel="noopener external" href=https://keda.sh/ target=_blank>KEDA</a> for some autoscaling configurations, cert-manager, KServe, an inference router, and a supported model engine.<p>Before adopting it, validate:<ol><li>the exact compatibility matrix<li>upgrade order and rollback behavior<li>CRD conversion and deletion behavior<li>which component owns each metric and status condition<li>failure handling when the router, gateway, or one worker group is unavailable</ol><p><code>LLMInferenceService</code> reduces the amount of custom platform code you need to write. It does not remove the need to operate the resulting distributed system.<h2 id=4-leaderworkerset-makes-multi-node-inference-declarative>4. LeaderWorkerSet makes multi-node inference declarative</h2><p>Some models do not fit on one node. Others technically fit but need several nodes to reach the required throughput. A normal <code>Deployment</code> is a poor representation of this topology because several pods may jointly form one model replica and must start, stop, and recover as a group.<p><a rel="noopener external" href=https://lws.sigs.k8s.io/docs/overview/ target=_blank>LeaderWorkerSet</a> provides an API for deploying a group of pods as a unit of replication. It targets multi-host AI/ML workloads where a model is sharded across devices and nodes.<p>KServe can use LeaderWorkerSet for:<ul><li>multi-node tensor parallelism<li>distributed data parallel replicas<li>expert parallelism for mixture-of-experts models<li>coordinated lifecycle and autoscaling of worker groups</ul><p>llm-d builds a higher-level distributed inference system around engines such as vLLM. Its current architecture includes prefix-cache-aware routing, prefill/decode disaggregation, distributed KV-cache capabilities, multi-node execution, and workload-aware autoscaling. The project entered the CNCF Sandbox in March 2026.<h3 id=prefill-decode-disaggregation>Prefill/decode disaggregation</h3><p>LLM inference has two phases with different resource profiles:<ul><li><strong>Prefill</strong> processes the input prompt. It is often compute-heavy, especially for long contexts.<li><strong>Decode</strong> generates tokens iteratively. It is commonly limited by memory bandwidth and KV-cache access.</ul><p>A disaggregated architecture runs these phases in different pools and scales them independently:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=mermaid><span class=giallo-l><span style=color:light-dark(#8839ef,#cba6f7)>flowchart</span><span style=color:light-dark(#1e66f5,#89b4fa);font-style:italic> LR</span></span>
+<span class=giallo-l><span>    accTitle</span><span>: </span><span>Disaggregated </span><span>prefill </span><span>and </span><span>decode</span></span>
+<span class=giallo-l><span>    accDescr</span><span>: </span><span>A </span><span>request </span><span>is </span><span>processed </span><span>by </span><span>a </span><span>prefill </span><span>worker</span><span>, </span><span>its </span><span>KV </span><span>state </span><span>is </span><span>transferred </span><span>to </span><span>a </span><span>decode </span><span>worker</span><span>, </span><span>and </span><span>the </span><span>response </span><span>is </span><span>streamed </span><span>to </span><span>the </span><span>client</span><span>.</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    Request</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>Request</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l><span>    Prefill</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>Prefill worker</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l><span>    KVTransfer</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>Transfer KV state</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l><span>    Decode</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>Decode worker</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l><span>    Response</span><span style=color:light-dark(#8839ef,#cba6f7)>[</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#40a02b,#a6e3a1)>Streamed response</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span><span style=color:light-dark(#8839ef,#cba6f7)>]</span></span>
+<span class=giallo-l></span>
+<span class=giallo-l><span>    Request </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> Prefill</span></span>
+<span class=giallo-l><span>    Prefill </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> KVTransfer</span></span>
+<span class=giallo-l><span>    KVTransfer </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> Decode</span></span>
+<span class=giallo-l><span>    Decode </span><span style=color:light-dark(#8839ef,#cba6f7)>--></span><span> Response</span></span></code></pre><p class=mermaid-caption>Figure 3. Disaggregation introduces an explicit KV-state transfer between prefill and decode.<p>This can reduce interference between long prefills and active decodes and let each phase use a different replica count or hardware shape.<p>But it also adds a KV-transfer path before the first token. The result depends heavily on network bandwidth, latency, topology, transfer libraries, and the distribution of input and output lengths. On a bandwidth-constrained or high-latency inter-node network, disaggregation can move the bottleneck rather than remove it.<p>Use disaggregation when measurements show that it improves the target workload.<h2 id=5-dra-improves-accelerator-allocation-but-depends-on-drivers>5. DRA improves accelerator allocation—but depends on drivers</h2><p>For years, most Kubernetes GPU workloads have requested extended resources exposed by Device Plugins:<pre style="color-scheme:light dark;color:light-dark(#4c4f69,#cdd6f4);background-color:light-dark(#eff1f5,#1e1e2e)" class=giallo><code data-lang=yaml><span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>r</span><span style=color:light-dark(#1e66f5,#89b4fa)>esources</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>  l</span><span style=color:light-dark(#1e66f5,#89b4fa)>imits</span><span style=color:light-dark(#179299,#94e2d5)>:</span></span>
+<span class=giallo-l><span style=color:light-dark(#1e66f5,#89b4fa)>    n</span><span style=color:light-dark(#1e66f5,#89b4fa)>vidia.com/gpu</span><span style=color:light-dark(#179299,#94e2d5)>:</span><span style=color:light-dark(#40a02b,#a6e3a1)> "</span><span style=color:light-dark(#40a02b,#a6e3a1)>8</span><span style=color:light-dark(#40a02b,#a6e3a1)>"</span></span></code></pre><p>This works, but it expresses little about the requested devices. It does not naturally represent properties such as GPU model, memory size, interconnect topology, sharing mode, or a reusable claim.<p><a rel="noopener external" href=https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/ target=_blank>Dynamic Resource Allocation</a> provides a richer model based on resources such as <code>DeviceClass</code>, <code>ResourceClaim</code>, and <code>ResourceClaimTemplate</code>. The core DRA APIs graduated to stable in Kubernetes 1.34. Kubernetes 1.36 continued work on device health, partitionable devices, consumable capacity, and additional drivers.<p>DRA is Kubernetes's upstream direction for allocating specialized hardware, but a stable API does not make every accelerator stack ready for production.<p>You still need to check:<ul><li>whether your vendor provides a supported DRA driver<li>which Kubernetes and driver versions are compatible<li>how Multi-Instance GPU (MIG), time slicing, or other partitioning modes are represented<li>whether device health reaches the controllers that perform recovery<li>how upgrades coexist with existing Device Plugin workloads<li>whether your managed Kubernetes provider exposes the required features</ul><p>For many current clusters, Device Plugins remain the production default. DRA is useful when its richer selection and sharing semantics solve a concrete placement problem.<h2 id=6-workload-aware-scheduling-arrives-in-alpha>6. Workload-aware scheduling arrives in alpha</h2><p>Distributed inference may require several pods and devices to become available together. Scheduling them one at a time can leave partially allocated workloads holding scarce GPUs while waiting for the rest of the group.<p>Kubernetes 1.35 introduced native workload-aware scheduling work, including gang-scheduling foundations. Kubernetes 1.36 expanded it with <code>Workload</code> and <code>PodGroup</code> APIs and atomic scheduling of related pod groups.<p>The feature is <strong>alpha</strong>.<p>It moves group scheduling closer to the upstream scheduler and Job controller and may eventually replace some external scheduling layers. Do not replace an existing production scheduler or queueing system without extensive testing.<p>LeaderWorkerSet and workload-aware scheduling also solve different concerns:<ul><li>LeaderWorkerSet describes and manages a replicated group of cooperating pods.<li>Workload-aware scheduling determines how related pods receive resources together.</ul><p>A platform may eventually use both.<h2 id=7-kubeflow-hub-expands-model-discovery-and-governance>7. Kubeflow Hub expands model discovery and governance</h2><p>The Model Registry described in 2024 has expanded into <a rel="noopener external" href=https://www.kubeflow.org/docs/components/hub/ target=_blank>Kubeflow Hub</a>, which combines:<ul><li><strong>Model Registry:</strong> metadata, versions, artifacts, lifecycle status, and governance<li><strong>Model Catalog:</strong> read-only discovery across configured external catalogs</ul><p>The catalog can federate metadata from sources such as Hugging Face. The registry can integrate with deployment workflows and KServe storage initialization.<p>Kubeflow Hub is primarily a metadata and discovery system. Its architecture documentation explicitly describes the registry as a passive repository rather than a Kubernetes control plane. The catalog does not store model weights.<p>As of July 2026, the registry is still offered as an opt-in alpha component in Kubeflow Community Distribution 1.9 and newer, and its REST API remains versioned as <code>v1alpha3</code>.<p>Treat it as an early lifecycle component, not as a dependency for every inference request.<p>Keep large weight distribution in OCI registries, object storage, or a dedicated model-cache layer. Keep approval, lineage, versions, and deployment metadata in the registry.<h2 id=8-ai-policy-moves-toward-gateways>8. AI policy moves toward gateways</h2><p>TrustyAI has continued beyond its early explainability focus, with tools for metrics, evaluation, bias and drift analysis, and language-model testing. It remains a pluggable part of the wider lifecycle rather than the central serving control plane.<p>A newer development is the formation of the <a rel="noopener external" href=https://kubernetes.io/blog/2026/03/09/announcing-ai-gateway-wg/ target=_blank>Kubernetes AI Gateway Working Group</a>. Its scope includes common patterns such as:<ul><li>token-based rate limiting<li>fine-grained access control<li>payload inspection<li>routing, caching, and guardrail hooks<li>secure access to external model providers<li>regional policy and failover</ul><p>Model-serving engines schedule and execute inference. A gateway can apply tenant policy consistently to self-hosted and external providers.<p>The working group is new. Its proposals are not stable APIs with broad implementation support.<h2 id=what-i-would-deploy-today>What I would deploy today</h2><p>There is no single "Kubernetes AI stack." I would choose the smallest architecture that can handle the workload.<h3 id=case-1-one-model-one-or-a-few-replicas>Case 1: One model, one or a few replicas</h3><p>Start with:<ul><li>a tested model-server image, such as vLLM, SGLang, or TensorRT-LLM<li>a <code>Deployment</code>, <code>StatefulSet</code>, or a basic KServe <code>InferenceService</code><li>a standard <code>Service</code> and Gateway API route<li>model files from object storage, an OCI image volume, or a pre-warmed node cache<li>Prometheus metrics at the gateway, engine, GPU, and node layers</ul><p>Do not install an inference-aware router until replicas are sufficiently busy for routing quality to matter.<h3 id=case-2-a-shared-production-llm-service>Case 2: A shared production LLM service</h3><p>Add:<ul><li>multiple replicas with an explicit latency and throughput SLO<li><code>InferencePool</code> and a production endpoint picker when queue or cache affinity matters<li>KServe <code>LLMInferenceService</code> when its lifecycle automation is worth the dependencies<li>request priorities, admission control, quotas, and maximum context/output limits<li>autoscaling based on queueing, prompt length, output length, concurrency, and request mix—not GPU utilization alone</ul><p>Keep the model server and routing policy independently observable. A healthy gateway does not prove that the engine is healthy, and a healthy engine does not prove that clients receive timely streamed tokens.<h3 id=case-3-models-that-require-several-nodes>Case 3: Models that require several nodes</h3><p>Add <code>LeaderWorkerSet</code> only when one logical replica spans multiple pods or nodes.<p>Before production, test:<ul><li>startup and restart of the whole worker group<li>one worker or node failing during generation<li>collective-communication failures<li>rack and topology placement<li>network saturation<li>rolling updates when old and new model copies cannot fit simultaneously<li>whether failed replicas release all GPUs promptly</ul><p>Treat network bandwidth and topology as capacity constraints.<h3 id=case-4-large-scale-or-heterogeneous-inference>Case 4: Large-scale or heterogeneous inference</h3><p>Evaluate DRA when you need richer accelerator selection, sharing, or health semantics and your vendor's driver is ready. Consider llm-d when prefix affinity, prefill/decode disaggregation, or distributed serving produces a measurable improvement over simpler routing.<p>Do not adopt every available CRD. Every controller adds:<ul><li>reconciliation behavior<li>status you must monitor<li>upgrade compatibility<li>RBAC and security surface<li>another place where desired and actual state can diverge</ul><h2 id=what-is-still-not-solved>What is still not solved</h2><ul><li><strong>Predictable cold starts:</strong> OCI volumes and local caches improve delivery, but very large models still require substantial disk, network, and initialization time. Autoscaling cannot create warm GPU capacity instantly.<li><strong>Safe autoscaling:</strong> Inference demand is measured in prompts, tokens, context lengths, and active sequences, not only requests per second. Replica startup may take many minutes, and scaling down can interrupt streams or destroy useful cache state.<li><strong>Portable accelerator management:</strong> DRA provides a stable upstream API, but production behavior still depends on vendor drivers, managed-platform support, partitioning features, and integration with the existing device stack.<li><strong>Operational simplicity:</strong> A full deployment may combine KServe, Gateway API, Inference Extension, a gateway, LeaderWorkerSet, KEDA, llm-d components, an engine, a model cache, and accelerator drivers. The combination requires compatibility testing.<li><strong>Distributed-inference networking:</strong> Tensor parallelism, expert parallelism, and KV transfer are sensitive to topology and bandwidth. Kubernetes can place and restart pods, but it cannot compensate for insufficient network capacity.<li><strong>Stable, interoperable APIs:</strong> Several APIs remain alpha or project-specific and will continue to change.</ul><p>Inference performance still depends on the model engine, kernels, quantization, batching, KV-cache management, accelerator topology, and request characteristics. Kubernetes supplies control, placement, lifecycle, and routing.<div class=article-key-point><p>Build the smallest serving stack that meets current SLOs. Add inference-specific layers when measurements show that the existing architecture has reached its limit.</div><h2 id=sources-and-further-reading>Sources and further reading</h2><nav aria-label="Sources and further reading" class=further-reading><ul><li><a rel="noopener external" href=https://terrytangyuan.github.io/2024/10/22/ai-ml-innovation-in-the-kubernetes-ecosystem/ target=_blank>AI/ML Innovation in the Kubernetes Ecosystem (2024)</a> <span class=further-reading-description>The original ecosystem overview revisited by this article.</span><li><a rel="noopener external" href=https://kubernetes.io/blog/2026/04/22/kubernetes-v1-36-release/ target=_blank>Kubernetes 1.36 release notes</a> <span class=further-reading-description>Upstream changes including stable OCI image volumes.</span><li><a rel="noopener external" href=https://gateway-api-inference-extension.sigs.k8s.io/ target=_blank>Gateway API Inference Extension</a> <span class=further-reading-description>API definitions and concepts for inference-aware routing.</span><li><a rel="noopener external" href=https://kserve.github.io/website/blog/kserve-0.18-release target=_blank>KServe 0.18 release</a> <span class=further-reading-description>Generative inference and model-serving control-plane changes.</span><li><a rel="noopener external" href=https://kserve.github.io/website/docs/model-serving/generative-inference/llmisvc/llmisvc-overview target=_blank>KServe LLMInferenceService overview</a> <span class=further-reading-description>The serving API designed for generative AI and its architecture.</span><li><a rel="noopener external" href=https://lws.sigs.k8s.io/docs/overview/ target=_blank>LeaderWorkerSet overview</a> <span class=further-reading-description>A Kubernetes API for groups of cooperating pods.</span><li><a rel="noopener external" href=https://llm-d.ai/docs/0.7 target=_blank>llm-d documentation</a> <span class=further-reading-description>Distributed inference, routing, and disaggregation components.</span><li><a rel="noopener external" href=https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/ target=_blank>Kubernetes Dynamic Resource Allocation</a> <span class=further-reading-description>The upstream resource-allocation model used by accelerator drivers.</span><li><a rel="noopener external" href=https://www.kubeflow.org/docs/components/hub/ target=_blank>Kubeflow Hub</a> <span class=further-reading-description>Model registry and federated catalog capabilities.</span><li><a rel="noopener external" href=https://kubernetes.io/blog/2026/03/09/announcing-ai-gateway-wg/ target=_blank>Kubernetes AI Gateway Working Group</a> <span class=further-reading-description>The effort to standardize AI gateway patterns in Kubernetes.</span></ul></nav></div></div><aside aria-label="Table of contents" class="note-toc note-toc-desktop"><div class=note-toc-card><div class=note-toc-title>On this page</div><nav aria-label="Table of contents" class=note-toc-nav data-note-toc><ul class="note-toc-list note-toc-list-root"><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#from-isolated-features-to-an-inference-stack> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>From isolated features to an inference stack</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#1-oci-image-volumes-simplify-model-delivery> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>1. OCI image volumes simplify model delivery</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#2-inference-aware-routing-gets-a-standard-api> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>2. Inference-aware routing gets a standard API</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#3-kserve-separates-predictive-and-generative-serving> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>3. KServe separates predictive and generative serving</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#4-leaderworkerset-makes-multi-node-inference-declarative> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>4. LeaderWorkerSet makes multi-node inference declarative</span> </a> <ul class="note-toc-list note-toc-list-child"><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#prefill-decode-disaggregation> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Prefill/decode disaggregation</span> </a></ul><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#5-dra-improves-accelerator-allocation-but-depends-on-drivers> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>5. DRA improves accelerator allocation—but depends on drivers</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#6-workload-aware-scheduling-arrives-in-alpha> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>6. Workload-aware scheduling arrives in alpha</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#7-kubeflow-hub-expands-model-discovery-and-governance> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>7. Kubeflow Hub expands model discovery and governance</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#8-ai-policy-moves-toward-gateways> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>8. AI policy moves toward gateways</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#what-i-would-deploy-today> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>What I would deploy today</span> </a> <ul class="note-toc-list note-toc-list-child"><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#case-1-one-model-one-or-a-few-replicas> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Case 1: One model, one or a few replicas</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#case-2-a-shared-production-llm-service> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Case 2: A shared production LLM service</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#case-3-models-that-require-several-nodes> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Case 3: Models that require several nodes</span> </a><li class="note-toc-item note-toc-item-depth-2" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#case-4-large-scale-or-heterogeneous-inference> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Case 4: Large-scale or heterogeneous inference</span> </a></ul><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#what-is-still-not-solved> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>What is still not solved</span> </a><li class="note-toc-item note-toc-item-depth-1" data-toc-item><a class=note-toc-link data-toc-link href=https://akrisanov.com/kubernetes-model-serving-in-2026/#sources-and-further-reading> <span aria-hidden=true class=note-toc-marker></span> <span class=note-toc-text>Sources and further reading</span> </a></ul></nav></div></aside></div></article><aside aria-label="About the author" class=article-author><p><strong>Andrey Krisanov</strong> is a Staff Software Engineer at Severstal. He builds LLM inference platforms and AI infrastructure on Kubernetes and NVIDIA GPUs.</aside><nav class=note-navigation><div class=note-navigation-utilities><a href=/>All articles</a><a href=#article-top>Back to top ↑</a></div><div class=note-navigation-adjacent><a class=nav-older href=https://akrisanov.com/macos-apple-silicon-cpp-setup/> <span class=note-navigation-direction>Older <span class=note-navigation-shortcut><i class=nav-modifier></i>↓</span></span> <span class=note-navigation-title>My Modern C++ Setup on macOS and Apple Silicon</span> </a><a class=nav-newer href=https://akrisanov.com/planning-llm-inference-capacity/> <span class=note-navigation-direction>Newer <span class=note-navigation-shortcut><i class=nav-modifier></i>↑</span></span> <span class=note-navigation-title>How to Plan LLM Inference Capacity for a Shared Platform</span> </a></div></nav><script>(function () {
+    var older = document.querySelector(".nav-older");
+    var newer = document.querySelector(".nav-newer");
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowDown" && older) {
+        e.preventDefault();
+        location.href = older.href;
+      }
+      if (e.key === "ArrowUp" && newer) {
+        e.preventDefault();
+        location.href = newer.href;
+      }
+    });
+  })();</script></main><footer class=footer><span class=footer-copy> © Andrey Krisanov, 2026 </span><span class=footer-engine> Engine 🦀 <a rel="noopener noreferrer" href=https://www.getzola.org/ target=_blank>Zola</a> <a class=footer-rss href=https://akrisanov.com/rss.xml title=RSS> <svg viewbox="0 0 10 10" aria-hidden=true fill=currentColor height=10 width=10><circle cx=2 cy=8 r=1.5 /><path d="M1 4.5a4.5 4.5 0 014.5 4.5h1.5A6 6 0 001 3z"/><path d="M1 1a8 8 0 018 8h1.5A9.5 9.5 0 001-.5z"/></svg> RSS </a> </span></footer></div><script type=module>const mermaidBlocks = Array.from(
+    document.querySelectorAll('pre > code[data-lang="mermaid"]'),
+  );
+
+  if (mermaidBlocks.length) {
+    const { default: mermaid } = await import(
+      "/vendor/mermaid/mermaid.esm.min.mjs"
+    );
+    const diagrams = mermaidBlocks.map((code) => {
+      const pre = code.parentElement;
+      const caption =
+        pre.nextElementSibling?.matches(".mermaid-caption")
+          ? pre.nextElementSibling
+          : null;
+      const figure = document.createElement("figure");
+      figure.className = "mermaid-figure";
+      const toolbar = document.createElement("div");
+      toolbar.className = "mermaid-toolbar";
+      const expand = document.createElement("button");
+      expand.className = "mermaid-expand";
+      expand.type = "button";
+      expand.textContent = "Open large";
+      expand.setAttribute("aria-label", "Open a larger view of this diagram");
+      toolbar.append(expand);
+      const diagram = document.createElement("div");
+      diagram.className = "mermaid";
+      diagram.textContent = code.textContent;
+      figure.append(toolbar, diagram);
+      pre.replaceWith(figure);
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "mermaid-caption";
+        figcaption.innerHTML = caption.innerHTML;
+        figure.append(figcaption);
+        caption.remove();
+      }
+      return diagram;
+    });
+
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const themeStyles = getComputedStyle(document.documentElement);
+    const themeColor = (name) => themeStyles.getPropertyValue(name).trim();
+    const background = themeColor("--backgroundColor");
+    const foreground = themeColor("--foregroundColor");
+    const primary = themeColor("--diagramPrimaryBackgroundColor");
+    const primaryBorder = themeColor("--diagramPrimaryBorderColor");
+    const secondary = themeColor("--diagramSecondaryBackgroundColor");
+    const secondaryBorder = themeColor("--diagramSecondaryBorderColor");
+    const line = themeColor("--diagramLineColor");
+    const cluster = themeColor("--diagramClusterBackgroundColor");
+    const clusterBorder = themeColor("--diagramClusterBorderColor");
+    mermaid.initialize({
+      startOnLoad: false,
+      darkMode: dark,
+      htmlLabels: false,
+      theme: "base",
+      flowchart: {
+        wrappingWidth: 260,
+        nodeSpacing: 30,
+        rankSpacing: 45,
+      },
+      themeVariables: {
+        darkMode: dark,
+        background,
+        primaryColor: primary,
+        primaryTextColor: foreground,
+        primaryBorderColor: primaryBorder,
+        secondaryColor: secondary,
+        secondaryTextColor: foreground,
+        secondaryBorderColor: secondaryBorder,
+        tertiaryColor: background,
+        tertiaryTextColor: foreground,
+        tertiaryBorderColor: clusterBorder,
+        textColor: foreground,
+        nodeTextColor: foreground,
+        mainBkg: primary,
+        nodeBorder: primaryBorder,
+        lineColor: line,
+        defaultLinkColor: line,
+        arrowheadColor: line,
+        edgeLabelBackground: background,
+        clusterBkg: cluster,
+        clusterBorder,
+        titleColor: themeColor("--headingsColor"),
+        fontFamily: themeColor("--mainFontFamily"),
+        fontSize: "15px",
+      },
+    });
+    await mermaid.run({ nodes: diagrams });
+    diagrams.forEach((diagram) => {
+      const svg = diagram.querySelector("svg");
+      const viewBox = svg?.viewBox?.baseVal;
+      if (viewBox?.width && viewBox.width / viewBox.height > 1.4) {
+        diagram.classList.add("is-wide");
+      }
+    });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "mermaid-dialog";
+    dialog.innerHTML = `
+      <div class="mermaid-dialog-header">
+        <span>Diagram</span>
+        <button type="button" class="mermaid-dialog-close" aria-label="Close diagram">Close</button>
+      </div>
+      <div class="mermaid-dialog-viewport"></div>
+    `;
+    document.body.append(dialog);
+
+    const dialogViewport = dialog.querySelector(".mermaid-dialog-viewport");
+    const dialogClose = dialog.querySelector(".mermaid-dialog-close");
+    let activeDiagram = null;
+    let activeButton = null;
+    let diagramPlaceholder = null;
+
+    function closeDiagram() {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+        restoreDiagram();
+      }
+    }
+
+    function restoreDiagram() {
+      if (!activeDiagram || !diagramPlaceholder) return;
+      activeDiagram.classList.remove("is-expanded");
+      diagramPlaceholder.replaceWith(activeDiagram);
+      activeButton?.focus();
+      activeDiagram = null;
+      activeButton = null;
+      diagramPlaceholder = null;
+    }
+
+    document.querySelectorAll(".mermaid-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDiagram = button
+          .closest(".mermaid-figure")
+          .querySelector(".mermaid");
+        activeButton = button;
+        diagramPlaceholder = document.createComment("mermaid diagram");
+        activeDiagram.before(diagramPlaceholder);
+        activeDiagram.classList.add("is-expanded");
+        dialogViewport.append(activeDiagram);
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        dialogClose.focus();
+      });
+    });
+
+    dialogClose.addEventListener("click", closeDiagram);
+    dialog.addEventListener("close", restoreDiagram);
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) closeDiagram();
+    });
+    document.dispatchEvent(new Event("article:layoutchange"));
+  }</script><script>(function () {
+    var tocs = Array.prototype.slice.call(
+      document.querySelectorAll("[data-note-toc]"),
+    );
+    if (!tocs.length) return;
+
+    var groups = tocs
+      .map(function (toc) {
+        var links = Array.prototype.slice.call(
+          toc.querySelectorAll("[data-toc-link]"),
+        );
+        var items = Array.prototype.slice.call(
+          toc.querySelectorAll("[data-toc-item]"),
+        );
+        var entries = links
+          .map(function (link, index) {
+            var id = decodeURIComponent(link.hash.slice(1));
+            return {
+              link: link,
+              item: items[index],
+              heading: document.getElementById(id),
+              top: 0,
+            };
+          })
+          .filter(function (entry) {
+            return entry.heading;
+          });
+        return {
+          toc: toc,
+          entries: entries,
+          activeIndex: -1,
+        };
+      })
+      .filter(function (group) {
+        return group.entries.length;
+      });
+
+    if (!groups.length) return;
+
+    var frame = null;
+
+    function measure() {
+      groups.forEach(function (group) {
+        group.entries.forEach(function (entry) {
+          var headingRect = entry.heading.getBoundingClientRect();
+          entry.top = headingRect.top + window.pageYOffset;
+        });
+      });
+    }
+
+    function keepActiveLinkVisible(group, entry) {
+      var scroller = group.toc.closest(
+        ".note-toc, .note-toc-mobile-panel",
+      );
+      if (
+        !scroller ||
+        scroller.offsetParent === null ||
+        scroller.scrollHeight <= scroller.clientHeight
+      ) {
+        return;
+      }
+
+      var linkRect = entry.link.getBoundingClientRect();
+      var scrollerRect = scroller.getBoundingClientRect();
+      var padding = 10;
+
+      if (linkRect.top < scrollerRect.top + padding) {
+        scroller.scrollTop -= scrollerRect.top + padding - linkRect.top;
+      } else if (linkRect.bottom > scrollerRect.bottom - padding) {
+        scroller.scrollTop += linkRect.bottom - scrollerRect.bottom + padding;
+      }
+    }
+
+    function update() {
+      frame = null;
+      var position =
+        window.pageYOffset +
+        Math.max(120, Math.round(window.innerHeight * 0.22));
+
+      groups.forEach(function (group) {
+        var nextActive = 0;
+
+        for (var i = 0; i < group.entries.length; i += 1) {
+          if (position >= group.entries[i].top) {
+            nextActive = i;
+          }
+        }
+
+        if (nextActive !== group.activeIndex) {
+          group.activeIndex = nextActive;
+          group.entries.forEach(function (entry, index) {
+            var isActive = index === group.activeIndex;
+            var isPast = index < group.activeIndex;
+            entry.item.classList.toggle("is-active", isActive);
+            entry.item.classList.toggle("is-past", isPast);
+            if (isActive) {
+              entry.link.setAttribute("aria-current", "location");
+            } else {
+              entry.link.removeAttribute("aria-current");
+            }
+          });
+
+          keepActiveLinkVisible(
+            group,
+            group.entries[group.activeIndex],
+          );
+        }
+      });
+    }
+
+    function schedule() {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(update);
+    }
+
+    measure();
+    update();
+    window.addEventListener("resize", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("load", function () {
+      measure();
+      schedule();
+    });
+    window.addEventListener("pageshow", function () {
+      measure();
+      schedule();
+    });
+    document.addEventListener("article:layoutchange", function () {
+      measure();
+      schedule();
+    });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        measure();
+        schedule();
+      });
+    }
+
+    var noteMain = document.querySelector(".note-main");
+    if ("ResizeObserver" in window && noteMain) {
+      var resizeObserver = new ResizeObserver(function () {
+        measure();
+        schedule();
+      });
+      resizeObserver.observe(noteMain);
+    }
+
+    document
+      .querySelectorAll(".note-toc-mobile")
+      .forEach(function (details) {
+        details.addEventListener("toggle", function () {
+          if (!details.open) return;
+          groups.forEach(function (group) {
+            group.activeIndex = -1;
+          });
+          schedule();
+        });
+      });
+  })();</script>

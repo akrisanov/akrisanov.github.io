@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Andrey Krisanov - keycloak</title>
+    <link>https://akrisanov.com</link>
+    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <generator>Zola</generator>
+    <language>en</language>
+    <atom:link href="https://akrisanov.com/tags/keycloak/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <lastBuildDate>Sat, 23 Sep 2023 00:00:00 +0000</lastBuildDate>
+    
+
+    
+    <item>
+      <title>Synchronize Active Directory Users with a Keycloak LDAP Filter</title>
+      <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
+      <dc:creator>Andrey Krisanov</dc:creator>
+      <link>https://akrisanov.com/custom-user-ldap-filter-in-keycloak/</link>
+      <guid>https://akrisanov.com/custom-user-ldap-filter-in-keycloak/</guid>
+      <description xml:base="https://akrisanov.com/custom-user-ldap-filter-in-keycloak/"><![CDATA[
+        <p>Published: 2023-09-23</p>
+        
+        
+          <p>Keycloak User Federation can synchronize users from an external directory through LDAP or Kerberos. In a large
+Active Directory structure, the users required by one Keycloak realm may be spread across several organizational
+units. A custom LDAP filter can select only those accounts.</p>
+        
+      ]]></description>
+    </item>
+    
+  </channel>
+</rss>
