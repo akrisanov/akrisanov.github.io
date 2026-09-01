@@ -3,7 +3,7 @@
   <channel>
     <title>Andrey Krisanov - wsl2</title>
     <link>https://akrisanov.com</link>
-    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <description>Staff Software Engineer writing about AI infrastructure, ML systems, distributed systems, GPU infrastructure, and production LLM serving.</description>
     <generator>Zola</generator>
     <language>en</language>
     <atom:link href="https://akrisanov.com/tags/wsl2/rss.xml" rel="self" type="application/rss+xml" />

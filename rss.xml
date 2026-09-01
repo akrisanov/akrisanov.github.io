@@ -3,12 +3,12 @@
   <channel>
     <title>Andrey Krisanov</title>
     <link>https://akrisanov.com</link>
-    <description>Software engineer writing about LLM inference, AI infrastructure, distributed systems, Kubernetes, vLLM, and platform reliability.</description>
+    <description>Staff Software Engineer writing about AI infrastructure, ML systems, distributed systems, GPU infrastructure, and production LLM serving.</description>
     <generator>Zola</generator>
     <language>en</language>
     <atom:link href="https://akrisanov.com/rss.xml" rel="self" type="application/rss+xml" />
     
-    <lastBuildDate>Sun, 23 Aug 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 01 Sep 2026 00:00:00 +0000</lastBuildDate>
     
 
     
@@ -1937,41 +1937,26 @@ automated check prevents it from being missed.</p>
     
     <item>
       <title>About</title>
-      <pubDate>Sat, 01 Aug 2026 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 01 Sep 2026 00:00:00 +0000</pubDate>
       <dc:creator>Andrey Krisanov</dc:creator>
       <link>https://akrisanov.com/about/</link>
       <guid>https://akrisanov.com/about/</guid>
       <description xml:base="https://akrisanov.com/about/"><![CDATA[
         <p>Published: 2024-01-01</p>
-        <p>Updated: 2026-08-01</p>
+        <p>Updated: 2026-09-01</p>
         
           <h2 id="hi-i-m-andrey">Hi, I'm Andrey</h2>
-<p>I'm a Staff Software Engineer at Severstal, focused on LLM inference platforms, AI infrastructure,
-and distributed systems. I am responsible for the architecture and technical development of DaVinci, a shared GenAI
-platform that supports enterprise AI products and coding agents. Its inference foundation currently runs self-hosted,
-open-weight models on Kubernetes, vLLM, and 24 NVIDIA H200 GPUs.</p>
-<p>My work covers model serving, traffic routing and admission control, performance and reliability, observability,
-capacity planning, safe model rollout and multi-data-center resilience. I also designed the target topology and
-resilience strategy for a planned expansion to 48 H200 and eight H100 GPUs across two data centers.</p>
-<p>I enjoy transforming complex systems into something straightforward, dependable, and easy to understand.</p>
+<p>I'm a Staff Software Engineer at Severstal, where I build AI infrastructure, ML systems, and distributed systems.</p>
+<p>I lead the architecture and hands-on development of DaVinci, a shared GenAI platform that runs production workloads across multiple data centers on Kubernetes and NVIDIA GPUs. My work covers platform architecture, GPU infrastructure and capacity planning, reliability, observability, and the lifecycle of models in production.</p>
+<p>A large part of my current work is production LLM serving. I work on routing and control-plane design, performance and benchmarking, model rollouts, failure handling, and running vLLM-based workloads across clusters. I still spend much of my time close to the code: designing platform components, investigating incidents, testing infrastructure trade-offs, and improving the system as our models and compute needs grow.</p>
+<p>What I enjoy most is taking a complicated system and making it dependable, understandable, and easier for other engineers to use.</p>
 <h2 id="background">Background</h2>
-<p>Prior to specializing in AI infrastructure, I developed and scaled production systems in the SaaS, fintech,
-data privacy, payments and high-traffic consumer products sectors.</p>
-<p>My experience includes:</p>
-<ul>
-<li>modernizing a $3M+ ARR SaaS platform and improving critical backend paths by 2–10x, while achieving 99.998% availability;</li>
-<li>designing and launching a content platform that reached over 20 million monthly active users;</li>
-<li>building backend, cloud and distributed systems for start-ups and established companies in Germany and Russia;</li>
-<li>working in senior individual contributor, technical leadership and CTO roles.</li>
-</ul>
-<p>I have consistently taken responsibility for important, technically complicated systems that are expected to work
-reliably in production.</p>
+<p>My path into AI infrastructure grew out of many years building backend and platform systems for SaaS, fintech, payments, data privacy, and high-traffic consumer products.</p>
+<p>I've worked as an individual contributor, a technical lead, and a CTO. Those roles taught me to look at a system from several angles at once: how it is designed, how it behaves in production, how a team can change it safely, and whether it solves the problem it was built for.</p>
+<p>The domains have changed over the years, but the thread has stayed the same: I tend to take responsibility for technically difficult systems that need to work reliably in the real world.</p>
 <h2 id="writing-and-contact">Writing and contact</h2>
-<p>On this site, I write about AI infrastructure, LLM inference, distributed systems and the practical lessons
-I have learned from operating production platforms. You can also browse all of my public projects on
-<a rel="noopener external" target="_blank" href="https://github.com/akrisanov">GitHub</a>.</p>
-<p>For professional inquiries, connect with me on <a rel="noopener external" target="_blank" href="https://www.linkedin.com/in/akrisanov/">LinkedIn</a> or download my
-<a href="/files/andrey-krisanov-resume.pdf">résumé</a>.</p>
+<p>I write here about AI infrastructure, ML systems, distributed systems, and production LLM serving. Most articles start with a practical problem, an experiment, or something I learned while operating a real system.</p>
+<p>You can find my public projects on <a rel="noopener external" target="_blank" href="https://github.com/akrisanov">GitHub</a>. For professional inquiries, connect with me on <a rel="noopener external" target="_blank" href="https://www.linkedin.com/in/akrisanov/">LinkedIn</a> or download my <a href="/files/andrey-krisanov-resume.pdf">résumé</a>.</p>
 
         
       ]]></description>
