@@ -12,26 +12,18 @@ static_thumbnail = "/images/social-pages-about.png"
 
 +++
 
-## Hi, I'm Andrey
+Hi,
 
-I'm a Staff Software Engineer at Severstal, where I build AI infrastructure, ML systems, and distributed systems.
+My name is Andrey Krisanov, and I'm a Staff Software Engineer at Severstal. I build AI infrastructure, ML systems, and distributed systems. A large part of my current work is production LLM serving.
 
-I lead the architecture and hands-on development of DaVinci, a shared GenAI platform that runs production workloads across multiple data centers on Kubernetes and NVIDIA GPUs. My work covers platform architecture, GPU infrastructure and capacity planning, reliability, observability, and the lifecycle of models in production.
+I live in Moscow with my wife and son. We're preparing for a major move and the next chapter of our lives.
 
-A large part of my current work is production LLM serving. I work on routing and control-plane design, performance and benchmarking, model rollouts, failure handling, and running vLLM-based workloads across clusters. I still spend much of my time close to the code: designing platform components, investigating incidents, testing infrastructure trade-offs, and improving the system as our models and compute needs grow.
+Outside work, I read, take long walks, spend time with my family, travel when I can, and try to stay in shape.
 
-What I enjoy most is taking a complicated system and making it dependable, understandable, and easier for other engineers to use.
+My main technical interests are distributed systems, GPU infrastructure, Kubernetes, Go, developer tooling, and running reliable software in production. On this site, I write about the systems I build, problems I investigate, and things I learn along the way.
 
-## Background
+I'm also on other platforms:
 
-My path into AI infrastructure grew out of many years building backend and platform systems for SaaS, fintech, payments, data privacy, and high-traffic consumer products.
-
-I've worked as an individual contributor, a technical lead, and a CTO. Those roles taught me to look at a system from several angles at once: how it is designed, how it behaves in production, how a team can change it safely, and whether it solves the problem it was built for.
-
-The domains have changed over the years, but the thread has stayed the same: I tend to take responsibility for technically difficult systems that need to work reliably in the real world.
-
-## Writing and contact
-
-I write here about AI infrastructure, ML systems, distributed systems, and production LLM serving. Most articles start with a practical problem, an experiment, or something I learned while operating a real system.
-
-You can find my public projects on [GitHub](https://github.com/akrisanov). For professional inquiries, connect with me on [LinkedIn](https://www.linkedin.com/in/akrisanov/) or download my [résumé](/files/andrey-krisanov-resume.pdf).
+- For open-source projects and programming work, visit my [GitHub profile](https://github.com/akrisanov).
+- For shorter notes and updates, follow me on [X](https://x.com/_akrisanov). You can also reach me directly on [Telegram](https://t.me/akrisanov).
+- For more about my professional experience, see my [LinkedIn profile](https://www.linkedin.com/in/akrisanov/) or download my [résumé](/files/andrey-krisanov-resume.pdf).

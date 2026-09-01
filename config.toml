@@ -26,7 +26,7 @@ light_theme = "catppuccin-latte"
 dark_theme = "catppuccin-mocha"
 
 [extra]
-blog_subtitle = "AI infrastructure, ML systems, and distributed systems"
+blog_subtitle = "Notes on software, systems, and things I learn along the way"
 home_title = "Andrey Krisanov — AI Infrastructure & ML Systems"
 author_url = "https://akrisanov.com/about/"
 github_url = "https://github.com/akrisanov"

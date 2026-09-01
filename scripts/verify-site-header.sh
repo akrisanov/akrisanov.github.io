@@ -2,7 +2,7 @@
 set -euo pipefail
 
 readonly output_dir="${1:-public}"
-readonly expected_subtitle="AI infrastructure, ML systems, and distributed systems"
+readonly expected_subtitle="Notes on software, systems, and things I learn along the way"
 readonly expected_navigation='href="?/about/"?.*href="?/files/andrey-krisanov-resume.pdf"?.*href="?https://github.com/akrisanov"?.*href="?https://www.linkedin.com/in/akrisanov/"?'
 
 if [[ ! -d "$output_dir" ]]; then
