@@ -1945,18 +1945,17 @@ automated check prevents it from being missed.</p>
         <p>Published: 2024-01-01</p>
         <p>Updated: 2026-09-01</p>
         
-          <h2 id="hi-i-m-andrey">Hi, I'm Andrey</h2>
-<p>I'm a Staff Software Engineer at Severstal, where I build AI infrastructure, ML systems, and distributed systems.</p>
-<p>I lead the architecture and hands-on development of DaVinci, a shared GenAI platform that runs production workloads across multiple data centers on Kubernetes and NVIDIA GPUs. My work covers platform architecture, GPU infrastructure and capacity planning, reliability, observability, and the lifecycle of models in production.</p>
-<p>A large part of my current work is production LLM serving. I work on routing and control-plane design, performance and benchmarking, model rollouts, failure handling, and running vLLM-based workloads across clusters. I still spend much of my time close to the code: designing platform components, investigating incidents, testing infrastructure trade-offs, and improving the system as our models and compute needs grow.</p>
-<p>What I enjoy most is taking a complicated system and making it dependable, understandable, and easier for other engineers to use.</p>
-<h2 id="background">Background</h2>
-<p>My path into AI infrastructure grew out of many years building backend and platform systems for SaaS, fintech, payments, data privacy, and high-traffic consumer products.</p>
-<p>I've worked as an individual contributor, a technical lead, and a CTO. Those roles taught me to look at a system from several angles at once: how it is designed, how it behaves in production, how a team can change it safely, and whether it solves the problem it was built for.</p>
-<p>The domains have changed over the years, but the thread has stayed the same: I tend to take responsibility for technically difficult systems that need to work reliably in the real world.</p>
-<h2 id="writing-and-contact">Writing and contact</h2>
-<p>I write here about AI infrastructure, ML systems, distributed systems, and production LLM serving. Most articles start with a practical problem, an experiment, or something I learned while operating a real system.</p>
-<p>You can find my public projects on <a rel="noopener external" target="_blank" href="https://github.com/akrisanov">GitHub</a>. For professional inquiries, connect with me on <a rel="noopener external" target="_blank" href="https://www.linkedin.com/in/akrisanov/">LinkedIn</a> or download my <a href="/files/andrey-krisanov-resume.pdf">résumé</a>.</p>
+          <p>Hi,</p>
+<p>My name is Andrey Krisanov, and I'm a Staff Software Engineer at Severstal. I build AI infrastructure, ML systems, and distributed systems. A large part of my current work is production LLM serving.</p>
+<p>I live in Moscow with my wife and son. We're preparing for a major move and the next chapter of our lives.</p>
+<p>Outside work, I read, take long walks, spend time with my family, travel when I can, and try to stay in shape.</p>
+<p>My main technical interests are distributed systems, GPU infrastructure, Kubernetes, Go, developer tooling, and running reliable software in production. On this site, I write about the systems I build, problems I investigate, and things I learn along the way.</p>
+<p>I'm also on other platforms:</p>
+<ul>
+<li>For open-source projects and programming work, visit my <a rel="noopener external" target="_blank" href="https://github.com/akrisanov">GitHub profile</a>.</li>
+<li>For shorter notes and updates, follow me on <a rel="noopener external" target="_blank" href="https://x.com/_akrisanov">X</a>. You can also reach me directly on <a rel="noopener external" target="_blank" href="https://t.me/akrisanov">Telegram</a>.</li>
+<li>For more about my professional experience, see my <a rel="noopener external" target="_blank" href="https://www.linkedin.com/in/akrisanov/">LinkedIn profile</a> or download my <a href="/files/andrey-krisanov-resume.pdf">résumé</a>.</li>
+</ul>
 
         
       ]]></description>
