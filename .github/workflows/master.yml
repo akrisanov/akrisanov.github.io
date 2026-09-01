@@ -3,15 +3,17 @@ on:
     branches: [master]
   workflow_dispatch:
 
-name: Build and deploy on Github Pages
+name: Build and deploy on GitHub Pages
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
+
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v6
 
       - name: Install Zola
@@ -22,21 +24,10 @@ jobs:
       - name: Install ImageMagick
         run: sudo apt-get update && sudo apt-get install -y imagemagick fonts-dejavu-core
 
-      - name: Generate social preview cards
-        run: bash scripts/generate-social-previews.sh
+      - name: Build and verify site
+        run: bash scripts/build-site.sh
 
-      - name: Build site
-        run: zola build
-
-      - name: Verify shared site header
-        run: bash scripts/verify-site-header.sh public
-
-      - name: Verify SEO and performance budgets
-        run: |
-          bash scripts/verify-seo.sh public
-          bash scripts/verify-performance.sh public
-
-      - name: build_and_deploy
+      - name: Deploy
         uses: shalzz/zola-deploy-action@v0.23.4
         env:
           PAGES_BRANCH: gh-pages
