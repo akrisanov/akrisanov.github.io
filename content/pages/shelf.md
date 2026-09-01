@@ -8,4 +8,6 @@ updated = 2026-08-23
 
 [extra]
 seo_title = "The shelf — Andrey Krisanov"
+static_thumbnail = "/images/social-pages-shelf.png"
+
 +++

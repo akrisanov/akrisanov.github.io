@@ -12,6 +12,8 @@ selected = true
 keywords = "litellm health checks, litellm proxy, llm gateway, background health checks, health check routing, kubernetes probes, llm cost optimization"
 toc = true
 
+static_thumbnail = "/images/social-hidden-costs-of-litellm-health-checks.png"
+
 +++
 
 We run LiteLLM as an internal gateway in front of two kinds of models: local vLLM deployments and paid external
