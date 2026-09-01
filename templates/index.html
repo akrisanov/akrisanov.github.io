@@ -10,7 +10,7 @@
 
 {% block description -%}
   {%- if paginator and paginator.current_index > 1 -%}
-    Page {{ paginator.current_index }} of articles by Andrey Krisanov about LLM inference, AI infrastructure, distributed systems, and software engineering.
+    Page {{ paginator.current_index }} of articles by Andrey Krisanov about AI infrastructure, ML systems, distributed systems, and LLM inference.
   {%- else -%}
     {{ config.description | escape_xml | safe }}
   {%- endif -%}
@@ -26,7 +26,7 @@
 
 {% block og_description -%}
   {%- if paginator and paginator.current_index > 1 -%}
-    Page {{ paginator.current_index }} of articles by Andrey Krisanov about LLM inference, AI infrastructure, distributed systems, and software engineering.
+    Page {{ paginator.current_index }} of articles by Andrey Krisanov about AI infrastructure, ML systems, distributed systems, and LLM inference.
   {%- else -%}
     {{ config.description | escape_xml | safe }}
   {%- endif -%}
@@ -42,7 +42,7 @@
 
 {% block twitter_description -%}
   {%- if paginator and paginator.current_index > 1 -%}
-    Page {{ paginator.current_index }} of articles by Andrey Krisanov about LLM inference, AI infrastructure, distributed systems, and software engineering.
+    Page {{ paginator.current_index }} of articles by Andrey Krisanov about AI infrastructure, ML systems, distributed systems, and LLM inference.
   {%- else -%}
     {{ config.description | escape_xml | safe }}
   {%- endif -%}
@@ -59,12 +59,11 @@
 {% if paginator.current_index == 1 %}
 <section class="home-intro" aria-label="About Andrey Krisanov">
   <p class="home-intro-about">
-    I lead the architecture of Severstal’s shared platform for serving
-    open-weight models on Kubernetes, vLLM, and NVIDIA GPUs.
+    I build AI infrastructure, ML systems, and distributed systems. At Severstal, I lead the architecture and hands-on development of DaVinci, a shared GenAI platform running production workloads on Kubernetes and NVIDIA GPUs.
   </p>
   <p class="home-intro-focus">
     <span class="home-intro-focus-label">Focus</span>
-    <span>Control planes · Performance · Reliability · Observability · GPU capacity</span>
+    <span>Distributed systems · GPU infrastructure · LLM serving · Reliability · Observability</span>
   </p>
 </section>
 

@@ -1,7 +1,7 @@
 # akrisanov.com
 
-Technical writing on LLM inference platforms, AI infrastructure,
-distributed systems, Kubernetes, vLLM, and platform reliability.
+Technical writing on AI infrastructure, ML systems, distributed systems,
+production LLM serving, Kubernetes, and platform reliability.
 
 Built with [Zola](https://www.getzola.org/).
 
