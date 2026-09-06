@@ -1,0 +1,153 @@
+.talks-page {
+  max-width: var(--articleWideMeasure);
+}
+
+.talks-intro {
+  margin-bottom: 32px;
+}
+
+.talks-intro > p {
+  margin-top: 12px;
+  font-size: 1.125rem;
+  line-height: 1.55;
+}
+
+.talks-list,
+.talks-meta {
+  list-style: none;
+}
+
+.talks-item + .talks-item {
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--thinRuleColor);
+}
+
+.talks-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.talks-meta li + li::before {
+  content: "·";
+  margin-right: 12px;
+}
+
+.talks-meta li {
+  opacity: 0.74;
+}
+
+.talks-meta .talks-kind {
+  font-weight: 600;
+  opacity: 1;
+}
+
+.talks-title {
+  color: var(--headingsColor);
+  font-size: 1.5rem;
+  line-height: 1.35;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  overflow-wrap: break-word;
+}
+
+.talks-description {
+  margin-top: 6px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.talks-actions {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 10px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.talks-actions a {
+  padding-block: 3px;
+}
+
+.talks-duration {
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  opacity: 0.74;
+}
+
+.talks-videos {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.talks-videos summary {
+  width: fit-content;
+  max-width: 100%;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.talks-videos summary:hover {
+  color: var(--hoverColor);
+}
+
+.talks-videos ol {
+  margin: 10px 0 0 8px;
+  padding-left: 28px;
+  border-left: 2px solid var(--thinRuleColor);
+}
+
+.talks-videos li {
+  padding-left: 4px;
+}
+
+.talks-videos li + li {
+  margin-top: 16px;
+}
+
+.talks-videos li::marker {
+  color: var(--headingsColor);
+}
+
+.talks-video-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.talks-video-heading h3 {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.talks-video-description {
+  margin-top: 4px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.talks-video-language {
+  margin-top: 4px;
+  opacity: 0.74;
+}
+
+@media screen and (max-width: 639px) {
+  .talks-intro > p {
+    font-size: 1rem;
+  }
+
+  .talks-title {
+    font-size: 1.25rem;
+  }
+}
