@@ -1,0 +1,27 @@
+# Top-level entries may be playlists, lectures, or interviews, in display order.
+# Keep playlist videos in viewing order. Dates refer to recordings, not uploads.
+[[entries]]
+id = "applied-ai-2026"
+kind = "playlist"
+language = "ru"
+title = "Прикладная ИИ-разработка"
+description = "Две лекции для разработчиков: от foundation-моделей и архитектуры Transformer до оценки качества LLM."
+date = "2026-02"
+date_label = "February 2026"
+url = "https://www.youtube.com/playlist?list=PLbjpXxUde2OM"
+
+[[entries.videos]]
+title = "Введение в AI Engineering"
+description = "Foundation-модели, архитектура Transformer и ответы на вопросы."
+url = "https://www.youtube.com/watch?v=R3RXA_Iy8dk&list=PLbjpXxUde2OM"
+duration = "59:11"
+duration_iso = "PT59M11S"
+duration_label = "59 minutes, 11 seconds"
+
+[[entries.videos]]
+title = "Оценка LLM и LLM-as-a-judge"
+description = "Метрики оценки больших языковых моделей и подход «ИИ как судья»."
+url = "https://www.youtube.com/watch?v=C2G2ZdQ9qNk&list=PLbjpXxUde2OM"
+duration = "42:03"
+duration_iso = "PT42M3S"
+duration_label = "42 minutes, 3 seconds"

@@ -1,0 +1,58 @@
+{% extends "static_page.html" %}
+
+{% block head_links %}
+<link rel="stylesheet" href="{{ get_url(path='css/talks.css', cachebust=true) }}" />
+{% endblock head_links %}
+
+{% block content %}
+{% set talks = load_data(path="data/talks.toml", format="toml") %}
+<article class="talks-page">
+  <header class="talks-intro">
+    <h1 class="note-title">{{ page.title | escape_xml | safe }}</h1>
+    {{ page.content | safe }}
+  </header>
+
+  <ul class="talks-list" role="list">
+    {% for entry in talks.entries %}
+    <li class="talks-item">
+      <article aria-labelledby="{{ entry.id }}-title">
+        <ul class="talks-meta" aria-label="Recording details" role="list">
+          <li class="talks-kind">{% if entry.kind == "playlist" %}Playlist{% elif entry.kind == "interview" %}Interview{% else %}Lecture{% endif %}</li>
+          <li>{% if entry.language == "ru" %}Russian{% else %}English{% endif %}</li>
+          <li><time datetime="{{ entry.date }}">{{ entry.date_label | escape_xml | safe }}</time></li>
+        </ul>
+        <h2 class="talks-title" id="{{ entry.id }}-title" lang="{{ entry.language }}">{{ entry.title | escape_xml | safe }}</h2>
+        <p class="talks-description" lang="{{ entry.language }}">{{ entry.description | escape_xml | safe }}</p>
+        <div class="talks-actions">
+          <a href="{{ entry.url | escape_xml | safe }}" hreflang="{{ entry.language }}" aria-describedby="{{ entry.id }}-title">{% if entry.kind == "playlist" %}Open playlist on YouTube{% else %}Watch on YouTube{% endif %} <span aria-hidden="true">↗</span></a>
+          {% if entry.duration %}
+          <time class="talks-duration" datetime="{{ entry.duration_iso }}" aria-label="{{ entry.duration_label | escape_xml | safe }}">{{ entry.duration }}</time>
+          {% endif %}
+        </div>
+
+        {% if entry.kind == "playlist" and entry.videos %}
+        <details class="talks-videos">
+          <summary>Videos in this playlist ({{ entry.videos | length }})</summary>
+          <ol>
+            {% for video in entry.videos %}
+            {% set video_language = video.language | default(value=entry.language) %}
+            <li>
+              <div class="talks-video-heading">
+                <h3 lang="{{ video_language }}"><a href="{{ video.url | escape_xml | safe }}" hreflang="{{ video_language }}">{{ video.title | escape_xml | safe }}</a></h3>
+                {% if video.duration %}
+                <time class="talks-duration" datetime="{{ video.duration_iso }}" aria-label="{{ video.duration_label | escape_xml | safe }}">{{ video.duration }}</time>
+                {% endif %}
+              </div>
+              {% if video.description %}<p class="talks-video-description" lang="{{ video_language }}">{{ video.description | escape_xml | safe }}</p>{% endif %}
+              {% if video_language != entry.language %}<p class="talks-video-language">{% if video_language == "ru" %}Russian{% else %}English{% endif %}</p>{% endif %}
+            </li>
+            {% endfor %}
+          </ol>
+        </details>
+        {% endif %}
+      </article>
+    </li>
+    {% endfor %}
+  </ul>
+</article>
+{% endblock content %}
